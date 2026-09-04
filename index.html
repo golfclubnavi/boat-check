@@ -108,6 +108,31 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .errorbox{background:#fff4f4;border:1px solid #f0c9cc;color:#a52f37;border-radius:11px;padding:10px;font-size:9px;margin-bottom:10px}
 @media(min-width:760px){.grid{grid-template-columns:repeat(6,1fr)}.raceGrid{grid-template-columns:1fr 1fr}}
 @media(max-width:390px){.name{font-size:14px}.card{min-height:108px}.race{gap:4px}.judge-main{grid-template-columns:.9fr 1.25fr 1fr}.status p{font-size:6.5px}}
+
+/* v23: venue status / professional card polish */
+.card{padding-top:7px}
+.cardTop{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;min-height:18px}
+.venueCode{font-size:7px;font-weight:900;color:#8a97a8;letter-spacing:.05em}
+.stateMark{display:inline-flex;align-items:center;gap:3px;padding:3px 5px;border-radius:999px;font-size:6.5px;font-weight:950;white-space:nowrap}
+.stateMark i{width:5px;height:5px;border-radius:50%;display:block}
+.stateMark.live{color:#08784b;background:#eaf8f1}.stateMark.live i{background:#16aa69;box-shadow:0 0 0 2px rgba(22,170,105,.12)}
+.stateMark.soon{color:#a86200;background:#fff6dd}.stateMark.soon i{background:#efa400}
+.stateMark.closed{color:#5c6877;background:#e8edf2}.stateMark.closed i{background:#7e8996}
+.stateMark.offday{color:#8a95a1;background:#eef1f4}.stateMark.offday i{background:#aab2bb}
+.card.isLive{border-color:#bddfce;box-shadow:0 7px 19px rgba(13,115,73,.10)}
+.card.isSoon{border-color:#ead7a5;box-shadow:0 7px 19px rgba(159,105,0,.10)}
+.card.isClosed{opacity:.82}
+.card.off{opacity:.72}
+.card .name{margin:5px 0 6px}
+.nextRow{position:relative;z-index:2;margin-top:7px;display:flex;align-items:end;justify-content:space-between;gap:3px}
+.nextRace{font-size:7px;color:#7a8797}.nextRace b{display:block;color:#10223d;font-size:12px;line-height:1.05}
+.cutoff{text-align:right;font-size:6.5px;color:#7a8797}.cutoff b{display:block;color:#10223d;font-size:10px}
+.countdown{position:relative;z-index:2;text-align:center;margin-top:5px;font-size:6.5px;font-weight:850;color:#68788c}
+.countdown.urgent{color:#d65b00}
+.cardLegend{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin:-2px 2px 9px;color:#738095;font-size:7px;font-weight:800}
+.cardLegend span{display:inline-flex;align-items:center;gap:3px}.cardLegend i{width:6px;height:6px;border-radius:50%}
+.cardLegend .l1{background:#16aa69}.cardLegend .l2{background:#efa400}.cardLegend .l3{background:#7e8996}
+
 </style>
 </head>
 <body>
@@ -131,6 +156,7 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
     <div class="homeTab"><span class="ico">⭐</span>お気に入り</div>
     <div class="homeTab"><span class="ico">▶️</span>レース映像</div>
   </div>
+  <div class="cardLegend"><span><i class="l1"></i>開催中</span><span><i class="l2"></i>開始前</span><span><i class="l3"></i>終了/非開催</span></div>
 
   <div id="loadError" class="errorbox hidden"></div>
   <div class="grid" id="venues"></div>
@@ -223,25 +249,57 @@ function formatUpdated(s){
 function renderLoading(){
   $("venues").innerHTML=VENUES.map(v=>`<div class="card"><div class="name skeleton">${v[1]}</div><div class="meta skeleton">読込中</div><div class="race skeleton">----</div></div>`).join("");
 }
+function minutesUntil(deadline){
+  if(!deadline)return null;
+  const nowParts=jstNow(), [h,m]=deadline.split(":").map(Number), [nh,nm]=nowParts.time.split(":").map(Number);
+  return h*60+m-(nh*60+nm);
+}
+function countdownText(deadline){
+  const mins=minutesUntil(deadline);
+  if(mins===null)return "";
+  if(mins<0)return "締切済";
+  if(mins===0)return "締切まもなく";
+  if(mins<60)return `締切まで ${mins}分`;
+  return `締切まで ${Math.floor(mins/60)}時間${mins%60?mins%60+"分":""}`;
+}
+function meetingState(m,next){
+  const now=jstNow();
+  if(m.date!==now.date)return {cls:"soon",label:"開始前",card:"isSoon"};
+  if(!next)return {cls:"closed",label:"本日終了",card:"isClosed"};
+  const first=(m.races||[])[0];
+  if(first && !raceIsPast(first.deadline,now.time) && next.raceNo===first.raceNo)return {cls:"soon",label:"開始前",card:"isSoon"};
+  return {cls:"live",label:"開催中",card:"isLive"};
+}
 function renderVenues(){
   const map=new Map(state.meetings.map(m=>[m.venueCode,m]));
   const now=jstNow();
   $("venues").innerHTML=VENUES.map(([code,name])=>{
     const m=map.get(code);
     if(!m){
-      return `<div class="card off"><div class="name">${name}</div><div class="offtext"><b>本日非開催</b></div></div>`;
+      return `<div class="card off">
+        <div class="cardTop"><span class="venueCode">${code}</span><span class="stateMark offday"><i></i>非開催</span></div>
+        <div class="name">${name}</div>
+        <div class="offtext"><b>本日非開催</b></div>
+      </div>`;
     }
-    const next=getNextRace(m);
-    const allDone=m.date===now.date && !next;
-    if(allDone){
-      return `<div class="card off"><div class="name">${name}</div><div class="meta"><span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span><span>${esc(m.day||"")}</span></div><div class="offtext"><b>本日終了</b></div></div>`;
+    const next=getNextRace(m), st=meetingState(m,next);
+    if(!next){
+      return `<div class="card off ${st.card}">
+        <div class="cardTop"><span class="venueCode">${code}</span><span class="stateMark ${st.cls}"><i></i>${st.label}</span></div>
+        <div class="name">${name}</div>
+        <div class="meta"><span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span><span>${esc(m.day||"")}</span></div>
+        <div class="offtext"><b>本日終了</b></div>
+      </div>`;
     }
     const finished=(m.races||[]).filter(r=>m.date===now.date&&raceIsPast(r.deadline,now.time)).length;
     const pct=Math.round(finished/Math.max(1,(m.races||[]).length)*100);
-    return `<div class="card" data-code="${code}" onclick="openVenue('${code}')">
+    const mins=minutesUntil(next.deadline), urgent=mins!==null&&mins>=0&&mins<=10;
+    return `<div class="card ${st.card}" data-code="${code}" onclick="openVenue('${code}')">
+      <div class="cardTop"><span class="venueCode">${code}</span><span class="stateMark ${st.cls}"><i></i>${st.label}</span></div>
       <div class="name">${name}</div>
       <div class="meta"><span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span><span>${esc(m.day||"")}</span></div>
-      <div class="race"><b>${next?next.raceNo+"R":"-"}</b><span>締切 <b>${next?esc(next.deadline):"-"}</b></span></div>
+      <div class="nextRow"><div class="nextRace">NEXT<b>${next.raceNo}R</b></div><div class="cutoff">締切予定<b>${esc(next.deadline)}</b></div></div>
+      <div class="countdown ${urgent?"urgent":""}">${esc(countdownText(next.deadline))}</div>
       <div class="progress"><i style="width:${pct}%"></i></div>
     </div>`;
   }).join("");
