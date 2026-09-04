@@ -1,6 +1,7 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BOAT ✓ CHECK</title>
+<!-- v11: 上部種別凡例を廃止し、説明は下部ガイドへ統合 -->
 <style>
-:root{--n:#092744;--b:#1671d9;--bg:#f4f6f9;--t:#10223d;--l:#dfe5ec;--r:#df3340;--y:#dda000;--g:#18a568}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}header{background:linear-gradient(135deg,#06192f,#0d315d);color:#fff;padding:15px;position:sticky;top:0;z-index:5}.logo{font-size:21px;font-weight:900}.logo b{color:#49a4ff}.tag{font-size:9px;color:#cbd7e8}main{padding:15px 10px 35px;max-width:900px;margin:auto}h2{margin:0 0 4px}.sub{font-size:10px;color:#758196;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.card,.hero,.raceCard,.panel,.boats{background:#fff;border:1px solid var(--l);border-radius:13px;box-shadow:0 6px 16px #08203b12}.card{min-height:108px;padding:8px 5px;position:relative}.name{text-align:center;font-weight:900;font-size:15px;margin:7px 0}.icons{position:absolute;right:5px;top:5px;font-size:12px}.meta{border-top:1px solid #e9edf2;padding-top:6px;display:flex;justify-content:center;gap:5px;font-size:8px;font-weight:800}.grade{border-radius:4px;padding:3px 5px;color:#fff;font-weight:900}.normal,.women{padding:0;color:var(--t)}.g3{background:#1671d9}.g2{background:#79b82e}.g1{background:#b58a2a}.sg{background:#df2937}.race{display:flex;justify-content:center;gap:9px;margin-top:7px;font-size:10px}.race b{font-size:13px}.end{background:#e9edf1}.ended{text-align:center;margin-top:18px}.ended b{background:#3d4651;color:#fff;border-radius:20px;padding:5px 9px;font-size:9px}.panel{margin-top:14px;overflow:hidden}.panelTitle{background:linear-gradient(135deg,var(--n),#214d80);color:#fff;padding:9px 11px;font-size:12px;font-weight:900}.guide{padding:11px;font-size:9px;line-height:1.7}.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:7px}.hidden{display:none}.back{border:1px solid var(--l);background:#fff;border-radius:9px;padding:8px 10px;font-weight:800;margin-bottom:11px}.hero{padding:14px;background:linear-gradient(145deg,#fff,#f8fbff)}.heroTop{display:flex;justify-content:space-between}.venueName{font-size:27px;font-weight:950}.event{border-top:1px solid #e9edf2;margin-top:10px;padding-top:10px;font-size:12px;font-weight:800}.tabs{display:flex;gap:6px;overflow:auto;margin-top:11px}.tab{min-width:65px;background:#eef3f8;border-radius:8px;padding:7px;text-align:center;font-size:9px}.tab b{display:block;font-size:11px}.tab.active{background:var(--n);color:#fff}.section{display:flex;justify-content:space-between;align-items:end;margin:17px 2px 9px}.section h3{margin:0}.section span{font-size:9px;color:#758196}
+:root{--n:#092744;--b:#1671d9;--bg:#f4f6f9;--t:#10223d;--l:#dfe5ec;--r:#df3340;--y:#dda000;--g:#18a568}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}header{background:linear-gradient(135deg,#06192f,#0d315d);color:#fff;padding:15px;position:sticky;top:0;z-index:5}.logo{font-size:21px;font-weight:900}.logo b{color:#49a4ff}.tag{font-size:9px;color:#cbd7e8}main{padding:15px 10px 35px;max-width:900px;margin:auto}h2{margin:0 0 4px}.sub{font-size:10px;color:#758196;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.card,.hero,.raceCard,.panel,.boats{background:#fff;border:1px solid var(--l);border-radius:13px;box-shadow:0 6px 16px #08203b12}.card{min-height:108px;padding:8px 5px;position:relative}.name{text-align:center;font-weight:900;font-size:15px;margin:7px 0}.icons{position:absolute;right:5px;top:5px;font-size:12px}.meta{border-top:1px solid #e9edf2;padding-top:6px;display:flex;justify-content:center;gap:5px;font-size:8px;font-weight:800}.grade{border-radius:4px;padding:3px 5px;color:#fff;font-weight:900}.normal,.women{padding:0;color:var(--t)}.g3{background:#1671d9}.g2{background:#79b82e}.g1{background:#f28a00}.sg{background:#df2937}.race{display:flex;justify-content:center;gap:9px;margin-top:7px;font-size:10px}.race b{font-size:13px}.end{background:#e9edf1}.ended{text-align:center;margin-top:18px}.ended b{background:#3d4651;color:#fff;border-radius:20px;padding:5px 9px;font-size:9px}.panel{margin-top:14px;overflow:hidden}.panelTitle{background:linear-gradient(135deg,var(--n),#214d80);color:#fff;padding:9px 11px;font-size:12px;font-weight:900}.guide{padding:11px;font-size:9px;line-height:1.7}.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:7px}.hidden{display:none}.back{border:1px solid var(--l);background:#fff;border-radius:9px;padding:8px 10px;font-weight:800;margin-bottom:11px}.hero{padding:14px;background:linear-gradient(145deg,#fff,#f8fbff)}.heroTop{display:flex;justify-content:space-between}.venueName{font-size:27px;font-weight:950}.event{border-top:1px solid #e9edf2;margin-top:10px;padding-top:10px;font-size:12px;font-weight:800}.tabs{display:flex;gap:6px;overflow:auto;margin-top:11px}.tab{min-width:65px;background:#eef3f8;border-radius:8px;padding:7px;text-align:center;font-size:9px}.tab b{display:block;font-size:11px}.tab.active{background:var(--n);color:#fff}.section{display:flex;justify-content:space-between;align-items:end;margin:17px 2px 9px}.section h3{margin:0}.section span{font-size:9px;color:#758196}
 .raceGrid{display:grid;grid-template-columns:1fr;gap:9px}
 .raceCard{background:#fff;border:1px solid var(--l);border-radius:13px;overflow:hidden;box-shadow:0 5px 14px #08203b10;padding:0}
 .raceSummary{display:grid;grid-template-columns:auto auto 1fr auto;gap:8px;align-items:center;padding:10px 11px 8px}
@@ -51,10 +52,38 @@
 .meta{position:relative;z-index:2;border-top:1px solid #e8edf2;padding-top:6px;display:flex;justify-content:center;align-items:center;gap:5px;font-size:8px;font-weight:800}
 .grade{display:inline-flex;align-items:center;justify-content:center;min-width:25px;border-radius:4px;padding:3px 5px;color:#fff;font-weight:900}
 .normal,.women{min-width:auto;padding:0;background:none;color:var(--t)}
-.g3{background:#1671d9}.g2{background:#79b82e}.g1{background:#b58a2a}.sg{background:#df2937}
+.g3{background:#1671d9}.g2{background:#79b82e}.g1{background:#f28a00}.sg{background:#df2937}
 .race{position:relative;z-index:2;display:flex;justify-content:center;align-items:end;gap:9px;margin-top:7px;font-size:10px}
 .race b{font-size:13px}.ended{position:relative;z-index:2;height:54px;display:grid;place-items:center}
 .ended b{background:linear-gradient(#4b535d,#353c45);color:#fff;border-radius:999px;padding:5px 10px;font-size:9px}
+
+
+/* ===== v10: venue card icon badges ===== */
+.icons{
+  position:absolute;
+  right:6px;
+  top:5px;
+  z-index:3;
+  display:flex;
+  gap:3px;
+  align-items:center;
+  font-size:0;
+}
+.cardIcon{
+  width:20px;height:20px;border-radius:50%;
+  display:inline-grid;place-items:center;
+  font-size:11px;line-height:1;font-weight:900;
+  box-shadow:0 1px 3px rgba(8,32,59,.14),inset 0 1px 0 rgba(255,255,255,.35);
+}
+.cardIcon.morning{background:#ffb000;color:#fff}
+.cardIcon.summer{background:#ff3447;color:#fff}
+.cardIcon.night{background:#123e7c;color:#ffd73a}
+.cardIcon.midnight{background:#123e7c;color:#ffd73a}
+.cardIcon.rookie{background:#26a748;color:#fff}
+.cardIcon.women{background:#ff5a93;color:#fff}
+@media(max-width:520px){
+  .cardIcon{width:19px;height:19px;font-size:10px}
+}
 
 </style></head><body>
 <header><div class="logo">BOAT <b>✓</b> CHECK</div><div class="tag">「買うレース」より、「買わないレース」を見つける。</div></header><main>
@@ -65,21 +94,25 @@
   <div class="homeTab"><span class="ico">⭐</span>お気に入り</div>
   <div class="homeTab"><span class="ico">▶️</span>レース映像</div>
 </div>
-<div class="raceTypeLegend">
-  <span class="typeItem"><span class="typeIcon morning">☀️</span>モーニング</span>
-  <span class="typeItem"><span class="typeIcon summer">☀</span>サマータイム</span>
-  <span class="typeItem"><span class="typeIcon night">🌙</span>ナイター</span>
-  <span class="typeItem"><span class="typeIcon midnight">★</span>ミッドナイト</span>
-  <span class="typeItem"><span class="typeIcon rookie">🌱</span>ルーキーシリーズ</span>
-  <span class="typeItem"><span class="typeIcon women">♥</span>女子戦</span>
-</div>
 <div class="grid" id="venues"></div><div class="panel"><div class="panelTitle">見送り度・判定の見方</div><div class="guide"><b>見送り度</b>：数値が高いほど見送り推奨<div class="legend"><span>✓ CHECK 0〜40%</span><span>⚠ CAUTION 41〜70%</span><span>✕ SKIP 71〜100%</span><span>☀️ モーニング　🔴 サマータイム　🌙 ナイター　⭐ ミッドナイト　🌱 ルーキーシリーズ　❤ 女子戦</span></div></div></div></section>
 <section id="venue" class="hidden"><button class="back" onclick="home()">← 24場一覧</button><div class="hero"><div class="heroTop"><div><div class="venueName" id="vn"></div><div class="sub" id="vi"></div></div><div id="vg"></div></div><div class="event" id="ev"></div><div class="tabs" id="tabs"></div></div><div class="section"><h3>レース一覧</h3><span>タップして詳細分析</span></div><div class="raceGrid" id="races"></div><div class="analysis"><b>BOAT ✓ CHECK</b><br>買い目を並べるのではなく、不確定要素を整理して「見送る価値」を可視化。見送り度と理由から先に確認できる設計です。</div></section>
 <section id="detail" class="hidden"><button class="back" onclick="venueBack()">← レース一覧</button><div class="hero"><div class="heroTop"><div><div class="sub" id="dv"></div><h2 id="dr"></h2><div class="sub" id="dt"></div></div><div class="big" id="br"></div></div><div class="reason" id="reason"></div></div><div class="section"><h3>出走データ</h3><span>判断に必要な項目を優先</span></div><div class="boats" id="boats"></div><div class="tools"><div class="tool primary">✓ CHECK分析</div><div class="tool">今節成績</div><div class="tool">モーター比較</div><div class="tool">展示・ST</div><div class="tool">枠別データ</div><div class="tool">直前情報</div></div></section>
 </main><script>
 const V=[["桐生","終了"],["戸田","一般","2日目","5R","12:44","☀️","戸田プリムローズ"],["江戸川","一般","2日目","4R","12:35","🌙","江戸川ボートレース杯"],["平和島","女子","最終日","2R","12:35","🌙❤","ヴィーナスシリーズ"],["多摩川","終了"],["浜名湖","G3","2日目","3R","12:20","❤","オールレディース"],["蒲郡","一般","2日目","1R","15:17","🌙🔴","蒲郡市長杯"],["常滑","終了"],["津","一般","3日目","5R","12:24","☀️","津インクル杯"],["三国","終了"],["びわこ","G2","4日目","5R","12:41","🌙","モーターボート大賞"],["住之江","G3","2日目","1R","15:25","🌙⭐","企業杯"],["尼崎","一般","4日目","5R","12:30","☀️","尼崎センプルカップ"],["鳴門","一般","3日目","9R","12:28","☀️","鳴門市長杯"],["丸亀","終了"],["児島","終了"],["宮島","終了"],["徳山","一般","2日目","9R","12:31","☀️🌱","徳山クラウン争奪戦"],["下関","一般","2日目","1R","15:21","🌙","海響ドリームナイター"],["若松","一般","最終日","1R","15:20","🌙","若松夜王シリーズ"],["芦屋","一般","最終日","9R","12:38","☀️","芦屋モーニングカップ"],["福岡","女子","3日目","1R","11:48","❤","三都市対抗戦 福岡観光コンベンションビューロー杯"],["唐津","終了"],["大村","SG","3日目","1R","15:18","🌙","ボートレースメモリアル"]];
 const $=x=>document.getElementById(x),gc=g=>g==="G3"?"g3":g==="G2"?"g2":g==="G1"?"g1":g==="SG"?"sg":g==="女子"?"women":"normal";$("today").textContent=new Intl.DateTimeFormat("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date());let cur=0;
-V.forEach((v,i)=>{let c=document.createElement("div");c.className="card "+(v[1]==="終了"?"end":"");if(v[1]==="終了")c.innerHTML=`<div class=name>${v[0]}</div><div class=ended><b>本日終了</b></div>`;else{c.innerHTML=`<div class=icons>${v[5]||""}</div><div class=name>${v[0]}</div><div class=meta><span class="grade ${gc(v[1])}">${v[1]==="女子"?"女子戦":v[1]}</span><span>${v[2]}</span></div><div class=race><b>${v[3]}</b><span>締切 <b>${v[4]}</b></span></div>`;c.onclick=()=>openV(i)}$("venues").appendChild(c)});
+
+function renderVenueIcons(raw){
+  if(!raw)return "";
+  let out="";
+  if(raw.includes("☀️"))out+='<span class="cardIcon morning">☀</span>';
+  if(raw.includes("🔴"))out+='<span class="cardIcon summer">☀</span>';
+  if(raw.includes("🌙"))out+='<span class="cardIcon night">🌙</span>';
+  if(raw.includes("⭐"))out+='<span class="cardIcon midnight">★</span>';
+  if(raw.includes("🌱"))out+='<span class="cardIcon rookie">🌱</span>';
+  if(raw.includes("❤")||raw.includes("♥"))out+='<span class="cardIcon women">♥</span>';
+  return out;
+}
+V.forEach((v,i)=>{let c=document.createElement("div");c.className="card "+(v[1]==="終了"?"end":"");if(v[1]==="終了")c.innerHTML=`<div class=name>${v[0]}</div><div class=ended><b>本日終了</b></div>`;else{c.innerHTML=`<div class=icons>${renderVenueIcons(v[5])}</div><div class=name>${v[0]}</div><div class=meta><span class="grade ${gc(v[1])}">${v[1]==="女子"?"女子戦":v[1]}</span><span>${v[2]}</span></div><div class=race><b>${v[3]}</b><span>締切 <b>${v[4]}</b></span></div>`;c.onclick=()=>openV(i)}$("venues").appendChild(c)});
 const P=[
 ["遠藤エミ","A1",4502],["浜田亜理沙","A1",4546],["林恵祐","B1",3928],["繁野谷圭介","A2",3915],
 ["作間章","A1",3966],["佐藤大騎","B1",4651],["杉村賢也","B1",4792],["甲斐寛大","B2",5426],
