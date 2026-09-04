@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T08:22:12+09:00",
+  "updatedAt": "2026-09-05T08:34:24+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -2670,7 +2670,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 坪井 康晴",
+              "racerName": "発売終了 坪井 康晴",
               "class": "A1"
             },
             {
