@@ -1,0 +1,10 @@
+boat-check
+├── .github
+│   └── workflows
+│       └── update-data.yml
+├── data
+│   └── today.json
+├── scripts
+│   └── collect_today.py
+├── index.html
+└── README.md
