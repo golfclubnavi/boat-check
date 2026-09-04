@@ -133,6 +133,24 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .cardLegend span{display:inline-flex;align-items:center;gap:3px}.cardLegend i{width:6px;height:6px;border-radius:50%}
 .cardLegend .l1{background:#16aa69}.cardLegend .l2{background:#efa400}.cardLegend .l3{background:#7e8996}
 
+
+/* v24: compact classification icons */
+.cardTop{justify-content:flex-end}
+.venueCode{display:none!important}
+.iconStack{display:flex;justify-content:flex-end;align-items:center;gap:3px;min-height:20px}
+.mark{width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px;font-weight:950;line-height:1;box-shadow:0 2px 5px rgba(8,32,59,.10)}
+.mark.morning{background:#ffb21b;color:#fff}
+.mark.summer{background:#55a7ff;color:#fff}
+.mark.night{background:#0b4399;color:#ffe357}
+.mark.midnight{background:#8d38e9;color:#fff}
+.mark.women{background:#ff4e92;color:#fff}
+.mark.rookie{background:#56bd49;color:#fff}
+.gradeMark{height:20px;min-width:24px;padding:0 4px;border-radius:5px;display:inline-grid;place-items:center;color:#fff;font-size:7px;font-weight:950;box-shadow:0 2px 5px rgba(8,32,59,.09)}
+.gradeMark.g3{background:#1671d9}.gradeMark.g2{background:#65b72d}.gradeMark.g1{background:#f28a00}.gradeMark.sg{background:#e62837}
+.card .meta .grade{display:none}
+.card.off .iconStack{opacity:.45}
+.card .name{margin-top:2px}
+
 </style>
 </head>
 <body>
@@ -156,9 +174,7 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
     <div class="homeTab"><span class="ico">⭐</span>お気に入り</div>
     <div class="homeTab"><span class="ico">▶️</span>レース映像</div>
   </div>
-  <div class="cardLegend"><span><i class="l1"></i>開催中</span><span><i class="l2"></i>開始前</span><span><i class="l3"></i>終了/非開催</span></div>
-
-  <div id="loadError" class="errorbox hidden"></div>
+<div id="loadError" class="errorbox hidden"></div>
   <div class="grid" id="venues"></div>
 
   <div class="judge-guide">
@@ -270,6 +286,33 @@ function meetingState(m,next){
   if(first && !raceIsPast(first.deadline,now.time) && next.raceNo===first.raceNo)return {cls:"soon",label:"開始前",card:"isSoon"};
   return {cls:"live",label:"開催中",card:"isLive"};
 }
+function normTitle(m){return `${m.title||""} ${m.raceType||""}`.replace(/\s+/g,"");}
+function timeMark(m){
+  const title=normTitle(m), races=m.races||[];
+  const last=races.length?races[races.length-1].deadline:"";
+  const hm=last?Number(last.replace(":","")):0;
+  // Explicit title wording takes priority. "デイ" is intentionally not shown.
+  if(/ミッドナイト/.test(title))return ["midnight","★"];
+  if(/ナイター/.test(title))return ["night","☾"];
+  if(/サマータイム|サマー/.test(title))return ["summer","☀"];
+  if(/モーニング/.test(title))return ["morning","☀"];
+  // Fallback from the official final-race cutoff time when title has no time label.
+  if(hm>=2140)return ["midnight","★"];
+  if(hm>=1740)return ["night","☾"];
+  if(hm>=1630)return ["summer","☀"];
+  if(hm>0 && hm<=1600)return ["morning","☀"];
+  return null;
+}
+function eventMarks(m){
+  const title=normTitle(m), marks=[];
+  const tm=timeMark(m);
+  if(tm)marks.push(`<span class="mark ${tm[0]}" title="${tm[0]}">${tm[1]}</span>`);
+  if(/女子|オールレディース|ヴィーナス/.test(title))marks.push(`<span class="mark women" title="女子戦">♥</span>`);
+  if(/ルーキー|若松夜王|スカパー.*若松/.test(title))marks.push(`<span class="mark rookie" title="ルーキー戦">🌱</span>`);
+  const grade=(m.grade||"").toUpperCase();
+  if(["G3","G2","G1","SG"].includes(grade))marks.push(`<span class="gradeMark ${grade.toLowerCase()}">${grade}</span>`);
+  return marks.join("");
+}
 function renderVenues(){
   const map=new Map(state.meetings.map(m=>[m.venueCode,m]));
   const now=jstNow();
@@ -277,17 +320,17 @@ function renderVenues(){
     const m=map.get(code);
     if(!m){
       return `<div class="card off">
-        <div class="cardTop"><span class="venueCode">${code}</span><span class="stateMark offday"><i></i>非開催</span></div>
+        <div class="cardTop"><span class="stateMark offday"><i></i>非開催</span></div>
         <div class="name">${name}</div>
         <div class="offtext"><b>本日非開催</b></div>
       </div>`;
     }
-    const next=getNextRace(m), st=meetingState(m,next);
+    const next=getNextRace(m), st=meetingState(m,next), marks=eventMarks(m);
     if(!next){
       return `<div class="card off ${st.card}">
-        <div class="cardTop"><span class="venueCode">${code}</span><span class="stateMark ${st.cls}"><i></i>${st.label}</span></div>
+        <div class="cardTop"><div class="iconStack">${marks}</div></div>
         <div class="name">${name}</div>
-        <div class="meta"><span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span><span>${esc(m.day||"")}</span></div>
+        <div class="meta"><span>${esc(m.day||"")}</span></div>
         <div class="offtext"><b>本日終了</b></div>
       </div>`;
     }
@@ -295,9 +338,9 @@ function renderVenues(){
     const pct=Math.round(finished/Math.max(1,(m.races||[]).length)*100);
     const mins=minutesUntil(next.deadline), urgent=mins!==null&&mins>=0&&mins<=10;
     return `<div class="card ${st.card}" data-code="${code}" onclick="openVenue('${code}')">
-      <div class="cardTop"><span class="venueCode">${code}</span><span class="stateMark ${st.cls}"><i></i>${st.label}</span></div>
+      <div class="cardTop"><div class="iconStack">${marks}</div></div>
       <div class="name">${name}</div>
-      <div class="meta"><span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span><span>${esc(m.day||"")}</span></div>
+      <div class="meta"><span class="stateMark ${st.cls}"><i></i>${st.label}</span><span>${esc(m.day||"")}</span></div>
       <div class="nextRow"><div class="nextRace">NEXT<b>${next.raceNo}R</b></div><div class="cutoff">締切予定<b>${esc(next.deadline)}</b></div></div>
       <div class="countdown ${urgent?"urgent":""}">${esc(countdownText(next.deadline))}</div>
       <div class="progress"><i style="width:${pct}%"></i></div>
