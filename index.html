@@ -1,5 +1,5 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BOAT ✓ CHECK</title>
-<!-- v13: 見送り度・判定ガイドを参照画像どおりの3カラム構成へ再調整 -->
+<!-- v17: v16デザイン固定・実データ受け入れ層と大量データ用スキーマを追加 -->
 <style>
 :root{--n:#092744;--b:#1671d9;--bg:#f4f6f9;--t:#10223d;--l:#dfe5ec;--r:#df3340;--y:#dda000;--g:#18a568}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}header{background:linear-gradient(135deg,#06192f,#0d315d);color:#fff;padding:15px;position:sticky;top:0;z-index:5}.logo{font-size:21px;font-weight:900}.logo b{color:#49a4ff}.tag{font-size:9px;color:#cbd7e8}main{padding:15px 10px 35px;max-width:900px;margin:auto}h2{margin:0 0 4px}.sub{font-size:10px;color:#758196;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.card,.hero,.raceCard,.panel,.boats{background:#fff;border:1px solid var(--l);border-radius:13px;box-shadow:0 6px 16px #08203b12}.card{min-height:108px;padding:8px 5px;position:relative}.name{text-align:center;font-weight:900;font-size:15px;margin:7px 0}.icons{position:absolute;right:5px;top:5px;font-size:12px}.meta{border-top:1px solid #e9edf2;padding-top:6px;display:flex;justify-content:center;gap:5px;font-size:8px;font-weight:800}.grade{border-radius:4px;padding:3px 5px;color:#fff;font-weight:900}.normal,.women{padding:0;color:var(--t)}.g3{background:#1671d9}.g2{background:#79b82e}.g1{background:#f28a00}.sg{background:#df2937}.race{display:flex;justify-content:center;gap:9px;margin-top:7px;font-size:10px}.race b{font-size:13px}.end{background:#e9edf1}.ended{text-align:center;margin-top:18px}.ended b{background:#3d4651;color:#fff;border-radius:20px;padding:5px 9px;font-size:9px}.panel{margin-top:14px;overflow:hidden}.panelTitle{background:linear-gradient(135deg,var(--n),#214d80);color:#fff;padding:9px 11px;font-size:12px;font-weight:900}.guide{padding:11px;font-size:9px;line-height:1.7}.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:7px}.hidden{display:none}.back{border:1px solid var(--l);background:#fff;border-radius:9px;padding:8px 10px;font-weight:800;margin-bottom:11px}.hero{padding:14px;background:linear-gradient(145deg,#fff,#f8fbff)}.heroTop{display:flex;justify-content:space-between}.venueName{font-size:27px;font-weight:950}.event{border-top:1px solid #e9edf2;margin-top:10px;padding-top:10px;font-size:12px;font-weight:800}.tabs{display:flex;gap:6px;overflow:auto;margin-top:11px}.tab{min-width:65px;background:#eef3f8;border-radius:8px;padding:7px;text-align:center;font-size:9px}.tab b{display:block;font-size:11px}.tab.active{background:var(--n);color:#fff}.section{display:flex;justify-content:space-between;align-items:end;margin:17px 2px 9px}.section h3{margin:0}.section span{font-size:9px;color:#758196}
 .raceGrid{display:grid;grid-template-columns:1fr;gap:9px}
@@ -323,6 +323,111 @@
   .jg-grade-pill{font-size:7px;padding:3px 5px}
 }
 
+
+/* v14: guide must remain white like the approved reference image */
+.judge-guide .jg-status.check,
+.judge-guide .jg-status.caution,
+.judge-guide .jg-status.skip{background:transparent!important;color:#10223d;border-radius:0;padding:0}
+.judge-guide{margin-top:14px}
+
+/* ===== v15: 下部凡例の重なり修正 ===== */
+.judge-guide-legend{
+  display:grid !important;
+  grid-template-columns:repeat(6,minmax(0,1fr)) 1.35fr;
+  align-items:stretch !important;
+  gap:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+}
+.jg-legend-item{
+  min-width:0 !important;
+  padding:9px 5px !important;
+  border-right:1px solid #d7e0e8 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+}
+.jg-legend-item b{
+  display:block !important;
+  font-size:8px !important;
+  line-height:1.25 !important;
+  white-space:normal !important;
+}
+.jg-legend-item small{
+  display:block !important;
+  font-size:6px !important;
+  line-height:1.2 !important;
+  white-space:normal !important;
+}
+.jg-round{
+  width:23px !important;
+  height:23px !important;
+  flex:0 0 23px !important;
+  font-size:14px !important;
+}
+.jg-grade{
+  min-width:0 !important;
+  padding:7px 6px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+}
+.jg-grade>small{
+  font-size:7px !important;
+  margin-bottom:4px !important;
+  white-space:nowrap !important;
+}
+.jg-grade>div{
+  display:flex !important;
+  gap:3px !important;
+  flex-wrap:nowrap !important;
+}
+.jg-grade-pill{
+  font-size:7px !important;
+  padding:3px 5px !important;
+}
+
+@media(max-width:520px){
+  .judge-guide-legend{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+  .jg-legend-item{
+    min-height:48px !important;
+    padding:7px 4px !important;
+    border-bottom:1px solid #e3e9ef !important;
+  }
+  .jg-grade{
+    grid-column:1 / -1 !important;
+    min-height:48px !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
+    border-top:0 !important;
+  }
+  .jg-grade>small{
+    margin:0 !important;
+    font-size:7px !important;
+  }
+  .jg-round{
+    width:22px !important;
+    height:22px !important;
+    flex-basis:22px !important;
+    font-size:13px !important;
+  }
+  .jg-legend-item b{font-size:7px !important}
+  .jg-legend-item small{font-size:5.5px !important}
+}
+
+
+/* ===== v16: 見送り度・判定のみのコンパクト版 ===== */
+.judge-guide{margin-bottom:0}
+.judge-guide-main{padding-bottom:12px}
+@media(max-width:520px){
+  .judge-guide-main{padding-bottom:10px}
+}
+
 </style></head><body>
 <header><div class="logo">BOAT <b>✓</b> CHECK</div><div class="tag">「買うレース」より、「買わないレース」を見つける。</div></header><main>
 <section id="home"><h2>本日の開催場</h2><div class="sub" id="today"></div>
@@ -332,7 +437,7 @@
   <div class="homeTab"><span class="ico">⭐</span>お気に入り</div>
   <div class="homeTab"><span class="ico">▶️</span>レース映像</div>
 </div>
-<div class="grid" id="venues"></div><div class="panel"><div class="panelTitle">見送り度・判定の見方</div><div class="guide"><b>見送り度</b>：数値が高いほど見送り推奨
+<div class="grid" id="venues"></div>
 <div class="judge-guide">
   <div class="judge-guide-title">見送り度・判定の見方</div>
 
@@ -363,24 +468,84 @@
     </div>
   </div>
 
-  <div class="judge-guide-legend">
-    <div class="jg-legend-item"><span class="jg-round sun">☀</span><div><b>モーニング</b><small>（デイレース）</small></div></div>
-    <div class="jg-legend-item"><span class="jg-round summer">☀</span><div><b>サマータイム</b></div></div>
-    <div class="jg-legend-item"><span class="jg-round night">●</span><div><b>ナイター</b><small>（ナイトレース）</small></div></div>
-    <div class="jg-legend-item"><span class="jg-round midnight">★</span><div><b>ミッドナイト</b></div></div>
-    <div class="jg-legend-item"><span class="jg-round rookie">🌱</span><div><b>ルーキーシリーズ</b></div></div>
-    <div class="jg-legend-item"><span class="jg-round women">♥</span><div><b>女子戦</b></div></div>
-    <div class="jg-grade">
-      <small>グレードカラー</small>
-      <div><i class="jg-grade-pill g3">G3</i><i class="jg-grade-pill g2">G2</i><i class="jg-grade-pill g1">G1</i><i class="jg-grade-pill sg">SG</i></div>
-    </div>
   </div>
-</div>
 
 </section>
 <section id="venue" class="hidden"><button class="back" onclick="home()">← 24場一覧</button><div class="hero"><div class="heroTop"><div><div class="venueName" id="vn"></div><div class="sub" id="vi"></div></div><div id="vg"></div></div><div class="event" id="ev"></div><div class="tabs" id="tabs"></div></div><div class="section"><h3>レース一覧</h3><span>タップして詳細分析</span></div><div class="raceGrid" id="races"></div><div class="analysis"><b>BOAT ✓ CHECK</b><br>買い目を並べるのではなく、不確定要素を整理して「見送る価値」を可視化。見送り度と理由から先に確認できる設計です。</div></section>
 <section id="detail" class="hidden"><button class="back" onclick="venueBack()">← レース一覧</button><div class="hero"><div class="heroTop"><div><div class="sub" id="dv"></div><h2 id="dr"></h2><div class="sub" id="dt"></div></div><div class="big" id="br"></div></div><div class="reason" id="reason"></div></div><div class="section"><h3>出走データ</h3><span>判断に必要な項目を優先</span></div><div class="boats" id="boats"></div><div class="tools"><div class="tool primary">✓ CHECK分析</div><div class="tool">今節成績</div><div class="tool">モーター比較</div><div class="tool">展示・ST</div><div class="tool">枠別データ</div><div class="tool">直前情報</div></div></section>
 </main><script>
+
+/* ===== v17 REAL DATA READY LAYER =====
+   画面デザインはv16のまま。
+   将来は /data/today.json を生成するだけで、開催場→12R→6艇データへ差し替え可能。
+*/
+const BOATCHECK_SCHEMA_VERSION="17.0";
+const BOATCHECK_DATA_URL="./data/today.json";
+
+const BOATCHECK_FIELD_SCHEMA={
+  meeting:["venueCode","venueName","date","title","grade","day","dayLabel","isFinalDay","status","nextRace","nextDeadline","raceType"],
+  race:["raceNo","raceName","distance","deadline","status","skipScore","judgement","reasons","weather","boats"],
+  boat:["lane","racerId","racerName","class","branch","birthplace","age","weight","fCount","lCount","avgST",
+        "nationalWinRate","national2Rate","national3Rate","localWinRate","local2Rate","local3Rate",
+        "motorNo","motor2Rate","motor3Rate","boatNo","boat2Rate","boat3Rate","seriesResults",
+        "exhibitionTime","exhibitionST","exhibitionCourse","tilt","adjustWeight","parts","notes"],
+  weather:["weather","temperature","waterTemperature","windDirection","windSpeed","waveHeight"],
+  result:["finishOrder","actualCourse","actualST","winningMove","payouts","trifectaOdds"],
+  analytics:["lane1Trust","attackPressure","entryRisk","stVariance","motorGap","exhibitionGap","weatherRisk","upsetRisk"]
+};
+
+window.BOATCHECK_DATA={
+  mode:"demo",
+  updatedAt:null,
+  source:"demo",
+  meetings:[],
+  schema:BOATCHECK_FIELD_SCHEMA
+};
+
+async function loadBoatCheckRealData(){
+  try{
+    const res=await fetch(BOATCHECK_DATA_URL,{cache:"no-store"});
+    if(!res.ok) throw new Error("data file not found");
+    const payload=await res.json();
+    if(!payload || !Array.isArray(payload.meetings)) throw new Error("invalid data");
+    window.BOATCHECK_DATA={...window.BOATCHECK_DATA,...payload,mode:"real"};
+    applyRealVenueSummary(payload.meetings);
+    console.info("BOAT CHECK: real data loaded",payload.updatedAt||"");
+  }catch(e){
+    console.info("BOAT CHECK: demo fallback");
+  }
+}
+
+function applyRealVenueSummary(meetings){
+  if(!Array.isArray(meetings)||!meetings.length) return;
+  meetings.forEach(m=>{
+    const i=V.findIndex(v=>v[0]===m.venueName);
+    if(i<0) return;
+    if(m.status==="finished" || m.status==="closed"){
+      V[i]=[m.venueName,"終了"];
+      return;
+    }
+    V[i]=[
+      m.venueName,
+      m.grade||"一般",
+      m.dayLabel||"",
+      m.nextRace ? `${m.nextRace}R` : "",
+      m.nextDeadline||"",
+      m.raceType||"",
+      m.title||""
+    ];
+  });
+  if(typeof renderVenues==="function") renderVenues();
+}
+
+function getRealMeeting(venueName){
+  return (window.BOATCHECK_DATA.meetings||[]).find(m=>m.venueName===venueName)||null;
+}
+function getRealRace(venueName,raceNo){
+  const m=getRealMeeting(venueName);
+  return m && Array.isArray(m.races) ? m.races.find(r=>Number(r.raceNo)===Number(raceNo))||null : null;
+}
+
 const V=[["桐生","終了"],["戸田","一般","2日目","5R","12:44","☀️","戸田プリムローズ"],["江戸川","一般","2日目","4R","12:35","🌙","江戸川ボートレース杯"],["平和島","女子","最終日","2R","12:35","🌙❤","ヴィーナスシリーズ"],["多摩川","終了"],["浜名湖","G3","2日目","3R","12:20","❤","オールレディース"],["蒲郡","一般","2日目","1R","15:17","🌙🔴","蒲郡市長杯"],["常滑","終了"],["津","一般","3日目","5R","12:24","☀️","津インクル杯"],["三国","終了"],["びわこ","G2","4日目","5R","12:41","🌙","モーターボート大賞"],["住之江","G3","2日目","1R","15:25","🌙⭐","企業杯"],["尼崎","一般","4日目","5R","12:30","☀️","尼崎センプルカップ"],["鳴門","一般","3日目","9R","12:28","☀️","鳴門市長杯"],["丸亀","終了"],["児島","終了"],["宮島","終了"],["徳山","一般","2日目","9R","12:31","☀️🌱","徳山クラウン争奪戦"],["下関","一般","2日目","1R","15:21","🌙","海響ドリームナイター"],["若松","一般","最終日","1R","15:20","🌙","若松夜王シリーズ"],["芦屋","一般","最終日","9R","12:38","☀️","芦屋モーニングカップ"],["福岡","女子","3日目","1R","11:48","❤","三都市対抗戦 福岡観光コンベンションビューロー杯"],["唐津","終了"],["大村","SG","3日目","1R","15:18","🌙","ボートレースメモリアル"]];
 const $=x=>document.getElementById(x),gc=g=>g==="G3"?"g3":g==="G2"?"g2":g==="G1"?"g1":g==="SG"?"sg":g==="女子"?"women":"normal";$("today").textContent=new Intl.DateTimeFormat("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date());let cur=0;
 
@@ -439,4 +604,6 @@ function openV(i){
 }
 function openR(n,rate,j,time){let v=V[cur];$("venue").classList.add("hidden");$("detail").classList.remove("hidden");$("dv").textContent=`${v[0]} ${v[2]} ・ ${v[1]==="女子"?"女子戦":v[1]}`;$("dr").textContent=`${n}R 予選`;$("dt").textContent=`締切予定 ${time}`;let col=j==="SKIP"?"var(--r)":j==="CAUTION"?"var(--y)":"var(--g)";$("br").innerHTML=`<small>見送り度</small><span style="color:${col}">${rate}%</span><small style="color:${col}">${j}</small>`;let rs=rate>=71?["軸艇の信頼度が低め","攻め候補が複数","機力差が小さく決め手不足"]:rate>=41?["一部に不安要素あり","展示・ST確認後の判断を推奨","無理に買う必要はない条件"]:["軸候補の条件が比較的安定","展開の不確定要素が少なめ","直前情報で最終判断"];$("reason").innerHTML="<b>✓ BOAT CHECK 分析</b><br>"+rs.map(x=>"・"+x).join("<br>");let names=racePlayers(n,cur),cls=["B1","A2","A1","B1","B1","B2"],h="";for(let i=0;i<6;i++){h+=`<div class=boat><div class="no n${i+1}">${i+1}</div><div class=player><b>${names[i]}</b><span>${3900+i*173} / ${cls[i]}</span></div><div class=cell><b>${(5.1+((i+n)%18)/10).toFixed(2)}</b><span>勝率</span></div><div class=cell><b>${32+((n*7+i*11)%34)}%</b><span>モーター</span></div><div class=cell><b>${(0.11+((n+i)%9)/100).toFixed(2)}</b><span>平均ST</span></div></div>`}$("boats").innerHTML=h;scrollTo(0,0)}
 function home(){$("venue").classList.add("hidden");$("home").classList.remove("hidden");scrollTo(0,0)}function venueBack(){$("detail").classList.add("hidden");$("venue").classList.remove("hidden");scrollTo(0,0)}
+
+loadBoatCheckRealData();
 </script></body></html>
