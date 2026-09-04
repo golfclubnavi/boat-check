@@ -1,10 +1,31 @@
-boat-check
-├── .github
-│   └── workflows
-│       └── update-data.yml
-├── data
-│   └── today.json
-├── scripts
-│   └── collect_today.py
-├── index.html
-└── README.md
+name: Update BOAT CHECK data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Collect today's official race data
+        run: python scripts/collect_today.py --deep --out data/today.json
+
+      - name: Commit data when changed
+        run: |
+          git config user.name "boat-check-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/today.json
+          git diff --cached --quiet || git commit -m "Update BOAT CHECK data"
+          git push
