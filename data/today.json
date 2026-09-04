@@ -1,7 +1,6197 @@
 {
-  "schemaVersion": "19.0",
-  "updatedAt": "2026-09-04T16:16:36+00:00",
-  "source": "BOAT RACE official public raceindex pages",
-  "mode": "fast",
-  "meetings": []
+  "schemaVersion": "20.0",
+  "updatedAt": "2026-09-05T01:46:15+09:00",
+  "dateJST": "20260905",
+  "source": "BOAT RACE official public pages",
+  "meetings": [
+    {
+      "venueCode": "01",
+      "venueName": "桐生",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "15:19",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "品川 賢次",
+              "class": "B2"
+            },
+            {
+              "lane": 2,
+              "racerName": "阪本 勇介",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "齋藤 勇",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "笠 雅雄",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "相馬 翔",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "谷野 錬志",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "15:43",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "澤 大介",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "森 智哉",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "鈴木 峻佑",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "吉田 翔悟",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "河野 真也",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "若林 樹蘭",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "16:07",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "三品 隆浩",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "眞鳥 康太",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "廣瀬 篤哉",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山本 寛久",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "鳥居塚 孝博",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "加倉 侑征",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "16:33",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "松尾 光広",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "八木 治樹",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "前川 守嗣",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山谷 央",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "山崎 義明",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "笠置 博之",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "17:01",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "黒柳 浩孝",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "田村 隆信",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "武富 智亮",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "萩原 知哉",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "阪本 勇介",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "鳥本 智史",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "17:29",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "林 美憲",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "小野 信樹",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "品川 賢次",
+              "class": "B2"
+            },
+            {
+              "lane": 4,
+              "racerName": "松浦 勝",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "花本 夏樹",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "松本 真広",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "17:57",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "廣瀬 将亨",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "相馬 翔",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "赤岩 善生",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "眞鳥 康太",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "澤 大介",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "中島 航",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "18:25",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "伊藤 将吉",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "齋藤 勇",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "八木 治樹",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "森 智哉",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "湯川 浩司",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "廣瀬 篤哉",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "18:54",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "橋本 久和",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "谷野 錬志",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "山崎 義明",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "河野 真也",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "萩原 知哉",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "松江 秀徳",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "19:24",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "前川 守嗣",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "宇佐見 淳",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "鳥居塚 孝博",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "鈴谷 一平",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "武富 智亮",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "谷口 丞",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "19:57",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山本 寛久",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "笠置 博之",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "若林 樹蘭",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "廣瀬 将亨",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "黒柳 浩孝",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "笠 雅雄",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "20:30",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "赤岩 善生",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "湯川 浩司",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "笠原 亮",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "林 美憲",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "山本 隆幸",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "田村 隆信",
+              "class": "A1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "02",
+      "venueName": "戸田",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "10:47",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "上村 宏太",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "加藤 啓太",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中井 俊祐",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "宇野 博之",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "櫻井 隼",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "鈴木 猛",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "11:16",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "原田 雄次",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "野村 誠",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "森 雄利",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山崎 善庸",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "重富 伸也",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "藤原 碧生",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "11:45",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山崎 昂介",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "萬 正嗣",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "杢野 誓良",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "島川 海輝",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "海野 康志郎",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "金子 怜央",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "12:14",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "中山 雄太",
+              "class": "B2"
+            },
+            {
+              "lane": 2,
+              "racerName": "汐崎 正則",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "椎名 豊",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "三村 岳人",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "安河内鈴之介",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "森 晋太郎",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "12:44",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "木下 大將",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "関口 智久",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "岩津 徹郎",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "佐藤 翼",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "加藤 啓太",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "小川 晃司",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "13:14",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "小澤 学",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "郷原 章平",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "藤原 碧生",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "畔柳 俊吾",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "川添 英正",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "柴田 光",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "13:45",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "島田 賢人",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "山崎 善庸",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "田邉 亮蔵",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "中井 俊祐",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "木幡 純也",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "鐘ヶ江 真司",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "14:16",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "森 雄利",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "井上 忠政",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "山崎 昂介",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "櫻井 隼",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "森 晋太郎",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "尾道 佳諭",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "14:48",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "岩津 徹郎",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "海野 康志郎",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "重富 伸也",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "汐崎 正則",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "齊藤 仁",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "宇野 博之",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "15:21",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "川添 英正",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "上村 宏太",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "岡瀬 正人",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "杢野 誓良",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "小川 晃司",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "椎名 豊",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "15:55",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "野村 誠",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "鈴木 猛",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "萬 正嗣",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "島田 賢人",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "小澤 学",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "三村 岳人",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "16:30",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "佐藤 翼",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "原田 雄次",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "畔柳 俊吾",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "木幡 純也",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "井上 忠政",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "島川 海輝",
+              "class": "A2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "03",
+      "venueName": "江戸川",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "11:14",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "澤崎 雄哉",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "関根 彰人",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中北 将史",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "古田 祐貴",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "小川 知行",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "鈴木 結平太",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "11:41",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "金児 隆太",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "松本 博昭",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "野見山 拓己",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山本 稔太朗",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "多羅尾 達之",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "鈴木 賢一",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "12:08",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山本 浩輔",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "秦 英悟",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "村本 大成",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "広次 修",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "大江 純",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "阿波 勝哉",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "12:35",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "浅井 翼",
+              "class": "B2"
+            },
+            {
+              "lane": 2,
+              "racerName": "石渡 翔一郎",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "山口 裕二",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "渡辺 豊",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "太田 和美",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "鹿島 敏弘",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "13:02",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "川合 理司",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "花本 剛",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中島 昂章",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "古川 健",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "茅原 悠紀",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "港 理樹",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "13:29",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "牧山 敦也",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "小川 知行",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "横澤 剛治",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "山口 広樹",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "三角 哲男",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "岡谷 健吾",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "13:56",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "加藤 政彦",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "新田 泰章",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "本橋 克洋",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "中北 将史",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "平野 和明",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "野見山 拓己",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "14:24",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "荒井 輝年",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "古田 祐貴",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "浅井 翼",
+              "class": "B2"
+            },
+            {
+              "lane": 4,
+              "racerName": "森作 雄大",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "松本 博昭",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "村本 大成",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "14:52",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "川上 剛",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "鹿島 敏弘",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "多羅尾 達之",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "上田 健太",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "広次 修",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "関根 彰人",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "15:22",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "佐藤 航",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "古川 健",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "山ノ内 雅人",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "山本 浩輔",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "澤崎 雄哉",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "黒崎 竜也",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "15:53",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山口 裕二",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "岡谷 健吾",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "山本 稔太朗",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "阿波 勝哉",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "松尾 祭",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "中島 昂章",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "16:25",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "三角 哲男",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "太田 和美",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "岩瀬 裕亮",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "茅原 悠紀",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "新田 泰章",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "秦 英悟",
+              "class": "A1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "04",
+      "venueName": "平和島",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "10:55",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "渡邉 真奈美",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "孫崎 百世",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中村 尊",
+              "class": "B2"
+            },
+            {
+              "lane": 4,
+              "racerName": "今井 裕梨",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "大橋 由珠",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "日隈 茜",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "11:24",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "瀧川 千依",
+              "class": "B2"
+            },
+            {
+              "lane": 2,
+              "racerName": "関野 文",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "植竹 玲奈",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "西舘 果里",
+              "class": "B2"
+            },
+            {
+              "lane": 5,
+              "racerName": "川尻 泰輔",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "金田 幸子",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "11:53",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "櫻本 あゆみ",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "永井 聖美",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "村上 奈穂",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "井上 未都",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "田中 瀬里奈",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "門間 雄大",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "12:22",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "高石 梨菜",
+              "class": "B2"
+            },
+            {
+              "lane": 2,
+              "racerName": "湯淺 紀香",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "樋口 由加里",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "藤井 太雅",
+              "class": "B2"
+            },
+            {
+              "lane": 5,
+              "racerName": "中谷 朋子",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "谷島 咲希",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "12:52",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "中村 かなえ",
+              "class": "B2"
+            },
+            {
+              "lane": 2,
+              "racerName": "登 みひ果",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "佐藤 隆太郎",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "土屋 実沙希",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "森田 梨湖",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "菅野 はやか",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "13:22",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "真子 奈津実",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "小川 時光",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "大橋 由珠",
+              "class": "B2"
+            },
+            {
+              "lane": 4,
+              "racerName": "黒澤 めぐみ",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "土屋 蘭",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "平山 智加",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "13:53",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "小林 愛実",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "西舘 果里",
+              "class": "B2"
+            },
+            {
+              "lane": 3,
+              "racerName": "岩崎 麗子",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "長田 頼宗",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "日隈 茜",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "来田 衣織",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "14:24",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "孫崎 百世",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "喜井 つかさ",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "中曽 瑠華",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "瀧川 千依",
+              "class": "B2"
+            },
+            {
+              "lane": 5,
+              "racerName": "村上 宗太郎",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "田中 瀬里奈",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "14:56",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "池田 奈津美",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "落合 直子",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "湯淺 紀香",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "永井 聖美",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "中村 尊",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "植竹 玲奈",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "15:29",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "川尻 泰輔",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "大澤 真菜",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "土屋 実沙希",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "石井 裕美",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "渡邉 真奈美",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "井上 未都",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "16:03",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "今井 裕梨",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "樋口 由加里",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "門間 雄大",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "藤田 美代",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "黒澤 めぐみ",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "登 みひ果",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "16:38",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "長田 頼宗",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "中谷 朋子",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "平山 智加",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "櫻本 あゆみ",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "関野 文",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "佐藤 隆太郎",
+              "class": "A1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "07",
+      "venueName": "蒲郡",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "15:25",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "森林 太",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "高野 心吾",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "森下 勇",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "宮嵜 隆太郎",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "橋口 真樹",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "上田 隆章",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "15:50",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "廣中 良一",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "鰐部 太空海",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "今坂 晃広",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山下 流心",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "岩橋 裕馬",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "林 祐介",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "16:19",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "野相 弘司",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "谷川 将太",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "片岡 雅裕",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "土山 卓也",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "小林 基樹",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "池本 輝明",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "16:46",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "松下 誉士",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "長谷川 親王",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "塩嶋 泰空",
+              "class": "B2"
+            },
+            {
+              "lane": 4,
+              "racerName": "服部 達哉",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "渥美 卓郎",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "吉田 裕平",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "17:15",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "大谷 直弘",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "中辻 崇人",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "柳瀬 興志",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "津留 浩一郎",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "宮崎 奏磨",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "西川 新太郎",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "17:44",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "高倉 孝太",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "大峯 豊",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "橋口 真樹",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "中里 昌志",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "山田 佑樹",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "飯島 昌弘",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "18:11",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "三宅 潤",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "宮嵜 隆太郎",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "大上 卓人",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "岡田 憲行",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "本岡 勝利",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "岩橋 裕馬",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "18:39",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "土山 卓也",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "上田 隆章",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "廣中 良一",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "土屋 智則",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "塩嶋 泰空",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "盛本 真輔",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "19:09",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "片岡 雅裕",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "山下 流心",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "服部 達哉",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "高野 心吾",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "下河 誉史",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "中辻 崇人",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "19:40",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "大峯 豊",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "今坂 晃広",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "品川 二千翔",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "松下 誉士",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "野相 弘司",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "中村 辰也",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "20:10",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "大上 卓人",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "林 祐介",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "小林 基樹",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "吉田 裕平",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "高倉 孝太",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "柳瀬 興志",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "20:40",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "土屋 智則",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "西川 新太郎",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "飯島 昌弘",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "三宅 潤",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "鰐部 太空海",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "谷川 将太",
+              "class": "B1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "09",
+      "venueName": "津",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "10:42",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "鎌倉 涼",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "中島 孝平",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "尾嶋 一広",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "中村 晃朋",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "澤田 尚也",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "春園 功太",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "11:12",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "高野 哲史",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "篠崎 仁志",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "山崎 郡",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "平本 真之",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "松田 祐季",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "山口 剛",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "11:42",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "木村 仁紀",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "豊田 健士郎",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "石本 裕武",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "川原 祐明",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "宮地 元輝",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "若林 義人",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "12:13",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "金子 拓矢",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "石丸 海渡",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "尾上 雅也",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "大池 佑来",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "佐々木 完太",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "新田 雄史",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "12:44",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "砂長 知輝",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "遠藤 エミ",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "加藤 翔馬",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "下出 卓矢",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "池田 浩二",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "渡邉 和将",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "13:15",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "尾嶋 一広",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "塩田 北斗",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "福島 勇樹",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "白神 優",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "中山 翔太",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "白井 英治",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "13:46",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "西村 拓也",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "山口 剛",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "高田 ひかる",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "関 浩哉",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "木村 仁紀",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "羽野 直也",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "14:18",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "澤田 尚也",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "宮之原 輝紀",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "平本 真之",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "柳生 泰二",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "桐生 順平",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "渡辺 浩司",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "14:50",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "磯部 誠",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "宮地 元輝",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中田 竜太",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "井上 一輝",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "中島 孝平",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "大池 佑来",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "15:23",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "末永 和也",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "青木 玄太",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "新田 雄史",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "高橋 竜矢",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "山崎 郡",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "下出 卓矢",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "15:58",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "菊地 孝平",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "松田 祐季",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "池田 浩二",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "春園 功太",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "金子 拓矢",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "福島 勇樹",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "16:35",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "井口 佳典",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "関 浩哉",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "黒井 達矢",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "若林 義人",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "石丸 海渡",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "塩田 北斗",
+              "class": "A1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "10",
+      "venueName": "三国",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "08:32",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "坪井 康晴",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "中本 大樹",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "土性 雅也",
+              "class": "B2"
+            },
+            {
+              "lane": 4,
+              "racerName": "竹腰 正樹",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "熊本 英一",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "多田 有佑",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "08:58",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "永嶋 裕一",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "板橋 侑我",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "中村 将隆",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "長谷川 雅和",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "川口 貴久",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "片岡 秀樹",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "09:24",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "平見 真彦",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "間野 兼礼",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "石野 貴之",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "岩川 仁士",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "岸本 雄貴",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "東口 晃",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "09:50",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "戸塚 邦好",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "井上 茂",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "大橋 純一郎",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "重冨 勇哉",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "香川 颯太",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "久永 祥平",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "10:18",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "田中 太一郎",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "吉島 祥之",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "前田 健太郎",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "島村 隆幸",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "塩崎 優司",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "百武 翔",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "10:50",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "中岡 健人",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "多田 有佑",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "田頭 虎親",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "萩原 秀人",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "中村 将隆",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "北川 太一",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "11:20",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "中渡 修作",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "登玉 隼百",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "片岡 秀樹",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "岡村 将也",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "中本 大樹",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "横井 健太",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "11:50",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "井上 茂",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "熊本 英一",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "松下 哲也",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "森 智也",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "岩川 仁士",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "吉田 拡郎",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "12:25",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "杉山 勝匡",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "永嶋 裕一",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "吉島 祥之",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "山崎 聖司",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "大橋 純一郎",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "坂口 諒宗",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "12:58",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "長谷川 雅和",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "島村 隆幸",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中岡 健人",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "間野 兼礼",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "戸塚 邦好",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "山崎 鉄平",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "13:33",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "重冨 勇哉",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "北川 太一",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "板橋 侑我",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "坪井 康晴",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "平見 真彦",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "前田 健太郎",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "14:11",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "石野 貴之",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "川口 貴久",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "久永 祥平",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "百武 翔",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "登玉 隼百",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "松下 哲也",
+              "class": "B1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "11",
+      "venueName": "びわこ",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "10:33",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "楠 将太郎",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "松井 貫太",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "笹木 香吾",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "原田 朱理",
+              "class": "B2"
+            },
+            {
+              "lane": 5,
+              "racerName": "坂本 一真",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "佐野 優都",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "11:02",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "村松 栄太",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "土井 歩夢",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "小川 竜太朗",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "廣瀬 凜",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "上野 拓馬",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "藤井 公人",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "11:34",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "小林 礼央",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "山崎 祥",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "渡邊 雄斗",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "大原 祥昌",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "廣部 大明",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "竹間 隆晟",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "12:02",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山下 拓巳",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "遠藤 圭吾",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "山本 幸也",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "藤原 仙二",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "竹下 大樹",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "大森 翼",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "12:33",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "津田 陸翔",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "坂本 一真",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "大島 隆乃介",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "濱野 斗馬",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "杉山 太陽",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "鳥居塚 嶺王",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "13:06",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "吉田 一心",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "宮崎 心之介",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "水谷 理人",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "丸山 祐也",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "松井 貫太",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "金子 龍斗",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "13:36",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "西川 拓利",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "廣部 大明",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "村松 栄太",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "藤田 俊祐",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "佐野 優都",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "松田 淳平",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "14:07",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "上野 拓馬",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "塚越 海斗",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "市川 健太",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "遠藤 圭吾",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "原田 朱理",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "宇留田 翔平",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "14:39",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "数原 魁",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "廣瀬 凜",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "仲 航太",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "小林 礼央",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "笹木 香吾",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "早川 理稀",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "15:09",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "長谷川 晴哉",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "藤本 元輝",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "竹間 隆晟",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山本 幸也",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "楠 将太郎",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "垂水 悠",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "15:38",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "竹下 大樹",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "大原 祥昌",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "藤田 俊祐",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "宮崎 心之介",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "津田 陸翔",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "土井 歩夢",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "16:14",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "濱野 斗馬",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "藤原 仙二",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "金子 龍斗",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "西川 拓利",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "山崎 祥",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "小川 竜太朗",
+              "class": "B1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "12",
+      "venueName": "住之江",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "15:17",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "佐々木 翔斗",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "森 貴洋",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "三原 司",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "鈴木 智啓",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "中島 浩哉",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "高木 茉白",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "15:42",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "白水 勝也",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "大塚 浩二",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "山本 修一",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "安藤 裕貴",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "赤松 咲香",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "田中 結",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "16:11",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "芝田 浩治",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "近江 翔吾",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "須藤 隆雄",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "間庭 菜摘",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "南 佑典",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "龍田 真白",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "16:44",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "末永 祐輝",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "上田 紗奈",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "金子 和之",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "赤池 修平",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "小野 京平",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "高倉 和士",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "17:08",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山田 理央",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "田中 勇輔",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "東 健介",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "柴田 朋哉",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "浦田 晃嗣",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "藤岡 俊介",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "17:37",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "渡邉 翼",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "中野 夢斗",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "深山 祐二",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "赤松 咲香",
+              "class": "B2"
+            },
+            {
+              "lane": 5,
+              "racerName": "齋藤 真之",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "木谷 賢太",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "18:04",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "烏野 賢太",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "草場 康幸",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "滝沢 織寧",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "柏野 幸二",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "大塚 浩二",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "徳増 秀樹",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "18:32",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "乙藤 智史",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "久保原 秀人",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "安藤 裕貴",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "松下 知幸",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "間庭 菜摘",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "池田 雄祐",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "19:02",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "南 佑典",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "末永 祐輝",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "森 貴洋",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "芝田 浩治",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "白水 勝也",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "金子 和之",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "19:32",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "木谷 賢太",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "柴田 朋哉",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "渡邉 翼",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "藤岡 俊介",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "山本 修一",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "上田 紗奈",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "20:04",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "高倉 和士",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "烏野 賢太",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "徳増 秀樹",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "佐々木 翔斗",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "近江 翔吾",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "中野 夢斗",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "20:35",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "池田 雄祐",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "浦田 晃嗣",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "柏野 幸二",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "深山 祐二",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "田中 勇輔",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "乙藤 智史",
+              "class": "A2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "13",
+      "venueName": "尼崎",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "10:36",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "橋本 年光",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "乃村 康友",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "水摩 敦",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "中里 英夫",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "峰重 侑治",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "國弘 翔平",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "11:05",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "福西 広太郎",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "竹田 広樹",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中野 孝二",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "北川 敏弘",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "渡辺 真至",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "木村 亮太",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "11:37",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "伊藤 尚汰",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "渡邉 英児",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "小畑 実成",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "佐藤 太亮",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "高橋 直哉",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "天野 友和",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "12:00",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "角山 雄哉",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "高井 雄基",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "中島 友和",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "柴田 直哉",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "成貞 琳平",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "上野 秀和",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "12:31",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "近藤 友宝",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "茶谷 信次",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "奥平 拓也",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "高橋 正男",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "乃村 康友",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "齋藤 智裕",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "13:10",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "池田 雄一",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "栗山 繁洋",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "峰重 侑治",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "柳沢 一",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "竹田 広樹",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "一ノ木 匠",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "13:39",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "天野 友和",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "北川 敏弘",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "大澤 風葵",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "富田 恕生",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "伊藤 尚汰",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "吉田 宗弘",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "14:09",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "上野 秀和",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "久田 武",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "高橋 直哉",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "中野 孝二",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "中島 友和",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "樅山 拓馬",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "14:37",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "高橋 正男",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "小畑 実成",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "柴田 直哉",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "水摩 敦",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "高井 雄基",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "西川 真人",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "15:07",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "中里 英夫",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "池田 雄一",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "渡邉 英児",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "角山 雄哉",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "橋本 年光",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "茶谷 信次",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "15:36",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "柳沢 一",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "國弘 翔平",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "佐藤 太亮",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "大澤 風葵",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "木村 亮太",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "近藤 友宝",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "16:09",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "平田 忠則",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "中 亮太",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中野 希一",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "小山 勉",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "佐藤 博亮",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "寺本 重宣",
+              "class": "A2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "17",
+      "venueName": "宮島",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "10:54",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "長尾 章平",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "山本 景士郎",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "森清 友翔",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "吉田 和仁",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "石川 哲秀",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "齊藤 廉",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "11:23",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "亀山 雅幸",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "栗原 一馬",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "松井 賢治",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "貫地谷 直人",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "外崎 悟",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "木山 大聖",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "12:11",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "北川 潤二",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "山地 正樹",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "小林 甘寧",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "峰重 力也",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "江藤 敦宏",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "武重 雄介",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "12:38",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "三嶌 こころ",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "深川 麻奈美",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "島倉 都",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "内山 七海",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "小野 桜",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "根岸 真優",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "13:03",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山下 和彦",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "飯田 庄吾",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "越智 照浩",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山本 光雄",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "福田 雅一",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "前田 滉",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "13:31",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "眞崎 武蔵",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "牧 宏次",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "谷口 知優",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "山本 景士郎",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "佐竹 太一",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "大平 誉史明",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "14:02",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "谷村 一哉",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "原村 拓也",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "齊藤 廉",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "栗原 一馬",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "向後 龍一",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "清水 紀克",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "14:46",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "後藤 正宗",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "貫地谷 直人",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "小原 聡将",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "江藤 敦宏",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "森清 友翔",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "三嶌 こころ",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "15:15",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "根岸 真優",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "神田 達也",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "峰重 力也",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "木山 大聖",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "島倉 都",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "野長瀬 正孝",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "15:48",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "武重 雄介",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "外崎 悟",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "内山 七海",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "長尾 章平",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "牧 宏次",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "小林 甘寧",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "16:17",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "大平 誉史明",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "北川 潤二",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "吉田 和仁",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "谷村 一哉",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "眞崎 武蔵",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "山下 和彦",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "16:49",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "前田 滉",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "向後 龍一",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "後藤 正宗",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "松井 賢治",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "飯田 庄吾",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "亀山 雅幸",
+              "class": "A2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "18",
+      "venueName": "徳山",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "08:44",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "古澤 光紀",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "三浦 裕貴",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "藤森 拓海",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "沼田 大都",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "金田 大輔",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "鈴木 雄登",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "09:10",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "稗田 聖也",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "高村 諒",
+              "class": "B2"
+            },
+            {
+              "lane": 3,
+              "racerName": "柘植 政浩",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "都築 正治",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "本吉 正樹",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "江本 真治",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "09:36",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "佐藤 大佑",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "池田 雷太",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "幸田 智裕",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山口 修路",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "藤田 浩人",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "和田 拓也",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "10:02",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山田 丈",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "坂元 浩仁",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "高橋 勲",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "福田 理",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "妻鳥 晋也",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "山田 真聖",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "10:29",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "蒲原 健太",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "藤山 雅弘",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "岡村 慶太",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "牧村 俊輝",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "三浦 裕貴",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "西丸 侑太朗",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "10:59",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "三好 勇人",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "島川 光男",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "金田 大輔",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "嶋田 貴支",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "鈴木 雄登",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "吉村 誠",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "11:31",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "内田 圭",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "幸田 智裕",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "大西 隆洋",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "池田 雷太",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "新田 洋一",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "高村 諒",
+              "class": "B2"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "12:06",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "三浦 洋次朗",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "藤田 浩人",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "福田 理",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "本吉 正樹",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "藤森 拓海",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "山田 丈",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "12:41",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "岡村 慶太",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "高橋 勲",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "江本 真治",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "妻鳥 晋也",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "山口 修路",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "蒲原 健太",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "13:12",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "西丸 侑太朗",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "吉村 誠",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "三好 勇人",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "坂元 浩仁",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "柘植 政浩",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "藤山 雅弘",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "13:50",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "和田 拓也",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "古澤 光紀",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "三浦 洋次朗",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "稗田 聖也",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "佐藤 大佑",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "島川 光男",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "14:30",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "安河内 将",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "里岡 右貴",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "長岡 良也",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "山口 晃朋",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "原田 秀弥",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "深川 和仁",
+              "class": "B1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "20",
+      "venueName": "若松",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "15:27",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "内山 文典",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "木村 光宏",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "広瀬 聖仁",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "河上 年昭",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "久富 政弘",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "胡本 悟志",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "16:01",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "河合 三弘",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "志道 吉和",
+              "class": "B2"
+            },
+            {
+              "lane": 3,
+              "racerName": "桂林 寛",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "宮地 博士",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "重成 一人",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "増田 進",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "16:27",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "森安 弘雅",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "鈴木 茂正",
+              "class": "B2"
+            },
+            {
+              "lane": 3,
+              "racerName": "中野 和裕",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "豊田 訓靖",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "佐竹 恒彦",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "大場 敏",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "16:54",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山一 鉄也",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "浦田 信義",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "加藤 高史",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "吉永 泰弘",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "平石 和男",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "山田 竜一",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "17:20",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "倉尾 大介",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "浅見 昌克",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "野中 義生",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "服部 幸男",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "河上 年昭",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "桑原 啓",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "17:51",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "鈴木 博",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "中嶋 誠一郎",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "増田 進",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "松下 直也",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "仲口 博崇",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "榮田 将彦",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "18:18",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "大場 敏",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "宮地 博士",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "宮武 英司",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "広瀬 聖仁",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "中野 和裕",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "飯山 泰",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "18:46",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "久富 政弘",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "佐竹 恒彦",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "鈴木 茂正",
+              "class": "B2"
+            },
+            {
+              "lane": 4,
+              "racerName": "志道 吉和",
+              "class": "B2"
+            },
+            {
+              "lane": 5,
+              "racerName": "浦田 信義",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "内山 文典",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "19:16",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山田 竜一",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "加藤 高史",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "木村 光宏",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "野中 義生",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "豊田 訓靖",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "桂林 寛",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "19:48",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "平石 和男",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "仲口 博崇",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "中嶋 誠一郎",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山一 鉄也",
+              "class": "A2"
+            },
+            {
+              "lane": 5,
+              "racerName": "桑原 啓",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "河合 三弘",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "20:16",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "重成 一人",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "森安 弘雅",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "浅見 昌克",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "宮武 英司",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "鈴木 博",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "服部 幸男",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "20:45",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "田頭 実",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "馬袋 義則",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "益田 啓司",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "江夏 満",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "深井 利寿",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "小野 勇作",
+              "class": "B1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "venueCode": "22",
+      "venueName": "福岡",
+      "date": "20260905",
+      "title": "",
+      "day": "初日",
+      "status": "open",
+      "races": [
+        {
+          "raceNo": 1,
+          "deadline": "11:48",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "松本 一毅",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "長尾 京志郎",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "大町 利克",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "伏島 祐介",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "田代 達也",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "寳田 亮治",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "12:18",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "平岡 重典",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "岩田 凌",
+              "class": "B2"
+            },
+            {
+              "lane": 3,
+              "racerName": "堀越 雄貴",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "松田 隆司",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "篠原 飛翔",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "大月 遊雅",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 3,
+          "deadline": "12:49",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "山口 隆史",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "品田 直樹",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "林 恵祐",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "近藤 雄一郎",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "佐々木 大河",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "河野 主樹",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 4,
+          "deadline": "13:25",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "杉村 賢也",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "関 裕也",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "長野 壮志郎",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "宮迫 暢彦",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "桑島 和宏",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "佃 來紀",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 5,
+          "deadline": "13:58",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "今泉 友吾",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "土井 祥伍",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "繁野谷 圭介",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "深澤 達徳",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "甲斐 貴大",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "田中 孝明",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 6,
+          "deadline": "14:27",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "小松 卓司",
+              "class": "B1"
+            },
+            {
+              "lane": 2,
+              "racerName": "山本 英志",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "佐藤 大騎",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "溝口 海義也",
+              "class": "A1"
+            },
+            {
+              "lane": 5,
+              "racerName": "岩田 凌",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "作間 章",
+              "class": "A1"
+            }
+          ]
+        },
+        {
+          "raceNo": 7,
+          "deadline": "15:01",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "福来 剛",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "有山 望",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "長尾 京志郎",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "平岡 重典",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "新開 航",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "森 弘行",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 8,
+          "deadline": "15:31",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "濱本 優一",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "竹井 貴史",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "品田 直樹",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "寳田 亮治",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "堀越 雄貴",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "宮迫 暢彦",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 9,
+          "deadline": "15:56",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "篠原 飛翔",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "河野 主樹",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "桑島 和宏",
+              "class": "A2"
+            },
+            {
+              "lane": 4,
+              "racerName": "土井 祥伍",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "早川 颯太",
+              "class": "B2"
+            },
+            {
+              "lane": 6,
+              "racerName": "鳥飼 眞",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 10,
+          "deadline": "16:23",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "北山 康介",
+              "class": "A2"
+            },
+            {
+              "lane": 2,
+              "racerName": "深澤 達徳",
+              "class": "B1"
+            },
+            {
+              "lane": 3,
+              "racerName": "関 裕也",
+              "class": "B1"
+            },
+            {
+              "lane": 4,
+              "racerName": "佐藤 大騎",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "大町 利克",
+              "class": "B1"
+            },
+            {
+              "lane": 6,
+              "racerName": "枝尾 賢",
+              "class": "A2"
+            }
+          ]
+        },
+        {
+          "raceNo": 11,
+          "deadline": "16:51",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "佐々木 大河",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "長野 壮志郎",
+              "class": "A2"
+            },
+            {
+              "lane": 3,
+              "racerName": "今泉 友吾",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "田代 達也",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "溝口 海義也",
+              "class": "A1"
+            },
+            {
+              "lane": 6,
+              "racerName": "有山 望",
+              "class": "B1"
+            }
+          ]
+        },
+        {
+          "raceNo": 12,
+          "deadline": "17:26",
+          "boats": [
+            {
+              "lane": 1,
+              "racerName": "新開 航",
+              "class": "A1"
+            },
+            {
+              "lane": 2,
+              "racerName": "作間 章",
+              "class": "A1"
+            },
+            {
+              "lane": 3,
+              "racerName": "濱本 優一",
+              "class": "A1"
+            },
+            {
+              "lane": 4,
+              "racerName": "山口 隆史",
+              "class": "B1"
+            },
+            {
+              "lane": 5,
+              "racerName": "繁野谷 圭介",
+              "class": "A2"
+            },
+            {
+              "lane": 6,
+              "racerName": "伏島 祐介",
+              "class": "B1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": []
 }
