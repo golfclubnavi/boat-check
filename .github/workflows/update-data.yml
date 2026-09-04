@@ -8,14 +8,9 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: boat-check-data-update
-  cancel-in-progress: true
-
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +19,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Collect today's race data
-        run: python scripts/collect_today.py --out data/today.json
+      - name: Collect today's official race data
+        run: python scripts/collect_today.py --deep --out data/today.json
 
       - name: Commit data when changed
         run: |
