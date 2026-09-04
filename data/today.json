@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T08:34:24+09:00",
+  "updatedAt": "2026-09-05T08:49:09+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -4880,7 +4880,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 古澤 光紀",
+              "racerName": "発売終了 古澤 光紀",
               "class": "A2"
             },
             {
