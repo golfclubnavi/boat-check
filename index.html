@@ -1,609 +1,324 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BOAT ✓ CHECK</title>
-<!-- v18: デザイン固定・実データ収集パイプライン接続版 -->
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071d35">
+<title>BOAT ✓ CHECK</title>
 <style>
-:root{--n:#092744;--b:#1671d9;--bg:#f4f6f9;--t:#10223d;--l:#dfe5ec;--r:#df3340;--y:#dda000;--g:#18a568}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}header{background:linear-gradient(135deg,#06192f,#0d315d);color:#fff;padding:15px;position:sticky;top:0;z-index:5}.logo{font-size:21px;font-weight:900}.logo b{color:#49a4ff}.tag{font-size:9px;color:#cbd7e8}main{padding:15px 10px 35px;max-width:900px;margin:auto}h2{margin:0 0 4px}.sub{font-size:10px;color:#758196;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.card,.hero,.raceCard,.panel,.boats{background:#fff;border:1px solid var(--l);border-radius:13px;box-shadow:0 6px 16px #08203b12}.card{min-height:108px;padding:8px 5px;position:relative}.name{text-align:center;font-weight:900;font-size:15px;margin:7px 0}.icons{position:absolute;right:5px;top:5px;font-size:12px}.meta{border-top:1px solid #e9edf2;padding-top:6px;display:flex;justify-content:center;gap:5px;font-size:8px;font-weight:800}.grade{border-radius:4px;padding:3px 5px;color:#fff;font-weight:900}.normal,.women{padding:0;color:var(--t)}.g3{background:#1671d9}.g2{background:#79b82e}.g1{background:#f28a00}.sg{background:#df2937}.race{display:flex;justify-content:center;gap:9px;margin-top:7px;font-size:10px}.race b{font-size:13px}.end{background:#e9edf1}.ended{text-align:center;margin-top:18px}.ended b{background:#3d4651;color:#fff;border-radius:20px;padding:5px 9px;font-size:9px}.panel{margin-top:14px;overflow:hidden}.panelTitle{background:linear-gradient(135deg,var(--n),#214d80);color:#fff;padding:9px 11px;font-size:12px;font-weight:900}.guide{padding:11px;font-size:9px;line-height:1.7}.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:7px}.hidden{display:none}.back{border:1px solid var(--l);background:#fff;border-radius:9px;padding:8px 10px;font-weight:800;margin-bottom:11px}.hero{padding:14px;background:linear-gradient(145deg,#fff,#f8fbff)}.heroTop{display:flex;justify-content:space-between}.venueName{font-size:27px;font-weight:950}.event{border-top:1px solid #e9edf2;margin-top:10px;padding-top:10px;font-size:12px;font-weight:800}.tabs{display:flex;gap:6px;overflow:auto;margin-top:11px}.tab{min-width:65px;background:#eef3f8;border-radius:8px;padding:7px;text-align:center;font-size:9px}.tab b{display:block;font-size:11px}.tab.active{background:var(--n);color:#fff}.section{display:flex;justify-content:space-between;align-items:end;margin:17px 2px 9px}.section h3{margin:0}.section span{font-size:9px;color:#758196}
-.raceGrid{display:grid;grid-template-columns:1fr;gap:9px}
-.raceCard{background:#fff;border:1px solid var(--l);border-radius:13px;overflow:hidden;box-shadow:0 5px 14px #08203b10;padding:0}
-.raceSummary{display:grid;grid-template-columns:auto auto 1fr auto;gap:8px;align-items:center;padding:10px 11px 8px}
-.rno{font-size:20px;font-weight:950}
-.deadlineInline{font-size:8px;color:#758196;white-space:nowrap}.deadlineInline b{color:var(--t);font-size:10px}
-.summaryRate{min-width:0}.summaryRateTop{display:flex;justify-content:flex-end;gap:5px;align-items:center;font-size:8px;color:#758196}.summaryRateTop strong{font-size:12px;color:var(--t)}
-.summaryMeter{height:5px;background:#edf1f5;border-radius:999px;overflow:hidden;margin-top:4px}.summaryMeter i{display:block;height:100%;border-radius:999px}
-.badge{font-size:8px;color:#fff;border-radius:999px;padding:5px 8px;font-weight:900}.check{background:var(--g)}.caution{background:var(--y)}.skip{background:var(--r)}
-.runners{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid #e6ebf1}
-.runner{min-width:0;text-align:center;border-right:1px solid #dfe5ec}.runner:last-child{border-right:0}
-.runnerHead{padding:4px 1px;font-size:7px;font-weight:900}.runnerBody{min-height:61px;padding:5px 2px 6px;display:flex;flex-direction:column;justify-content:center;gap:2px}
-.runnerName{font-size:8px;font-weight:900;line-height:1.15;word-break:keep-all}.runnerClass{font-size:7px;font-weight:900}.runnerReg{font-size:7px;color:#758196}
-.r1 .runnerHead{background:#fff;color:#111;border-bottom:3px solid #ddd}.r2 .runnerHead{background:#111;color:#fff}.r3 .runnerHead{background:#ef3340;color:#fff}.r4 .runnerHead{background:#2356dc;color:#fff}.r5 .runnerHead{background:#f2dc00;color:#111}.r6 .runnerHead{background:#149343;color:#fff}
-.r1 .runnerBody{background:#fff}.r2 .runnerBody{background:#fafafa}.r3 .runnerBody{background:#fff2f3}.r4 .runnerBody{background:#f2f6ff}.r5 .runnerBody{background:#fffde8}.r6 .runnerBody{background:#effaf3}
-.raceAction{padding:7px 11px 9px;border-top:1px solid #eef1f5;text-align:right;font-size:9px;color:#1671d9;font-weight:800}
-.analysis{margin-top:13px;background:var(--n);color:#fff;border-radius:12px;padding:11px;font-size:9px;line-height:1.6}.analysis b{font-size:11px}.big{font-size:30px;font-weight:950}.big small{display:block;font-size:9px;color:#758196}.reason{background:#f5f8fb;border-radius:10px;padding:10px;margin-top:10px;font-size:10px;line-height:1.7}.boats{overflow:hidden}.boat{display:grid;grid-template-columns:30px 1.3fr .6fr .7fr .7fr;align-items:center;border-bottom:1px solid #edf0f4;min-height:48px;font-size:9px}.boat>div{padding:7px 4px}.no{height:100%;display:grid;place-items:center;font-weight:900;font-size:14px}.n1{background:#fff}.n2{background:#222;color:#fff}.n3{background:#ef3340;color:#fff}.n4{background:#2356dc;color:#fff}.n5{background:#f2dc00}.n6{background:#149343;color:#fff}.player b,.cell b{display:block;font-size:10px}.player span,.cell span{color:#758196;font-size:8px}.cell{text-align:center}.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.tool{background:#fff;border:1px solid var(--l);border-radius:9px;padding:10px 4px;text-align:center;font-size:9px;font-weight:800}.primary{background:var(--n);color:#fff}
-@media(max-width:620px){.raceGrid{grid-template-columns:1fr}.pname{font-size:9px}.raceCard{padding:12px}}
-/* ===== v9 HOME DESIGN ===== */
+:root{
+  --navy:#071d35;--navy2:#0d315d;--blue:#1671d9;--bg:#f4f6f9;--text:#10223d;
+  --muted:#748196;--line:#dfe5ec;--white:#fff;--green:#18a568;--yellow:#dda000;--red:#df3340;
+  --shadow:0 8px 22px rgba(8,32,59,.09);
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit}
+header{
+  position:sticky;top:0;z-index:50;
+  padding:14px max(14px,env(safe-area-inset-left)) 13px;
+  padding-top:max(14px,env(safe-area-inset-top));
+  color:#fff;background:linear-gradient(135deg,#06172b 0%,#0c315d 100%);
+  box-shadow:0 3px 15px rgba(3,19,36,.18)
+}
+.header-inner{max-width:980px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-size:21px;font-weight:950;letter-spacing:.01em}.logo b{color:#50a8ff}
+.tag{font-size:9px;color:#cbd8e7;margin-top:2px;letter-spacing:.01em}
+.live{
+  display:flex;align-items:center;gap:5px;font-size:8px;font-weight:800;color:#d8e7f6;
+  padding:5px 8px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.06)
+}
+.live i{width:6px;height:6px;border-radius:50%;background:#48d18c;box-shadow:0 0 0 3px rgba(72,209,140,.12)}
+main{max-width:980px;margin:auto;padding:15px 10px 42px}
+.hidden{display:none!important}
+.topline{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:10px}
+h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color:var(--muted)}
+.data-state{font-size:8px;color:var(--muted);text-align:right}.data-state strong{display:block;color:#2d4260;font-size:9px}
+
 .homeTabs{
-  display:grid;grid-template-columns:repeat(4,1fr);background:#fff;
-  border:1px solid #dfe5ec;border-radius:12px;margin-bottom:9px;
-  box-shadow:0 5px 14px rgba(8,32,59,.08);overflow:hidden
+ display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border:1px solid var(--line);
+ border-radius:13px;margin-bottom:10px;box-shadow:0 5px 14px rgba(8,32,59,.06);overflow:hidden
 }
 .homeTab{padding:10px 3px 8px;text-align:center;font-size:9px;font-weight:850;color:#20334f;border-right:1px solid #edf1f5}
-.homeTab:last-child{border-right:0}.homeTab .ico{display:block;font-size:17px;line-height:1;margin-bottom:5px}
-.homeTab.active{color:#1671d9;box-shadow:inset 0 -3px 0 #1671d9}
-.raceTypeLegend{
-  display:flex;gap:8px 10px;align-items:center;flex-wrap:wrap;background:#fff;
-  border:1px solid #dfe5ec;border-radius:12px;padding:8px 9px;margin-bottom:9px;
-  box-shadow:0 4px 12px rgba(8,32,59,.06)
-}
-.typeItem{display:inline-flex;align-items:center;gap:4px;font-size:8px;font-weight:800;color:#30435e;white-space:nowrap}
-.typeIcon{width:21px;height:21px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:900}
-.typeIcon.morning{background:#ffb000;color:#fff}.typeIcon.summer{background:#ff3447;color:#fff}
-.typeIcon.night{background:#123e7c;color:#ffd73a}.typeIcon.midnight{background:#123e7c;color:#ffd73a}
-.typeIcon.rookie{background:#26a748;color:#fff}.typeIcon.women{background:#ff5a93;color:#fff}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.homeTab:last-child{border-right:0}.homeTab .ico{display:block;font-size:16px;line-height:1;margin-bottom:5px}
+.homeTab.active{color:var(--blue);box-shadow:inset 0 -3px 0 var(--blue)}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
 .card{
-  position:relative;min-height:109px;background:linear-gradient(180deg,#fff,#fbfcfe);
-  border:1px solid #dfe5ec;border-radius:12px;padding:8px 5px;overflow:hidden;
-  box-shadow:0 6px 16px rgba(8,32,59,.10),0 1px 2px rgba(8,32,59,.06);
-  cursor:pointer
+ position:relative;min-height:112px;background:linear-gradient(180deg,#fff,#fbfcfe);border:1px solid var(--line);
+ border-radius:13px;padding:9px 5px;overflow:hidden;box-shadow:0 6px 17px rgba(8,32,59,.09);
+ cursor:pointer;transition:transform .12s ease,box-shadow .12s ease
 }
-.card.end{background:linear-gradient(#f1f3f5,#e9edf1);cursor:default}
-.card::after{content:"";position:absolute;left:8px;bottom:5px;width:53px;height:16px;opacity:.035;background:#10223d;border-radius:55% 20% 50% 20%}
-.name{position:relative;z-index:2;text-align:center;font-size:15px;font-weight:900;margin:7px 0 7px}
-.icons{position:absolute;right:6px;top:5px;z-index:3;font-size:12px;display:flex;gap:2px}
-.meta{position:relative;z-index:2;border-top:1px solid #e8edf2;padding-top:6px;display:flex;justify-content:center;align-items:center;gap:5px;font-size:8px;font-weight:800}
-.grade{display:inline-flex;align-items:center;justify-content:center;min-width:25px;border-radius:4px;padding:3px 5px;color:#fff;font-weight:900}
-.normal,.women{min-width:auto;padding:0;background:none;color:var(--t)}
-.g3{background:#1671d9}.g2{background:#79b82e}.g1{background:#f28a00}.sg{background:#df2937}
-.race{position:relative;z-index:2;display:flex;justify-content:center;align-items:end;gap:9px;margin-top:7px;font-size:10px}
-.race b{font-size:13px}.ended{position:relative;z-index:2;height:54px;display:grid;place-items:center}
-.ended b{background:linear-gradient(#4b535d,#353c45);color:#fff;border-radius:999px;padding:5px 10px;font-size:9px}
+.card:active{transform:scale(.975);box-shadow:0 3px 8px rgba(8,32,59,.09)}
+.card.off{background:linear-gradient(#f2f4f6,#eaedf1);cursor:default;box-shadow:0 3px 9px rgba(8,32,59,.05)}
+.card::after{content:"";position:absolute;left:7px;bottom:6px;width:55px;height:16px;opacity:.035;background:#10223d;border-radius:55% 20% 50% 20%}
+.name{position:relative;z-index:2;text-align:center;font-size:15px;font-weight:950;margin:8px 0 8px}
+.meta{position:relative;z-index:2;border-top:1px solid #e8edf2;padding-top:7px;display:flex;justify-content:center;align-items:center;gap:5px;font-size:8px;font-weight:850;white-space:nowrap}
+.grade{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;padding:3px 5px;color:#fff;font-weight:950}
+.grade.general{background:#193a5d}.grade.g3{background:#1671d9}.grade.g2{background:#79b82e}.grade.g1{background:#f28a00}.grade.sg{background:#df2937}.grade.women{background:#e94d87}
+.race{position:relative;z-index:2;display:flex;justify-content:center;align-items:end;gap:7px;margin-top:8px;font-size:9px}.race b{font-size:12px}
+.offtext{height:55px;display:grid;place-items:center;position:relative;z-index:2}.offtext b{background:#46505b;color:#fff;border-radius:999px;padding:5px 9px;font-size:8px}
+.progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:#e7edf4}.progress i{display:block;height:100%;background:#1d78d8}
+.skeleton{animation:pulse 1.2s ease-in-out infinite alternate;background:#e7edf3!important;color:transparent!important}
+@keyframes pulse{from{opacity:.55}to{opacity:1}}
 
+.judge-guide{margin-top:14px;background:#fff;border:1px solid #d8e1ea;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.judge-title{background:linear-gradient(90deg,#092d57,#174f84);color:#fff;font-size:13px;font-weight:950;padding:10px 12px}
+.judge-main{display:grid;grid-template-columns:.95fr 1.2fr 1fr;padding:11px 9px 10px}
+.jc{min-width:0}.jc+.jc{border-left:1px solid #d7e0e8;padding-left:9px;margin-left:9px}
+.jh{font-size:11px;font-weight:950;margin-bottom:5px}.jp{font-size:8px;line-height:1.5}
+.scale{height:6px;margin:9px 0 4px;border-radius:99px;background:linear-gradient(90deg,#0877f9,#16b962 27%,#f0d80c 53%,#ff8a00 74%,#ee2028)}
+.scale-label{display:flex;justify-content:space-between;font-size:8px;font-weight:800}
+.status{margin-bottom:7px}.status:last-child{margin-bottom:0}.status-head{font-size:9px;font-weight:950}.status small{font-size:6px}.status p{margin:2px 0 0;font-size:7px;line-height:1.35}
+.status.check .status-head{color:#0878ee}.status.caution .status-head{color:#e89500}.status.skip .status-head{color:#ef2028}
 
-/* ===== v10: venue card icon badges ===== */
-.icons{
-  position:absolute;
-  right:6px;
-  top:5px;
-  z-index:3;
-  display:flex;
-  gap:3px;
-  align-items:center;
-  font-size:0;
-}
-.cardIcon{
-  width:20px;height:20px;border-radius:50%;
-  display:inline-grid;place-items:center;
-  font-size:11px;line-height:1;font-weight:900;
-  box-shadow:0 1px 3px rgba(8,32,59,.14),inset 0 1px 0 rgba(255,255,255,.35);
-}
-.cardIcon.morning{background:#ffb000;color:#fff}
-.cardIcon.summer{background:#ff3447;color:#fff}
-.cardIcon.night{background:#123e7c;color:#ffd73a}
-.cardIcon.midnight{background:#123e7c;color:#ffd73a}
-.cardIcon.rookie{background:#26a748;color:#fff}
-.cardIcon.women{background:#ff5a93;color:#fff}
-@media(max-width:520px){
-  .cardIcon{width:19px;height:19px;font-size:10px}
-}
+.back{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;font-weight:850;color:#233952;margin-bottom:10px;box-shadow:0 3px 10px rgba(8,32,59,.05)}
+.hero{background:linear-gradient(145deg,#fff,#f8fbff);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.heroTop{display:flex;justify-content:space-between;gap:12px}.venueName{font-size:28px;font-weight:950;letter-spacing:-.03em}
+.event{border-top:1px solid #e7edf2;margin-top:10px;padding-top:10px;font-size:11px;font-weight:800}
+.event:empty{display:none}
+.status-chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:#eef6ff;color:#1765bd;font-size:8px;font-weight:900;padding:5px 8px}
+.tabs{display:flex;gap:6px;overflow:auto;margin-top:11px;padding-bottom:1px}.tab{min-width:72px;background:#edf3f8;border-radius:9px;padding:7px;text-align:center;font-size:8px;font-weight:750}.tab b{display:block;font-size:10px}.tab.active{background:var(--navy);color:#fff}
+.section{display:flex;justify-content:space-between;align-items:end;margin:17px 2px 9px}.section h3{margin:0;font-size:17px}.section span{font-size:8px;color:var(--muted)}
+.raceGrid{display:grid;grid-template-columns:1fr;gap:9px}
+.raceCard{background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:0 5px 14px rgba(8,32,59,.07);cursor:pointer}
+.raceCard:active{transform:scale(.992)}
+.raceSummary{display:grid;grid-template-columns:auto auto 1fr auto;gap:8px;align-items:center;padding:10px 11px 8px}
+.rno{font-size:20px;font-weight:950}.deadlineInline{font-size:8px;color:var(--muted);white-space:nowrap}.deadlineInline b{color:var(--text);font-size:10px}
+.summaryState{text-align:right;font-size:7px;color:var(--muted)}.summaryState b{font-size:9px;color:#28415e}
+.badge{font-size:8px;border-radius:999px;padding:5px 8px;font-weight:950}.badge.pending{color:#466078;background:#eef2f6;border:1px solid #dbe3eb}
+.runners{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid #e6ebf1}
+.runner{min-width:0;text-align:center;border-right:1px solid #dfe5ec}.runner:last-child{border-right:0}
+.runnerHead{padding:4px 1px;font-size:7px;font-weight:950}.runnerBody{min-height:62px;padding:5px 2px 6px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.runnerName{font-size:8px;font-weight:950;line-height:1.15;word-break:keep-all}.runnerClass{font-size:7px;font-weight:900;color:#52647a}
+.r1 .runnerHead{background:#fff;color:#111;border-bottom:3px solid #ddd}.r2 .runnerHead{background:#111;color:#fff}.r3 .runnerHead{background:#ef3340;color:#fff}.r4 .runnerHead{background:#2356dc;color:#fff}.r5 .runnerHead{background:#f2dc00;color:#111}.r6 .runnerHead{background:#149343;color:#fff}
+.r1 .runnerBody{background:#fff}.r2 .runnerBody{background:#fafafa}.r3 .runnerBody{background:#fff2f3}.r4 .runnerBody{background:#f2f6ff}.r5 .runnerBody{background:#fffde8}.r6 .runnerBody{background:#effaf3}
+.raceAction{padding:7px 11px 9px;border-top:1px solid #eef1f5;text-align:right;font-size:9px;color:#1671d9;font-weight:850}
+.analysisNotice{margin-top:13px;background:linear-gradient(135deg,#071d35,#0f3c6d);color:#fff;border-radius:12px;padding:11px;font-size:9px;line-height:1.6;box-shadow:0 6px 15px rgba(7,29,53,.13)}
+.analysisNotice b{font-size:11px}
+.big{text-align:right;font-size:22px;font-weight:950}.big small{display:block;font-size:8px;color:var(--muted)}
+.reason{background:#f5f8fb;border-radius:10px;padding:10px;margin-top:10px;font-size:9px;line-height:1.6}
+.boats{background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:var(--shadow)}
+.boat{display:grid;grid-template-columns:31px 1.4fr .65fr;align-items:center;border-bottom:1px solid #edf0f4;min-height:51px;font-size:9px}.boat:last-child{border-bottom:0}.boat>div{padding:7px 5px}
+.no{align-self:stretch;display:grid;place-items:center;font-weight:950;font-size:14px}.n1{background:#fff}.n2{background:#222;color:#fff}.n3{background:#ef3340;color:#fff}.n4{background:#2356dc;color:#fff}.n5{background:#f2dc00}.n6{background:#149343;color:#fff}
+.player b,.cell b{display:block;font-size:10px}.player span,.cell span{color:var(--muted);font-size:8px}.cell{text-align:center}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.tool{background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 4px;text-align:center;font-size:8px;font-weight:850;color:#43566d}.tool.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.empty{grid-column:1/-1;background:#fff;border:1px solid var(--line);border-radius:13px;padding:26px 15px;text-align:center;color:var(--muted);font-size:10px;box-shadow:var(--shadow)}
+.errorbox{background:#fff4f4;border:1px solid #f0c9cc;color:#a52f37;border-radius:11px;padding:10px;font-size:9px;margin-bottom:10px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(6,1fr)}.raceGrid{grid-template-columns:1fr 1fr}}
+@media(max-width:390px){.name{font-size:14px}.card{min-height:108px}.race{gap:4px}.judge-main{grid-template-columns:.9fr 1.25fr 1fr}.status p{font-size:6.5px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div><div class="logo">BOAT <b>✓</b> CHECK</div><div class="tag">「買うレース」より、「買わないレース」を見つける。</div></div>
+    <div class="live"><i></i> OFFICIAL DATA</div>
+  </div>
+</header>
 
+<main>
+<section id="home">
+  <div class="topline">
+    <div><h2>本日の開催場</h2><div class="sub" id="todayLabel">読み込み中...</div></div>
+    <div class="data-state" id="dataState"><strong>公式データ</strong>更新確認中</div>
+  </div>
 
-/* ===== v12 approved judge guide ===== */
-.judge-guide{margin-top:14px;background:#fff;border:1px solid #dbe4ed;border-radius:12px;overflow:hidden;box-shadow:0 5px 16px rgba(8,32,59,.08);color:#0b2342}
-.judge-guide-title{background:linear-gradient(90deg,#082b55,#174f84);color:#fff;font-size:13px;font-weight:900;padding:8px 12px}
-.judge-main{display:grid;grid-template-columns:1.05fr 1.2fr 1.1fr;padding:10px 12px 8px}
-.judge-scale{padding-right:12px;border-right:1px solid #ccd8e4}
-.judge-scale h3{font-size:11px;margin:0 0 5px;font-weight:900}.judge-scale p{font-size:8px;line-height:1.55;margin:0 0 8px}
-.scale-bar{height:7px;border-radius:99px;background:linear-gradient(90deg,#0877f9 0%,#29b95b 30%,#f2d40b 58%,#ff8b00 77%,#ef222b 100%)}
-.scale-label{display:flex;justify-content:space-between;font-size:9px;margin-top:4px}
-.judge-status{padding:0 11px;border-right:1px solid #ccd8e4}.skip-col{border-right:0}
-.status{margin-bottom:8px}.status b{display:block;font-size:11px;line-height:1.25}.status small{font-size:7px}.status span{display:block;font-size:8px;line-height:1.45;margin:4px 0 0 25px}
-.status.check b{color:#0878ee}.status.caution b{color:#ef9c00}.status.skip b{color:#ee2028}
-.guide-bottom{border-top:1px solid #e0e6ed;padding:8px 8px 6px;display:flex;align-items:flex-end;justify-content:center;gap:5px;flex-wrap:wrap}
-.guide-bottom>span{display:inline-flex;align-items:center;gap:2px;padding-right:5px;border-right:1px solid #d9e1e9;font-size:7px;white-space:nowrap}
-.guide-bottom>span:last-child{border-right:0}.guide-bottom small{display:block;font-size:6px}.grade-guide{gap:4px!important}.grade-guide small{margin-right:2px}
-.gg{font-style:normal;color:#fff;border-radius:3px;padding:2px 4px;font-size:7px;font-weight:900}.gg.g3{background:#1671d9}.gg.g2{background:#79b82e}.gg.g1{background:#f28a00}.gg.sg{background:#df2937}
-.guide-note{text-align:right;color:#75859a;font-size:6px;padding:0 10px 7px}
-@media(max-width:520px){
- .judge-main{grid-template-columns:1fr 1.22fr 1.05fr;padding:9px 8px 7px}
- .judge-scale{padding-right:8px}.judge-status{padding:0 7px}
- .status b{font-size:9px}.status span{font-size:7px;margin-left:17px}
- .guide-bottom{gap:4px;padding-left:5px;padding-right:5px}
- .guide-bottom>span{font-size:6px;padding-right:3px}
-}
+  <div class="homeTabs">
+    <div class="homeTab active"><span class="ico">🚩</span>開催一覧</div>
+    <div class="homeTab"><span class="ico">⏱️</span>締切順</div>
+    <div class="homeTab"><span class="ico">⭐</span>お気に入り</div>
+    <div class="homeTab"><span class="ico">▶️</span>レース映像</div>
+  </div>
 
+  <div id="loadError" class="errorbox hidden"></div>
+  <div class="grid" id="venues"></div>
 
-/* ===== v13 approved guide: reference-faithful ===== */
-.judge-guide{
-  margin-top:14px;
-  background:#fff;
-  border:1px solid #d8e1ea;
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 6px 18px rgba(8,32,59,.09);
-  color:#10223d;
-}
-.judge-guide-title{
-  background:linear-gradient(90deg,#092d57,#174f84);
-  color:#fff;
-  font-size:15px;
-  line-height:1;
-  font-weight:900;
-  padding:11px 14px;
-  letter-spacing:.02em;
-}
-.judge-guide-main{
-  display:grid;
-  grid-template-columns:1.02fr 1.35fr 1.2fr;
-  padding:14px 15px 12px;
-}
-.judge-col{min-width:0}
-.judge-left{
-  padding-right:14px;
-  border-right:1px solid #cad6e2;
-}
-.judge-middle{
-  padding:0 17px;
-  border-right:1px solid #cad6e2;
-}
-.judge-right{padding-left:17px}
-.jg-heading{
-  font-size:14px;
-  font-weight:900;
-  margin-bottom:7px;
-}
-.jg-copy{
-  font-size:11px;
-  line-height:1.55;
-  font-weight:650;
-}
-.jg-scale{
-  height:8px;
-  margin:13px 0 5px;
-  border-radius:999px;
-  background:linear-gradient(90deg,#0877f9 0%,#16b962 27%,#f0d80c 53%,#ff8a00 74%,#ee2028 100%);
-}
-.jg-scale-label{
-  display:flex;
-  justify-content:space-between;
-  font-size:11px;
-}
-.jg-status{margin-bottom:12px}
-.jg-status:last-child{margin-bottom:0}
-.jg-status-head{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  line-height:1;
-}
-.jg-status-head strong{
-  font-size:14px;
-  font-weight:950;
-}
-.jg-status-head small{
-  font-size:9px;
-  font-weight:800;
-}
-.jg-symbol{
-  width:29px;
-  height:29px;
-  flex:0 0 29px;
-  display:grid;
-  place-items:center;
-  font-size:22px;
-  font-weight:950;
-}
-.jg-status.check .jg-symbol,
-.jg-status.check strong,
-.jg-status.check small{color:#0878ee}
-.jg-status.caution .jg-symbol{
-  background:#efa400;
-  color:#fff;
-  clip-path:polygon(50% 0,100% 100%,0 100%);
-  padding-top:8px;
-  border-radius:2px;
-  font-size:16px;
-}
-.jg-status.caution strong,
-.jg-status.caution small{color:#e89500}
-.jg-status.skip .jg-symbol{
-  border-radius:50%;
-  background:#ef2028;
-  color:#fff;
-}
-.jg-status.skip strong,
-.jg-status.skip small{color:#ef2028}
-.jg-status-copy{
-  margin-left:36px;
-  margin-top:5px;
-  font-size:11px;
-  line-height:1.5;
-  font-weight:650;
-}
-.judge-guide-legend{
-  border-top:1px solid #dfe6ed;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:0;
-  padding:9px 12px 10px;
-}
-.jg-legend-item{
-  display:flex;
-  align-items:center;
-  gap:5px;
-  padding:0 9px;
-  border-right:1px solid #d7e0e8;
-  min-width:0;
-}
-.jg-legend-item:first-child{padding-left:0}
-.jg-legend-item b{
-  display:block;
-  font-size:9px;
-  white-space:nowrap;
-}
-.jg-legend-item small{
-  display:block;
-  font-size:7px;
-  white-space:nowrap;
-}
-.jg-round{
-  width:25px;
-  height:25px;
-  flex:0 0 25px;
-  display:grid;
-  place-items:center;
-  font-size:14px;
-  font-weight:950;
-}
-.jg-round.sun{color:#ffae00}
-.jg-round.summer{color:#ef2028}
-.jg-round.night{color:#ffc21a;font-size:22px}
-.jg-round.midnight{color:#f7b800;font-size:21px}
-.jg-round.rookie{font-size:18px}
-.jg-round.women{color:#ec4b86;font-size:22px}
-.jg-grade{
-  padding-left:11px;
-  min-width:115px;
-}
-.jg-grade>small{
-  display:block;
-  font-size:8px;
-  margin-bottom:4px;
-  font-weight:800;
-}
-.jg-grade>div{
-  display:flex;
-  gap:4px;
-}
-.jg-grade-pill{
-  font-style:normal;
-  color:#fff;
-  font-size:8px;
-  font-weight:950;
-  border-radius:4px;
-  padding:3px 6px;
-}
-.jg-grade-pill.g3{background:#1671d9}
-.jg-grade-pill.g2{background:#79b82e}
-.jg-grade-pill.g1{background:#f28a00}
-.jg-grade-pill.sg{background:#df2937}
-
-@media(max-width:520px){
-  .judge-guide-title{font-size:13px;padding:10px 12px}
-  .judge-guide-main{
-    grid-template-columns:.95fr 1.25fr 1.05fr;
-    padding:11px 9px 9px;
-  }
-  .judge-left{padding-right:8px}
-  .judge-middle{padding:0 9px}
-  .judge-right{padding-left:9px}
-  .jg-heading{font-size:11px;margin-bottom:5px}
-  .jg-copy{font-size:8px}
-  .jg-scale{height:6px;margin:9px 0 4px}
-  .jg-scale-label{font-size:9px}
-  .jg-status{margin-bottom:8px}
-  .jg-status-head{gap:4px}
-  .jg-status-head strong{font-size:10px}
-  .jg-status-head small{font-size:6px}
-  .jg-symbol{width:22px;height:22px;flex-basis:22px;font-size:17px}
-  .jg-status.caution .jg-symbol{font-size:12px;padding-top:6px}
-  .jg-status-copy{margin-left:26px;margin-top:3px;font-size:7.5px;line-height:1.45}
-  .judge-guide-legend{
-    padding:8px 6px 9px;
-    gap:0;
-    overflow-x:auto;
-    justify-content:flex-start;
-  }
-  .jg-legend-item{padding:0 7px;gap:3px}
-  .jg-legend-item b{font-size:7px}
-  .jg-legend-item small{font-size:5.5px}
-  .jg-round{width:21px;height:21px;flex-basis:21px;font-size:12px}
-  .jg-round.night,.jg-round.midnight,.jg-round.women{font-size:18px}
-  .jg-grade{padding-left:8px;min-width:105px}
-  .jg-grade>small{font-size:6px}
-  .jg-grade-pill{font-size:7px;padding:3px 5px}
-}
-
-
-/* v14: guide must remain white like the approved reference image */
-.judge-guide .jg-status.check,
-.judge-guide .jg-status.caution,
-.judge-guide .jg-status.skip{background:transparent!important;color:#10223d;border-radius:0;padding:0}
-.judge-guide{margin-top:14px}
-
-/* ===== v15: 下部凡例の重なり修正 ===== */
-.judge-guide-legend{
-  display:grid !important;
-  grid-template-columns:repeat(6,minmax(0,1fr)) 1.35fr;
-  align-items:stretch !important;
-  gap:0 !important;
-  padding:0 !important;
-  overflow:visible !important;
-}
-.jg-legend-item{
-  min-width:0 !important;
-  padding:9px 5px !important;
-  border-right:1px solid #d7e0e8 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:5px !important;
-}
-.jg-legend-item b{
-  display:block !important;
-  font-size:8px !important;
-  line-height:1.25 !important;
-  white-space:normal !important;
-}
-.jg-legend-item small{
-  display:block !important;
-  font-size:6px !important;
-  line-height:1.2 !important;
-  white-space:normal !important;
-}
-.jg-round{
-  width:23px !important;
-  height:23px !important;
-  flex:0 0 23px !important;
-  font-size:14px !important;
-}
-.jg-grade{
-  min-width:0 !important;
-  padding:7px 6px !important;
-  display:flex !important;
-  flex-direction:column !important;
-  justify-content:center !important;
-}
-.jg-grade>small{
-  font-size:7px !important;
-  margin-bottom:4px !important;
-  white-space:nowrap !important;
-}
-.jg-grade>div{
-  display:flex !important;
-  gap:3px !important;
-  flex-wrap:nowrap !important;
-}
-.jg-grade-pill{
-  font-size:7px !important;
-  padding:3px 5px !important;
-}
-
-@media(max-width:520px){
-  .judge-guide-legend{
-    grid-template-columns:repeat(3,1fr) !important;
-  }
-  .jg-legend-item{
-    min-height:48px !important;
-    padding:7px 4px !important;
-    border-bottom:1px solid #e3e9ef !important;
-  }
-  .jg-grade{
-    grid-column:1 / -1 !important;
-    min-height:48px !important;
-    flex-direction:row !important;
-    align-items:center !important;
-    justify-content:center !important;
-    gap:8px !important;
-    border-top:0 !important;
-  }
-  .jg-grade>small{
-    margin:0 !important;
-    font-size:7px !important;
-  }
-  .jg-round{
-    width:22px !important;
-    height:22px !important;
-    flex-basis:22px !important;
-    font-size:13px !important;
-  }
-  .jg-legend-item b{font-size:7px !important}
-  .jg-legend-item small{font-size:5.5px !important}
-}
-
-
-/* ===== v16: 見送り度・判定のみのコンパクト版 ===== */
-.judge-guide{margin-bottom:0}
-.judge-guide-main{padding-bottom:12px}
-@media(max-width:520px){
-  .judge-guide-main{padding-bottom:10px}
-}
-
-</style></head><body>
-<header><div class="logo">BOAT <b>✓</b> CHECK</div><div class="tag">「買うレース」より、「買わないレース」を見つける。</div></header><main>
-<section id="home"><h2>本日の開催場</h2><div class="sub" id="today"></div>
-<div class="homeTabs">
-  <div class="homeTab active"><span class="ico">🚩</span>開催一覧</div>
-  <div class="homeTab"><span class="ico">⏱️</span>締切順</div>
-  <div class="homeTab"><span class="ico">⭐</span>お気に入り</div>
-  <div class="homeTab"><span class="ico">▶️</span>レース映像</div>
-</div>
-<div class="grid" id="venues"></div>
-<div class="judge-guide">
-  <div class="judge-guide-title">見送り度・判定の見方</div>
-
-  <div class="judge-guide-main">
-    <div class="judge-col judge-left">
-      <div class="jg-heading">見送り度</div>
-      <div class="jg-copy">数値が高いほど<br>見送るべきレースです</div>
-      <div class="jg-scale"></div>
-      <div class="jg-scale-label"><b>0%</b><b>100%</b></div>
-    </div>
-
-    <div class="judge-col judge-middle">
-      <div class="jg-status check">
-        <div class="jg-status-head"><span class="jg-symbol">✓</span><strong>CHECK</strong><small>（チェック）</small></div>
-        <div class="jg-status-copy">見送り度 0〜40%<br>買い目検討OKのレース</div>
+  <div class="judge-guide">
+    <div class="judge-title">見送り度・判定の見方</div>
+    <div class="judge-main">
+      <div class="jc">
+        <div class="jh">見送り度</div>
+        <div class="jp">数値が高いほど<br>見送るべきレースです</div>
+        <div class="scale"></div><div class="scale-label"><b>0%</b><b>100%</b></div>
       </div>
-      <div class="jg-status caution">
-        <div class="jg-status-head"><span class="jg-symbol">!</span><strong>CAUTION</strong><small>（カウション）</small></div>
-        <div class="jg-status-copy">見送り度 41〜70%<br>慎重に判断したいレース</div>
+      <div class="jc">
+        <div class="status check"><div class="status-head">✓ CHECK <small>0〜40%</small></div><p>買い目検討OKのレース</p></div>
+        <div class="status caution"><div class="status-head">▲ CAUTION <small>41〜70%</small></div><p>慎重に判断したいレース</p></div>
       </div>
-    </div>
-
-    <div class="judge-col judge-right">
-      <div class="jg-status skip">
-        <div class="jg-status-head"><span class="jg-symbol">×</span><strong>SKIP</strong><small>（スキップ）</small></div>
-        <div class="jg-status-copy">見送り度 71〜100%<br>見送ることを推奨するレース</div>
+      <div class="jc">
+        <div class="status skip"><div class="status-head">× SKIP <small>71〜100%</small></div><p>見送ることを推奨するレース</p></div>
       </div>
     </div>
   </div>
-
-  </div>
-
 </section>
-<section id="venue" class="hidden"><button class="back" onclick="home()">← 24場一覧</button><div class="hero"><div class="heroTop"><div><div class="venueName" id="vn"></div><div class="sub" id="vi"></div></div><div id="vg"></div></div><div class="event" id="ev"></div><div class="tabs" id="tabs"></div></div><div class="section"><h3>レース一覧</h3><span>タップして詳細分析</span></div><div class="raceGrid" id="races"></div><div class="analysis"><b>BOAT ✓ CHECK</b><br>買い目を並べるのではなく、不確定要素を整理して「見送る価値」を可視化。見送り度と理由から先に確認できる設計です。</div></section>
-<section id="detail" class="hidden"><button class="back" onclick="venueBack()">← レース一覧</button><div class="hero"><div class="heroTop"><div><div class="sub" id="dv"></div><h2 id="dr"></h2><div class="sub" id="dt"></div></div><div class="big" id="br"></div></div><div class="reason" id="reason"></div></div><div class="section"><h3>出走データ</h3><span>判断に必要な項目を優先</span></div><div class="boats" id="boats"></div><div class="tools"><div class="tool primary">✓ CHECK分析</div><div class="tool">今節成績</div><div class="tool">モーター比較</div><div class="tool">展示・ST</div><div class="tool">枠別データ</div><div class="tool">直前情報</div></div></section>
-</main><script>
 
-/* ===== v17 REAL DATA READY LAYER =====
-   画面デザインはv16のまま。
-   将来は /data/today.json を生成するだけで、開催場→12R→6艇データへ差し替え可能。
-*/
-const BOATCHECK_SCHEMA_VERSION="17.0";
-const BOATCHECK_DATA_URL="./data/today.json";
+<section id="venue" class="hidden">
+  <button class="back" onclick="showHome()">← 24場一覧</button>
+  <div class="hero">
+    <div class="heroTop">
+      <div><div class="venueName" id="venueName"></div><div class="sub" id="venueInfo"></div></div>
+      <div id="venueGrade"></div>
+    </div>
+    <div class="event" id="eventTitle"></div>
+    <div class="tabs" id="dayTabs"></div>
+  </div>
+  <div class="section"><h3>レース一覧</h3><span>公式出走データ</span></div>
+  <div class="raceGrid" id="races"></div>
+  <div class="analysisNotice"><b>BOAT ✓ CHECK</b><br>現在は公式の開催・締切・出走選手データを表示しています。見送り度は、勝率・ST・モーター・展示・気象など判断材料が揃った段階で算出します。</div>
+</section>
 
-const BOATCHECK_FIELD_SCHEMA={
-  meeting:["venueCode","venueName","date","title","grade","day","dayLabel","isFinalDay","status","nextRace","nextDeadline","raceType"],
-  race:["raceNo","raceName","distance","deadline","status","skipScore","judgement","reasons","weather","boats"],
-  boat:["lane","racerId","racerName","class","branch","birthplace","age","weight","fCount","lCount","avgST",
-        "nationalWinRate","national2Rate","national3Rate","localWinRate","local2Rate","local3Rate",
-        "motorNo","motor2Rate","motor3Rate","boatNo","boat2Rate","boat3Rate","seriesResults",
-        "exhibitionTime","exhibitionST","exhibitionCourse","tilt","adjustWeight","parts","notes"],
-  weather:["weather","temperature","waterTemperature","windDirection","windSpeed","waveHeight"],
-  result:["finishOrder","actualCourse","actualST","winningMove","payouts","trifectaOdds"],
-  analytics:["lane1Trust","attackPressure","entryRisk","stVariance","motorGap","exhibitionGap","weatherRisk","upsetRisk"]
-};
+<section id="detail" class="hidden">
+  <button class="back" onclick="backToVenue()">← レース一覧</button>
+  <div class="hero">
+    <div class="heroTop">
+      <div><div class="sub" id="detailVenue"></div><h2 id="detailRace"></h2><div class="sub" id="detailTime"></div></div>
+      <div class="big" id="detailJudge"><small>見送り度</small>分析準備中</div>
+    </div>
+    <div class="reason" id="detailReason"><b>✓ BOAT CHECK 分析</b><br>現在取得済みの基本データを表示しています。見送り度は未算出です。</div>
+  </div>
+  <div class="section"><h3>出走データ</h3><span>BOAT RACE公式データ</span></div>
+  <div class="boats" id="boats"></div>
+  <div class="tools">
+    <div class="tool primary">✓ CHECK分析</div><div class="tool">今節成績</div><div class="tool">モーター比較</div>
+    <div class="tool">展示・ST</div><div class="tool">枠別データ</div><div class="tool">直前情報</div>
+  </div>
+</section>
+</main>
 
-window.BOATCHECK_DATA={
-  mode:"demo",
-  updatedAt:null,
-  source:"demo",
-  meetings:[],
-  schema:BOATCHECK_FIELD_SCHEMA
-};
-
-async function loadBoatCheckRealData(){
-  try{
-    const res=await fetch(BOATCHECK_DATA_URL,{cache:"no-store"});
-    if(!res.ok) throw new Error("data file not found");
-    const payload=await res.json();
-    if(!payload || !Array.isArray(payload.meetings)) throw new Error("invalid data");
-    window.BOATCHECK_DATA={...window.BOATCHECK_DATA,...payload,mode:"real"};
-    applyRealVenueSummary(payload.meetings);
-    console.info("BOAT CHECK: real data loaded",payload.updatedAt||"");
-  }catch(e){
-    console.info("BOAT CHECK: demo fallback");
-  }
-}
-
-function applyRealVenueSummary(meetings){
-  if(!Array.isArray(meetings)||!meetings.length) return;
-  meetings.forEach(m=>{
-    const i=V.findIndex(v=>v[0]===m.venueName);
-    if(i<0) return;
-    if(m.status==="finished" || m.status==="closed"){
-      V[i]=[m.venueName,"終了"];
-      return;
-    }
-    V[i]=[
-      m.venueName,
-      m.grade||"一般",
-      m.dayLabel||"",
-      m.nextRace ? `${m.nextRace}R` : "",
-      m.nextDeadline||"",
-      m.raceType||"",
-      m.title||""
-    ];
-  });
-  if(typeof renderVenues==="function") renderVenues();
-}
-
-function getRealMeeting(venueName){
-  return (window.BOATCHECK_DATA.meetings||[]).find(m=>m.venueName===venueName)||null;
-}
-function getRealRace(venueName,raceNo){
-  const m=getRealMeeting(venueName);
-  return m && Array.isArray(m.races) ? m.races.find(r=>Number(r.raceNo)===Number(raceNo))||null : null;
-}
-
-const V=[["桐生","終了"],["戸田","一般","2日目","5R","12:44","☀️","戸田プリムローズ"],["江戸川","一般","2日目","4R","12:35","🌙","江戸川ボートレース杯"],["平和島","女子","最終日","2R","12:35","🌙❤","ヴィーナスシリーズ"],["多摩川","終了"],["浜名湖","G3","2日目","3R","12:20","❤","オールレディース"],["蒲郡","一般","2日目","1R","15:17","🌙🔴","蒲郡市長杯"],["常滑","終了"],["津","一般","3日目","5R","12:24","☀️","津インクル杯"],["三国","終了"],["びわこ","G2","4日目","5R","12:41","🌙","モーターボート大賞"],["住之江","G3","2日目","1R","15:25","🌙⭐","企業杯"],["尼崎","一般","4日目","5R","12:30","☀️","尼崎センプルカップ"],["鳴門","一般","3日目","9R","12:28","☀️","鳴門市長杯"],["丸亀","終了"],["児島","終了"],["宮島","終了"],["徳山","一般","2日目","9R","12:31","☀️🌱","徳山クラウン争奪戦"],["下関","一般","2日目","1R","15:21","🌙","海響ドリームナイター"],["若松","一般","最終日","1R","15:20","🌙","若松夜王シリーズ"],["芦屋","一般","最終日","9R","12:38","☀️","芦屋モーニングカップ"],["福岡","女子","3日目","1R","11:48","❤","三都市対抗戦 福岡観光コンベンションビューロー杯"],["唐津","終了"],["大村","SG","3日目","1R","15:18","🌙","ボートレースメモリアル"]];
-const $=x=>document.getElementById(x),gc=g=>g==="G3"?"g3":g==="G2"?"g2":g==="G1"?"g1":g==="SG"?"sg":g==="女子"?"women":"normal";$("today").textContent=new Intl.DateTimeFormat("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date());let cur=0;
-
-function renderVenueIcons(raw){
-  if(!raw)return "";
-  let out="";
-  if(raw.includes("☀️"))out+='<span class="cardIcon morning">☀</span>';
-  if(raw.includes("🔴"))out+='<span class="cardIcon summer">☀</span>';
-  if(raw.includes("🌙"))out+='<span class="cardIcon night">🌙</span>';
-  if(raw.includes("⭐"))out+='<span class="cardIcon midnight">★</span>';
-  if(raw.includes("🌱"))out+='<span class="cardIcon rookie">🌱</span>';
-  if(raw.includes("❤")||raw.includes("♥"))out+='<span class="cardIcon women">♥</span>';
-  return out;
-}
-V.forEach((v,i)=>{let c=document.createElement("div");c.className="card "+(v[1]==="終了"?"end":"");if(v[1]==="終了")c.innerHTML=`<div class=name>${v[0]}</div><div class=ended><b>本日終了</b></div>`;else{c.innerHTML=`<div class=icons>${renderVenueIcons(v[5])}</div><div class=name>${v[0]}</div><div class=meta><span class="grade ${gc(v[1])}">${v[1]==="女子"?"女子戦":v[1]}</span><span>${v[2]}</span></div><div class=race><b>${v[3]}</b><span>締切 <b>${v[4]}</b></span></div>`;c.onclick=()=>openV(i)}$("venues").appendChild(c)});
-const P=[
-["遠藤エミ","A1",4502],["浜田亜理沙","A1",4546],["林恵祐","B1",3928],["繁野谷圭介","A2",3915],
-["作間章","A1",3966],["佐藤大騎","B1",4651],["杉村賢也","B1",4792],["甲斐寛大","B2",5426],
-["山田亮太","A2",4644],["松尾拓","A1",4808],["中村桃佳","A1",4823],["大山千広","A1",4885],
-["石渡鉄兵","A1",3716],["西山貴浩","A1",4371],["篠崎元志","A1",4350],["峰竜太","A1",4320],
-["守屋美穂","A1",4482],["平高奈菜","A1",4450],["瓜生正義","A1",3783],["毒島誠","A1",4238],
-["池田浩二","A1",3941],["寺田千恵","A1",3435],["深谷知博","A1",4524],["宮地元輝","A1",4445]
+<script>
+const DATA_URL="./data/today.json";
+const VENUES=[
+["01","桐生"],["02","戸田"],["03","江戸川"],["04","平和島"],["05","多摩川"],["06","浜名湖"],
+["07","蒲郡"],["08","常滑"],["09","津"],["10","三国"],["11","びわこ"],["12","住之江"],
+["13","尼崎"],["14","鳴門"],["15","丸亀"],["16","児島"],["17","宮島"],["18","徳山"],
+["19","下関"],["20","若松"],["21","芦屋"],["22","福岡"],["23","唐津"],["24","大村"]
 ];
-function racePlayers(r,venueIndex){
-  const start=(r*3+venueIndex*5)%P.length;
-  return Array.from({length:6},(_,k)=>P[(start+k)%P.length]);
-}
-function openV(i){
-  cur=i;let v=V[i];
-  $("home").classList.add("hidden");$("detail").classList.add("hidden");$("venue").classList.remove("hidden");
-  $("vn").textContent=v[0];
-  $("vi").textContent=`${v[2]} ・ ${v[5]||""}　次回 ${v[3]} / ${v[4]}`;
-  $("vg").innerHTML=`<span class="grade ${gc(v[1])}">${v[1]==="女子"?"女子戦":v[1]}</span>`;
-  $("ev").textContent=v[6];
-  $("tabs").innerHTML=["09/02 初日","09/03 2日目","09/04 3日目","09/05 4日目","09/06 5日目","09/07 最終日"].map((x,n)=>{let p=x.split(" ");return `<div class="tab ${n===2?"active":""}"><b>${p[0]}</b>${p[1]}</div>`}).join("");
-  let h="";
-  for(let n=1;n<=12;n++){
-    let rate=Math.min((n*19+i*11)%87+8,96);
-    let j=rate>=71?"SKIP":rate>=41?"CAUTION":"CHECK";
-    let cl=j.toLowerCase(),col=j==="SKIP"?"var(--r)":j==="CAUTION"?"var(--y)":"var(--g)";
-    let time=`${10+Math.floor(n/2)}:${String((n*13+i*3)%60).padStart(2,"0")}`;
-    let ps=racePlayers(n,i);
-    let runners=ps.map((p,k)=>`<div class="runner r${k+1}"><div class="runnerHead">${k+1}号艇</div><div class="runnerBody"><div class="runnerName">${p[0]}</div><div class="runnerClass">${p[1]}</div><div class="runnerReg">${p[2]}</div></div></div>`).join("");
-    h+=`<div class="raceCard" onclick="openR(${n},${rate},'${j}','${time}')">
-      <div class="raceSummary">
-        <div class="rno">${n}R</div>
-        <div class="deadlineInline">締切 <b>${time}</b></div>
-        <div class="summaryRate"><div class="summaryRateTop">見送り度 <strong>${rate}%</strong></div><div class="summaryMeter"><i style="width:${rate}%;background:${col}"></i></div></div>
-        <span class="badge ${cl}">${j}</span>
-      </div>
-      <div class="runners">${runners}</div>
-      <div class="raceAction">詳細分析を見る ›</div>
-    </div>`;
-  }
-  $("races").innerHTML=h;scrollTo(0,0)
-}
-function openR(n,rate,j,time){let v=V[cur];$("venue").classList.add("hidden");$("detail").classList.remove("hidden");$("dv").textContent=`${v[0]} ${v[2]} ・ ${v[1]==="女子"?"女子戦":v[1]}`;$("dr").textContent=`${n}R 予選`;$("dt").textContent=`締切予定 ${time}`;let col=j==="SKIP"?"var(--r)":j==="CAUTION"?"var(--y)":"var(--g)";$("br").innerHTML=`<small>見送り度</small><span style="color:${col}">${rate}%</span><small style="color:${col}">${j}</small>`;let rs=rate>=71?["軸艇の信頼度が低め","攻め候補が複数","機力差が小さく決め手不足"]:rate>=41?["一部に不安要素あり","展示・ST確認後の判断を推奨","無理に買う必要はない条件"]:["軸候補の条件が比較的安定","展開の不確定要素が少なめ","直前情報で最終判断"];$("reason").innerHTML="<b>✓ BOAT CHECK 分析</b><br>"+rs.map(x=>"・"+x).join("<br>");let names=racePlayers(n,cur),cls=["B1","A2","A1","B1","B1","B2"],h="";for(let i=0;i<6;i++){h+=`<div class=boat><div class="no n${i+1}">${i+1}</div><div class=player><b>${names[i]}</b><span>${3900+i*173} / ${cls[i]}</span></div><div class=cell><b>${(5.1+((i+n)%18)/10).toFixed(2)}</b><span>勝率</span></div><div class=cell><b>${32+((n*7+i*11)%34)}%</b><span>モーター</span></div><div class=cell><b>${(0.11+((n+i)%9)/100).toFixed(2)}</b><span>平均ST</span></div></div>`}$("boats").innerHTML=h;scrollTo(0,0)}
-function home(){$("venue").classList.add("hidden");$("home").classList.remove("hidden");scrollTo(0,0)}function venueBack(){$("detail").classList.add("hidden");$("venue").classList.remove("hidden");scrollTo(0,0)}
+const $=id=>document.getElementById(id);
+let state={meetings:[],updatedAt:null,dateJST:null,currentMeeting:null,currentRace:null};
 
-loadBoatCheckRealData();
-</script></body></html>
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function gradeClass(g){return g==="SG"?"sg":g==="G1"?"g1":g==="G2"?"g2":g==="G3"?"g3":g==="女子"?"women":"general"}
+function displayGrade(m){return m.grade||m.raceType||"開催"}
+function jstNow(){
+  const parts=new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+  const o=Object.fromEntries(parts.map(x=>[x.type,x.value]));return {date:`${o.year}${o.month}${o.day}`,time:`${o.hour}:${o.minute}`}
+}
+function raceIsPast(deadline, nowTime){return deadline && deadline<=nowTime}
+function getNextRace(m){
+  const now=jstNow();
+  if(m.date!==now.date)return m.races?.[0]||null;
+  return (m.races||[]).find(r=>!raceIsPast(r.deadline,now.time))||null;
+}
+function formatDataDate(s){
+  if(!s||s.length!==8)return "";
+  const d=new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T12:00:00+09:00`);
+  return new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(d);
+}
+function formatUpdated(s){
+  if(!s)return "更新時刻不明";
+  try{return new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit"}).format(new Date(s))+" 更新"}catch{return "更新済み"}
+}
+function renderLoading(){
+  $("venues").innerHTML=VENUES.map(v=>`<div class="card"><div class="name skeleton">${v[1]}</div><div class="meta skeleton">読込中</div><div class="race skeleton">----</div></div>`).join("");
+}
+function renderVenues(){
+  const map=new Map(state.meetings.map(m=>[m.venueCode,m]));
+  const now=jstNow();
+  $("venues").innerHTML=VENUES.map(([code,name])=>{
+    const m=map.get(code);
+    if(!m){
+      return `<div class="card off"><div class="name">${name}</div><div class="offtext"><b>本日非開催</b></div></div>`;
+    }
+    const next=getNextRace(m);
+    const allDone=m.date===now.date && !next;
+    if(allDone){
+      return `<div class="card off"><div class="name">${name}</div><div class="meta"><span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span><span>${esc(m.day||"")}</span></div><div class="offtext"><b>本日終了</b></div></div>`;
+    }
+    const finished=(m.races||[]).filter(r=>m.date===now.date&&raceIsPast(r.deadline,now.time)).length;
+    const pct=Math.round(finished/Math.max(1,(m.races||[]).length)*100);
+    return `<div class="card" data-code="${code}" onclick="openVenue('${code}')">
+      <div class="name">${name}</div>
+      <div class="meta"><span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span><span>${esc(m.day||"")}</span></div>
+      <div class="race"><b>${next?next.raceNo+"R":"-"}</b><span>締切 <b>${next?esc(next.deadline):"-"}</b></span></div>
+      <div class="progress"><i style="width:${pct}%"></i></div>
+    </div>`;
+  }).join("");
+}
+function openVenue(code){
+  const m=state.meetings.find(x=>x.venueCode===code);if(!m)return;
+  state.currentMeeting=m;
+  $("home").classList.add("hidden");$("detail").classList.add("hidden");$("venue").classList.remove("hidden");
+  $("venueName").textContent=m.venueName;
+  const next=getNextRace(m);
+  $("venueInfo").textContent=`${m.day||""}${next?` ・ 次回 ${next.raceNo}R / ${next.deadline}`:" ・ 本日終了"}`;
+  $("venueGrade").innerHTML=`<span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span>`;
+  $("eventTitle").textContent=m.title||"";
+  const mm=m.date.slice(4,6),dd=m.date.slice(6,8);
+  $("dayTabs").innerHTML=`<div class="tab active"><b>${mm}/${dd}</b>${esc(m.day||"開催日")}</div>`;
+  renderRaces(m);
+  scrollTo({top:0,behavior:"instant"});
+}
+function renderRaces(m){
+  const now=jstNow();
+  $("races").innerHTML=(m.races||[]).map(r=>{
+    const past=m.date===now.date&&raceIsPast(r.deadline,now.time);
+    const boats=(r.boats||[]).map(b=>`<div class="runner r${b.lane}">
+      <div class="runnerHead">${b.lane}号艇</div>
+      <div class="runnerBody"><div class="runnerName">${esc(b.racerName||"-")}</div><div class="runnerClass">${esc(b.class||"-")}</div></div>
+    </div>`).join("");
+    return `<div class="raceCard" onclick="openRace(${Number(r.raceNo)})">
+      <div class="raceSummary">
+        <div class="rno">${r.raceNo}R</div>
+        <div class="deadlineInline">締切 <b>${esc(r.deadline||"-")}</b></div>
+        <div class="summaryState"><b>${past?"締切済":"受付予定"}</b><br>${past?"結果データ拡張予定":"公式出走表"}</div>
+        <span class="badge pending">分析準備中</span>
+      </div>
+      <div class="runners">${boats}</div>
+      <div class="raceAction">レース詳細を見る ›</div>
+    </div>`;
+  }).join("")||`<div class="empty">レースデータがありません。</div>`;
+}
+function openRace(no){
+  const m=state.currentMeeting;if(!m)return;
+  const r=(m.races||[]).find(x=>Number(x.raceNo)===Number(no));if(!r)return;
+  state.currentRace=r;
+  $("venue").classList.add("hidden");$("detail").classList.remove("hidden");
+  $("detailVenue").textContent=`${m.venueName} ${m.day||""} ・ ${displayGrade(m)}`;
+  $("detailRace").textContent=`${r.raceNo}R`;
+  $("detailTime").textContent=`締切予定 ${r.deadline||"-"}`;
+  $("boats").innerHTML=(r.boats||[]).map(b=>`<div class="boat">
+    <div class="no n${b.lane}">${b.lane}</div>
+    <div class="player"><b>${esc(b.racerName||"-")}</b><span>${esc(b.class||"-")} / ${b.racerId?esc(b.racerId):"選手登録番号 取得準備中"}</span></div>
+    <div class="cell"><b>${esc(b.class||"-")}</b><span>級別</span></div>
+  </div>`).join("");
+  scrollTo({top:0,behavior:"instant"});
+}
+function showHome(){$("venue").classList.add("hidden");$("detail").classList.add("hidden");$("home").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
+function backToVenue(){$("detail").classList.add("hidden");$("venue").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
+
+async function loadData(){
+  renderLoading();
+  try{
+    const res=await fetch(`${DATA_URL}?v=${Date.now()}`,{cache:"no-store"});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const d=await res.json();
+    if(!Array.isArray(d.meetings))throw new Error("meetings invalid");
+    state.meetings=d.meetings;state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
+    $("todayLabel").textContent=formatDataDate(d.dateJST);
+    $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
+    renderVenues();
+  }catch(e){
+    $("todayLabel").textContent=formatDataDate(jstNow().date);
+    $("dataState").innerHTML="<strong>データ取得エラー</strong>再読み込みしてください";
+    $("loadError").classList.remove("hidden");
+    $("loadError").textContent="公式データを読み込めませんでした。ページを再読み込みしてください。";
+    $("venues").innerHTML=VENUES.map(v=>`<div class="card off"><div class="name">${v[1]}</div><div class="offtext"><b>確認中</b></div></div>`).join("");
+  }
+}
+loadData();
+setInterval(()=>{if(state.meetings.length){renderVenues()}},30000);
+</script>
+</body>
+</html>
