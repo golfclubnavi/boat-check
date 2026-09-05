@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T09:06:56+09:00",
+  "updatedAt": "2026-09-05T09:34:22+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -2742,7 +2742,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 平見 真彦",
+              "racerName": "発売終了 平見 真彦",
               "class": "A2"
             },
             {
@@ -4916,7 +4916,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 稗田 聖也",
+              "racerName": "発売終了 稗田 聖也",
               "class": "A1"
             },
             {
