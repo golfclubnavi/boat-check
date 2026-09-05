@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T18:49:16+09:00",
+  "updatedAt": "2026-09-05T19:05:12+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -306,7 +306,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 橋本 久和",
+              "racerName": "発売終了 橋本 久和",
               "class": "B1"
             },
             {
@@ -3842,7 +3842,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 南 佑典",
+              "racerName": "発売終了 南 佑典",
               "class": "A2"
             },
             {
