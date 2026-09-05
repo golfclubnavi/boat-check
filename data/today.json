@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T18:05:15+09:00",
+  "updatedAt": "2026-09-05T18:23:37+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -2002,7 +2002,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 三宅 潤",
+              "racerName": "発売終了 三宅 潤",
               "class": "A2"
             },
             {
@@ -5538,7 +5538,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大場 敏",
+              "racerName": "発売終了 大場 敏",
               "class": "A2"
             },
             {
