@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T18:23:37+09:00",
+  "updatedAt": "2026-09-05T18:35:58+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -270,7 +270,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 伊藤 将吉",
+              "racerName": "発売終了 伊藤 将吉",
               "class": "A2"
             },
             {
@@ -3806,7 +3806,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 乙藤 智史",
+              "racerName": "発売終了 乙藤 智史",
               "class": "A2"
             },
             {
