@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "20.0",
-  "updatedAt": "2026-09-06T05:05:11+09:00",
+  "schemaVersion": "26.0",
+  "updatedAt": "2026-09-06T05:12:29+09:00",
   "dateJST": "20260906",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -8,7 +8,8 @@
       "venueCode": "01",
       "venueName": "桐生",
       "date": "20260906",
-      "title": "",
+      "title": "バスケで群馬を熱くする群馬クレインサンダーズカップ",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -450,7 +451,8 @@
       "venueCode": "02",
       "venueName": "戸田",
       "date": "20260906",
-      "title": "",
+      "title": "サッポロビールカップ",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -892,7 +894,8 @@
       "venueCode": "03",
       "venueName": "江戸川",
       "date": "20260906",
-      "title": "",
+      "title": "月兎ソースカップ",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -1334,7 +1337,8 @@
       "venueCode": "04",
       "venueName": "平和島",
       "date": "20260906",
-      "title": "",
+      "title": "第２３回サントリーカップ ほぼ女子戦",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -1776,7 +1780,8 @@
       "venueCode": "07",
       "venueName": "蒲郡",
       "date": "20260906",
-      "title": "",
+      "title": "一般社団法人蒲郡市観光協会長杯",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -2218,7 +2223,8 @@
       "venueCode": "09",
       "venueName": "津",
       "date": "20260906",
-      "title": "",
+      "title": "開設７４周年記念 ツッキー王座決定戦",
+      "grade": "G1",
       "day": "初日",
       "status": "open",
       "races": [
@@ -2660,7 +2666,8 @@
       "venueCode": "10",
       "venueName": "三国",
       "date": "20260906",
-      "title": "",
+      "title": "三国港解禁ふくい甘えび杯",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -3102,7 +3109,8 @@
       "venueCode": "11",
       "venueName": "びわこ",
       "date": "20260906",
-      "title": "",
+      "title": "ルーキーシリーズ第１６戦 スカパー！・ＪＬＣ杯",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -3544,7 +3552,8 @@
       "venueCode": "12",
       "venueName": "住之江",
       "date": "20260906",
-      "title": "",
+      "title": "日刊スポーツ杯争奪第３０回ブルースターカップ",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -3986,7 +3995,8 @@
       "venueCode": "14",
       "venueName": "鳴門",
       "date": "20260906",
-      "title": "",
+      "title": "ヴィーナスシリーズ第１２戦 マクール杯競走",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -4428,7 +4438,8 @@
       "venueCode": "17",
       "venueName": "宮島",
       "date": "20260906",
-      "title": "",
+      "title": "第１７回ＰａｙＰａｙ銀行賞",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
@@ -4870,7 +4881,8 @@
       "venueCode": "22",
       "venueName": "福岡",
       "date": "20260906",
-      "title": "",
+      "title": "三都市対抗戦 福岡観光コンベンションビューロー杯",
+      "grade": "一般",
       "day": "初日",
       "status": "open",
       "races": [
