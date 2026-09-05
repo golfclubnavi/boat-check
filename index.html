@@ -384,6 +384,82 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
   .mark.summer::before{font-size:10.5px}
 }
 
+
+/* v29: time-band color headers + refined icon alignment */
+.card{
+  --timeTint:#dff3ff;
+  --timeTint2:#edf8ff;
+}
+.card.time-morning{
+  --timeTint:#ffe7b8;
+  --timeTint2:#fff5dd;
+}
+.card.time-summer{
+  --timeTint:#ffd0c4;
+  --timeTint2:#fff0d9;
+}
+.card.time-night{
+  --timeTint:#e4d8ff;
+  --timeTint2:#f1eaff;
+}
+.card.time-midnight{
+  --timeTint:#c9afff;
+  --timeTint2:#e1d1ff;
+}
+.card.time-other{
+  --timeTint:#cfefff;
+  --timeTint2:#e9f8ff;
+}
+.card:not(.off) .nameRow{
+  margin:-1px -1px 4px;
+  min-height:28px;
+  border-radius:8px;
+  background:linear-gradient(90deg,var(--timeTint),var(--timeTint2));
+}
+.card.off .nameRow{background:transparent}
+
+.mark{
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  line-height:1!important;
+}
+.mark.morning{
+  background:#f5a400;
+  color:#fff;
+}
+.mark.summer{
+  position:relative;
+  background:#ff2551;
+  color:#ffd739;
+  font-size:0!important;
+}
+.mark.summer::before{
+  content:"☀";
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  font-size:10.5px!important;
+  line-height:1!important;
+  transform:translateY(-0.1px);
+}
+.mark.night{
+  background:#17458f;
+  color:#ffe463;
+}
+.mark.midnight{
+  background:#6c36c8;
+  color:#fff;
+}
+.nameRow .leftMark,
+.nameRow .rightMark{
+  z-index:2;
+}
+.nameRow .venueTitle{
+  z-index:1;
+}
+
 </style>
 </head>
 <body>
@@ -545,11 +621,15 @@ function timeMark(m){
   if(total>=1020 && total<=1080)return ["midnight","★"]; // 17:00-18:00
   return null;
 }
+function timeClass(m){
+  const tm=timeMark(m);
+  return tm ? `time-${tm[0]}` : "time-other";
+}
 function eventMarks(m){
   const title=normTitle(m), marks=[];
   const tm=timeMark(m);
   if(tm)marks.push(`<span class="mark ${tm[0]}" aria-label="${tm[0]}">${tm[1]}</span>`);
-  if(/オールレディース|ヴィーナスシリーズ|レディースオールスター|クイーンズクライマックス|レディースチャレンジカップ/.test(title))marks.push(`<span class="mark women" aria-label="女子戦">♥</span>`);
+  if(/オールレディース|ヴィーナスシリーズ|レディースオールスター|クイーンズクライマックス|クイーン|QUEEN|レディースチャレンジカップ/.test(title))marks.push(`<span class="mark women" aria-label="女子戦">♥</span>`);
   const grade=meetingGrade(m);
   if(["G3","G2","G1","SG"].includes(grade))marks.push(`<span class="gradeMark ${grade.toLowerCase()}">${grade}</span>`);
   return marks.join("");
@@ -582,7 +662,7 @@ function renderVenues(){
       ? `<span class="mark ${tm[0]}" aria-label="${tm[0]}">${tm[1]}</span>`
       : "";
 
-    const right = /オールレディース|ヴィーナスシリーズ|レディースオールスター|クイーンズクライマックス|レディースチャレンジカップ/.test(title)
+    const right = /オールレディース|ヴィーナスシリーズ|レディースオールスター|クイーンズクライマックス|クイーン|QUEEN|レディースチャレンジカップ/.test(title)
       ? `<span class="mark women" aria-label="女子戦">♥</span>`
       : "";
 
@@ -591,7 +671,7 @@ function renderVenues(){
       : `<span class="gradeCenter ${grade.toLowerCase()}">${grade}</span>`;
 
     if(!next){
-      return `<div class="card off ${st.card}" onclick="openVenue('${code}')">
+      return `<div class="card off ${st.card} ${timeClass(m)}" onclick="openVenue('${code}')">
         <div class="nameRow">
           <span class="leftMark">${left}</span>
           <div class="venueTitle">${name}</div>
@@ -608,7 +688,7 @@ function renderVenues(){
     const mins=minutesUntil(next.deadline);
     const urgent=mins!==null&&mins>=0&&mins<=10;
 
-    return `<div class="card ${st.card}" data-code="${code}" onclick="openVenue('${code}')">
+    return `<div class="card ${st.card} ${timeClass(m)}" data-code="${code}" onclick="openVenue('${code}')">
       <div class="nameRow">
         <span class="leftMark">${left}</span>
         <div class="venueTitle">${name}</div>
