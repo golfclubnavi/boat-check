@@ -219,6 +219,34 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
   .countdown{font-size:5.8px}
 }
 
+
+/* v26: official-style compact grid + metadata fixes */
+.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.card{min-height:92px;padding:7px 6px 8px;border-radius:11px;overflow:hidden}
+.cardTop{position:absolute;top:6px;right:6px;min-height:0;z-index:4}
+.card .name{
+  margin:7px 25px 5px;
+  text-align:center;font-size:14px;line-height:1.05;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.card.off .name{margin:10px 6px 8px;color:#526174}
+.card .meta{min-height:24px;padding-top:5px;display:flex;justify-content:center;gap:4px}
+.kindText{font-size:7px;font-weight:950;color:#344a64;padding:3px 4px;border-radius:5px;background:#eef3f7}
+.card.off .cardTop,.card.off .meta{display:none}
+.card.off .offtext{height:46px}
+.card.off .offtext b{padding:5px 9px}
+.card.off::after{opacity:.02}
+.cutoff b.urgentTime{color:#df2635!important}
+.countdown.urgent{color:#df2635;font-weight:950;background:#fff0f1}
+.mark.summer{background:#ff1d4e;color:#ffd72a;border:1px solid rgba(182,0,39,.08);font-size:0}
+.mark.summer::before{content:"☀";font-size:13px;line-height:1}
+@media(max-width:390px){
+  .grid{gap:5px}
+  .card{min-height:89px;padding:6px 5px 7px}
+  .card .name{font-size:12.7px;margin:7px 23px 5px}
+  .card.off .name{margin:10px 4px 8px}
+}
+
 </style>
 </head>
 <body>
@@ -265,7 +293,7 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 </section>
 
 <section id="venue" class="hidden">
-  <button class="back" onclick="showHome()">← 24場一覧</button>
+  <button class="back" onclick="history.back()">← 24場一覧</button>
   <div class="hero">
     <div class="heroTop">
       <div><div class="venueName" id="venueName"></div><div class="sub" id="venueInfo"></div></div>
@@ -280,7 +308,7 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 </section>
 
 <section id="detail" class="hidden">
-  <button class="back" onclick="backToVenue()">← レース一覧</button>
+  <button class="back" onclick="history.back()">← レース一覧</button>
   <div class="hero">
     <div class="heroTop">
       <div><div class="sub" id="detailVenue"></div><h2 id="detailRace"></h2><div class="sub" id="detailTime"></div></div>
@@ -354,6 +382,16 @@ function meetingState(m,next){
   if(first && !raceIsPast(first.deadline,now.time) && next.raceNo===first.raceNo)return {cls:"soon",label:"開始前",card:"isSoon"};
   return {cls:"live",label:"開催中",card:"isLive"};
 }
+function meetingGrade(m){
+  const direct=String(m.grade||"").toUpperCase();
+  if(["SG","G1","G2","G3"].includes(direct))return direct;
+  const t=normTitle(m);
+  if(/(^|[^A-Z])SG([^A-Z]|$)/i.test(t))return "SG";
+  if(/(^|[^A-Z])G1([^A-Z0-9]|$)/i.test(t) || /開設.{0,8}周年記念/.test(t))return "G1";
+  if(/(^|[^A-Z])G2([^A-Z0-9]|$)/i.test(t) || /モーターボート大賞/.test(t))return "G2";
+  if(/(^|[^A-Z])G3([^A-Z0-9]|$)/i.test(t) || /オールレディース|マスターズリーグ/.test(t))return "G3";
+  return "一般";
+}
 function normTitle(m){return `${m.title||""} ${m.raceType||""}`.replace(/\s+/g,"");}
 function timeMark(m){
   const races=m.races||[];
@@ -373,10 +411,10 @@ function timeMark(m){
 function eventMarks(m){
   const title=normTitle(m), marks=[];
   const tm=timeMark(m);
-  if(tm)marks.push(`<span class="mark ${tm[0]}" title="${tm[0]}">${tm[1]}</span>`);
-  if(/女子|オールレディース|ヴィーナス/.test(title))marks.push(`<span class="mark women" title="女子戦">♥</span>`);
-  if(/ルーキー|若松夜王|スカパー.*若松/.test(title))marks.push(`<span class="mark rookie" title="ルーキー戦">🌱</span>`);
-  const grade=(m.grade||"").toUpperCase();
+  if(tm)marks.push(`<span class="mark ${tm[0]}" aria-label="${tm[0]}">${tm[1]}</span>`);
+  if(/女子|オールレディース|ヴィーナス/.test(title))marks.push(`<span class="mark women" aria-label="女子戦">♥</span>`);
+  if(/ルーキー/.test(title))marks.push(`<span class="mark rookie" aria-label="ルーキー戦">🌱</span>`);
+  const grade=meetingGrade(m);
   if(["G3","G2","G1","SG"].includes(grade))marks.push(`<span class="gradeMark ${grade.toLowerCase()}">${grade}</span>`);
   return marks.join("");
 }
@@ -387,35 +425,40 @@ function renderVenues(){
     const m=map.get(code);
     if(!m){
       return `<div class="card off">
-        <div class="cardTop"><span class="stateMark offday"><i></i>非開催</span></div>
         <div class="name">${name}</div>
         <div class="offtext"><b>本日非開催</b></div>
       </div>`;
     }
-    const next=getNextRace(m), st=meetingState(m,next), marks=eventMarks(m);
+
+    const next=getNextRace(m), st=meetingState(m,next), marks=eventMarks(m), grade=meetingGrade(m);
+
     if(!next){
-      return `<div class="card off ${st.card}">
+      return `<div class="card off ${st.card}" onclick="openVenue('${code}')">
         <div class="cardTop"><div class="iconStack">${marks}</div></div>
         <div class="name">${name}</div>
-        <div class="meta"><span>${esc(m.day||"")}</span></div>
         <div class="offtext"><b>本日終了</b></div>
       </div>`;
     }
+
     const finished=(m.races||[]).filter(r=>m.date===now.date&&raceIsPast(r.deadline,now.time)).length;
     const pct=Math.round(finished/Math.max(1,(m.races||[]).length)*100);
-    const mins=minutesUntil(next.deadline), urgent=mins!==null&&mins>=0&&mins<=10;
+    const mins=minutesUntil(next.deadline);
+    const urgent=mins!==null&&mins>=0&&mins<=10;
+    const kind=grade==="一般"?`<span class="kindText">一般</span>`:"";
+
     return `<div class="card ${st.card}" data-code="${code}" onclick="openVenue('${code}')">
       <div class="cardTop"><div class="iconStack">${marks}</div></div>
       <div class="name">${name}</div>
-      <div class="meta"><span class="stateMark ${st.cls}"><i></i>${st.label}</span><span>${esc(m.day||"")}</span></div>
-      <div class="nextRow"><div class="nextRace"><b>${next.raceNo}R</b></div><div class="cutoff">締切予定<b>${esc(next.deadline)}</b></div></div>
+      <div class="meta"><span class="stateMark ${st.cls}"><i></i>${st.label}</span>${kind}<span>${esc(m.day||"")}</span></div>
+      <div class="nextRow"><div class="nextRace"><b>${next.raceNo}R</b></div><div class="cutoff">締切予定<b class="${urgent?"urgentTime":""}">${esc(next.deadline)}</b></div></div>
       <div class="countdown ${urgent?"urgent":""}">${esc(countdownText(next.deadline))}</div>
       <div class="progress"><i style="width:${pct}%"></i></div>
     </div>`;
   }).join("");
 }
-function openVenue(code){
+function openVenue(code, push=true){
   const m=state.meetings.find(x=>x.venueCode===code);if(!m)return;
+  if(push)history.pushState({view:"venue",code},"",`#venue-${code}`);
   state.currentMeeting=m;
   $("home").classList.add("hidden");$("detail").classList.add("hidden");$("venue").classList.remove("hidden");
   $("venueName").textContent=m.venueName;
@@ -448,8 +491,9 @@ function renderRaces(m){
     </div>`;
   }).join("")||`<div class="empty">レースデータがありません。</div>`;
 }
-function openRace(no){
+function openRace(no, push=true){
   const m=state.currentMeeting;if(!m)return;
+  if(push)history.pushState({view:"detail",code:m.venueCode,raceNo:Number(no)},"",`#race-${m.venueCode}-${no}`);
   const r=(m.races||[]).find(x=>Number(x.raceNo)===Number(no));if(!r)return;
   state.currentRace=r;
   $("venue").classList.add("hidden");$("detail").classList.remove("hidden");
@@ -485,6 +529,18 @@ async function loadData(){
     $("venues").innerHTML=VENUES.map(v=>`<div class="card off"><div class="name">${v[1]}</div><div class="offtext"><b>確認中</b></div></div>`).join("");
   }
 }
+
+history.replaceState({view:"home"},"",location.pathname+location.search);
+window.addEventListener("popstate",(e)=>{
+  const st=e.state||{view:"home"};
+  if(st.view==="home"){showHome();return;}
+  if(st.view==="venue"){openVenue(st.code,false);return;}
+  if(st.view==="detail"){
+    const m=state.meetings.find(x=>x.venueCode===st.code);
+    if(m){state.currentMeeting=m;openRace(st.raceNo,false);}
+  }
+});
+
 loadData();
 setInterval(()=>{if(state.meetings.length){renderVenues()}},30000);
 </script>
