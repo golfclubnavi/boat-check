@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T20:05:21+09:00",
+  "updatedAt": "2026-09-05T20:22:45+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -2146,7 +2146,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大上 卓人",
+              "racerName": "発売終了 大上 卓人",
               "class": "A1"
             },
             {
@@ -5682,7 +5682,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 重成 一人",
+              "racerName": "発売終了 重成 一人",
               "class": "A1"
             },
             {
