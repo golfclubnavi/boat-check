@@ -460,6 +460,163 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
   z-index:1;
 }
 
+
+/* v30 home finishing: R and cutoff centered as a pair */
+.nextRow{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  align-items:end!important;
+  justify-items:center!important;
+  gap:4px!important;
+  padding:0 5px;
+}
+.nextRace,.cutoff{text-align:center!important;width:100%}
+.nextRace b{display:block}
+.cutoff b{display:block}
+
+
+/* v30 venue / race detail redesign */
+#venue,#detail{padding-bottom:24px}
+
+.venueBack{
+  display:inline-flex;align-items:center;gap:5px;
+  margin:0 0 10px;padding:7px 10px;
+  border:1px solid #cbd9e7;border-radius:999px;
+  background:#fff;color:#24405f;font-size:9px;font-weight:900;
+  box-shadow:0 3px 10px rgba(8,32,59,.05)
+}
+.venueHero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#071d35 0%,#0d3766 68%,#145287 100%);
+  color:#fff;border-radius:16px;padding:15px 14px 13px;
+  box-shadow:0 10px 25px rgba(7,29,53,.16)
+}
+.venueHero:after{
+  content:"";position:absolute;right:-25px;top:-40px;width:130px;height:130px;
+  border-radius:50%;background:rgba(255,255,255,.045)
+}
+.venueHeroTop{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.venueHeroName{font-size:27px;font-weight:950;letter-spacing:-.035em;line-height:1}
+.venueHeroMeta{margin-top:6px;color:#cbd9e8;font-size:9px;font-weight:700}
+.venueHeroBadge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:42px;padding:6px 8px;border-radius:8px;
+  background:#fff;color:#0e3158;font-size:10px;font-weight:950
+}
+.venueEvent{
+  position:relative;z-index:2;margin-top:12px;padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.16);
+  font-size:10px;font-weight:800;line-height:1.45;color:#edf5fc
+}
+.venueEvent:empty{display:none}
+.venueQuick{
+  position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);
+  gap:6px;margin-top:11px
+}
+.quickBox{
+  text-align:center;padding:7px 3px;border-radius:9px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10)
+}
+.quickBox small{display:block;font-size:6.5px;color:#bcd0e2;margin-bottom:2px}
+.quickBox b{font-size:10px}
+
+.raceSectionHead{
+  display:flex;align-items:end;justify-content:space-between;
+  margin:17px 2px 8px
+}
+.raceSectionHead h3{margin:0;font-size:18px;letter-spacing:-.02em}
+.raceSectionHead span{font-size:7px;color:#738197;font-weight:750}
+
+.raceGrid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+.raceCardPro{
+  background:#fff;border:1.2px solid #b9cee1;border-radius:13px;
+  overflow:hidden;box-shadow:0 5px 14px rgba(8,32,59,.065);
+  cursor:pointer
+}
+.raceCardPro:active{transform:scale(.994)}
+.raceTopPro{
+  display:grid;grid-template-columns:52px 1fr auto;
+  align-items:center;gap:8px;padding:9px 10px 8px
+}
+.raceNoPro{
+  display:flex;align-items:baseline;justify-content:center;gap:1px;
+  font-size:23px;font-weight:950;color:#0c2949;letter-spacing:-.04em
+}
+.raceNoPro small{font-size:11px}
+.raceTiming{text-align:left;min-width:0}
+.raceTiming small{display:block;color:#7b889a;font-size:6.5px;margin-bottom:1px}
+.raceTiming b{font-size:12px;color:#142f4e}
+.raceTiming b.urgent{color:#df2635}
+.raceStatePro{
+  min-width:58px;text-align:center;padding:5px 7px;border-radius:999px;
+  font-size:7px;font-weight:900;background:#eef3f7;color:#4c627a
+}
+.raceStatePro.closed{background:#edf0f3;color:#77818e}
+.raceStatePro.soon{background:#edf5ff;color:#1769bd}
+.raceStatePro.urgent{background:#fff0f1;color:#d92c38}
+
+.laneStrip{
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+  border-top:1px solid #e2e8ef;border-bottom:1px solid #edf1f5
+}
+.laneMini{min-width:0;text-align:center;border-right:1px solid #e3e8ee;background:#fff}
+.laneMini:last-child{border-right:0}
+.laneNo{
+  height:19px;display:grid;place-items:center;font-size:8px;font-weight:950
+}
+.laneName{
+  min-height:37px;padding:4px 1px 3px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px
+}
+.laneName b{
+  width:100%;font-size:7.2px;line-height:1.12;font-weight:950;
+  white-space:normal;word-break:keep-all;overflow-wrap:anywhere
+}
+.laneName small{font-size:6.2px;color:#6f7d90;font-weight:850}
+.lane1 .laneNo{background:#fff;color:#111;border-top:3px solid #ddd}
+.lane2 .laneNo{background:#151515;color:#fff}
+.lane3 .laneNo{background:#eb3340;color:#fff}
+.lane4 .laneNo{background:#2559dc;color:#fff}
+.lane5 .laneNo{background:#f0d900;color:#111}
+.lane6 .laneNo{background:#149548;color:#fff}
+
+.raceFootPro{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 10px 7px;font-size:7px;color:#718096
+}
+.raceFootPro b{font-size:8px;color:#166bc2}
+.raceFootPro .alert{color:#d92c38}
+
+.dataNoticePro{
+  margin-top:12px;padding:10px 11px;border-radius:11px;
+  background:#eef5fb;border:1px solid #d1e1ef;
+  color:#4c6278;font-size:8px;line-height:1.55
+}
+.dataNoticePro strong{color:#163a60;font-size:9px}
+
+/* detail polish */
+.detailHero{
+  background:linear-gradient(145deg,#fff,#f7fbff);
+  border:1.2px solid #b9cee1;border-radius:15px;padding:13px;
+  box-shadow:0 7px 18px rgba(8,32,59,.075)
+}
+.detailHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.detailRaceNo{font-size:28px;font-weight:950;line-height:1;color:#0b2948}
+.detailMeta{font-size:8px;color:#748397;margin-top:5px}
+.detailStatus{
+  background:#edf3f8;border-radius:10px;padding:7px 9px;
+  font-size:7px;color:#66798f;text-align:right
+}
+.detailStatus b{display:block;color:#153858;font-size:9px}
+.boats{border:1.2px solid #b9cee1!important}
+.tool{min-height:43px;display:grid;place-items:center}
+@media(max-width:390px){
+  .venueHeroName{font-size:24px}
+  .raceTopPro{grid-template-columns:45px 1fr auto;gap:6px;padding:8px}
+  .raceNoPro{font-size:21px}
+  .laneName b{font-size:6.8px}
+}
+
 </style>
 </head>
 <body>
@@ -506,34 +663,61 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 </section>
 
 <section id="venue" class="hidden">
-  <button class="back" onclick="history.back()">← 24場一覧</button>
-  <div class="hero">
-    <div class="heroTop">
-      <div><div class="venueName" id="venueName"></div><div class="sub" id="venueInfo"></div></div>
-      <div id="venueGrade"></div>
+  <button class="venueBack" onclick="history.back()">‹ 24場一覧</button>
+
+  <div class="venueHero">
+    <div class="venueHeroTop">
+      <div>
+        <div class="venueHeroName" id="venueName"></div>
+        <div class="venueHeroMeta" id="venueInfo"></div>
+      </div>
+      <div class="venueHeroBadge" id="venueGrade"></div>
     </div>
-    <div class="event" id="eventTitle"></div>
-    <div class="tabs" id="dayTabs"></div>
+    <div class="venueEvent" id="eventTitle"></div>
+    <div class="venueQuick">
+      <div class="quickBox"><small>開催日</small><b id="quickDay">-</b></div>
+      <div class="quickBox"><small>次レース</small><b id="quickNext">-</b></div>
+      <div class="quickBox"><small>締切予定</small><b id="quickDeadline">-</b></div>
+    </div>
   </div>
-  <div class="section"><h3>レース一覧</h3><span>公式出走データ</span></div>
+
+  <div class="raceSectionHead">
+    <h3>1R〜12R</h3>
+    <span>BOAT RACE公式 出走データ</span>
+  </div>
   <div class="raceGrid" id="races"></div>
-  <div class="analysisNotice"><b>BOAT ✓ CHECK</b><br>現在は公式の開催・締切・出走選手データを表示しています。見送り度は、勝率・ST・モーター・展示・気象など判断材料が揃った段階で算出します。</div>
+
+  <div class="dataNoticePro">
+    <strong>✓ BOAT CHECK 分析について</strong><br>
+    現在は公式の開催・締切・出走選手データを表示中です。勝率・平均ST・モーター・展示・気象などが揃った段階で、各レースに「見送り度」と理由を表示します。
+  </div>
 </section>
 
 <section id="detail" class="hidden">
-  <button class="back" onclick="history.back()">← レース一覧</button>
-  <div class="hero">
-    <div class="heroTop">
-      <div><div class="sub" id="detailVenue"></div><h2 id="detailRace"></h2><div class="sub" id="detailTime"></div></div>
-      <div class="big" id="detailJudge"><small>見送り度</small>分析準備中</div>
+  <button class="venueBack" onclick="history.back()">‹ レース一覧</button>
+
+  <div class="detailHero">
+    <div class="detailHead">
+      <div>
+        <div class="sub" id="detailVenue"></div>
+        <div class="detailRaceNo" id="detailRace"></div>
+        <div class="detailMeta" id="detailTime"></div>
+      </div>
+      <div class="detailStatus" id="detailJudge"><b>BOAT CHECK</b>分析準備中</div>
     </div>
-    <div class="reason" id="detailReason"><b>✓ BOAT CHECK 分析</b><br>現在取得済みの基本データを表示しています。見送り度は未算出です。</div>
+    <div class="reason" id="detailReason"><b>✓ 分析ステータス</b><br>現在取得済みの基本データを表示しています。見送り度は未算出です。</div>
   </div>
-  <div class="section"><h3>出走データ</h3><span>BOAT RACE公式データ</span></div>
+
+  <div class="section"><h3>出走データ</h3><span>BOAT RACE公式</span></div>
   <div class="boats" id="boats"></div>
+
   <div class="tools">
-    <div class="tool primary">✓ CHECK分析</div><div class="tool">今節成績</div><div class="tool">モーター比較</div>
-    <div class="tool">展示・ST</div><div class="tool">枠別データ</div><div class="tool">直前情報</div>
+    <div class="tool primary">✓ CHECK分析</div>
+    <div class="tool">今節成績</div>
+    <div class="tool">モーター比較</div>
+    <div class="tool">展示・ST</div>
+    <div class="tool">枠別データ</div>
+    <div class="tool">直前情報</div>
   </div>
 </section>
 </main>
@@ -707,38 +891,76 @@ function renderVenues(){
     </div>`;
   }).join("");
 }
+function raceMinutesUntil(deadline){
+  if(!deadline)return null;
+  const now=jstNow();
+  const [h,m]=deadline.split(":").map(Number);
+  const [nh,nm]=now.time.split(":").map(Number);
+  return h*60+m-(nh*60+nm);
+}
+function raceStatusInfo(r,m){
+  const mins=raceMinutesUntil(r.deadline);
+  const now=jstNow();
+  const past=m.date===now.date&&raceIsPast(r.deadline,now.time);
+  if(past)return {label:"締切済",cls:"closed"};
+  if(mins!==null&&mins>=0&&mins<=10)return {label:`あと ${mins}分`,cls:"urgent"};
+  return {label:"受付予定",cls:"soon"};
+}
 function openVenue(code, push=true){
   const m=state.meetings.find(x=>x.venueCode===code);if(!m)return;
   if(push)history.pushState({view:"venue",code},"",`#venue-${code}`);
   state.currentMeeting=m;
-  $("home").classList.add("hidden");$("detail").classList.add("hidden");$("venue").classList.remove("hidden");
-  $("venueName").textContent=m.venueName;
+
+  $("home").classList.add("hidden");
+  $("detail").classList.add("hidden");
+  $("venue").classList.remove("hidden");
+
   const next=getNextRace(m);
-  $("venueInfo").textContent=`${m.day||""}${next?` ・ 次回 ${next.raceNo}R / ${next.deadline}`:" ・ 本日終了"}`;
-  $("venueGrade").innerHTML=`<span class="grade ${gradeClass(displayGrade(m))}">${esc(displayGrade(m))}</span>`;
+  const grade=meetingGrade(m);
+
+  $("venueName").textContent=m.venueName;
+  $("venueInfo").textContent=`${formatDataDate(m.date)}${m.day?` ・ ${m.day}`:""}`;
+  $("venueGrade").textContent=grade;
   $("eventTitle").textContent=m.title||"";
-  const mm=m.date.slice(4,6),dd=m.date.slice(6,8);
-  $("dayTabs").innerHTML=`<div class="tab active"><b>${mm}/${dd}</b>${esc(m.day||"開催日")}</div>`;
+
+  $("quickDay").textContent=m.day||"開催日";
+  $("quickNext").textContent=next?`${next.raceNo}R`:"本日終了";
+  $("quickDeadline").textContent=next?(next.deadline||"-"):"-";
+
   renderRaces(m);
   scrollTo({top:0,behavior:"instant"});
 }
 function renderRaces(m){
-  const now=jstNow();
   $("races").innerHTML=(m.races||[]).map(r=>{
-    const past=m.date===now.date&&raceIsPast(r.deadline,now.time);
-    const boats=(r.boats||[]).map(b=>`<div class="runner r${b.lane}">
-      <div class="runnerHead">${b.lane}号艇</div>
-      <div class="runnerBody"><div class="runnerName">${esc(b.racerName||"-")}</div><div class="runnerClass">${esc(b.class||"-")}</div></div>
-    </div>`).join("");
-    return `<div class="raceCard" onclick="openRace(${Number(r.raceNo)})">
-      <div class="raceSummary">
-        <div class="rno">${r.raceNo}R</div>
-        <div class="deadlineInline">締切 <b>${esc(r.deadline||"-")}</b></div>
-        <div class="summaryState"><b>${past?"締切済":"受付予定"}</b><br>${past?"結果データ拡張予定":"公式出走表"}</div>
-        <span class="badge pending">分析準備中</span>
+    const info=raceStatusInfo(r,m);
+    const mins=raceMinutesUntil(r.deadline);
+    const urgent=info.cls==="urgent";
+
+    const boats=(r.boats||[]).map(b=>`
+      <div class="laneMini lane${b.lane}">
+        <div class="laneNo">${b.lane}</div>
+        <div class="laneName">
+          <b>${esc(b.racerName||"-")}</b>
+          <small>${esc(b.class||"-")}</small>
+        </div>
+      </div>`).join("");
+
+    return `<div class="raceCardPro" onclick="openRace(${Number(r.raceNo)})">
+      <div class="raceTopPro">
+        <div class="raceNoPro">${r.raceNo}<small>R</small></div>
+        <div class="raceTiming">
+          <small>締切予定</small>
+          <b class="${urgent?"urgent":""}">${esc(r.deadline||"-")}</b>
+        </div>
+        <div class="raceStatePro ${info.cls}">${esc(info.label)}</div>
       </div>
-      <div class="runners">${boats}</div>
-      <div class="raceAction">レース詳細を見る ›</div>
+
+      <div class="laneStrip">${boats}</div>
+
+      <div class="raceFootPro">
+        <span>${(r.boats||[]).length===6?"6艇 出走データ":"出走データ確認中"}</span>
+        <b class="${urgent?"alert":""}">詳細を見る ›</b>
+      </div>
     </div>`;
   }).join("")||`<div class="empty">レースデータがありません。</div>`;
 }
@@ -750,7 +972,9 @@ function openRace(no, push=true){
   $("venue").classList.add("hidden");$("detail").classList.remove("hidden");
   $("detailVenue").textContent=`${m.venueName} ${m.day||""} ・ ${displayGrade(m)}`;
   $("detailRace").textContent=`${r.raceNo}R`;
-  $("detailTime").textContent=`締切予定 ${r.deadline||"-"}`;
+  const rs=raceStatusInfo(r,m);
+  $("detailTime").textContent=`締切予定 ${r.deadline||"-"} ・ ${rs.label}`;
+  $("detailJudge").innerHTML=`<b>BOAT CHECK</b>${rs.cls==="urgent"?"締切間近":"分析準備中"}`;
   $("boats").innerHTML=(r.boats||[]).map(b=>`<div class="boat">
     <div class="no n${b.lane}">${b.lane}</div>
     <div class="player"><b>${esc(b.racerName||"-")}</b><span>${esc(b.class||"-")} / ${b.racerId?esc(b.racerId):"選手登録番号 取得準備中"}</span></div>
