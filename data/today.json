@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T10:22:52+09:00",
+  "updatedAt": "2026-09-05T10:35:32+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -3112,7 +3112,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 楠 将太郎",
+              "racerName": "発売終了 楠 将太郎",
               "class": "A2"
             },
             {
@@ -5024,7 +5024,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 蒲原 健太",
+              "racerName": "発売終了 蒲原 健太",
               "class": "B1"
             },
             {
