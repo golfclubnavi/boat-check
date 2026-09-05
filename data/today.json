@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T08:49:09+09:00",
+  "updatedAt": "2026-09-05T09:06:56+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -2706,7 +2706,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 永嶋 裕一",
+              "racerName": "発売終了 永嶋 裕一",
               "class": "A2"
             },
             {
