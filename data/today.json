@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T18:35:58+09:00",
+  "updatedAt": "2026-09-05T18:49:16+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -2038,7 +2038,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 土山 卓也",
+              "racerName": "発売終了 土山 卓也",
               "class": "A2"
             },
             {
@@ -5574,7 +5574,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 久富 政弘",
+              "racerName": "発売終了 久富 政弘",
               "class": "A2"
             },
             {
