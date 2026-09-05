@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v20 collector
+BOAT CHECK v26 collector
 - GitHub Actions上でも日本時間(Asia/Tokyo)の日付を使用
 - BOAT RACE公式「本日のレース」から開催場を特定
 - 各開催場の raceindex から1R〜12R、締切予定時刻、6艇の選手名/級別を取得
@@ -34,7 +34,7 @@ NAME_TO_CODE = {v: k for k, v in VENUES.items()}
 
 session = requests.Session()
 session.headers.update({
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.20; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.26; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 })
 
@@ -71,15 +71,49 @@ def active_venues(date: str) -> list[tuple[str, str]]:
 
     return sorted(found.items())
 
+def detect_grade(soup: BeautifulSoup, title: str) -> str:
+    """公式HTMLの画像・属性からグレードを優先取得し、タイトルで補完する。"""
+    attrs_blob = []
+    for tag in soup.find_all(True):
+        for key, value in tag.attrs.items():
+            if isinstance(value, (list, tuple)):
+                value = " ".join(map(str, value))
+            attrs_blob.append(f"{key}={value}")
+    blob = " ".join(attrs_blob).lower()
+
+    for grade, pat in [
+        ("SG", r"(?:^|[_/\-.])sg(?:[_/\-.]|$)|grade[^a-z0-9]*sg"),
+        ("G1", r"(?:^|[_/\-.])g1(?:[_/\-.]|$)|grade[^a-z0-9]*g1"),
+        ("G2", r"(?:^|[_/\-.])g2(?:[_/\-.]|$)|grade[^a-z0-9]*g2"),
+        ("G3", r"(?:^|[_/\-.])g3(?:[_/\-.]|$)|grade[^a-z0-9]*g3"),
+    ]:
+        if re.search(pat, blob, re.I):
+            return grade
+
+    t = compact(title)
+    if re.search(r"(^|[^A-Z])SG([^A-Z]|$)", t, re.I):
+        return "SG"
+    if re.search(r"(^|[^A-Z])G1([^A-Z0-9]|$)", t, re.I) or re.search(r"開設.{0,8}周年記念", t):
+        return "G1"
+    if re.search(r"(^|[^A-Z])G2([^A-Z0-9]|$)", t, re.I) or "モーターボート大賞" in t:
+        return "G2"
+    if re.search(r"(^|[^A-Z])G3([^A-Z0-9]|$)", t, re.I) or re.search(r"オールレディース|マスターズリーグ", t):
+        return "G3"
+    return "一般"
+
+
 def page_meta(soup: BeautifulSoup, date: str, code: str) -> dict:
     text = compact(soup.get_text(" ", strip=True))
+
+    # 公式raceindexでは大会タイトルがh2。空h1を拾わず、非空h2を優先。
     title = ""
-    h2 = soup.find(["h1", "h2"])
-    if h2:
-        title = compact(h2.get_text(" ", strip=True))
+    for h in soup.find_all("h2"):
+        candidate = compact(h.get_text(" ", strip=True))
+        if candidate:
+            title = candidate
+            break
 
     day = ""
-    # 9月5日３日目 / 9月5日最終日 のような表記を優先
     md = re.search(r"\d{1,2}月\d{1,2}日\s*(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)", text)
     if md:
         day = md.group(1)
@@ -89,6 +123,7 @@ def page_meta(soup: BeautifulSoup, date: str, code: str) -> dict:
         "venueName": VENUES[code],
         "date": date,
         "title": title,
+        "grade": detect_grade(soup, title),
         "day": day,
     }
 
@@ -164,7 +199,7 @@ def collect(date: str) -> dict:
         time.sleep(0.15)
 
     return {
-        "schemaVersion": "20.0",
+        "schemaVersion": "26.0",
         "updatedAt": datetime.now(JST).isoformat(timespec="seconds"),
         "dateJST": date,
         "source": "BOAT RACE official public pages",
