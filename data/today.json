@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T19:35:15+09:00",
+  "updatedAt": "2026-09-05T19:49:29+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -2110,7 +2110,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大峯 豊",
+              "racerName": "発売終了 大峯 豊",
               "class": "A1"
             },
             {
@@ -5646,7 +5646,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 平石 和男",
+              "racerName": "発売終了 平石 和男",
               "class": "A2"
             },
             {
