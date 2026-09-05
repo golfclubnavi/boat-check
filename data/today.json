@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T13:05:23+09:00",
+  "updatedAt": "2026-09-05T13:24:26+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -640,7 +640,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小澤 学",
+              "racerName": "発売終了 小澤 学",
               "class": "B1"
             },
             {
@@ -1524,7 +1524,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 真子 奈津実",
+              "racerName": "発売終了 真子 奈津実",
               "class": "B1"
             },
             {
@@ -2408,7 +2408,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 尾嶋 一広",
+              "racerName": "発売終了 尾嶋 一広",
               "class": "A1"
             },
             {
@@ -3292,7 +3292,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 吉田 一心",
+              "racerName": "発売終了 吉田 一心",
               "class": "B1"
             },
             {
@@ -4176,7 +4176,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 池田 雄一",
+              "racerName": "発売終了 池田 雄一",
               "class": "A2"
             },
             {
@@ -5204,7 +5204,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 西丸 侑太朗",
+              "racerName": "発売終了 西丸 侑太朗",
               "class": "A1"
             },
             {
