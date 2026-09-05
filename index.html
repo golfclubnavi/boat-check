@@ -617,6 +617,70 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
   .laneName b{font-size:6.8px}
 }
 
+
+/* v31: meet-day tabs + 1R-12R selector + larger racer information */
+.meetDayWrap{margin:2px 0 10px;overflow-x:auto;scrollbar-width:none}
+.meetDayWrap::-webkit-scrollbar{display:none}
+.meetDayTabs{display:flex;gap:5px;min-width:max-content;padding:1px}
+.meetDayTab{
+  min-width:61px;padding:7px 7px 6px;border-radius:9px;
+  border:1.2px solid #c8d8e7;background:#fff;color:#243b55;
+  text-align:center;font-weight:900;line-height:1.15;
+  box-shadow:0 2px 7px rgba(8,32,59,.04)
+}
+.meetDayTab .md{font-size:9px}
+.meetDayTab .dl{font-size:8px;margin-top:3px;color:#66798e}
+.meetDayTab.active{
+  color:#fff;border-color:#1677c8;
+  background:linear-gradient(135deg,#0d5fa6,#158bc8)
+}
+.meetDayTab.active .dl{color:#e7f5ff}
+.meetDayTab.future{opacity:.72}
+.meetDayTab:active{transform:scale(.98)}
+
+.raceJump{
+  margin:12px 0 12px;
+  display:grid;grid-template-columns:repeat(6,1fr);
+  gap:3px
+}
+.raceJump button{
+  height:34px;border:1px solid #c0d3e4;border-radius:6px;
+  background:#e7f2fc;color:#183855;font-size:11px;font-weight:950
+}
+.raceJump button.active{
+  background:#116fbd;color:#fff;border-color:#116fbd
+}
+.raceJump button:active{transform:scale(.97)}
+
+.raceCardPro{scroll-margin-top:12px}
+.laneStrip{background:#fff}
+.laneName{min-height:74px!important;padding:5px 1px 4px!important;justify-content:flex-start!important}
+.laneName b{
+  font-size:9.3px!important;line-height:1.15!important;
+  min-height:22px;display:flex;align-items:center;justify-content:center;
+  letter-spacing:-.025em
+}
+.laneMeta{
+  width:100%;margin-top:2px;display:flex;flex-direction:column;
+  gap:1px;align-items:center
+}
+.laneMeta span{
+  display:block;font-size:6.7px;line-height:1.15;
+  color:#607288;font-weight:850;white-space:nowrap
+}
+.laneMeta .racerNo{font-size:7.2px;color:#1d3d5e;font-weight:950}
+.laneMeta .missing{color:#9aa7b5;font-weight:700}
+.dayNoData{
+  padding:28px 14px;border:1.2px dashed #bfd0df;border-radius:13px;
+  text-align:center;background:#f8fbfe;color:#63778d;font-size:9px;line-height:1.7
+}
+.dayNoData b{display:block;color:#173c61;font-size:12px;margin-bottom:4px}
+@media(max-width:390px){
+  .laneName b{font-size:8.7px!important}
+  .laneMeta span{font-size:6.25px}
+  .meetDayTab{min-width:57px}
+}
+
 </style>
 </head>
 <body>
@@ -665,6 +729,8 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 <section id="venue" class="hidden">
   <button class="venueBack" onclick="history.back()">‹ 24場一覧</button>
 
+  <div class="meetDayWrap"><div class="meetDayTabs" id="meetDayTabs"></div></div>
+
   <div class="venueHero">
     <div class="venueHeroTop">
       <div>
@@ -681,8 +747,10 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
     </div>
   </div>
 
+  <div class="raceJump" id="raceJump"></div>
+
   <div class="raceSectionHead">
-    <h3>1R〜12R</h3>
+    <h3>レース一覧</h3>
     <span>BOAT RACE公式 出走データ</span>
   </div>
   <div class="raceGrid" id="races"></div>
@@ -731,7 +799,7 @@ const VENUES=[
 ["19","下関"],["20","若松"],["21","芦屋"],["22","福岡"],["23","唐津"],["24","大村"]
 ];
 const $=id=>document.getElementById(id);
-let state={meetings:[],updatedAt:null,dateJST:null,currentMeeting:null,currentRace:null};
+let state={meetings:[],updatedAt:null,dateJST:null,currentMeeting:null,currentMeetingView:null,currentRace:null,currentDayDate:null};
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function gradeClass(g){return g==="SG"?"sg":g==="G1"?"g1":g==="G2"?"g2":g==="G3"?"g3":g==="女子"?"women":"general"}
@@ -891,6 +959,67 @@ function renderVenues(){
     </div>`;
   }).join("");
 }
+
+function mdLabel(date){
+  if(!date||date.length!==8)return "--/--";
+  return `${Number(date.slice(4,6))}/${Number(date.slice(6,8))}`;
+}
+function normalizedMeetDays(m){
+  if(Array.isArray(m.meetDays)&&m.meetDays.length){
+    return m.meetDays.map(d=>({
+      date:d.date,
+      label:d.label||d.day||"",
+      day:d.day||d.label||"",
+      races:Array.isArray(d.races)?d.races:[]
+    }));
+  }
+  return [{date:m.date,label:m.day||"",day:m.day||"",races:m.races||[]}];
+}
+function renderMeetDayTabs(m, selectedDate){
+  const days=normalizedMeetDays(m);
+  $("meetDayTabs").innerHTML=days.map(d=>{
+    const active=d.date===selectedDate;
+    const future=d.date>state.dateJST;
+    return `<button class="meetDayTab ${active?"active":""} ${future?"future":""}" onclick="selectMeetDay('${esc(d.date)}')">
+      <div class="md">${esc(mdLabel(d.date))}</div>
+      <div class="dl">${esc(d.label||"")}</div>
+    </button>`;
+  }).join("");
+}
+function currentDayView(m,date){
+  const d=normalizedMeetDays(m).find(x=>x.date===date);
+  if(!d)return {...m};
+  return {...m,date:d.date,day:d.day||d.label||m.day,races:d.races||[]};
+}
+function selectMeetDay(date){
+  const m=state.currentMeetingView||state.currentMeeting;if(!m)return;
+  state.currentDayDate=date;
+  const view=currentDayView(m,date);
+  state.currentMeetingView=view;
+  renderMeetDayTabs(m,date);
+
+  const next=getNextRace(view);
+  $("venueInfo").textContent=`${formatDataDate(view.date)}${view.day?` ・ ${view.day}`:""}`;
+  $("quickDay").textContent=view.day||"開催日";
+  $("quickNext").textContent=next?`${next.raceNo}R`:(view.date>state.dateJST?"未確定":"本日終了");
+  $("quickDeadline").textContent=next?(next.deadline||"-"):"-";
+
+  renderRaceJump(view);
+  renderRaces(view);
+}
+function renderRaceJump(m){
+  const has=new Set((m.races||[]).map(r=>Number(r.raceNo)));
+  $("raceJump").innerHTML=Array.from({length:12},(_,i)=>i+1).map(n=>
+    `<button ${has.has(n)?"":'disabled style="opacity:.42"'} onclick="jumpRace(${n})">${n}R</button>`
+  ).join("");
+}
+function jumpRace(no){
+  const el=document.getElementById(`race-card-${no}`);
+  if(!el)return;
+  document.querySelectorAll("#raceJump button").forEach((b,i)=>b.classList.toggle("active",i===Number(no)-1));
+  el.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 function raceMinutesUntil(deadline){
   if(!deadline)return null;
   const now=jstNow();
@@ -915,37 +1044,60 @@ function openVenue(code, push=true){
   $("detail").classList.add("hidden");
   $("venue").classList.remove("hidden");
 
-  const next=getNextRace(m);
+  const days=normalizedMeetDays(m);
+  const preferred=days.find(d=>d.date===m.date)?.date || m.date || days[0]?.date;
+  state.currentDayDate=preferred;
+  const view=currentDayView(m,preferred);
+  state.currentMeetingView=view;
+
+  const next=getNextRace(view);
   const grade=meetingGrade(m);
 
   $("venueName").textContent=m.venueName;
-  $("venueInfo").textContent=`${formatDataDate(m.date)}${m.day?` ・ ${m.day}`:""}`;
+  $("venueInfo").textContent=`${formatDataDate(view.date)}${view.day?` ・ ${view.day}`:""}`;
   $("venueGrade").textContent=grade;
   $("eventTitle").textContent=m.title||"";
 
-  $("quickDay").textContent=m.day||"開催日";
+  $("quickDay").textContent=view.day||"開催日";
   $("quickNext").textContent=next?`${next.raceNo}R`:"本日終了";
   $("quickDeadline").textContent=next?(next.deadline||"-"):"-";
 
-  renderRaces(m);
+  renderMeetDayTabs(m,preferred);
+  renderRaceJump(view);
+  renderRaces(view);
   scrollTo({top:0,behavior:"instant"});
 }
 function renderRaces(m){
-  $("races").innerHTML=(m.races||[]).map(r=>{
+  const races=m.races||[];
+  if(!races.length){
+    $("races").innerHTML=`<div class="dayNoData"><b>${m.date>state.dateJST?"出走表はまだ未確定です":"レースデータを確認中です"}</b>${esc(formatDataDate(m.date))}のデータが公開され次第、自動で表示します。</div>`;
+    return;
+  }
+
+  $("races").innerHTML=races.map(r=>{
     const info=raceStatusInfo(r,m);
-    const mins=raceMinutesUntil(r.deadline);
     const urgent=info.cls==="urgent";
 
-    const boats=(r.boats||[]).map(b=>`
-      <div class="laneMini lane${b.lane}">
+    const boats=(r.boats||[]).map(b=>{
+      const period=b.period?`${esc(b.period)}期`:"--期";
+      const age=b.age!==undefined&&b.age!==null?`${esc(b.age)}歳`:"--歳";
+      const branch=b.branch||b.region||"--";
+      const racerNo=b.racerId||b.registrationNo||"----";
+      return `<div class="laneMini lane${b.lane}">
         <div class="laneNo">${b.lane}</div>
         <div class="laneName">
           <b>${esc(b.racerName||"-")}</b>
-          <small>${esc(b.class||"-")}</small>
+          <div class="laneMeta">
+            <span class="racerNo">${esc(racerNo)} / ${esc(b.class||"-")}</span>
+            <span>${esc(branch)}</span>
+            <span>${period}</span>
+            <span>${age}</span>
+          </div>
         </div>
-      </div>`).join("");
+      </div>`;
+    }).join("");
 
-    return `<div class="raceCardPro" onclick="openRace(${Number(r.raceNo)})">
+    return `<div class="raceCardPro" id="race-card-${Number(r.raceNo)}" onclick="openRace(${Number(r.raceNo)})">
       <div class="raceTopPro">
         <div class="raceNoPro">${r.raceNo}<small>R</small></div>
         <div class="raceTiming">
@@ -958,11 +1110,11 @@ function renderRaces(m){
       <div class="laneStrip">${boats}</div>
 
       <div class="raceFootPro">
-        <span>${(r.boats||[]).length===6?"6艇 出走データ":"出走データ確認中"}</span>
+        <span>${(r.boats||[]).length===6?"6艇 出走表":"出走データ確認中"}</span>
         <b class="${urgent?"alert":""}">詳細を見る ›</b>
       </div>
     </div>`;
-  }).join("")||`<div class="empty">レースデータがありません。</div>`;
+  }).join("");
 }
 function openRace(no, push=true){
   const m=state.currentMeeting;if(!m)return;
@@ -977,7 +1129,7 @@ function openRace(no, push=true){
   $("detailJudge").innerHTML=`<b>BOAT CHECK</b>${rs.cls==="urgent"?"締切間近":"分析準備中"}`;
   $("boats").innerHTML=(r.boats||[]).map(b=>`<div class="boat">
     <div class="no n${b.lane}">${b.lane}</div>
-    <div class="player"><b>${esc(b.racerName||"-")}</b><span>${esc(b.class||"-")} / ${b.racerId?esc(b.racerId):"選手登録番号 取得準備中"}</span></div>
+    <div class="player"><b>${esc(b.racerName||"-")}</b><span>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"-")}　${esc(b.branch||b.region||"--")}支部　${b.period?esc(b.period)+"期":"--期"}　${b.age!==undefined&&b.age!==null?esc(b.age)+"歳":"--歳"}</span></div>
     <div class="cell"><b>${esc(b.class||"-")}</b><span>級別</span></div>
   </div>`).join("");
   scrollTo({top:0,behavior:"instant"});
@@ -1012,7 +1164,7 @@ window.addEventListener("popstate",(e)=>{
   if(st.view==="venue"){openVenue(st.code,false);return;}
   if(st.view==="detail"){
     const m=state.meetings.find(x=>x.venueCode===st.code);
-    if(m){state.currentMeeting=m;openRace(st.raceNo,false);}
+    if(m){state.currentMeeting=m;state.currentMeetingView=currentDayView(m,state.currentDayDate||m.date);openRace(st.raceNo,false);}
   }
 });
 
