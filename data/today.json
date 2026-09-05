@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T19:23:26+09:00",
+  "updatedAt": "2026-09-05T19:35:15+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -342,7 +342,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 前川 守嗣",
+              "racerName": "発売終了 前川 守嗣",
               "class": "B1"
             },
             {
@@ -3878,7 +3878,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 木谷 賢太",
+              "racerName": "発売終了 木谷 賢太",
               "class": "A1"
             },
             {
