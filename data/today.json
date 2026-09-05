@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T20:22:45+09:00",
+  "updatedAt": "2026-09-05T20:34:26+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -414,7 +414,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 赤岩 善生",
+              "racerName": "発売終了 赤岩 善生",
               "class": "A1"
             },
             {
