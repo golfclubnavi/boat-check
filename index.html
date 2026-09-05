@@ -151,6 +151,74 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .card.off .iconStack{opacity:.45}
 .card .name{margin-top:2px}
 
+
+/* v25: compact premium venue cards */
+.grid{gap:6px}
+.card{
+  min-height:94px;
+  padding:7px 6px 8px;
+  border-radius:12px;
+  box-shadow:0 5px 14px rgba(8,32,59,.075);
+}
+.cardTop{
+  position:absolute;
+  top:7px; right:7px;
+  min-height:0;
+  z-index:4;
+}
+.iconStack{min-height:0;gap:2px}
+.mark{
+  width:22px;height:22px;
+  font-size:12px;
+  box-shadow:0 2px 5px rgba(8,32,59,.10);
+}
+.mark.morning{background:#f3aa19;color:#fff}
+.mark.summer{background:#ff1f4f;color:#ffd51f}
+.mark.night{background:#0b428f;color:#ffe45b}
+.mark.midnight{background:#8b31df;color:#fff}
+.mark.women{background:#f34a88;color:#fff}
+.mark.rookie{background:#4bae42;color:#fff}
+.gradeMark{
+  height:20px;min-width:24px;padding:0 4px;border-radius:5px;
+  font-size:7px
+}
+.card .name{
+  margin:5px 28px 5px 0;
+  text-align:center;
+  font-size:14px;
+  line-height:1.08;
+}
+.card .meta{
+  padding-top:5px;
+  gap:4px;
+  font-size:7px;
+}
+.stateMark{padding:3px 5px;font-size:6px}
+.nextRow{margin-top:5px;align-items:center}
+.nextRace{font-size:0}
+.nextRace b{font-size:12px;line-height:1}
+.cutoff{font-size:6px;line-height:1.15}
+.cutoff b{font-size:9px;margin-top:1px}
+.countdown{
+  margin-top:4px;
+  padding:3px 2px;
+  border-radius:999px;
+  background:#f1f4f8;
+  font-size:6px;
+  line-height:1.1;
+}
+.offtext{height:42px}
+.offtext b{font-size:7px;padding:5px 8px}
+.card.off .name{margin-right:0}
+@media(max-width:390px){
+  .card{min-height:91px;padding:6px 5px 7px}
+  .card .name{font-size:13px;margin-right:26px}
+  .mark{width:21px;height:21px;font-size:11px}
+  .nextRace b{font-size:11px}
+  .cutoff b{font-size:8.5px}
+  .countdown{font-size:5.8px}
+}
+
 </style>
 </head>
 <body>
@@ -288,19 +356,18 @@ function meetingState(m,next){
 }
 function normTitle(m){return `${m.title||""} ${m.raceType||""}`.replace(/\s+/g,"");}
 function timeMark(m){
-  const title=normTitle(m), races=m.races||[];
-  const last=races.length?races[races.length-1].deadline:"";
-  const hm=last?Number(last.replace(":","")):0;
-  // Explicit title wording takes priority. "デイ" is intentionally not shown.
-  if(/ミッドナイト/.test(title))return ["midnight","★"];
-  if(/ナイター/.test(title))return ["night","☾"];
-  if(/サマータイム|サマー/.test(title))return ["summer","☀"];
-  if(/モーニング/.test(title))return ["morning","☀"];
-  // Fallback from the official final-race cutoff time when title has no time label.
-  if(hm>=2140)return ["midnight","★"];
-  if(hm>=1740)return ["night","☾"];
-  if(hm>=1630)return ["summer","☀"];
-  if(hm>0 && hm<=1600)return ["morning","☀"];
+  const races=m.races||[];
+  const first=races.find(r=>Number(r.raceNo)===1)||races[0];
+  if(!first || !first.deadline)return null;
+
+  const [h,min]=first.deadline.split(":").map(Number);
+  const total=h*60+min;
+
+  // User-defined classification based on 1R time.
+  if(total>=510 && total<=540)return ["morning","☀"];   // 08:30-09:00
+  if(total>=680 && total<=780)return ["summer","☀"];   // 11:20-13:00
+  if(total>=900 && total<=960)return ["night","☾"];    // 15:00-16:00
+  if(total>=1020 && total<=1080)return ["midnight","★"]; // 17:00-18:00
   return null;
 }
 function eventMarks(m){
@@ -341,7 +408,7 @@ function renderVenues(){
       <div class="cardTop"><div class="iconStack">${marks}</div></div>
       <div class="name">${name}</div>
       <div class="meta"><span class="stateMark ${st.cls}"><i></i>${st.label}</span><span>${esc(m.day||"")}</span></div>
-      <div class="nextRow"><div class="nextRace">NEXT<b>${next.raceNo}R</b></div><div class="cutoff">締切予定<b>${esc(next.deadline)}</b></div></div>
+      <div class="nextRow"><div class="nextRace"><b>${next.raceNo}R</b></div><div class="cutoff">締切予定<b>${esc(next.deadline)}</b></div></div>
       <div class="countdown ${urgent?"urgent":""}">${esc(countdownText(next.deadline))}</div>
       <div class="progress"><i style="width:${pct}%"></i></div>
     </div>`;
