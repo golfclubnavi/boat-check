@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T17:24:54+09:00",
+  "updatedAt": "2026-09-05T17:36:31+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -198,7 +198,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 林 美憲",
+              "racerName": "発売終了 林 美憲",
               "class": "A1"
             },
             {
@@ -6160,7 +6160,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 新開 航",
+              "racerName": "発売終了 新開 航",
               "class": "A1"
             },
             {
