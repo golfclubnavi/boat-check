@@ -1,6 +1,6 @@
 {
   "schemaVersion": "20.0",
-  "updatedAt": "2026-09-05T15:06:02+09:00",
+  "updatedAt": "2026-09-05T15:28:00+09:00",
   "dateJST": "20260905",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -18,7 +18,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 品川 賢次",
+              "racerName": "発売終了 品川 賢次",
               "class": "B2"
             },
             {
@@ -784,7 +784,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 川添 英正",
+              "racerName": "発売終了 川添 英正",
               "class": "B1"
             },
             {
@@ -1226,7 +1226,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 佐藤 航",
+              "racerName": "発売終了 佐藤 航",
               "class": "A1"
             },
             {
@@ -1786,7 +1786,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 森林 太",
+              "racerName": "発売終了 森林 太",
               "class": "B1"
             },
             {
@@ -2552,7 +2552,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 末永 和也",
+              "racerName": "発売終了 末永 和也",
               "class": "A1"
             },
             {
@@ -3436,7 +3436,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 長谷川 晴哉",
+              "racerName": "発売終了 長谷川 晴哉",
               "class": "A1"
             },
             {
@@ -3554,7 +3554,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 佐々木 翔斗",
+              "racerName": "発売終了 佐々木 翔斗",
               "class": "A2"
             },
             {
@@ -4320,7 +4320,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中里 英夫",
+              "racerName": "発売終了 中里 英夫",
               "class": "B1"
             },
             {
@@ -4726,7 +4726,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 根岸 真優",
+              "racerName": "発売終了 根岸 真優",
               "class": "B1"
             },
             {
@@ -5322,7 +5322,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 内山 文典",
+              "racerName": "発売終了 内山 文典",
               "class": "B1"
             },
             {
