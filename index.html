@@ -314,6 +314,76 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
   .mark{width:20px;height:20px}
 }
 
+
+/* v28: stronger site-matched borders + true centered venue names */
+.card{
+  border:1.35px solid #8fb9dc;
+  box-shadow:0 5px 14px rgba(8,32,59,.07);
+}
+.card.off{
+  border-color:#c8d8e6;
+}
+.card.isLive,.card.isSoon{
+  border-color:#6fa8d7;
+}
+.nameRow{
+  position:relative;
+  display:block;
+  min-height:26px;
+}
+.nameRow .venueTitle{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:calc(100% - 42px);
+  text-align:center;
+  font-size:14px;
+  font-weight:950;
+  color:var(--text);
+  line-height:1.05;
+  white-space:nowrap;
+  overflow:visible;
+  text-overflow:clip;
+}
+.nameRow .leftMark{
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+}
+.nameRow .rightMark{
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+}
+.mark{
+  width:18px;
+  height:18px;
+  font-size:10px;
+  box-shadow:0 2px 4px rgba(8,32,59,.09);
+}
+.mark.summer::before{font-size:11px}
+.card .meta{
+  justify-content:center;
+}
+@media(max-width:390px){
+  .nameRow .venueTitle{
+    width:calc(100% - 38px);
+    font-size:12.6px;
+    letter-spacing:-.02em;
+  }
+  .mark{width:17px;height:17px;font-size:9.5px}
+  .mark.summer::before{font-size:10.5px}
+}
+
 </style>
 </head>
 <body>
@@ -479,7 +549,7 @@ function eventMarks(m){
   const title=normTitle(m), marks=[];
   const tm=timeMark(m);
   if(tm)marks.push(`<span class="mark ${tm[0]}" aria-label="${tm[0]}">${tm[1]}</span>`);
-  if(/女子|オールレディース|ヴィーナス/.test(title))marks.push(`<span class="mark women" aria-label="女子戦">♥</span>`);
+  if(/オールレディース|ヴィーナスシリーズ|レディースオールスター|クイーンズクライマックス|レディースチャレンジカップ/.test(title))marks.push(`<span class="mark women" aria-label="女子戦">♥</span>`);
   const grade=meetingGrade(m);
   if(["G3","G2","G1","SG"].includes(grade))marks.push(`<span class="gradeMark ${grade.toLowerCase()}">${grade}</span>`);
   return marks.join("");
@@ -512,7 +582,7 @@ function renderVenues(){
       ? `<span class="mark ${tm[0]}" aria-label="${tm[0]}">${tm[1]}</span>`
       : "";
 
-    const right = /女子|オールレディース|ヴィーナス/.test(title)
+    const right = /オールレディース|ヴィーナスシリーズ|レディースオールスター|クイーンズクライマックス|レディースチャレンジカップ/.test(title)
       ? `<span class="mark women" aria-label="女子戦">♥</span>`
       : "";
 
