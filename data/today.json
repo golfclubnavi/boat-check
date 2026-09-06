@@ -1,6 +1,6 @@
 {
   "schemaVersion": "31.0",
-  "updatedAt": "2026-09-06T08:36:15+09:00",
+  "updatedAt": "2026-09-06T09:42:09+09:00",
   "dateJST": "20260906",
   "source": "BOAT RACE official public pages",
   "meetings": [
@@ -7679,7 +7679,8 @@
               "racerName": "平本 真之",
               "class": "A1",
               "branch": "愛知",
-              "age": 42
+              "age": 42,
+              "period": 96
             },
             {
               "lane": 2,
@@ -7774,7 +7775,8 @@
               "racerName": "関 浩哉",
               "class": "A1",
               "branch": "群馬",
-              "age": 31
+              "age": 31,
+              "period": 115
             },
             {
               "lane": 6,
