@@ -679,7 +679,38 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .quickDataPanel p{
   margin:0;color:#65778a;font-size:10px;font-weight:650;line-height:1.65
 }
+
 .detailAnalysisNotice{margin-top:12px}
+
+.raceQuickGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  padding:9px 10px 11px;
+  border-top:1px solid var(--line);
+  background:#f8fbfe;
+  border-radius:0 0 13px 13px;
+}
+.raceQuickGrid button{
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid #c9dceb;
+  background:#fff;
+  color:#24445f;
+  border-radius:8px;
+  min-height:34px;
+  padding:6px 3px;
+  font-family:inherit;
+  font-size:8.5px;
+  font-weight:850;
+  line-height:1.15;
+  cursor:pointer;
+}
+.raceQuickGrid button:active{
+  transform:scale(.97);
+  background:#eaf4fb;
+}
+
 
 
 .raceCardPro{scroll-margin-top:12px}
@@ -1054,11 +1085,11 @@ function renderRaceJump(m){
     `<button ${has.has(n)?"":'disabled style="opacity:.42"'} onclick="jumpRace(${n})">${n}R</button>`
   ).join("");
 }
-function jumpRace(no, behavior="smooth"){
+function jumpRace(no, behavior="smooth", block="start"){
   const el=document.getElementById(`race-card-${no}`);
   if(!el)return;
   document.querySelectorAll("#raceJump button").forEach((b,i)=>b.classList.toggle("active",i===Number(no)-1));
-  el.scrollIntoView({behavior,block:"start"});
+  el.scrollIntoView({behavior,block});
 }
 
 function raceMinutesUntil(deadline){
@@ -1112,7 +1143,7 @@ function openVenue(code, push=true){
   const autoTarget=next || (view.races||[]).slice(-1)[0] || null;
   if(autoTarget){
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      jumpRace(Number(autoTarget.raceNo), "instant");
+      jumpRace(Number(autoTarget.raceNo), "instant", "center");
     }));
   }else{
     scrollTo({top:0,behavior:"instant"});
@@ -1164,6 +1195,15 @@ function renderRaces(m){
         <span>${(r.boats||[]).length===6?"6艇 出走表":"出走データ確認中"}</span>
         <b class="${urgent?"alert":""}">詳細を見る ›</b>
       </div>
+
+      <div class="raceQuickGrid" onclick="event.stopPropagation()">
+        <button onclick="openRaceData(${Number(r.raceNo)},'course')">コース別情報</button>
+        <button onclick="openRaceData(${Number(r.raceNo)},'meet')">今節成績</button>
+        <button onclick="openRaceData(${Number(r.raceNo)},'motor')">モーター情報</button>
+        <button onclick="openRaceData(${Number(r.raceNo)},'exhibition')">展示情報</button>
+        <button onclick="openRaceData(${Number(r.raceNo)},'odds')">オッズ一覧</button>
+        <button onclick="openRaceData(${Number(r.raceNo)},'result')">結果</button>
+      </div>
     </div>`;
   }).join("");
 }
@@ -1187,6 +1227,18 @@ function openRace(no, push=true){
   showRaceData("course", document.querySelector('.quickDataTools [data-panel="course"]'));
   scrollTo({top:0,behavior:"instant"});
 }
+function openRaceData(no, type){
+  openRace(no);
+  requestAnimationFrame(()=>{
+    const btn=document.querySelector(`.quickDataTools [data-panel="${type}"]`);
+    showRaceData(type, btn);
+    const panel=document.getElementById("quickDataPanel");
+    if(panel){
+      setTimeout(()=>panel.scrollIntoView({behavior:"smooth",block:"center"}),60);
+    }
+  });
+}
+
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
@@ -1263,3 +1315,41 @@ setInterval(()=>{if(state.meetings.length){renderVenues()}},30000);
 </script>
 </body>
 </html>
+
+<style>
+/* v33: venue cards - remove bottom blue accent/progress line */
+.venueCard .progress,
+.venueCard .progressBar,
+.venueCard .cardProgress,
+.card .progress,
+.card .progressBar,
+.card .cardProgress {
+  display:none !important;
+}
+</style>
+
+<script>
+/* v33: BOAT CHECK logo acts as Home button */
+document.addEventListener("DOMContentLoaded", () => {
+  const candidates = [...document.querySelectorAll("header *, .header *, .brand, .logo, h1")];
+  const brand = candidates.find(el => {
+    const t = (el.textContent || "").replace(/\s+/g," ").trim();
+    return /BOAT\s*[✓✔∨√]?\s*CHECK/i.test(t) && el.children.length <= 6;
+  });
+  if (brand) {
+    brand.style.cursor = "pointer";
+    brand.setAttribute("role","button");
+    brand.setAttribute("aria-label","ホームへ戻る");
+    const goHome = () => {
+      if (typeof showHome === "function") showHome();
+      if (typeof history !== "undefined") history.pushState({view:"home"},"",location.pathname);
+      window.scrollTo({top:0,behavior:"instant"});
+    };
+    brand.addEventListener("click", goHome);
+    brand.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goHome(); }
+    });
+    brand.tabIndex = 0;
+  }
+});
+</script>
