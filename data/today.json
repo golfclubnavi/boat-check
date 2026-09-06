@@ -1,6 +1,6 @@
 {
   "schemaVersion": "37.0",
-  "updatedAt": "2026-09-06T13:38:36+09:00",
+  "updatedAt": "2026-09-06T14:07:46+09:00",
   "dateJST": "20260906",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -1480,7 +1480,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 藤原 碧生",
+              "racerName": "発売終了 藤原 碧生",
               "class": "A1"
             },
             {
@@ -3478,11 +3478,11 @@
         },
         {
           "raceNo": 7,
-          "deadline": "13:56",
+          "deadline": "14:01",
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山本 稔太朗",
+              "racerName": "発売終了 山本 稔太朗",
               "class": "B1"
             },
             {
@@ -3534,7 +3534,7 @@
         },
         {
           "raceNo": 8,
-          "deadline": "14:24",
+          "deadline": "14:29",
           "boats": [
             {
               "lane": 1,
@@ -3590,7 +3590,7 @@
         },
         {
           "raceNo": 9,
-          "deadline": "14:52",
+          "deadline": "14:57",
           "boats": [
             {
               "lane": 1,
@@ -3646,7 +3646,7 @@
         },
         {
           "raceNo": 10,
-          "deadline": "15:22",
+          "deadline": "15:27",
           "boats": [
             {
               "lane": 1,
@@ -3702,7 +3702,7 @@
         },
         {
           "raceNo": 11,
-          "deadline": "15:53",
+          "deadline": "15:58",
           "boats": [
             {
               "lane": 1,
@@ -3758,7 +3758,7 @@
         },
         {
           "raceNo": 12,
-          "deadline": "16:25",
+          "deadline": "16:30",
           "boats": [
             {
               "lane": 1,
@@ -4606,7 +4606,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 永井 聖美",
+              "racerName": "発売終了 永井 聖美",
               "class": "B1"
             },
             {
@@ -7292,7 +7292,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 石本 裕武",
+              "racerName": "発売終了 石本 裕武",
               "class": "A1"
             },
             {
@@ -15963,7 +15963,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 後藤 美翼",
+              "racerName": "発売終了 後藤 美翼",
               "class": "A2"
             },
             {
@@ -16642,7 +16642,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 後藤 美翼",
+                  "racerName": "発売終了 後藤 美翼",
                   "class": "A2"
                 },
                 {
@@ -17133,7 +17133,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 向後 龍一",
+              "racerName": "発売終了 向後 龍一",
               "class": "A2"
             },
             {
@@ -19462,7 +19462,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 鳥飼 眞",
+              "racerName": "発売終了 鳥飼 眞",
               "class": "A2"
             },
             {
