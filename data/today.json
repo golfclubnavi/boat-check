@@ -1,6 +1,6 @@
 {
   "schemaVersion": "37.0",
-  "updatedAt": "2026-09-06T14:07:46+09:00",
+  "updatedAt": "2026-09-06T14:37:36+09:00",
   "dateJST": "20260906",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -1127,7 +1127,8 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": null
     },
     {
       "venueCode": "02",
@@ -1536,7 +1537,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 川添 英正",
+              "racerName": "発売終了 川添 英正",
               "class": "B1"
             },
             {
@@ -3129,7 +3130,37 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "62%",
+            "0%",
+            "25%",
+            "12%",
+            "0%",
+            "0%"
+          ],
+          "2着": [
+            "12%",
+            "37%",
+            "25%",
+            "0%",
+            "25%",
+            "0%"
+          ],
+          "3着": [
+            "12%",
+            "25%",
+            "0%",
+            "37%",
+            "0%",
+            "25%"
+          ]
+        },
+        "completedRaces": 8
+      }
     },
     {
       "venueCode": "03",
@@ -3534,11 +3565,11 @@
         },
         {
           "raceNo": 8,
-          "deadline": "14:29",
+          "deadline": "14:31",
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 鈴木 結平太",
+              "racerName": "発売終了 鈴木 結平太",
               "class": "B2"
             },
             {
@@ -3590,7 +3621,7 @@
         },
         {
           "raceNo": 9,
-          "deadline": "14:57",
+          "deadline": "14:59",
           "boats": [
             {
               "lane": 1,
@@ -3646,7 +3677,7 @@
         },
         {
           "raceNo": 10,
-          "deadline": "15:27",
+          "deadline": "15:29",
           "boats": [
             {
               "lane": 1,
@@ -3702,7 +3733,7 @@
         },
         {
           "raceNo": 11,
-          "deadline": "15:58",
+          "deadline": "16:00",
           "boats": [
             {
               "lane": 1,
@@ -3758,7 +3789,7 @@
         },
         {
           "raceNo": 12,
-          "deadline": "16:30",
+          "deadline": "16:32",
           "boats": [
             {
               "lane": 1,
@@ -4253,7 +4284,37 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "28%",
+            "28%",
+            "28%",
+            "0%",
+            "14%",
+            "0%"
+          ],
+          "2着": [
+            "42%",
+            "0%",
+            "14%",
+            "0%",
+            "28%",
+            "14%"
+          ],
+          "3着": [
+            "0%",
+            "0%",
+            "28%",
+            "42%",
+            "0%",
+            "28%"
+          ]
+        },
+        "completedRaces": 7
+      }
     },
     {
       "venueCode": "04",
@@ -4662,7 +4723,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 森田 梨湖",
+              "racerName": "発売終了 森田 梨湖",
               "class": "B2"
             },
             {
@@ -5377,7 +5438,37 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "42%",
+            "28%",
+            "14%",
+            "0%",
+            "14%",
+            "0%"
+          ],
+          "2着": [
+            "14%",
+            "28%",
+            "14%",
+            "14%",
+            "28%",
+            "0%"
+          ],
+          "3着": [
+            "28%",
+            "0%",
+            "42%",
+            "14%",
+            "0%",
+            "14%"
+          ]
+        },
+        "completedRaces": 8
+      }
     },
     {
       "venueCode": "07",
@@ -6940,7 +7031,8 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": null
     },
     {
       "venueCode": "09",
@@ -7348,7 +7440,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 渡邉 和将",
+              "racerName": "発売終了 渡邉 和将",
               "class": "A1"
             },
             {
@@ -8941,7 +9033,37 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "75%",
+            "0%",
+            "25%",
+            "0%",
+            "0%",
+            "0%"
+          ],
+          "2着": [
+            "12%",
+            "25%",
+            "0%",
+            "62%",
+            "0%",
+            "0%"
+          ],
+          "3着": [
+            "0%",
+            "25%",
+            "37%",
+            "0%",
+            "12%",
+            "25%"
+          ]
+        },
+        "completedRaces": 8
+      }
     },
     {
       "venueCode": "10",
@@ -9574,7 +9696,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 吉田 拡郎",
+              "racerName": "発売終了 吉田 拡郎",
               "class": "A1"
             },
             {
@@ -10943,7 +11065,37 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "58%",
+            "25%",
+            "16%",
+            "0%",
+            "0%",
+            "0%"
+          ],
+          "2着": [
+            "0%",
+            "25%",
+            "25%",
+            "33%",
+            "16%",
+            "0%"
+          ],
+          "3着": [
+            "16%",
+            "25%",
+            "16%",
+            "8%",
+            "8%",
+            "25%"
+          ]
+        },
+        "completedRaces": 12
+      }
     },
     {
       "venueCode": "11",
@@ -11352,7 +11504,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 土井 歩夢",
+              "racerName": "発売終了 土井 歩夢",
               "class": "A2"
             },
             {
@@ -12506,7 +12658,37 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "37%",
+            "25%",
+            "12%",
+            "0%",
+            "25%",
+            "0%"
+          ],
+          "2着": [
+            "25%",
+            "0%",
+            "37%",
+            "25%",
+            "0%",
+            "12%"
+          ],
+          "3着": [
+            "12%",
+            "37%",
+            "12%",
+            "12%",
+            "12%",
+            "12%"
+          ]
+        },
+        "completedRaces": 8
+      }
     },
     {
       "venueCode": "12",
@@ -15386,7 +15568,8 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": null
     },
     {
       "venueCode": "14",
@@ -16019,7 +16202,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 田口 節子",
+              "racerName": "発売終了 田口 節子",
               "class": "A1"
             },
             {
@@ -16698,7 +16881,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 田口 節子",
+                  "racerName": "発売終了 田口 節子",
                   "class": "A1"
                 },
                 {
@@ -16780,7 +16963,37 @@
           "day": "最終日",
           "races": []
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "36%",
+            "27%",
+            "18%",
+            "18%",
+            "0%",
+            "0%"
+          ],
+          "2着": [
+            "27%",
+            "18%",
+            "27%",
+            "18%",
+            "9%",
+            "0%"
+          ],
+          "3着": [
+            "9%",
+            "18%",
+            "9%",
+            "9%",
+            "18%",
+            "36%"
+          ]
+        },
+        "completedRaces": 12
+      }
     },
     {
       "venueCode": "17",
@@ -17189,7 +17402,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 北川 潤二",
+              "racerName": "発売終了 北川 潤二",
               "class": "A1"
             },
             {
@@ -19221,7 +19434,37 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "28%",
+            "14%",
+            "14%",
+            "0%",
+            "42%",
+            "0%"
+          ],
+          "2着": [
+            "14%",
+            "0%",
+            "14%",
+            "42%",
+            "0%",
+            "28%"
+          ],
+          "3着": [
+            "14%",
+            "0%",
+            "28%",
+            "28%",
+            "0%",
+            "28%"
+          ]
+        },
+        "completedRaces": 7
+      }
     },
     {
       "venueCode": "22",
@@ -19518,7 +19761,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 今泉 友吾",
+              "racerName": "発売終了 今泉 友吾",
               "class": "A1"
             },
             {
@@ -21662,7 +21905,37 @@
             }
           ]
         }
-      ]
+      ],
+      "venueCourseTrend": {
+        "source": "BOAT RACE official resultlist",
+        "rows": {
+          "1着": [
+            "83%",
+            "16%",
+            "0%",
+            "0%",
+            "0%",
+            "0%"
+          ],
+          "2着": [
+            "0%",
+            "50%",
+            "16%",
+            "0%",
+            "16%",
+            "16%"
+          ],
+          "3着": [
+            "0%",
+            "0%",
+            "0%",
+            "66%",
+            "33%",
+            "0%"
+          ]
+        },
+        "completedRaces": 6
+      }
     }
   ],
   "errors": []
