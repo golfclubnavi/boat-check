@@ -1191,18 +1191,18 @@ function renderRaces(m){
 
       <div class="laneStrip">${boats}</div>
 
+      <div class="raceQuickGrid" onclick="event.stopPropagation()">
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'course')">コース別情報</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'meet')">今節成績</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'motor')">モーター情報</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'exhibition')">展示情報</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'odds')">オッズ一覧</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'result')">結果</button>
+      </div>
+
       <div class="raceFootPro">
         <span>${(r.boats||[]).length===6?"6艇 出走表":"出走データ確認中"}</span>
         <b class="${urgent?"alert":""}">詳細を見る ›</b>
-      </div>
-
-      <div class="raceQuickGrid" onclick="event.stopPropagation()">
-        <button onclick="openRaceData(${Number(r.raceNo)},'course')">コース別情報</button>
-        <button onclick="openRaceData(${Number(r.raceNo)},'meet')">今節成績</button>
-        <button onclick="openRaceData(${Number(r.raceNo)},'motor')">モーター情報</button>
-        <button onclick="openRaceData(${Number(r.raceNo)},'exhibition')">展示情報</button>
-        <button onclick="openRaceData(${Number(r.raceNo)},'odds')">オッズ一覧</button>
-        <button onclick="openRaceData(${Number(r.raceNo)},'result')">結果</button>
       </div>
     </div>`;
   }).join("");
@@ -1353,3 +1353,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
+
+<style>
+/* v35: race-list direct data buttons */
+.raceCardPro .raceQuickGrid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:6px !important;
+  padding:9px 10px !important;
+  background:#f2f7fb !important;
+  border-top:1px solid #d8e5ef !important;
+  border-bottom:1px solid #d8e5ef !important;
+}
+.raceCardPro .raceQuickGrid button{
+  display:block !important;
+  width:100% !important;
+  min-height:34px !important;
+  margin:0 !important;
+  padding:7px 2px !important;
+  border:1px solid #b9d3e6 !important;
+  border-radius:7px !important;
+  background:#ffffff !important;
+  color:#155b95 !important;
+  font-family:inherit !important;
+  font-size:8.5px !important;
+  font-weight:900 !important;
+  line-height:1.15 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+</style>
