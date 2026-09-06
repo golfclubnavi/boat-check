@@ -1617,3 +1617,49 @@ document.addEventListener("DOMContentLoaded",()=>{
   font-weight:850 !important;
 }
 </style>
+
+<style>
+/* v41: keep all 24 venue cards uniform */
+.card,
+.venueCard{
+  min-height:0 !important;
+}
+
+.card.todayEnded{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:flex-start !important;
+}
+
+.card.todayEnded .endedRow{
+  min-height:39px !important;
+  margin-top:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.card.todayEnded .endText{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  line-height:1 !important;
+  font-size:11px !important;
+  display:block !important;
+}
+
+.card.todayEnded .endedSpacer{
+  white-space:nowrap !important;
+  min-height:24px !important;
+  padding:5px 4px !important;
+  line-height:1 !important;
+}
+
+/* force every home card to the original compact grid height */
+#venueGrid .card,
+#venueGrid .venueCard,
+.grid .card,
+.venueGrid .card{
+  height:152px !important;
+  box-sizing:border-box !important;
+}
+</style>
