@@ -1172,6 +1172,44 @@ function renderMeetDayTabs(m, selectedDate){
   const activeBtn=wrap.querySelector("button.active");
   if(activeBtn)setTimeout(()=>activeBtn.scrollIntoView({behavior:"instant",inline:"center",block:"nearest"}),0);
 }
+
+function currentDayView(m,date){
+  const d=normalizedMeetDays(m).find(x=>x.date===date);
+  if(!d)return {...m};
+  return {...m,date:d.date,day:d.day||d.label||m.day,races:d.races||[]};
+}
+
+function selectMeetDay(date){
+  const m=state.currentMeeting||state.currentMeetingView;
+  if(!m)return;
+
+  state.currentDayDate=date;
+  const view=currentDayView(m,date);
+  state.currentMeetingView=view;
+
+  renderMeetDayTabs(m,date);
+
+  const next=getNextRace(view);
+  $("venueName").textContent=m.venueName||"";
+  $("venueInfo").textContent=`${formatDataDate(view.date)}${view.day?` ・ ${view.day}`:""}`;
+  $("venueGrade").textContent=meetingGrade(m);
+  $("eventTitle").textContent=m.title||"";
+
+  $("quickDay").textContent=view.day||"開催日";
+  $("quickNext").textContent=next?`${next.raceNo}R`:(view.date>state.dateJST?"未確定":"本日終了");
+  $("quickDeadline").textContent=next?(next.deadline||"-"):"-";
+
+  renderRaceJump(view);
+  renderRaces(view);
+
+  const autoTarget=next || (view.races||[]).slice(-1)[0] || null;
+  if(autoTarget){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      jumpRace(Number(autoTarget.raceNo), "instant", "center");
+    }));
+  }
+}
+
 function renderRaceJump(m){
   const has=new Set((m.races||[]).map(r=>Number(r.raceNo)));
   $("raceJump").innerHTML=Array.from({length:12},(_,i)=>i+1).map(n=>
