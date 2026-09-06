@@ -798,6 +798,51 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 }
 </style>
 
+
+<style>
+.raceQuickGrid9{grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:6px !important}
+.raceQuickGrid9 button{min-height:34px !important;font-size:8.5px !important;font-weight:900 !important}
+
+.raceDataTabs{
+  display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  margin:14px -2px 0;padding:2px 2px 8px;scroll-snap-type:x proximity
+}
+.raceDataTabs::-webkit-scrollbar{display:none}
+.raceDataTabs button{
+  flex:0 0 auto;min-width:92px;height:42px;padding:0 12px;border:1px solid #bfd6e8;border-radius:10px;
+  background:#edf6fc;color:#1c557f;font-family:inherit;font-size:10px;font-weight:900;white-space:nowrap;
+  scroll-snap-align:center;box-shadow:0 2px 6px rgba(16,55,86,.04)
+}
+.raceDataTabs button.active{background:#0f73b7;color:#fff;border-color:#0f73b7;box-shadow:0 5px 12px rgba(15,115,183,.18)}
+
+.dataSectionHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.dataSectionHead b{font-size:14px;color:#092c4b}
+.dataSectionHead span{font-size:8px;color:#607990;background:#edf4fa;border-radius:999px;padding:4px 7px;font-weight:850}
+.dataPlaceholder{margin:0;color:#64778b;font-size:10px;font-weight:700;line-height:1.7}
+
+.sixCompare{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid #d7e4ee;border-radius:10px;overflow:hidden}
+.sixCell{min-width:0;text-align:center;padding:8px 2px;background:#fff;border-right:1px solid #e0e9f0}
+.sixCell:last-child{border-right:none}
+.sixCell .laneBadge{width:24px;height:22px;line-height:22px;margin:0 auto 7px;border-radius:6px;background:#edf2f7;color:#183852;font-size:9px;font-weight:950}
+.sixCell.lane2 .laneBadge{background:#171717;color:#fff}.sixCell.lane3 .laneBadge{background:#ef3340;color:#fff}
+.sixCell.lane4 .laneBadge{background:#2d5bd3;color:#fff}.sixCell.lane5 .laneBadge{background:#f2db00;color:#111}
+.sixCell.lane6 .laneBadge{background:#159447;color:#fff}
+.sixCell strong{display:block;font-size:8px;color:#132f49;line-height:1.35;margin-bottom:5px}
+.sixCell small{display:block;font-size:6.8px;color:#697e92;font-weight:800;line-height:1.45}
+
+.skipPrep{display:flex;gap:12px;align-items:center}
+.skipScoreGhost{flex:0 0 58px;height:58px;border-radius:16px;background:#eef4f8;display:grid;place-items:center;font-size:25px;font-weight:950;color:#8da0b1}
+.skipPrep strong{font-size:12px;color:#163a58}.skipPrep p{margin:4px 0 0;font-size:9px;line-height:1.6;color:#6b7e90}
+
+.meetDayTabs{display:flex !important;gap:7px !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 2px 10px !important}
+.meetDayTabs::-webkit-scrollbar{display:none}
+.meetDayTabs button{
+  flex:0 0 72px !important;min-height:56px !important;display:flex !important;flex-direction:column !important;
+  align-items:center !important;justify-content:center !important;gap:3px !important;white-space:nowrap !important
+}
+.meetDayTabs .meetDate{font-size:10px;font-weight:950}.meetDayTabs .meetLabel{font-size:9px;font-weight:850}
+</style>
+
 </head>
 <body>
 <header>
@@ -899,15 +944,17 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
     <b>レースデータ</b>
     <span>見たい情報へ直接アクセス</span>
   </div>
-  <div class="tools quickDataTools">
-    <button class="tool primary" data-panel="course" onclick="showRaceData('course', this)">コース別情報</button>
-    <button class="tool" data-panel="meet" onclick="showRaceData('meet', this)">今節成績</button>
-    <button class="tool" data-panel="motor" onclick="showRaceData('motor', this)">モーター情報</button>
-    <button class="tool" data-panel="exhibition" onclick="showRaceData('exhibition', this)">展示情報</button>
-    <button class="tool" data-panel="odds" onclick="showRaceData('odds', this)">オッズ一覧</button>
-    <button class="tool" data-panel="result" onclick="showRaceData('result', this)">結果</button>
+  <div class="raceDataTabs" id="raceDataTabs">
+    <button class="active" data-panel="racer" onclick="showRaceData('racer',this)">選手情報</button>
+    <button data-panel="course" onclick="showRaceData('course',this)">コース別情報</button>
+    <button data-panel="meet" onclick="showRaceData('meet',this)">節間成績</button>
+    <button data-panel="motor" onclick="showRaceData('motor',this)">モーター情報</button>
+    <button data-panel="before" onclick="showRaceData('before',this)">直前情報</button>
+    <button data-panel="odds" onclick="showRaceData('odds',this)">オッズ</button>
+    <button data-panel="skip" onclick="showRaceData('skip',this)">見送り度</button>
+    <button data-panel="result" onclick="showRaceData('result',this)">結果</button>
+    <button data-panel="replay" onclick="showRaceData('replay',this)">リプレイ</button>
   </div>
-
   <div class="quickDataPanel" id="quickDataPanel"></div>
 
   <div class="dataNoticePro detailAnalysisNotice">
@@ -1110,36 +1157,20 @@ function normalizedMeetDays(m){
   return [{date:m.date,label:m.day||"",day:m.day||"",races:m.races||[]}];
 }
 function renderMeetDayTabs(m, selectedDate){
+  const wrap=$("meetDayTabs");
   const days=normalizedMeetDays(m);
-  $("meetDayTabs").innerHTML=days.map(d=>{
-    const active=d.date===selectedDate;
-    const future=d.date>state.dateJST;
-    return `<button class="meetDayTab ${active?"active":""} ${future?"future":""}" onclick="selectMeetDay('${esc(d.date)}')">
-      <div class="md">${esc(mdLabel(d.date))}</div>
-      <div class="dl">${esc(d.label||"")}</div>
-    </button>`;
+  if(!days.length){wrap.innerHTML="";return;}
+  wrap.innerHTML=days.map(d=>{
+    const raw=String(d.date||"");
+    const mm=raw.length>=8?Number(raw.slice(4,6)):"";
+    const dd=raw.length>=8?Number(raw.slice(6,8)):"";
+    const dateLabel=(mm&&dd)?`${mm}/${dd}`:"";
+    const dayLabel=d.label||d.day||"";
+    const active=raw===String(selectedDate||"");
+    return `<button class="${active?"active":""}" onclick="selectMeetDay('${esc(raw)}')"><span class="meetDate">${esc(dateLabel)}</span><span class="meetLabel">${esc(dayLabel)}</span></button>`;
   }).join("");
-}
-function currentDayView(m,date){
-  const d=normalizedMeetDays(m).find(x=>x.date===date);
-  if(!d)return {...m};
-  return {...m,date:d.date,day:d.day||d.label||m.day,races:d.races||[]};
-}
-function selectMeetDay(date){
-  const m=state.currentMeetingView||state.currentMeeting;if(!m)return;
-  state.currentDayDate=date;
-  const view=currentDayView(m,date);
-  state.currentMeetingView=view;
-  renderMeetDayTabs(m,date);
-
-  const next=getNextRace(view);
-  $("venueInfo").textContent=`${formatDataDate(view.date)}${view.day?` ・ ${view.day}`:""}`;
-  $("quickDay").textContent=view.day||"開催日";
-  $("quickNext").textContent=next?`${next.raceNo}R`:(view.date>state.dateJST?"未確定":"本日終了");
-  $("quickDeadline").textContent=next?(next.deadline||"-"):"-";
-
-  renderRaceJump(view);
-  renderRaces(view);
+  const activeBtn=wrap.querySelector("button.active");
+  if(activeBtn)setTimeout(()=>activeBtn.scrollIntoView({behavior:"instant",inline:"center",block:"nearest"}),0);
 }
 function renderRaceJump(m){
   const has=new Set((m.races||[]).map(r=>Number(r.raceNo)));
@@ -1260,13 +1291,16 @@ function renderRaces(m){
 
       <div class="laneStrip">${boats}</div>
 
-      <div class="raceQuickGrid" onclick="event.stopPropagation()">
+      <div class="raceQuickGrid raceQuickGrid9" onclick="event.stopPropagation()">
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'racer')">選手情報</button>
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'course')">コース別情報</button>
-        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'meet')">今節成績</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'meet')">節間成績</button>
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'motor')">モーター情報</button>
-        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'exhibition')">展示情報</button>
-        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'odds')">オッズ一覧</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'before')">直前情報</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'odds')">オッズ</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'skip')">見送り度</button>
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'result')">結果</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'replay')">リプレイ</button>
       </div>
 
       <div class="raceFootPro">
@@ -1293,13 +1327,13 @@ function openRace(no, push=true){
     <div class="cell"><b>${esc(b.class||"-")}</b><span>級別</span></div>
   </div>`).join("");
 
-  showRaceData("course", document.querySelector('.quickDataTools [data-panel="course"]'));
+  showRaceData("racer", document.querySelector('#raceDataTabs [data-panel="racer"]'));
   scrollTo({top:0,behavior:"instant"});
 }
 function openRaceData(no, type){
   openRace(no);
   requestAnimationFrame(()=>{
-    const btn=document.querySelector(`.quickDataTools [data-panel="${type}"]`);
+    const btn=document.querySelector(`#raceDataTabs [data-panel="${type}"]`);
     showRaceData(type, btn);
     const panel=document.getElementById("quickDataPanel");
     if(panel){
@@ -1354,47 +1388,63 @@ function renderCourseInfo(){
   </div>`;
 }
 
+function renderRacerInfo(){
+  const r=state.currentRace||{};
+  const boats=r.boats||[];
+  if(!boats.length){
+    return `<div class="qdh"><b>選手情報</b><span>公式データ取得待ち</span></div><p>出走選手データを取得中です。</p>`;
+  }
+  return `<div class="dataSection">
+    <div class="dataSectionHead"><b>選手情報</b><span>6艇比較</span></div>
+    <div class="sixCompare">
+      ${boats.slice(0,6).map(b=>`
+        <div class="sixCell lane${b.lane}">
+          <div class="laneBadge">${b.lane}</div>
+          <strong>${esc(cleanRacerName(b.racerName)||"--")}</strong>
+          <small>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"--")}</small>
+          <small>${esc(b.branch||b.region||"--")}支部</small>
+          <small>${b.period?esc(b.period)+"期":"--期"} / ${b.age!=null?esc(b.age)+"歳":"--歳"}</small>
+        </div>`).join("")}
+    </div>
+  </div>`;
+}
+
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
-  const labels={
-    course:"コース別情報",
-    meet:"今節成績",
-    motor:"モーター情報",
-    exhibition:"展示情報",
-    odds:"オッズ一覧",
-    result:"結果"
-  };
+  const labels={racer:"選手情報",course:"コース別情報",meet:"節間成績",motor:"モーター情報",before:"直前情報",odds:"オッズ",skip:"見送り度",result:"結果",replay:"リプレイ"};
 
-  document.querySelectorAll(".quickDataTools .tool").forEach(b=>b.classList.remove("primary"));
-  if(btn)btn.classList.add("primary");
+  document.querySelectorAll("#raceDataTabs button").forEach(b=>b.classList.remove("active"));
+  if(btn){btn.classList.add("active");btn.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});}
 
-  if(type==="course"){
-    panel.innerHTML=renderCourseInfo();
+  if(type==="racer"){panel.innerHTML=renderRacerInfo();return;}
+  if(type==="course"){panel.innerHTML=renderCourseInfo();return;}
+  if(type==="skip"){
+    panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>見送り度</b><span>BOAT CHECK独自分析</span></div>
+      <div class="skipPrep"><div class="skipScoreGhost">--</div><div><strong>分析準備中</strong><p>平均ST・コース傾向・今節・モーター・展示・気象が揃い次第、見送り度と理由を表示します。</p></div></div></div>`;
+    return;
+  }
+  if(type==="replay"){
+    panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>リプレイ</b><span>レース終了後</span></div><p class="dataPlaceholder">公式リプレイへの導線をここに追加します。</p></div>`;
     return;
   }
 
   const dataMap={
     meet:r.meetResults||r.meetData||null,
     motor:r.motorData||r.motors||null,
-    exhibition:r.exhibition||r.exhibitionData||null,
+    before:r.beforeData||r.before||r.exhibition||r.exhibitionData||null,
     odds:r.odds||r.oddsData||null,
     result:r.result||r.raceResult||null
   };
   const data=dataMap[type];
   const hasData=data && (Array.isArray(data) ? data.length : (typeof data==="object" ? Object.keys(data).length : true));
-
   if(!hasData){
-    panel.innerHTML=`<div class="qdh"><b>${labels[type]}</b><span>公式データ連携準備中</span></div>
-      <p>この項目はBOAT RACE公式データ取得を追加後、6艇比較を中心に見やすく整理して表示します。</p>`;
+    panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>${labels[type]}</b><span>公式データ連携準備中</span></div><p class="dataPlaceholder">公式データ取得後、6艇比較を中心に見やすく表示します。</p></div>`;
     return;
   }
-
   const raw=typeof data==="string" ? data : JSON.stringify(data);
-  panel.innerHTML=`<div class="qdh"><b>${labels[type]}</b><span>取得済み</span></div>
-    <p>${esc(raw.length>280?raw.slice(0,280)+"…":raw)}</p>`;
+  panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>${labels[type]}</b><span>取得済み</span></div><p class="dataPlaceholder">${esc(raw.length>320?raw.slice(0,320)+"…":raw)}</p></div>`;
 }
-
 function showHome(){$("venue").classList.add("hidden");$("detail").classList.add("hidden");$("home").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
 function backToVenue(){$("detail").classList.add("hidden");$("venue").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
 
