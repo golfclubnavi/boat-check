@@ -866,6 +866,59 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 }
 </style>
 
+
+<style>
+.raceContextHeader{
+  margin:0 0 14px;padding:14px;border:1px solid #d6e4ef;border-radius:16px;background:#fff;
+  box-shadow:0 7px 20px rgba(17,58,90,.07)
+}
+.raceContextTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.backToListBtn{
+  border:1px solid #c8ddeb;background:#f4f9fc;color:#1c638f;border-radius:999px;
+  padding:7px 11px;font-family:inherit;font-size:9px;font-weight:900
+}
+.raceContextMeta{display:flex;gap:6px;align-items:center;color:#6c8194;font-size:8px;font-weight:850}
+.raceContextMeta span:first-child{color:#0f73b7;background:#eaf5fc;border-radius:999px;padding:4px 7px}
+.raceContextTitleRow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.raceContextVenue{font-size:22px;font-weight:950;line-height:1;color:#092d4d;margin-bottom:7px}
+.raceContextTitle{font-size:11px;font-weight:850;line-height:1.55;color:#2f4a64;max-width:290px}
+.raceContextGrade{
+  flex:0 0 auto;min-width:54px;text-align:center;padding:9px 8px;border-radius:12px;
+  background:#f1f5f8;color:#153a59;font-size:10px;font-weight:950
+}
+.raceContextDays{
+  display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  margin-top:14px;padding-bottom:5px
+}
+.raceContextDays::-webkit-scrollbar{display:none}
+.raceContextDays button{
+  flex:0 0 62px;min-height:48px;border:1px solid #d3e2ed;border-radius:9px;background:#f7fafc;
+  color:#375570;font-family:inherit;font-size:8px;font-weight:850
+}
+.raceContextDays button span,.raceContextDays button b{display:block}
+.raceContextDays button span{font-size:9px;margin-bottom:2px}
+.raceContextDays button.active{background:#0f73b7;color:#fff;border-color:#0f73b7}
+.raceContextRaces{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:10px}
+.raceContextRaces button{
+  height:38px;border:1px solid #c8ddeb;border-radius:8px;background:#eaf4fb;color:#173f60;
+  font-family:inherit;font-size:10px;font-weight:950
+}
+.raceContextRaces button.active{
+  background:#0f73b7;color:#fff;border-color:#0f73b7;box-shadow:0 4px 9px rgba(15,115,183,.18)
+}
+.raceContextRaces button.disabled{opacity:.38}
+.raceContextDeadline{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;
+  padding:12px 13px;border-radius:12px;background:linear-gradient(90deg,#0c4d7d,#0f73b7);color:#fff
+}
+.raceContextRaceName{display:flex;align-items:baseline;gap:8px}
+.raceContextRaceName b{font-size:24px;line-height:1}
+.raceContextRaceName span{font-size:10px;font-weight:850;opacity:.9}
+.raceContextTime{text-align:right}
+.raceContextTime span{display:block;font-size:8px;font-weight:800;opacity:.8;margin-bottom:2px}
+.raceContextTime b{font-size:19px;line-height:1}
+</style>
+
 </head>
 <body>
 <header>
@@ -946,6 +999,39 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 </section>
 
 <section id="detail" class="hidden">
+  
+  <div class="raceContextHeader" id="raceContextHeader">
+    <div class="raceContextTop">
+      <button class="backToListBtn" onclick="showVenue()">‹ レース一覧</button>
+      <div class="raceContextMeta">
+        <span id="ctxDay">開催日</span>
+        <span id="ctxDate">--/--</span>
+      </div>
+    </div>
+
+    <div class="raceContextTitleRow">
+      <div>
+        <div class="raceContextVenue" id="ctxVenue">---</div>
+        <div class="raceContextTitle" id="ctxTitle">---</div>
+      </div>
+      <div class="raceContextGrade" id="ctxGrade">一般</div>
+    </div>
+
+    <div class="raceContextDays" id="ctxMeetDays"></div>
+    <div class="raceContextRaces" id="ctxRaceTabs"></div>
+
+    <div class="raceContextDeadline">
+      <div class="raceContextRaceName">
+        <b id="ctxRaceNo">--R</b>
+        <span id="ctxRaceLabel">レース</span>
+      </div>
+      <div class="raceContextTime">
+        <span>締切予定</span>
+        <b id="ctxDeadline">--:--</b>
+      </div>
+    </div>
+  </div>
+
   <div class="topRaceDataNav">
 <div class="raceDataTabs" id="raceDataTabs">
     <button class="active" data-panel="racer" onclick="showRaceData('racer',this)">選手情報</button>
@@ -1374,11 +1460,73 @@ function renderRaces(m){
     </div>`;
   }).join("");
 }
+
+function raceLabel(r){
+  return r?.raceName || r?.title || r?.name || "レース";
+}
+
+function renderRaceContext(){
+  const m=state.currentMeeting||state.currentMeetingView||{};
+  const view=state.currentMeetingView||m;
+  const r=state.currentRace||{};
+  const selectedDate=state.currentDayDate||view.date||m.date||"";
+  const raw=String(selectedDate||"");
+
+  const y=raw.length>=8?raw.slice(0,4):"";
+  const mo=raw.length>=8?Number(raw.slice(4,6)):"";
+  const d=raw.length>=8?Number(raw.slice(6,8)):"";
+  const dayObj=normalizedMeetDays(m).find(x=>String(x.date)===raw)||{};
+
+  $("ctxDay").textContent=dayObj.label||dayObj.day||view.day||m.day||"開催日";
+  $("ctxDate").textContent=(y&&mo&&d)?`${y}/${String(mo).padStart(2,"0")}/${String(d).padStart(2,"0")}`:"--/--";
+  $("ctxVenue").textContent=m.venueName||"";
+  $("ctxTitle").textContent=m.title||"";
+  $("ctxGrade").textContent=meetingGrade(m);
+  $("ctxRaceNo").textContent=r.raceNo?`${r.raceNo}R`:"--R";
+  $("ctxRaceLabel").textContent=raceLabel(r);
+  $("ctxDeadline").textContent=r.deadline||"--:--";
+
+  const days=normalizedMeetDays(m);
+  $("ctxMeetDays").innerHTML=days.map(x=>{
+    const s=String(x.date||"");
+    const mm=s.length>=8?Number(s.slice(4,6)):"";
+    const dd=s.length>=8?Number(s.slice(6,8)):"";
+    const active=s===raw;
+    return `<button class="${active?"active":""}" onclick="selectMeetDayFromDetail('${esc(s)}')">
+      <span>${mm&&dd?`${mm}/${dd}`:"--/--"}</span>
+      <b>${esc(x.label||x.day||"")}</b>
+    </button>`;
+  }).join("");
+
+  const races=view.races||[];
+  $("ctxRaceTabs").innerHTML=Array.from({length:12},(_,i)=>{
+    const no=i+1;
+    const exists=races.find(x=>Number(x.raceNo)===no);
+    const active=Number(r.raceNo)===no;
+    return `<button class="${active?"active":""} ${exists?"":"disabled"}" ${exists?`onclick="openRace(${no})"`:"disabled"}>${no}R</button>`;
+  }).join("");
+}
+
+function selectMeetDayFromDetail(date){
+  const m=state.currentMeeting||state.currentMeetingView;
+  if(!m)return;
+  state.currentDayDate=date;
+  const view=currentDayView(m,date);
+  state.currentMeetingView=view;
+  const next=getNextRace(view) || (view.races||[])[0] || null;
+  if(next){
+    openRace(Number(next.raceNo));
+  }else{
+    renderRaceContext();
+  }
+}
+
 function openRace(no, push=true){
   const m=state.currentMeeting;if(!m)return;
   if(push)history.pushState({view:"detail",code:m.venueCode,raceNo:Number(no)},"",`#race-${m.venueCode}-${no}`);
   const r=(m.races||[]).find(x=>Number(x.raceNo)===Number(no));if(!r)return;
   state.currentRace=r;
+  renderRaceContext();
   $("venue").classList.add("hidden");$("detail").classList.remove("hidden");
   $("detailVenue").textContent=`${m.venueName} ${m.day||""} ・ ${displayGrade(m)}`;
   $("detailRace").textContent=`${r.raceNo}R`;
@@ -1503,6 +1651,13 @@ function showRaceData(type, btn){
   const raw=typeof data==="string" ? data : JSON.stringify(data);
   panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>${labels[type]}</b><span>取得済み</span></div><p class="dataPlaceholder">${esc(raw.length>320?raw.slice(0,320)+"…":raw)}</p></div>`;
 }
+function showVenue(){
+  $("detail").classList.add("hidden");
+  $("home").classList.add("hidden");
+  $("venue").classList.remove("hidden");
+  scrollTo({top:0,behavior:"instant"});
+}
+
 function showHome(){$("venue").classList.add("hidden");$("detail").classList.add("hidden");$("home").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
 function backToVenue(){$("detail").classList.add("hidden");$("venue").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
 
