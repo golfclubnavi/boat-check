@@ -652,6 +652,36 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 }
 .raceJump button:active{transform:scale(.97)}
 
+.quickDataTitle{
+  display:flex;align-items:end;justify-content:space-between;
+  gap:10px;margin:16px 2px 8px
+}
+.quickDataTitle b{font-size:14px;color:var(--navy)}
+.quickDataTitle span{font-size:9px;color:#7b8b9d;font-weight:700}
+.quickDataTools{margin-top:0}
+.quickDataTools .tool{
+  appearance:none;-webkit-appearance:none;font-family:inherit;cursor:pointer;
+  width:100%;font-size:11px;line-height:1.2
+}
+.quickDataPanel{
+  margin-top:10px;background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:13px;box-shadow:0 5px 16px rgba(20,50,80,.05)
+}
+.quickDataPanel .qdh{
+  display:flex;justify-content:space-between;gap:8px;align-items:center;
+  margin-bottom:8px
+}
+.quickDataPanel .qdh b{font-size:13px;color:var(--navy)}
+.quickDataPanel .qdh span{
+  font-size:8px;font-weight:850;color:#5d738d;background:#eef4fa;
+  border-radius:999px;padding:4px 7px
+}
+.quickDataPanel p{
+  margin:0;color:#65778a;font-size:10px;font-weight:650;line-height:1.65
+}
+.detailAnalysisNotice{margin-top:12px}
+
+
 .raceCardPro{scroll-margin-top:12px}
 .laneStrip{background:#fff}
 .laneName{min-height:74px!important;padding:5px 1px 4px!important;justify-content:flex-start!important}
@@ -779,13 +809,24 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
   <div class="section"><h3>出走データ</h3><span>BOAT RACE公式</span></div>
   <div class="boats" id="boats"></div>
 
-  <div class="tools">
-    <div class="tool primary">✓ CHECK分析</div>
-    <div class="tool">今節成績</div>
-    <div class="tool">モーター比較</div>
-    <div class="tool">展示・ST</div>
-    <div class="tool">枠別データ</div>
-    <div class="tool">直前情報</div>
+  <div class="quickDataTitle">
+    <b>レースデータ</b>
+    <span>見たい情報へ直接アクセス</span>
+  </div>
+  <div class="tools quickDataTools">
+    <button class="tool primary" data-panel="course" onclick="showRaceData('course', this)">コース別情報</button>
+    <button class="tool" data-panel="meet" onclick="showRaceData('meet', this)">今節成績</button>
+    <button class="tool" data-panel="motor" onclick="showRaceData('motor', this)">モーター情報</button>
+    <button class="tool" data-panel="exhibition" onclick="showRaceData('exhibition', this)">展示情報</button>
+    <button class="tool" data-panel="odds" onclick="showRaceData('odds', this)">オッズ一覧</button>
+    <button class="tool" data-panel="result" onclick="showRaceData('result', this)">結果</button>
+  </div>
+
+  <div class="quickDataPanel" id="quickDataPanel"></div>
+
+  <div class="dataNoticePro detailAnalysisNotice">
+    <strong>✓ BOAT CHECK 独自分析</strong><br>
+    見送り度・展開安定度・異常値・2D展開予測は、必要な公式データが揃い次第ここへ追加します。
   </div>
 </section>
 </main>
@@ -1013,11 +1054,11 @@ function renderRaceJump(m){
     `<button ${has.has(n)?"":'disabled style="opacity:.42"'} onclick="jumpRace(${n})">${n}R</button>`
   ).join("");
 }
-function jumpRace(no){
+function jumpRace(no, behavior="smooth"){
   const el=document.getElementById(`race-card-${no}`);
   if(!el)return;
   document.querySelectorAll("#raceJump button").forEach((b,i)=>b.classList.toggle("active",i===Number(no)-1));
-  el.scrollIntoView({behavior:"smooth",block:"start"});
+  el.scrollIntoView({behavior,block:"start"});
 }
 
 function raceMinutesUntil(deadline){
@@ -1065,7 +1106,17 @@ function openVenue(code, push=true){
   renderMeetDayTabs(m,preferred);
   renderRaceJump(view);
   renderRaces(view);
-  scrollTo({top:0,behavior:"instant"});
+
+  // 場詳細を開いた時点で、現在時刻から最も締切が近いRへ自動移動。
+  // 全レース終了後は、その日の最後のRへ移動。
+  const autoTarget=next || (view.races||[]).slice(-1)[0] || null;
+  if(autoTarget){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      jumpRace(Number(autoTarget.raceNo), "instant");
+    }));
+  }else{
+    scrollTo({top:0,behavior:"instant"});
+  }
 }
 function renderRaces(m){
   const races=m.races||[];
@@ -1132,8 +1183,47 @@ function openRace(no, push=true){
     <div class="player"><b>${esc(b.racerName||"-")}</b><span>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"-")}　${esc(b.branch||b.region||"--")}支部　${b.period?esc(b.period)+"期":"--期"}　${b.age!==undefined&&b.age!==null?esc(b.age)+"歳":"--歳"}</span></div>
     <div class="cell"><b>${esc(b.class||"-")}</b><span>級別</span></div>
   </div>`).join("");
+
+  showRaceData("course", document.querySelector('.quickDataTools [data-panel="course"]'));
   scrollTo({top:0,behavior:"instant"});
 }
+function showRaceData(type, btn){
+  const panel=$("quickDataPanel");
+  const r=state.currentRace||{};
+  const labels={
+    course:"コース別情報",
+    meet:"今節成績",
+    motor:"モーター情報",
+    exhibition:"展示情報",
+    odds:"オッズ一覧",
+    result:"結果"
+  };
+
+  document.querySelectorAll(".quickDataTools .tool").forEach(b=>b.classList.remove("primary"));
+  if(btn)btn.classList.add("primary");
+
+  const dataMap={
+    course:r.courseData||r.course||null,
+    meet:r.meetResults||r.meetData||null,
+    motor:r.motorData||r.motors||null,
+    exhibition:r.exhibition||r.exhibitionData||null,
+    odds:r.odds||r.oddsData||null,
+    result:r.result||r.raceResult||null
+  };
+  const data=dataMap[type];
+  const hasData=data && (Array.isArray(data) ? data.length : (typeof data==="object" ? Object.keys(data).length : true));
+
+  if(!hasData){
+    panel.innerHTML=`<div class="qdh"><b>${labels[type]}</b><span>公式データ連携準備中</span></div>
+      <p>この項目は、BOAT RACE公式の該当データ取得を追加後、ここへ直接表示します。別ページへ移動せず確認できる設計です。</p>`;
+    return;
+  }
+
+  const raw=typeof data==="string" ? data : JSON.stringify(data);
+  panel.innerHTML=`<div class="qdh"><b>${labels[type]}</b><span>取得済み</span></div>
+    <p>${esc(raw.length>280?raw.slice(0,280)+"…":raw)}</p>`;
+}
+
 function showHome(){$("venue").classList.add("hidden");$("detail").classList.add("hidden");$("home").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
 function backToVenue(){$("detail").classList.add("hidden");$("venue").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
 
@@ -1173,3 +1263,41 @@ setInterval(()=>{if(state.meetings.length){renderVenues()}},30000);
 </script>
 </body>
 </html>
+
+<style>
+/* v33: venue cards - remove bottom blue accent/progress line */
+.venueCard .progress,
+.venueCard .progressBar,
+.venueCard .cardProgress,
+.card .progress,
+.card .progressBar,
+.card .cardProgress {
+  display:none !important;
+}
+</style>
+
+<script>
+/* v33: BOAT CHECK logo acts as Home button */
+document.addEventListener("DOMContentLoaded", () => {
+  const candidates = [...document.querySelectorAll("header *, .header *, .brand, .logo, h1")];
+  const brand = candidates.find(el => {
+    const t = (el.textContent || "").replace(/\s+/g," ").trim();
+    return /BOAT\s*[✓✔∨√]?\s*CHECK/i.test(t) && el.children.length <= 6;
+  });
+  if (brand) {
+    brand.style.cursor = "pointer";
+    brand.setAttribute("role","button");
+    brand.setAttribute("aria-label","ホームへ戻る");
+    const goHome = () => {
+      if (typeof showHome === "function") showHome();
+      if (typeof history !== "undefined") history.pushState({view:"home"},"",location.pathname);
+      window.scrollTo({top:0,behavior:"instant"});
+    };
+    brand.addEventListener("click", goHome);
+    brand.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goHome(); }
+    });
+    brand.tabIndex = 0;
+  }
+});
+</script>
