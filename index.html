@@ -743,6 +743,61 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 }
 
 </style>
+
+<style>
+/* v38: professional course-information panel */
+.coursePanel{margin-top:2px}
+.courseHead{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:10px
+}
+.courseHead .title{font-size:14px;font-weight:950;color:#092c4b}
+.courseHead .sub{
+  font-size:8px;font-weight:850;color:#607990;background:#edf4fa;
+  border:1px solid #d9e6f0;border-radius:999px;padding:4px 7px;white-space:nowrap
+}
+.courseIntro{
+  font-size:9px;line-height:1.65;color:#62758a;font-weight:700;
+  margin-bottom:10px
+}
+.courseMatrix{
+  width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;
+  overflow:hidden;border:1px solid #d7e4ee;border-radius:10px
+}
+.courseMatrix th,.courseMatrix td{
+  text-align:center;padding:8px 2px;border-right:1px solid #e0e9f0;
+  border-bottom:1px solid #e0e9f0;font-size:9px
+}
+.courseMatrix th:last-child,.courseMatrix td:last-child{border-right:none}
+.courseMatrix tr:last-child th,.courseMatrix tr:last-child td{border-bottom:none}
+.courseMatrix thead th{
+  font-weight:950;background:#f3f7fa;color:#173b59
+}
+.courseMatrix thead th.l1{background:#fff;color:#111}
+.courseMatrix thead th.l2{background:#171717;color:#fff}
+.courseMatrix thead th.l3{background:#ef3340;color:#fff}
+.courseMatrix thead th.l4{background:#2d5bd3;color:#fff}
+.courseMatrix thead th.l5{background:#f2db00;color:#111}
+.courseMatrix thead th.l6{background:#159447;color:#fff}
+.courseMatrix tbody th{
+  width:42px;background:#f8fbfd;color:#60758a;font-weight:900
+}
+.courseMatrix td{font-weight:950;color:#173b59;background:#fff}
+.courseMatrix td.best{background:#edf7ff;color:#0067b1}
+.courseMiniCards{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px
+}
+.courseMiniCard{
+  border:1px solid #d7e4ee;border-radius:9px;background:#fff;padding:8px 6px
+}
+.courseMiniCard small{display:block;color:#7c8da0;font-size:7px;font-weight:800;margin-bottom:3px}
+.courseMiniCard b{display:block;color:#153a59;font-size:10px;font-weight:950}
+.courseNote{
+  margin-top:9px;padding:9px 10px;background:#f7fafc;border-radius:9px;
+  color:#697b8d;font-size:8px;font-weight:700;line-height:1.6
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -1239,6 +1294,52 @@ function openRaceData(no, type){
   });
 }
 
+function renderCourseInfo(){
+  const m=state.currentMeeting||{};
+  const r=state.currentRace||{};
+  const trend=m.venueCourseTrend||null;
+  const boats=r.boats||[];
+
+  const headers=[1,2,3,4,5,6].map(n=>`<th class="l${n}">${n}コース</th>`).join("");
+
+  if(trend && trend.rows){
+    const rows=["1着","2着","3着"].map(label=>{
+      const vals=trend.rows[label]||[];
+      const nums=vals.map(v=>parseFloat(String(v).replace("%",""))||0);
+      const max=Math.max(...nums,0);
+      return `<tr><th>${label}</th>${vals.map((v,i)=>`<td class="${nums[i]===max&&max>0?"best":""}">${esc(v||"--")}</td>`).join("")}</tr>`;
+    }).join("");
+
+    const completed=trend.completedRaces!=null?`${trend.completedRaces}R分`:"当日終了R";
+    return `<div class="coursePanel">
+      <div class="courseHead">
+        <div class="title">コース別情報</div>
+        <div class="sub">BOAT RACE公式・${completed}</div>
+      </div>
+      <div class="courseIntro">この開催場の本日終了レースを、進入コース別に集計。水面の当日傾向を6コース横並びで比較できます。</div>
+      <table class="courseMatrix">
+        <thead><tr><th>着順</th>${headers}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="courseMiniCards">
+        ${boats.slice(0,6).map(b=>`<div class="courseMiniCard"><small>${b.lane}コース想定</small><b>${esc(b.racerName||"--")}</b></div>`).join("")}
+      </div>
+      <div class="courseNote">選手個人の「コース別平均ST・1着率・2連率・3連率・決まり手傾向」は過去データ蓄積後、このパネルへ追加します。情報量は増やしつつ、6艇比較を崩さない設計にします。</div>
+    </div>`;
+  }
+
+  return `<div class="coursePanel">
+    <div class="courseHead">
+      <div class="title">コース別情報</div>
+      <div class="sub">公式データ取得待ち</div>
+    </div>
+    <div class="courseIntro">当日の進入コース別結果を収集中です。終了レースが出ると、1〜6コースの1着・2着・3着率をここへ表示します。</div>
+    <div class="courseMiniCards">
+      ${boats.slice(0,6).map(b=>`<div class="courseMiniCard"><small>${b.lane}コース想定</small><b>${esc(b.racerName||"--")}</b></div>`).join("")}
+    </div>
+  </div>`;
+}
+
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
@@ -1254,8 +1355,12 @@ function showRaceData(type, btn){
   document.querySelectorAll(".quickDataTools .tool").forEach(b=>b.classList.remove("primary"));
   if(btn)btn.classList.add("primary");
 
+  if(type==="course"){
+    panel.innerHTML=renderCourseInfo();
+    return;
+  }
+
   const dataMap={
-    course:r.courseData||r.course||null,
     meet:r.meetResults||r.meetData||null,
     motor:r.motorData||r.motors||null,
     exhibition:r.exhibition||r.exhibitionData||null,
@@ -1267,7 +1372,7 @@ function showRaceData(type, btn){
 
   if(!hasData){
     panel.innerHTML=`<div class="qdh"><b>${labels[type]}</b><span>公式データ連携準備中</span></div>
-      <p>この項目は、BOAT RACE公式の該当データ取得を追加後、ここへ直接表示します。別ページへ移動せず確認できる設計です。</p>`;
+      <p>この項目はBOAT RACE公式データ取得を追加後、6艇比較を中心に見やすく整理して表示します。</p>`;
     return;
   }
 
