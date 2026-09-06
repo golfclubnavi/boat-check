@@ -1050,13 +1050,20 @@ function renderVenues(){
       : `<span class="gradeCenter ${grade.toLowerCase()}">${grade}</span>`;
 
     if(!next){
-      return `<div class="card off ${st.card} ${timeClass(m)}" onclick="openVenue('${code}')">
+      return `<div class="card ${st.card} ${timeClass(m)} todayEnded" data-code="${code}" onclick="openVenue('${code}')">
         <div class="nameRow">
           <span class="leftMark">${left}</span>
           <div class="venueTitle">${name}</div>
           <span class="rightMark">${right}</span>
         </div>
-        <div class="offtext"><b>本日終了</b></div>
+        <div class="meta">
+          ${gradeChip}
+          <span>${esc(m.day||"")}</span>
+        </div>
+        <div class="nextRow endedRow">
+          <div class="endText">本日終了</div>
+        </div>
+        <div class="countdown endedSpacer">全レース終了</div>
       </div>`;
     }
 
@@ -1204,6 +1211,13 @@ function openVenue(code, push=true){
     scrollTo({top:0,behavior:"instant"});
   }
 }
+function cleanRacerName(name){
+  return String(name||"")
+    .replace(/^(?:投票|発売終了|発売中|投票受付中|受付終了)\s*/g,"")
+    .replace(/\s*(?:投票|発売終了|発売中|投票受付中|受付終了)$/g,"")
+    .trim();
+}
+
 function renderRaces(m){
   const races=m.races||[];
   if(!races.length){
@@ -1572,3 +1586,34 @@ document.addEventListener("DOMContentLoaded",()=>{
   new MutationObserver(v39NormalizeEndedCards).observe(document.body,{childList:true,subtree:true});
 });
 </script>
+
+<style>
+/* v40: 本日終了 = 開催カードのまま。非開催だけグレー */
+.card.todayEnded{
+  opacity:1 !important;
+  filter:none !important;
+  border-color:#67afe0 !important;
+}
+.card.todayEnded .meta{
+  display:flex !important;
+}
+.card.todayEnded .endedRow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  margin-top:2px;
+}
+.card.todayEnded .endText{
+  font-size:13px;
+  font-weight:950;
+  color:#53697e;
+  letter-spacing:.02em;
+}
+.card.todayEnded .endedSpacer{
+  background:#f2f5f8 !important;
+  color:#7b8c9e !important;
+  font-size:8px !important;
+  font-weight:850 !important;
+}
+</style>
