@@ -1663,3 +1663,36 @@ document.addEventListener("DOMContentLoaded",()=>{
   box-sizing:border-box !important;
 }
 </style>
+
+<style>
+/* v42: restore compact home-card size */
+#venueGrid .card,
+#venueGrid .venueCard,
+.grid .card,
+.venueGrid .card{
+  height:auto !important;
+  min-height:92px !important;
+  box-sizing:border-box !important;
+}
+
+/* 本日終了カードも通常カードと同じコンパクト高さ */
+.card.todayEnded{
+  min-height:92px !important;
+  height:auto !important;
+}
+.card.todayEnded .endedRow{
+  min-height:34px !important;
+  margin-top:0 !important;
+}
+.card.todayEnded .endText{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  font-size:11px !important;
+  line-height:1 !important;
+}
+
+/* 「全レース終了」は非表示 */
+.card.todayEnded .endedSpacer{
+  display:none !important;
+}
+</style>
