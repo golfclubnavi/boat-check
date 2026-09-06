@@ -35,6 +35,7 @@ BASE = "https://www.boatrace.jp"
 INDEX_URL = BASE + "/owpc/pc/race/index"
 RACEINDEX_URL = BASE + "/owpc/pc/race/raceindex"
 RACELIST_URL = BASE + "/owpc/pc/race/racelist"
+RESULTLIST_URL = BASE + "/owpc/pc/race/resultlist"
 PROFILE_URL = BASE + "/owpc/pc/data/racersearch/profile"
 
 VENUES = {
@@ -244,6 +245,42 @@ def old_meeting_map(old_payload: dict) -> dict:
         if m.get("venueCode")
     }
 
+def parse_course_trend(soup: BeautifulSoup) -> dict | None:
+    """BOAT RACE公式 resultlist の最初の進入コース別結果表を抽出。"""
+    rows = {}
+    started = False
+    for tr in soup.find_all("tr"):
+        cells = [compact(x.get_text(" ", strip=True)) for x in tr.find_all(["th","td"])]
+        if len(cells) < 7:
+            continue
+        label = cells[0]
+        if label in ("1着","2着","3着"):
+            vals = cells[1:7]
+            if all(re.fullmatch(r"\d+(?:\.\d+)?%", v) for v in vals):
+                if label not in rows:
+                    rows[label] = vals
+                    started = True
+                if len(rows) == 3:
+                    break
+        elif started and rows:
+            break
+
+    if len(rows) != 3:
+        return None
+
+    text = compact(soup.get_text(" ", strip=True))
+    # resultlistは終了済みレース分の集計。明示的なR数が取れなければ省略。
+    completed = None
+    race_nums = [int(x) for x in re.findall(r"(?:^|\s)(1[0-2]|[1-9])R(?:\s|$)", text)]
+    if race_nums:
+        completed = max(race_nums)
+
+    return {
+        "source":"BOAT RACE official resultlist",
+        "rows":rows,
+        "completedRaces":completed,
+    }
+
 def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cache: dict) -> dict | None:
     soup = get_soup(RACEINDEX_URL, {"hd":date,"jcd":code})
     races = parse_races(soup)
@@ -255,6 +292,15 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
     meet_days = parse_meet_days(soup,date)
 
     old_meeting = old_meeting or {}
+    course_trend = old_meeting.get("venueCourseTrend")
+    try:
+        result_soup = get_soup(RESULTLIST_URL, {"hd":date,"jcd":code}, timeout=14)
+        parsed_trend = parse_course_trend(result_soup)
+        if parsed_trend:
+            course_trend = parsed_trend
+    except Exception:
+        pass
+
     old_current = old_meeting.get("races",[]) if old_meeting.get("date") == date else []
     merge_boat_details(races, old_current, racer_cache)
 
@@ -283,6 +329,7 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
         "status":"open",
         "races":races,
         "meetDays":meet_days,
+        "venueCourseTrend":course_trend,
     }
 
 def fetch_racelist_task(code: str, date: str, race_no: int):
