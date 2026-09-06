@@ -843,6 +843,29 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .meetDayTabs .meetDate{font-size:10px;font-weight:950}.meetDayTabs .meetLabel{font-size:9px;font-weight:850}
 </style>
 
+
+<style>
+/* v45: 9 data tabs are the primary navigation at the top of race detail */
+.topRaceDataNav{
+  margin:0 -2px 14px;
+  padding:10px 0 0;
+  background:linear-gradient(180deg,#f4f8fc 0%,rgba(244,248,252,0) 100%);
+}
+.topRaceDataNav .raceDataTabs{
+  margin:0 !important;
+  padding:2px 2px 10px !important;
+}
+.topRaceDataNav .quickDataPanel{
+  margin-top:2px !important;
+}
+
+/* no standalone "出走データ" section */
+.detailSectionTitle:has(+ #boats),
+#boats{
+  display:none !important;
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -923,6 +946,20 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 </section>
 
 <section id="detail" class="hidden">
+  <div class="topRaceDataNav">
+<div class="raceDataTabs" id="raceDataTabs">
+    <button class="active" data-panel="racer" onclick="showRaceData('racer',this)">選手情報</button>
+    <button data-panel="course" onclick="showRaceData('course',this)">コース別情報</button>
+    <button data-panel="meet" onclick="showRaceData('meet',this)">節間成績</button>
+    <button data-panel="motor" onclick="showRaceData('motor',this)">モーター情報</button>
+    <button data-panel="before" onclick="showRaceData('before',this)">直前情報</button>
+    <button data-panel="odds" onclick="showRaceData('odds',this)">オッズ</button>
+    <button data-panel="skip" onclick="showRaceData('skip',this)">見送り度</button>
+    <button data-panel="result" onclick="showRaceData('result',this)">結果</button>
+    <button data-panel="replay" onclick="showRaceData('replay',this)">リプレイ</button>
+  </div>
+  <div class="quickDataPanel" id="quickDataPanel"></div>
+  </div>
   <button class="venueBack" onclick="history.back()">‹ レース一覧</button>
 
   <div class="detailHero">
@@ -944,18 +981,7 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
     <b>レースデータ</b>
     <span>見たい情報へ直接アクセス</span>
   </div>
-  <div class="raceDataTabs" id="raceDataTabs">
-    <button class="active" data-panel="racer" onclick="showRaceData('racer',this)">選手情報</button>
-    <button data-panel="course" onclick="showRaceData('course',this)">コース別情報</button>
-    <button data-panel="meet" onclick="showRaceData('meet',this)">節間成績</button>
-    <button data-panel="motor" onclick="showRaceData('motor',this)">モーター情報</button>
-    <button data-panel="before" onclick="showRaceData('before',this)">直前情報</button>
-    <button data-panel="odds" onclick="showRaceData('odds',this)">オッズ</button>
-    <button data-panel="skip" onclick="showRaceData('skip',this)">見送り度</button>
-    <button data-panel="result" onclick="showRaceData('result',this)">結果</button>
-    <button data-panel="replay" onclick="showRaceData('replay',this)">リプレイ</button>
-  </div>
-  <div class="quickDataPanel" id="quickDataPanel"></div>
+  
 
   <div class="dataNoticePro detailAnalysisNotice">
     <strong>✓ BOAT CHECK 独自分析</strong><br>
@@ -1359,13 +1385,7 @@ function openRace(no, push=true){
   const rs=raceStatusInfo(r,m);
   $("detailTime").textContent=`締切予定 ${r.deadline||"-"} ・ ${rs.label}`;
   $("detailJudge").innerHTML=`<b>BOAT CHECK</b>${rs.cls==="urgent"?"締切間近":"分析準備中"}`;
-  $("boats").innerHTML=(r.boats||[]).map(b=>`<div class="boat">
-    <div class="no n${b.lane}">${b.lane}</div>
-    <div class="player"><b>${esc(cleanRacerName(b.racerName)||"-")}</b><span>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"-")}　${esc(b.branch||b.region||"--")}支部　${b.period?esc(b.period)+"期":"--期"}　${b.age!==undefined&&b.age!==null?esc(b.age)+"歳":"--歳"}</span></div>
-    <div class="cell"><b>${esc(b.class||"-")}</b><span>級別</span></div>
-  </div>`).join("");
-
-  showRaceData("racer", document.querySelector('#raceDataTabs [data-panel="racer"]'));
+showRaceData("racer", document.querySelector('#raceDataTabs [data-panel="racer"]'));
   scrollTo({top:0,behavior:"instant"});
 }
 function openRaceData(no, type){
