@@ -1223,7 +1223,7 @@ function renderRaces(m){
       return `<div class="laneMini lane${b.lane}">
         <div class="laneNo">${b.lane}</div>
         <div class="laneName">
-          <b>${esc(b.racerName||"-")}</b>
+          <b>${esc(cleanRacerName(b.racerName)||"-")}</b>
           <div class="laneMeta">
             <span class="racerNo">${esc(racerNo)} / ${esc(b.class||"-")}</span>
             <span>${esc(branch)}</span>
@@ -1275,7 +1275,7 @@ function openRace(no, push=true){
   $("detailJudge").innerHTML=`<b>BOAT CHECK</b>${rs.cls==="urgent"?"締切間近":"分析準備中"}`;
   $("boats").innerHTML=(r.boats||[]).map(b=>`<div class="boat">
     <div class="no n${b.lane}">${b.lane}</div>
-    <div class="player"><b>${esc(b.racerName||"-")}</b><span>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"-")}　${esc(b.branch||b.region||"--")}支部　${b.period?esc(b.period)+"期":"--期"}　${b.age!==undefined&&b.age!==null?esc(b.age)+"歳":"--歳"}</span></div>
+    <div class="player"><b>${esc(cleanRacerName(b.racerName)||"-")}</b><span>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"-")}　${esc(b.branch||b.region||"--")}支部　${b.period?esc(b.period)+"期":"--期"}　${b.age!==undefined&&b.age!==null?esc(b.age)+"歳":"--歳"}</span></div>
     <div class="cell"><b>${esc(b.class||"-")}</b><span>級別</span></div>
   </div>`).join("");
 
@@ -1322,7 +1322,7 @@ function renderCourseInfo(){
         <tbody>${rows}</tbody>
       </table>
       <div class="courseMiniCards">
-        ${boats.slice(0,6).map(b=>`<div class="courseMiniCard"><small>${b.lane}コース想定</small><b>${esc(b.racerName||"--")}</b></div>`).join("")}
+        ${boats.slice(0,6).map(b=>`<div class="courseMiniCard"><small>${b.lane}コース想定</small><b>${esc(cleanRacerName(b.racerName)||"--")}</b></div>`).join("")}
       </div>
       <div class="courseNote">選手個人の「コース別平均ST・1着率・2連率・3連率・決まり手傾向」は過去データ蓄積後、このパネルへ追加します。情報量は増やしつつ、6艇比較を崩さない設計にします。</div>
     </div>`;
@@ -1335,7 +1335,7 @@ function renderCourseInfo(){
     </div>
     <div class="courseIntro">当日の進入コース別結果を収集中です。終了レースが出ると、1〜6コースの1着・2着・3着率をここへ表示します。</div>
     <div class="courseMiniCards">
-      ${boats.slice(0,6).map(b=>`<div class="courseMiniCard"><small>${b.lane}コース想定</small><b>${esc(b.racerName||"--")}</b></div>`).join("")}
+      ${boats.slice(0,6).map(b=>`<div class="courseMiniCard"><small>${b.lane}コース想定</small><b>${esc(cleanRacerName(b.racerName)||"--")}</b></div>`).join("")}
     </div>
   </div>`;
 }
@@ -1529,3 +1529,46 @@ document.addEventListener("DOMContentLoaded", () => {
   opacity:1 !important;
 }
 </style>
+
+<style>
+/* v39: 本日終了は通常カードの背景、非開催だけグレー */
+.venueCard.v39-ended,.card.v39-ended{
+  background:#fff !important;opacity:1 !important;filter:none !important;
+  border-color:#67afe0 !important;
+}
+.venueCard.v39-ended .venueName,.card.v39-ended .venueName{color:#0b2d4d !important}
+</style>
+<script>
+function v39NormalizeEndedCards(){
+  document.querySelectorAll(".venueCard,.card").forEach(card=>{
+    const text=(card.textContent||"").replace(/\s+/g," ").trim();
+    if(!text.includes("本日終了")) return;
+    card.classList.add("v39-ended");
+    card.style.background="#fff";
+    card.style.opacity="1";
+    card.style.filter="none";
+
+    // standalone 本日終了 badge/pill is removed
+    [...card.querySelectorAll("*")].forEach(el=>{
+      if((el.textContent||"").trim()==="本日終了" && el.children.length===0){
+        const c=(el.className||"").toString();
+        if(/status|badge|pill|closed|non|off/i.test(c)) el.style.display="none";
+      }
+    });
+
+    // R/締切エリアに「本日終了」を表示
+    const deadline=[...card.querySelectorAll("*")].find(el=>{
+      const t=(el.textContent||"").replace(/\s+/g," ").trim();
+      return t.includes("締切予定") && /\\d{1,2}:\\d{2}/.test(t);
+    });
+    if(deadline){
+      deadline.innerHTML='<span style="display:block;font-size:8px;color:#8797a8;font-weight:800;margin-bottom:2px">本日のレース</span><b style="font-size:13px;color:#53697e;font-weight:950">本日終了</b>';
+    }
+  });
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  setTimeout(v39NormalizeEndedCards,100);
+  setTimeout(v39NormalizeEndedCards,700);
+  new MutationObserver(v39NormalizeEndedCards).observe(document.body,{childList:true,subtree:true});
+});
+</script>
