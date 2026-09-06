@@ -1383,3 +1383,44 @@ document.addEventListener("DOMContentLoaded", () => {
   visibility:visible !important;
 }
 </style>
+
+<style>
+/* v36: venue race-list direct data buttons, directly under racer names */
+.raceCardPro .raceQuickGrid,
+.raceCard .raceQuickGrid,
+[class*="raceCard"] .raceQuickGrid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:6px !important;
+  padding:8px 10px 9px !important;
+  margin:0 !important;
+  background:#f4f8fc !important;
+  border-top:1px solid #d9e5ef !important;
+  border-bottom:1px solid #d9e5ef !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  height:auto !important;
+  overflow:visible !important;
+}
+.raceCardPro .raceQuickGrid button,
+.raceCard .raceQuickGrid button,
+[class*="raceCard"] .raceQuickGrid button{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  min-height:35px !important;
+  margin:0 !important;
+  padding:7px 2px !important;
+  border:1px solid #b8d2e6 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  color:#17669f !important;
+  font-family:inherit !important;
+  font-size:9px !important;
+  font-weight:900 !important;
+  line-height:1.15 !important;
+  white-space:nowrap !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+</style>
