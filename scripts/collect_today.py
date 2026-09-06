@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v31 collector
-- BOAT RACE公式の当日開催・1R〜12Rを取得
-- raceindex から開催節の日程（初日〜最終日）を取得
-- 現在日の racelist から登録番号・支部・年齢を取得
-- racer profile から登録期を取得し data/racers.json にキャッシュ
-- 過去日分は raceindex からその節のレース一覧を同じJSON内に保持
+BOAT CHECK v37 collector
+
+FAST（通常・30分ごと）
+- BOAT RACE公式の当日開催場 + 各場raceindexだけを並列取得
+- 締切/R/開催日/タイトル/グレードを更新
+- 既存 today.json の選手詳細（登録番号・支部・期・年齢）を引き継ぐ
+- 過去日の出走データも既存JSONから引き継ぐ
+- racers.json の既存キャッシュを利用
+- racelist / racer profile は毎回取りに行かない
+
+ENRICH（別ワークフロー・1日1回/手動）
+- 当日の全racelistを並列取得
+- 支部・年齢・登録番号を更新
+- racer profile は未取得の登録期だけ並列取得
+- 過去開催日のraceindexも並列取得
 """
 from __future__ import annotations
 
 import argparse
 import json
 import re
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -36,20 +44,27 @@ VENUES = {
     "19":"下関","20":"若松","21":"芦屋","22":"福岡","23":"唐津","24":"大村",
 }
 
-session = requests.Session()
-session.headers.update({
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.31; +https://github.com/golfclubnavi/boat-check)",
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.37; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
-})
+}
 
 def compact(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
-def get_soup(url: str, params: dict, timeout: int = 20) -> BeautifulSoup:
-    r = session.get(url, params=params, timeout=timeout)
+def get_soup(url: str, params: dict, timeout: int = 18) -> BeautifulSoup:
+    r = requests.get(url, params=params, headers=HEADERS, timeout=timeout)
     r.raise_for_status()
     r.encoding = r.apparent_encoding or "utf-8"
     return BeautifulSoup(r.text, "html.parser")
+
+def load_json(path: Path, default):
+    try:
+        if path.exists():
+            return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return default
 
 def active_venues(date: str) -> list[tuple[str, str]]:
     soup = get_soup(INDEX_URL, {"hd": date})
@@ -120,7 +135,7 @@ def day_label_from_text(text: str) -> str:
     m = re.search(r"(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)", text)
     return m.group(1) if m else ""
 
-def infer_tab_date(href: str, fallback_year: int) -> str | None:
+def infer_tab_date(href: str) -> str | None:
     try:
         q = parse_qs(urlparse(href.replace("&amp;","&")).query)
         hd = (q.get("hd") or [None])[0]
@@ -132,20 +147,15 @@ def infer_tab_date(href: str, fallback_year: int) -> str | None:
 
 def parse_meet_days(soup: BeautifulSoup, base_date: str) -> list[dict]:
     out, seen = [], set()
-
-    # First choice: date-tab links with explicit hd=YYYYMMDD.
     for a in soup.find_all("a", href=True):
         text = compact(a.get_text(" ", strip=True))
-        if not re.search(r"\d{1,2}月\d{1,2}日", text):
-            continue
-        if not re.search(r"初日|日目|最終日", text):
-            continue
-        hd = infer_tab_date(a.get("href",""), int(base_date[:4]))
+        if not re.search(r"\d{1,2}月\d{1,2}日", text): continue
+        if not re.search(r"初日|日目|最終日", text): continue
+        hd = infer_tab_date(a.get("href",""))
         if hd and hd not in seen:
-            out.append({"date":hd,"label":day_label_from_text(text),"day":day_label_from_text(text)})
+            label = day_label_from_text(text)
+            out.append({"date":hd,"label":label,"day":label})
             seen.add(hd)
-
-    # Fallback: visible tab text; infer year around base date.
     if not out:
         text = compact(soup.get_text(" ", strip=True))
         base_year, base_month = int(base_date[:4]), int(base_date[4:6])
@@ -160,53 +170,37 @@ def parse_meet_days(soup: BeautifulSoup, base_date: str) -> list[dict]:
             if hd not in seen:
                 out.append({"date":hd,"label":label,"day":label})
                 seen.add(hd)
-
     return sorted(out, key=lambda x:x["date"])
 
 def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
-    """Current race page: registration no, class, branch and age."""
-    found = []
-    used = set()
-
+    found, used = [], set()
     for a in soup.find_all("a", href=True):
         href = a.get("href","")
         mt = re.search(r"(?:[?&]|&amp;)toban=(\d{4})", href)
-        if not mt:
-            continue
+        if not mt: continue
         toban = mt.group(1)
-        if toban in used:
-            continue
+        if toban in used: continue
         row = a.find_parent("tr")
         text = compact((row or a.parent or a).get_text(" ", strip=True))
 
-        klass = ""
         mk = re.search(rf"{re.escape(toban)}\s*/\s*(A1|A2|B1|B2)", text)
-        if mk: klass = mk.group(1)
+        klass = mk.group(1) if mk else ""
 
         name = compact(a.get_text(" ", strip=True))
         if not name or name == toban or len(name) > 24:
             mn = re.search(rf"{re.escape(toban)}\s*/\s*(?:A1|A2|B1|B2)\s+(.+?)\s+[^\s/]+/[^\s/]+\s+\d{{1,2}}歳/", text)
             name = compact(mn.group(1)) if mn else ""
 
-        branch = ""
+        branch, age = "", None
         mb = re.search(r"([一-龥ぁ-んァ-ヶー]+)\/([一-龥ぁ-んァ-ヶー]+)\s+(\d{1,2})歳/", text)
-        age = None
         if mb:
             branch = mb.group(1)
             age = int(mb.group(3))
 
-        found.append({
-            "racerId":toban,
-            "racerName":name,
-            "class":klass,
-            "branch":branch,
-            "age":age,
-        })
+        found.append({"racerId":toban,"racerName":name,"class":klass,"branch":branch,"age":age})
         used.add(toban)
-        if len(found) == 6:
-            break
+        if len(found) == 6: break
 
-    # HTML structure fallback based on official rendered text.
     if len(found) < 6:
         text = compact(soup.get_text(" ", strip=True))
         pat = re.compile(
@@ -214,103 +208,43 @@ def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
             r"([一-龥ぁ-んァ-ヶー]+)\/([一-龥ぁ-んァ-ヶー]+)\s+(\d{1,2})歳/"
         )
         found = []
+        used = set()
         for toban, klass, name, branch, _origin, age in pat.findall(text):
-            if toban in {x["racerId"] for x in found}: continue
+            if toban in used: continue
             found.append({
-                "racerId":toban,
-                "racerName":compact(name),
-                "class":klass,
-                "branch":branch,
-                "age":int(age),
+                "racerId":toban,"racerName":compact(name),"class":klass,
+                "branch":branch,"age":int(age)
             })
+            used.add(toban)
             if len(found)==6: break
     return found
 
-def enrich_current_races(code: str, date: str, races: list[dict]) -> set[str]:
-    racer_ids = set()
-    for r in races:
-        try:
-            soup = get_soup(RACELIST_URL, {"rno":r["raceNo"],"jcd":code,"hd":date})
-            meta = parse_racelist_meta(soup)
-            if len(meta) == 6:
-                r["boats"] = [
-                    {"lane":i, **b}
-                    for i,b in enumerate(meta,1)
-                ]
-                racer_ids.update(b["racerId"] for b in meta if b.get("racerId"))
-        except Exception as e:
-            r["metaError"] = f"{type(e).__name__}: {e}"
-        time.sleep(0.04)
-    return racer_ids
+def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache: dict):
+    old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
+    for r in new_races:
+        old = old_by_race.get(int(r.get("raceNo",0)), {})
+        old_boats = {int(b.get("lane",0)): b for b in old.get("boats",[])}
 
-def load_racer_cache(path: Path) -> dict:
-    try:
-        if path.exists():
-            d = json.loads(path.read_text(encoding="utf-8"))
-            if isinstance(d, dict): return d
-    except Exception:
-        pass
-    return {}
+        for b in r.get("boats",[]):
+            ob = old_boats.get(int(b.get("lane",0)), {})
+            # 名前が変わっていない場合のみ詳細情報を継承
+            same = not b.get("racerName") or not ob.get("racerName") or compact(b["racerName"]) == compact(ob["racerName"])
+            if same:
+                for key in ("racerId","branch","age","period"):
+                    if ob.get(key) not in (None,""):
+                        b[key] = ob[key]
+            rid = b.get("racerId")
+            if rid and racer_cache.get(str(rid),{}).get("period"):
+                b["period"] = racer_cache[str(rid)]["period"]
 
-def fetch_profile_period(toban: str) -> tuple[str, dict]:
-    try:
-        r = requests.get(
-            PROFILE_URL,
-            params={"toban":toban},
-            headers=session.headers,
-            timeout=12,
-        )
-        r.raise_for_status()
-        r.encoding = r.apparent_encoding or "utf-8"
-        text = compact(BeautifulSoup(r.text,"html.parser").get_text(" ", strip=True))
-        mp = re.search(r"登録期\s*(\d+)期", text)
-        return toban, {
-            "period": int(mp.group(1)) if mp else None,
-            "updatedAt": datetime.now(JST).isoformat(timespec="seconds")
-        }
-    except Exception as e:
-        return toban, {"period":None,"error":f"{type(e).__name__}: {e}"}
-
-def fill_periods(meetings: list[dict], cache_path: Path):
-    cache = load_racer_cache(cache_path)
-    ids = {
-        b.get("racerId")
-        for m in meetings
-        for r in m.get("races",[])
-        for b in r.get("boats",[])
-        if b.get("racerId")
+def old_meeting_map(old_payload: dict) -> dict:
+    return {
+        str(m.get("venueCode")): m
+        for m in old_payload.get("meetings",[])
+        if m.get("venueCode")
     }
-    missing = sorted(x for x in ids if x not in cache or not cache[x].get("period"))
 
-    if missing:
-        print(f"[BOAT CHECK] racer period cache misses={len(missing)}")
-        with ThreadPoolExecutor(max_workers=6) as ex:
-            futs = [ex.submit(fetch_profile_period, x) for x in missing]
-            for fut in as_completed(futs):
-                toban, info = fut.result()
-                cache[toban] = info
-
-    for m in meetings:
-        for r in m.get("races",[]):
-            for b in r.get("boats",[]):
-                info = cache.get(b.get("racerId",""),{})
-                if info.get("period"):
-                    b["period"] = info["period"]
-
-        for d in m.get("meetDays",[]):
-            if d.get("date") == m.get("date"):
-                # current day points at enriched races below
-                d["races"] = m.get("races",[])
-            else:
-                for r in d.get("races",[]):
-                    for b in r.get("boats",[]):
-                        # past-day base raceindex lacks racerId, so period stays unavailable.
-                        pass
-
-    cache_path.parent.mkdir(parents=True, exist_ok=True)
-    cache_path.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
-
-def collect_venue(code: str, date: str, deep: bool) -> dict | None:
+def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cache: dict) -> dict | None:
     soup = get_soup(RACEINDEX_URL, {"hd":date,"jcd":code})
     races = parse_races(soup)
     if not races: return None
@@ -320,21 +254,26 @@ def collect_venue(code: str, date: str, deep: bool) -> dict | None:
     day = day_label_from_text(text)
     meet_days = parse_meet_days(soup,date)
 
-    # Load past/current meet days. Future days remain as tabs with no fabricated races.
+    old_meeting = old_meeting or {}
+    old_current = old_meeting.get("races",[]) if old_meeting.get("date") == date else []
+    merge_boat_details(races, old_current, racer_cache)
+
+    old_days = {
+        d.get("date"): d for d in old_meeting.get("meetDays",[])
+        if d.get("date")
+    }
+
+    if not meet_days:
+        meet_days = [{"date":date,"label":day,"day":day}]
+
     for d in meet_days:
         if d["date"] == date:
             d["races"] = races
-        elif d["date"] < date:
-            try:
-                psoup = get_soup(RACEINDEX_URL, {"hd":d["date"],"jcd":code})
-                d["races"] = parse_races(psoup)
-            except Exception:
-                d["races"] = []
-            time.sleep(0.05)
         else:
-            d["races"] = []
+            old_d = old_days.get(d["date"],{})
+            d["races"] = old_d.get("races",[]) if old_d else []
 
-    item = {
+    return {
         "venueCode":code,
         "venueName":VENUES[code],
         "date":date,
@@ -343,61 +282,179 @@ def collect_venue(code: str, date: str, deep: bool) -> dict | None:
         "day":day,
         "status":"open",
         "races":races,
-        "meetDays":meet_days or [{"date":date,"label":day,"day":day,"races":races}],
+        "meetDays":meet_days,
     }
 
-    if deep:
-        enrich_current_races(code,date,item["races"])
-        for d in item["meetDays"]:
-            if d["date"] == date:
-                d["races"] = item["races"]
-    return item
+def fetch_racelist_task(code: str, date: str, race_no: int):
+    try:
+        soup = get_soup(RACELIST_URL, {"rno":race_no,"jcd":code,"hd":date})
+        return code, race_no, parse_racelist_meta(soup), None
+    except Exception as e:
+        return code, race_no, [], f"{type(e).__name__}: {e}"
 
-def collect(date: str, deep: bool, cache_path: Path) -> dict:
+def fetch_past_day_task(code: str, hd: str):
+    try:
+        soup = get_soup(RACEINDEX_URL, {"hd":hd,"jcd":code})
+        return code, hd, parse_races(soup), None
+    except Exception as e:
+        return code, hd, [], f"{type(e).__name__}: {e}"
+
+def fetch_profile_period(toban: str):
+    try:
+        soup = get_soup(PROFILE_URL, {"toban":toban}, timeout=14)
+        text = compact(soup.get_text(" ", strip=True))
+        mp = re.search(r"登録期\s*(\d+)期", text)
+        return toban, {
+            "period":int(mp.group(1)) if mp else None,
+            "updatedAt":datetime.now(JST).isoformat(timespec="seconds")
+        }
+    except Exception as e:
+        return toban, {"period":None,"error":f"{type(e).__name__}: {e}"}
+
+def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
+    meetings = payload.get("meetings",[])
+    racer_cache = load_json(cache_path, {})
+
+    # 全場×全Rのracelistをグローバル並列化
+    tasks = []
+    for m in meetings:
+        code = m["venueCode"]
+        for r in m.get("races",[]):
+            tasks.append((code, m["date"], int(r["raceNo"])))
+
+    print(f"[BOAT CHECK] ENRICH racelist tasks={len(tasks)} workers={workers}")
+    meta_results = {}
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = [ex.submit(fetch_racelist_task,*t) for t in tasks]
+        for fut in as_completed(futs):
+            code, rno, meta, err = fut.result()
+            meta_results[(code,rno)] = (meta,err)
+
+    for m in meetings:
+        for r in m.get("races",[]):
+            meta, err = meta_results.get((m["venueCode"],int(r["raceNo"])),([],None))
+            if len(meta)==6:
+                r["boats"] = [{"lane":i, **b} for i,b in enumerate(meta,1)]
+            elif err:
+                r["metaError"] = err
+
+    # 過去開催日raceindexだけを並列取得（未来日は空のまま）
+    past_tasks = []
+    for m in meetings:
+        for d in m.get("meetDays",[]):
+            if d.get("date") and d["date"] < m["date"]:
+                past_tasks.append((m["venueCode"],d["date"]))
+
+    if past_tasks:
+        print(f"[BOAT CHECK] ENRICH past-day tasks={len(past_tasks)}")
+        past_results = {}
+        with ThreadPoolExecutor(max_workers=min(workers,8)) as ex:
+            futs = [ex.submit(fetch_past_day_task,*t) for t in past_tasks]
+            for fut in as_completed(futs):
+                code, hd, races, err = fut.result()
+                past_results[(code,hd)] = (races,err)
+        for m in meetings:
+            for d in m.get("meetDays",[]):
+                key=(m["venueCode"],d.get("date"))
+                if key in past_results:
+                    races,_ = past_results[key]
+                    d["races"] = races
+
+    # 現在日の出走表をmeetDaysにも反映
+    for m in meetings:
+        for d in m.get("meetDays",[]):
+            if d.get("date") == m.get("date"):
+                d["races"] = m.get("races",[])
+
+    # 未取得の登録期だけprofile取得
+    ids = {
+        str(b.get("racerId"))
+        for m in meetings for r in m.get("races",[]) for b in r.get("boats",[])
+        if b.get("racerId")
+    }
+    missing = sorted(rid for rid in ids if not racer_cache.get(rid,{}).get("period"))
+    print(f"[BOAT CHECK] ENRICH profile cache misses={len(missing)}")
+    if missing:
+        with ThreadPoolExecutor(max_workers=min(workers,10)) as ex:
+            futs = [ex.submit(fetch_profile_period,rid) for rid in missing]
+            for fut in as_completed(futs):
+                rid, info = fut.result()
+                racer_cache[rid] = info
+
+    for m in meetings:
+        for r in m.get("races",[]):
+            for b in r.get("boats",[]):
+                rid = str(b.get("racerId",""))
+                p = racer_cache.get(rid,{}).get("period")
+                if p:
+                    b["period"] = p
+
+    cache_path.parent.mkdir(parents=True,exist_ok=True)
+    cache_path.write_text(json.dumps(racer_cache,ensure_ascii=False,indent=2),encoding="utf-8")
+
+def collect(date: str, out_path: Path, enrich: bool, workers: int) -> dict:
+    old_payload = load_json(out_path, {})
+    racer_cache = load_json(out_path.parent/"racers.json", {})
+    old_map = old_meeting_map(old_payload)
+
     venues = active_venues(date)
-    print(f"[BOAT CHECK] date={date} active candidates={len(venues)} deep={deep}")
+    print(f"[BOAT CHECK] date={date} active={len(venues)} mode={'ENRICH' if enrich else 'FAST'}")
+
     meetings, errors = [], []
 
-    for code,name in venues:
-        try:
-            item = collect_venue(code,date,deep)
-            if item:
-                meetings.append(item)
-                print(f"  OK {code} {name}: {len(item['races'])} races / {len(item.get('meetDays',[]))} days")
-            else:
-                print(f"  SKIP {code} {name}: race rows not found")
-        except Exception as e:
-            errors.append({"venueCode":code,"venueName":name,"error":f"{type(e).__name__}: {e}"})
-            print(f"  ERROR {code} {name}: {e}")
-        time.sleep(0.08)
+    # 開催場の当日raceindexを並列化
+    with ThreadPoolExecutor(max_workers=min(workers,8)) as ex:
+        futs = {
+            ex.submit(collect_venue_fast,code,date,old_map.get(code),racer_cache):(code,name)
+            for code,name in venues
+        }
+        for fut in as_completed(futs):
+            code,name=futs[fut]
+            try:
+                item=fut.result()
+                if item:
+                    meetings.append(item)
+                    print(f"  OK {code} {name}: {len(item['races'])} races")
+                else:
+                    print(f"  SKIP {code} {name}: no race rows")
+            except Exception as e:
+                errors.append({"venueCode":code,"venueName":name,"error":f"{type(e).__name__}: {e}"})
+                print(f"  ERROR {code} {name}: {e}")
 
-    if deep and meetings:
-        fill_periods(meetings,cache_path)
+    meetings.sort(key=lambda m:int(m["venueCode"]))
 
-    return {
-        "schemaVersion":"31.0",
+    payload = {
+        "schemaVersion":"37.0",
         "updatedAt":datetime.now(JST).isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
+        "mode":"enrich" if enrich else "fast",
         "meetings":meetings,
         "errors":errors,
     }
+
+    if enrich and meetings:
+        enrich_payload(payload,out_path.parent/"racers.json",workers=workers)
+
+    return payload
 
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--date",default=None,help="YYYYMMDD。省略時は日本時間の今日")
     p.add_argument("--out",default="data/today.json")
-    p.add_argument("--deep",action="store_true",help="racelist/profileまで取得")
+    p.add_argument("--enrich",action="store_true",help="racelist/profile/過去日も取得")
+    p.add_argument("--deep",action="store_true",help="旧互換: --enrich と同じ")
+    p.add_argument("--workers",type=int,default=10)
     args=p.parse_args()
 
     date=args.date or datetime.now(JST).strftime("%Y%m%d")
-    out=Path(args.out)
-    cache_path=out.parent/"racers.json"
-    payload=collect(date,args.deep,cache_path)
+    out_path=Path(args.out)
+    enrich=bool(args.enrich or args.deep)
 
-    out.parent.mkdir(parents=True,exist_ok=True)
-    out.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding="utf-8")
-    print(f"[BOAT CHECK] collected {len(payload['meetings'])} meetings -> {out}")
+    payload=collect(date,out_path,enrich,args.workers)
+    out_path.parent.mkdir(parents=True,exist_ok=True)
+    out_path.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding="utf-8")
+    print(f"[BOAT CHECK] collected {len(payload['meetings'])} meetings -> {out_path}")
 
     if not payload["meetings"]:
         raise SystemExit("No meetings collected.")
