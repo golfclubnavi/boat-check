@@ -1723,6 +1723,54 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style>
+/* v58: slightly larger R + cleaner vertical balance */
+.raceTopPro{
+  padding-top:8px !important;
+  padding-bottom:8px !important;
+  align-items:center !important;
+}
+.raceNoPro{
+  font-size:27px !important;
+  transform:translateX(5px);
+  line-height:1 !important;
+}
+.raceNoPro small{
+  font-size:11px !important;
+}
+.raceTiming{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  min-height:38px !important;
+}
+.raceTiming small{
+  margin-bottom:3px !important;
+  line-height:1 !important;
+}
+.raceTiming b{
+  line-height:1.05 !important;
+}
+
+@media(max-width:390px){
+  .raceTopPro{
+    padding-top:7px !important;
+    padding-bottom:7px !important;
+  }
+  .raceNoPro{
+    font-size:25px !important;
+    transform:translateX(4px);
+  }
+  .raceNoPro small{
+    font-size:10px !important;
+  }
+  .raceTiming{
+    min-height:36px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header>
