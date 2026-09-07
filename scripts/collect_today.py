@@ -22,7 +22,7 @@ import argparse
 import json
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
@@ -147,31 +147,152 @@ def infer_tab_date(href: str) -> str | None:
     return None
 
 def parse_meet_days(soup: BeautifulSoup, base_date: str) -> list[dict]:
-    out, seen = [], set()
+    """
+    Extract full meeting schedule, including future dates.
+    Handles:
+    - linked day tabs
+    - visible day/date cells
+    - meeting date ranges such as 9/5～9/10
+    """
+    out: dict[str, dict] = {}
+    base_dt = datetime.strptime(base_date, "%Y%m%d").date()
+    base_year, base_month = base_dt.year, base_dt.month
+
+    def resolve_date(month: int, day: int) -> str:
+        year = base_year
+        if base_month == 12 and month == 1:
+            year += 1
+        elif base_month == 1 and month == 12:
+            year -= 1
+        return f"{year:04d}{month:02d}{day:02d}"
+
+    def add(hd: str | None, label: str):
+        if not hd or not re.fullmatch(r"\d{8}", hd):
+            return
+        label = compact(label)
+        if not label:
+            return
+        if hd not in out:
+            out[hd] = {"date": hd, "label": label, "day": label}
+
+    # 1) Explicit day links
     for a in soup.find_all("a", href=True):
         text = compact(a.get_text(" ", strip=True))
-        if not re.search(r"\d{1,2}月\d{1,2}日", text): continue
-        if not re.search(r"初日|日目|最終日", text): continue
-        hd = infer_tab_date(a.get("href",""))
-        if hd and hd not in seen:
-            label = day_label_from_text(text)
-            out.append({"date":hd,"label":label,"day":label})
-            seen.add(hd)
-    if not out:
-        text = compact(soup.get_text(" ", strip=True))
-        base_year, base_month = int(base_date[:4]), int(base_date[4:6])
-        for mm, dd, label in re.findall(
-            r"(\d{1,2})月(\d{1,2})日\s*(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)", text
-        ):
-            month = int(mm)
-            year = base_year
-            if base_month == 12 and month == 1: year += 1
-            if base_month == 1 and month == 12: year -= 1
-            hd = f"{year:04d}{month:02d}{int(dd):02d}"
-            if hd not in seen:
-                out.append({"date":hd,"label":label,"day":label})
-                seen.add(hd)
-    return sorted(out, key=lambda x:x["date"])
+        label = day_label_from_text(text)
+        if not label:
+            continue
+        hd = infer_tab_date(a.get("href", ""))
+        if hd:
+            add(hd, label)
+
+        md = re.search(r"(\d{1,2})[月/](\d{1,2})日?", text)
+        if md:
+            add(resolve_date(int(md.group(1)), int(md.group(2))), label)
+
+    # 2) Visible cells/buttons/spans
+    for el in soup.find_all(["li", "td", "th", "button", "span", "div", "p"]):
+        text = compact(el.get_text(" ", strip=True))
+        if len(text) > 100:
+            continue
+        label = day_label_from_text(text)
+        if not label:
+            continue
+        m = re.search(r"(?:(\d{4})[/-])?(\d{1,2})[月/-](\d{1,2})日?", text)
+        if m:
+            if m.group(1):
+                hd = f"{int(m.group(1)):04d}{int(m.group(2)):02d}{int(m.group(3)):02d}"
+            else:
+                hd = resolve_date(int(m.group(2)), int(m.group(3)))
+            add(hd, label)
+
+    page_text = compact(soup.get_text(" ", strip=True))
+
+    # 3) Page-text date+day-label fallback
+    for pat in (
+        r"(?:(\d{4})[/-])?(\d{1,2})月(\d{1,2})日\s*(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)",
+        r"(?:(\d{4})[/-])?(\d{1,2})/(\d{1,2})\s*(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)",
+    ):
+        for yy, mm, dd, label in re.findall(pat, page_text):
+            hd = f"{int(yy):04d}{int(mm):02d}{int(dd):02d}" if yy else resolve_date(int(mm), int(dd))
+            add(hd, label)
+
+    # 4) Meeting date-range fallback. BOAT RACE pages often expose a range even when
+    # future day tabs are not links yet. Synthesize every day in the range.
+    range_patterns = [
+        r"(\d{1,2})月(\d{1,2})日\s*[～〜~\-－]\s*(\d{1,2})月(\d{1,2})日",
+        r"(\d{1,2})/(\d{1,2})\s*[～〜~\-－]\s*(\d{1,2})/(\d{1,2})",
+        r"(\d{1,2})月(\d{1,2})日\s*[～〜~\-－]\s*(\d{1,2})日",
+        r"(\d{1,2})/(\d{1,2})\s*[～〜~\-－]\s*(\d{1,2})",
+    ]
+
+    range_start = range_end = None
+
+    for idx, pat in enumerate(range_patterns):
+        m = re.search(pat, page_text)
+        if not m:
+            continue
+
+        if idx in (0, 1):
+            sm, sd, em, ed = map(int, m.groups())
+        else:
+            sm, sd, ed = map(int, m.groups())
+            em = sm
+
+        sy = base_year
+        ey = base_year
+        if base_month == 12 and sm == 1:
+            sy += 1
+        if sm == 12 and em == 1:
+            ey = sy + 1
+        elif base_month == 1 and sm == 12:
+            sy -= 1
+            ey = sy if em == 12 else sy + 1
+
+        try:
+            range_start = datetime(sy, sm, sd).date()
+            range_end = datetime(ey, em, ed).date()
+        except ValueError:
+            range_start = range_end = None
+        if range_start and range_end and range_start <= range_end and (range_end-range_start).days <= 10:
+            break
+
+    # If a clear date range exists, use it to fill every day.
+    if range_start and range_end:
+        total = (range_end - range_start).days + 1
+        for i in range(total):
+            dt = range_start + timedelta(days=i)
+            hd = dt.strftime("%Y%m%d")
+            if i == 0:
+                label = "初日"
+            elif i == total - 1:
+                label = "最終日"
+            else:
+                label = f"{i+1}日目"
+            add(hd, label)
+
+    result = sorted(out.values(), key=lambda x: x["date"])
+
+    # Prefer a plausible continuous block containing base_date.
+    if result:
+        dates = [x["date"] for x in result]
+        if base_date in dates:
+            idx = dates.index(base_date)
+            lo = hi = idx
+            while lo > 0:
+                a = datetime.strptime(dates[lo], "%Y%m%d").date()
+                b = datetime.strptime(dates[lo-1], "%Y%m%d").date()
+                if (a-b).days > 1:
+                    break
+                lo -= 1
+            while hi < len(dates)-1:
+                a = datetime.strptime(dates[hi+1], "%Y%m%d").date()
+                b = datetime.strptime(dates[hi], "%Y%m%d").date()
+                if (a-b).days > 1:
+                    break
+                hi += 1
+            result = result[lo:hi+1]
+
+    return result
 
 def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
     """Parse all six starters robustly, including lane 1 where status text can precede the name."""
