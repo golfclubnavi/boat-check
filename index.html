@@ -1590,6 +1590,62 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style>
+/* v55: reserve center space for future 見送り度 */
+.raceTopPro{
+  grid-template-columns:58px 118px 1fr auto !important;
+  gap:8px !important;
+  padding:12px 14px 11px !important;
+  align-items:center !important;
+}
+.raceNoPro{
+  justify-content:flex-start !important;
+  font-size:27px !important;
+}
+.raceNoPro small{
+  font-size:12px !important;
+}
+.raceTiming{
+  text-align:left !important;
+}
+.raceTiming small{
+  font-size:8px !important;
+  margin-bottom:2px !important;
+}
+.raceTiming b{
+  font-size:18px !important;
+}
+.raceCountdownBox{
+  grid-column:4;
+  min-width:100px !important;
+  font-size:14px !important;
+  text-align:right !important;
+}
+
+/* keep an open middle lane for future 見送り度 */
+.raceTopPro::after{
+  content:"";
+  grid-column:3;
+}
+
+@media(max-width:390px){
+  .raceTopPro{
+    grid-template-columns:52px 106px 1fr auto !important;
+    gap:7px !important;
+    padding:11px 11px 10px !important;
+  }
+  .raceNoPro{font-size:25px !important}
+  .raceNoPro small{font-size:11px !important}
+  .raceTiming small{font-size:7.5px !important}
+  .raceTiming b{font-size:17px !important}
+  .raceCountdownBox{
+    min-width:90px !important;
+    font-size:13px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header>
