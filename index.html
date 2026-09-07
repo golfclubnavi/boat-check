@@ -1872,43 +1872,66 @@ body{letter-spacing:0 !important}
 </style>
 
 
-<style id="v64-racer-profile-labels">
+<style id="v65-racer-profile-labels">
 .racerInfoPro,.racerTableWrap,.racerCompareTable{max-width:100%;box-sizing:border-box;}
-.racerTableWrap{overflow:hidden !important;}
-.racerCompareTable{width:100%;table-layout:fixed;border-collapse:collapse;}
-.racerCompareTable .riProfileLabels{background:#ecf6fd !important;color:#0f4e7b !important;padding:0 !important;vertical-align:top;}
-.racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{display:grid;grid-template-rows:52px repeat(7, 34px);height:100%;}
-.racerCompareTable .riProfileGrid>div,.racerCompareTable .riRacerCard>div{display:flex;align-items:center;justify-content:center;padding:0 4px;border-bottom:2px solid #aac7dc;box-sizing:border-box;}
+.racerTableWrap{overflow:hidden !important;border-radius:16px;}
+.racerCompareTable{width:100%;table-layout:fixed;border-collapse:collapse;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;}
+.racerCompareTable .riProfileLabels{background:#edf7fd !important;color:#0f4e7b !important;padding:0 !important;vertical-align:top;}
+.racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{display:grid;grid-template-rows:58px repeat(7, 29px);height:100%;}
+.racerCompareTable .riProfileGrid>div,.racerCompareTable .riRacerCard>div{display:flex;align-items:center;justify-content:center;padding:0 4px;border-bottom:2px solid #9ebed5;box-sizing:border-box;}
 .racerCompareTable .riProfileGrid>div:last-child,.racerCompareTable .riRacerCard>div:last-child{border-bottom:0;}
-.racerCompareTable .riProfileGrid>div{font-size:10px !important;line-height:1.08 !important;font-weight:950;color:#174f78;letter-spacing:.01em;}
-.racerCompareTable .riProfileGrid .riLabelName{font-size:11px !important;}
+.racerCompareTable .riProfileGrid>div{font-size:10.8px !important;line-height:1.08 !important;font-weight:950;color:#174f78;letter-spacing:.01em;}
+.racerCompareTable .riProfileGrid .riLabelName{font-size:12px !important;}
 .racerCompareTable .riRacer{padding:0 !important;vertical-align:top;}
 .racerCompareTable .riRacerCard{height:100%;}
-.racerCompareTable .riRacerCard .riName{font-size:10.8px !important;line-height:1.08 !important;font-weight:950;color:#102f4c;white-space:normal;word-break:keep-all;padding:4px 3px;}
-.racerCompareTable .riRacerCard>div:not(.riName){font-size:9.3px !important;line-height:1.05 !important;font-weight:900;color:#435f74;}
-.racerCompareTable .riRacer.riTint1 .riRacerCard>div:not(.riName){color:#516678;}
-.racerCompareTable .riRacer.riTint2{background:#46525e !important;}
-.racerCompareTable .riRacer.riTint2 .riName,.racerCompareTable .riRacer.riTint2 .riRacerCard>div:not(.riName){color:#ffffff !important;}
-.racerCompareTable .riRacer.riTint3 .riRacerCard>div:not(.riName){color:#627385;}
-.racerCompareTable .riRacer.riTint4 .riRacerCard>div:not(.riName){color:#5e7391;}
-.racerCompareTable .riRacer.riTint5 .riRacerCard>div:not(.riName){color:#5f6781;}
-.racerCompareTable .riRacer.riTint6 .riRacerCard>div:not(.riName){color:#577666;}
-.racerCompareTable tbody td.riBest1{background:#fdeaea !important;color:#b32424 !important;font-weight:950 !important;}
-.racerCompareTable tbody td.riBest2{background:#fff6cc !important;color:#7a5b00 !important;font-weight:950 !important;}
+.racerCompareTable .riRacerCard .riName{font-size:13.4px !important;line-height:1.08 !important;font-weight:950;color:#102f4c;white-space:normal;word-break:keep-all;padding:6px 4px;letter-spacing:-.01em;}
+.racerCompareTable .riRacerCard>div:not(.riName){font-size:10.6px !important;line-height:1.05 !important;font-weight:900;color:#405c72;}
+.racerCompareTable .riRacer.riTint1 .riRacerCard>div:not(.riName){color:#4d677c;}
+.racerCompareTable .riRacer.riTint2{background:#3d4854 !important;}
+.racerCompareTable .riRacer.riTint2 .riName,.racerCompareTable .riRacer.riTint2 .riRacerCard>div:not(.riName){color:#f7fbff !important;}
+.racerCompareTable .riRacer.riTint3 .riRacerCard>div:not(.riName){color:#677687;}
+.racerCompareTable .riRacer.riTint4 .riRacerCard>div:not(.riName){color:#5b7191;}
+.racerCompareTable .riRacer.riTint5 .riRacerCard>div:not(.riName){color:#606b7f;}
+.racerCompareTable .riRacer.riTint6 .riRacerCard>div:not(.riName){color:#557264;}
+.racerCompareTable .riGroup th{padding:10px 12px !important;text-align:left;background:linear-gradient(90deg,#0c6fae,#1e97cf);color:#fff;font-size:12px;letter-spacing:.02em;border-bottom:0;}
+.racerCompareTable .riCorner,.racerCompareTable .riMain{width:56px;background:#e8f3fb;color:#0d4f7e;font-weight:950;padding:8px 4px;font-size:11px;}
+.racerCompareTable .riSub{width:56px;background:#f3f8fc;color:#355c79;font-weight:900;padding:8px 4px;line-height:1.2;font-size:10.4px;}
+.racerCompareTable .riLane{height:30px;font-size:13px;font-weight:950;padding:4px 1px;}
+.racerCompareTable tbody td{font-size:10.6px !important;color:#173b58;background:#fff;line-height:1.25;padding:9px 4px;font-weight:900;letter-spacing:.01em;}
+.racerCompareTable th,.racerCompareTable td{border-right:2px solid #b9d2e3;border-bottom:2px solid #c3d8e7;text-align:center;overflow-wrap:anywhere;}
+.racerCompareTable tr>*:last-child{border-right:0;}
+.racerCompareTable tbody tr:nth-child(even):not(.riGroup) td{background:#f9fbfd;}
+.racerCompareTable tbody td.riBest1{background:#fae7ea !important;color:#ab2436 !important;font-weight:950 !important;box-shadow:inset 0 0 0 1px rgba(171,36,54,.08);}
+.racerCompareTable tbody td.riBest2{background:#fff4cf !important;color:#846100 !important;font-weight:950 !important;box-shadow:inset 0 0 0 1px rgba(132,97,0,.08);}
 .racerCompareTable tbody td.riBest1.riTint2,.racerCompareTable tbody td.riBest2.riTint2{color:#102f4c !important;}
+.racerInfoTop{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.racerInfoTop h3{margin:0;font-size:20px;color:#092d4d;letter-spacing:-.02em;}
+.racerInfoTop p{margin:4px 0 0;font-size:11px;color:#74879a;font-weight:800;}
+.racerInfoTop>span{font-size:9px;color:#6d8296;background:#eef5fa;border-radius:999px;padding:7px 10px;font-weight:850;white-space:nowrap;}
+.racerInfoNote{margin-top:10px;padding:10px 12px;border-radius:10px;background:#f5f8fb;color:#76899b;font-size:8.8px;line-height:1.6;font-weight:750;}
 @media (max-width: 430px){
-  .racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{grid-template-rows:48px repeat(7, 31px);}
-  .racerCompareTable .riProfileGrid>div{font-size:9.2px !important;}
-  .racerCompareTable .riProfileGrid .riLabelName{font-size:10.2px !important;}
-  .racerCompareTable .riRacerCard .riName{font-size:9.8px !important;}
-  .racerCompareTable .riRacerCard>div:not(.riName){font-size:8.5px !important;}
+  .racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{grid-template-rows:54px repeat(7, 27px);}
+  .racerCompareTable .riProfileGrid>div{font-size:9.7px !important;}
+  .racerCompareTable .riProfileGrid .riLabelName{font-size:11px !important;}
+  .racerCompareTable .riRacerCard .riName{font-size:12px !important;}
+  .racerCompareTable .riRacerCard>div:not(.riName){font-size:9.8px !important;}
+  .racerCompareTable .riCorner,.racerCompareTable .riMain{width:52px;font-size:10.2px;}
+  .racerCompareTable .riSub{width:52px;font-size:9.8px;}
+  .racerCompareTable .riGroup th{font-size:11px;padding:9px 10px !important;}
+  .racerCompareTable tbody td{font-size:9.9px !important;padding:8px 3px;}
+  .racerInfoTop h3{font-size:18px;}
+  .racerInfoTop p{font-size:10px;}
 }
 @media (max-width: 390px){
-  .racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{grid-template-rows:46px repeat(7, 29px);}
-  .racerCompareTable .riProfileGrid>div{font-size:8.6px !important;}
-  .racerCompareTable .riProfileGrid .riLabelName{font-size:9.4px !important;}
-  .racerCompareTable .riRacerCard .riName{font-size:9.1px !important;}
-  .racerCompareTable .riRacerCard>div:not(.riName){font-size:7.9px !important;}
+  .racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{grid-template-rows:50px repeat(7, 25px);}
+  .racerCompareTable .riProfileGrid>div{font-size:9px !important;}
+  .racerCompareTable .riProfileGrid .riLabelName{font-size:10.2px !important;}
+  .racerCompareTable .riRacerCard .riName{font-size:11px !important;}
+  .racerCompareTable .riRacerCard>div:not(.riName){font-size:8.8px !important;}
+  .racerCompareTable .riCorner,.racerCompareTable .riMain{width:48px;font-size:9.8px;}
+  .racerCompareTable .riSub{width:48px;font-size:9.2px;}
+  .racerCompareTable .riGroup th{font-size:10.3px;}
+  .racerCompareTable tbody td{font-size:9.1px !important;padding:7px 2px;}
 }
 </style>
 </head>
@@ -2590,9 +2613,22 @@ function formatRacerNameTwoLines(name){
   return esc(s);
 }
 
-function fmtStat(v, suffix=""){
+function formatMetricValue(v, suffix="", digits=null){
   if(v===undefined||v===null||v==="")return "--";
-  return `${esc(v)}${suffix}`;
+  if(typeof v==="number" && Number.isFinite(v)){
+    return `${digits!==null ? v.toFixed(digits) : String(v)}${suffix}`;
+  }
+  const s=String(v).trim();
+  if(!s || s==="--") return "--";
+  if(digits!==null){
+    const clean=s.replace(/[％%]/g,"").replace(/,/g,"");
+    if(/^-?\d+(?:\.\d+)?$/.test(clean)) return `${Number(clean).toFixed(digits)}${suffix}`;
+  }
+  return suffix && !s.endsWith(suffix) ? `${s}${suffix}` : s;
+}
+function fmtStat(v, suffix="", digits=null){
+  if(v===undefined||v===null||v==="")return "--";
+  return esc(formatMetricValue(v, suffix, digits));
 }
 function firstStat(obj, keys){
   for(const k of keys){
@@ -2660,9 +2696,9 @@ function parseRankableNumber(v){
   const num=Number(m[0]);
   return Number.isFinite(num) ? num : null;
 }
-function rankHighlightCells(values, mode="desc", tints=[]){
+function rankHighlightCells(values, mode="desc", tints=[], digits=null){
   const items=values.map((v,i)=>({i,v:parseRankableNumber(v)})).filter(x=>x.v!==null);
-  if(items.length<2) return values.map((v,i)=>`<td class="${tints[i]||''}">${fmtStat(v)}</td>`);
+  if(items.length<2) return values.map((v,i)=>`<td class="${tints[i]||''}">${fmtStat(v,"",digits)}</td>`);
   items.sort((a,b)=>mode==="asc" ? a.v-b.v : b.v-a.v);
   const first=items[0]?.i;
   let second=null;
@@ -2671,13 +2707,13 @@ function rankHighlightCells(values, mode="desc", tints=[]){
     const cls=[tints[i]||''];
     if(i===first) cls.push('riBest1');
     else if(i===second) cls.push('riBest2');
-    return `<td class="${cls.filter(Boolean).join(' ')}">${fmtStat(v)}</td>`;
+    return `<td class="${cls.filter(Boolean).join(' ')}">${fmtStat(v,"",digits)}</td>`;
   });
 }
-function rowCells(values, suffix="", mode=null, tints=[]){
-  const displayVals=values.map(v=>suffix && v!==undefined && v!==null && v!=="" && v!=="--" ? `${v}${suffix}` : v);
+function rowCells(values, suffix="", mode=null, tints=[], digits=null){
+  const displayVals=values.map(v=>formatMetricValue(v, suffix, digits));
   if(!mode) return displayVals.map((v,i)=>`<td class="${tints[i]||''}">${fmtStat(v)}</td>`).join('');
-  return rankHighlightCells(displayVals, mode, tints).join('');
+  return rankHighlightCells(displayVals, mode, tints, digits).join('');
 }
 
 function renderRacerInfo(){
@@ -2714,21 +2750,21 @@ function renderRacerInfo(){
     </div></td>`;
   }).join("");
 
-  const metricRow=(label, group, period, suffix="", rankMode="desc")=>{
+  const metricRow=(label, group, period, suffix="", rankMode="desc", digits=null)=>{
     const values=boats.map(b=>racerMetric(b,group,period));
     return `
     <tr>
       <th class="riSub">${label}</th>
-      ${rowCells(values,suffix,rankMode)}
+      ${rowCells(values,suffix,rankMode,[],digits)}
     </tr>`;
   };
 
-  const simpleRow=(label, getter, suffix="", rankMode=null)=>{
+  const simpleRow=(label, getter, suffix="", rankMode=null, digits=null)=>{
     const values=boats.map(b=>getter(b));
     return `
     <tr>
       <th class="riMain">${label}</th>
-      ${rowCells(values,suffix,rankMode)}
+      ${rowCells(values,suffix,rankMode,[],digits)}
     </tr>`;
   };
 
@@ -2764,27 +2800,27 @@ function renderRacerInfo(){
         </thead>
         <tbody>
           <tr class="riGroup"><th colspan="7">勝率</th></tr>
-          ${metricRow("全国","winRate","national")}
-          ${metricRow("当地","winRate","local")}
-          ${metricRow("直近1ヶ月","winRate","m1")}
-          ${metricRow("直近3ヶ月","winRate","m3")}
+          ${metricRow("全国","winRate","national","","desc",2)}
+          ${metricRow("当地","winRate","local","","desc",2)}
+          ${metricRow("直近1ヶ月","winRate","m1","","desc",2)}
+          ${metricRow("直近3ヶ月","winRate","m3","","desc",2)}
 
           <tr class="riGroup"><th colspan="7">2連対率</th></tr>
-          ${metricRow("全国","quinella","national","%")}
-          ${metricRow("当地","quinella","local","%")}
-          ${metricRow("直近1ヶ月","quinella","m1","%")}
-          ${metricRow("直近3ヶ月","quinella","m3","%")}
+          ${metricRow("全国","quinella","national","%","desc",2)}
+          ${metricRow("当地","quinella","local","%","desc",2)}
+          ${metricRow("直近1ヶ月","quinella","m1","%","desc",2)}
+          ${metricRow("直近3ヶ月","quinella","m3","%","desc",2)}
 
           <tr class="riGroup"><th colspan="7">3連対率</th></tr>
-          ${metricRow("全国","trifecta","national","%")}
-          ${metricRow("当地","trifecta","local","%")}
-          ${metricRow("直近1ヶ月","trifecta","m1","%")}
-          ${metricRow("直近3ヶ月","trifecta","m3","%")}
+          ${metricRow("全国","trifecta","national","%","desc",2)}
+          ${metricRow("当地","trifecta","local","%","desc",2)}
+          ${metricRow("直近1ヶ月","trifecta","m1","%","desc",2)}
+          ${metricRow("直近3ヶ月","trifecta","m3","%","desc",2)}
 
           <tr class="riGroup"><th colspan="7">平均スタート</th></tr>
-          ${metricRow("今節","st","meet","","asc")}
-          ${metricRow("直近1ヶ月","st","m1","","asc")}
-          ${metricRow("直近3ヶ月","st","m3","","asc")}
+          ${metricRow("今節","st","meet","","asc",2)}
+          ${metricRow("直近1ヶ月","st","m1","","asc",2)}
+          ${metricRow("直近3ヶ月","st","m3","","asc",2)}
 
           <tr class="riGroup"><th colspan="7">決まり手数</th></tr>
           ${finishingRows}
@@ -2792,11 +2828,11 @@ function renderRacerInfo(){
           <tr class="riGroup"><th colspan="7">フライング</th></tr>
           ${simpleRow("Fした日",flyingDate)}
           ${simpleRow("F休み開始日",flyingBreak)}
-          ${simpleRow("未消化数",flyingRemain,"","asc")}
+          ${simpleRow("未消化数",flyingRemain,"","asc",0)}
 
           <tr class="riGroup"><th colspan="7">その他</th></tr>
-          ${simpleRow("事故率",accident,"%","asc")}
-          ${simpleRow("優勝数",wins,"","desc")}
+          ${simpleRow("事故率",accident,"%","asc",2)}
+          ${simpleRow("優勝数",wins,"","desc",0)}
         </tbody>
       </table>
     </div>
