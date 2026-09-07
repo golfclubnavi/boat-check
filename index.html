@@ -1373,6 +1373,103 @@ body{
 }
 </style>
 
+
+<style>
+/* v52: refined typography + blue grid lines */
+
+/* restore previous font stack */
+html,body,button,input,select,textarea{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif !important;
+  font-feature-settings:normal !important;
+}
+body{letter-spacing:0 !important}
+
+/* blue-toned, clearer borders */
+.raceCardPro{
+  border-color:#79a9cc !important;
+}
+.laneStrip{
+  border-top-color:#72a6cd !important;
+  border-bottom-color:#72a6cd !important;
+}
+.laneMini{
+  border-right-color:#86b2d2 !important;
+}
+.laneNo{
+  border-bottom-color:#78a8ca !important;
+}
+.lane1 .laneNo{
+  border-bottom-color:#78a8ca !important;
+}
+.lane2 .laneNo{
+  border-bottom-color:#6d98b8 !important;
+}
+.laneMeta{
+  border-top-color:rgba(66,126,169,.55) !important;
+}
+.laneMeta .metaRow{
+  border-top-color:rgba(66,126,169,.40) !important;
+}
+.lane2 .laneMeta{
+  border-top-color:rgba(135,190,229,.55) !important;
+}
+.lane2 .laneMeta .metaRow{
+  border-top-color:rgba(135,190,229,.36) !important;
+}
+
+/* names: avoid wrapping for 4 chars or fewer; allow wrapping at 5+ */
+.laneName b.shortRacerName{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+  font-size:13.6px !important;
+}
+.laneName b.longRacerName{
+  white-space:normal !important;
+  word-break:keep-all !important;
+  overflow-wrap:anywhere !important;
+  font-size:12.8px !important;
+  line-height:1.15 !important;
+}
+
+/* registration no. + class: larger and fitted to lane width */
+.laneMeta .metaTop{
+  width:100% !important;
+  box-sizing:border-box !important;
+  padding:0 1px !important;
+  font-size:9.8px !important;
+  letter-spacing:-.025em !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+}
+
+/* supporting details remain legible */
+.laneMeta .metaRow{
+  font-size:9.6px !important;
+  letter-spacing:-.01em !important;
+}
+
+/* slightly more room without making cards oversized */
+.laneName{
+  min-height:134px !important;
+}
+
+/* nine direct-data buttons stay bold and highly legible */
+.raceQuickGrid9 button{
+  font-size:13.4px !important;
+  font-weight:900 !important;
+}
+
+@media(max-width:390px){
+  .laneName b.shortRacerName{font-size:12.8px !important}
+  .laneName b.longRacerName{font-size:12px !important}
+  .laneMeta .metaTop{font-size:9.2px !important}
+  .laneMeta .metaRow{font-size:9px !important}
+  .raceQuickGrid9 button{font-size:12.6px !important}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -1826,6 +1923,11 @@ function cleanRacerName(name){
     .trim();
 }
 
+function racerNameClass(name){
+  const s=String(name||"").replace(/\s+/g,"");
+  return Array.from(s).length>=5 ? "longRacerName" : "shortRacerName";
+}
+
 function renderRaces(m){
   const races=m.races||[];
   if(!races.length){
@@ -1845,7 +1947,7 @@ function renderRaces(m){
       return `<div class="laneMini lane${b.lane}">
         <div class="laneNo">${b.lane}</div>
         <div class="laneName">
-          <b>${esc(cleanRacerName(b.racerName)||"-")}</b>
+          <b class="${racerNameClass(cleanRacerName(b.racerName))}">${esc(cleanRacerName(b.racerName)||"-")}</b>
           <div class="laneMeta">
             <div class="metaTop">${esc(racerNo)} / ${esc(b.class||"-")}</div>
             <div class="metaRow">${esc(branch)}</div>
