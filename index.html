@@ -1824,6 +1824,53 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style>
+/* v61: racer info profile readability */
+.racerCompareTable .riRacer strong{
+  font-size:9.6px !important;
+  line-height:1.12 !important;
+  min-height:24px;
+}
+.racerCompareTable .riRacer span{
+  font-size:7.2px !important;
+  line-height:1.32 !important;
+  margin-top:1px;
+}
+.racerCompareTable tbody td{
+  font-size:8.5px !important;
+}
+.racerCompareTable .riSub{
+  font-size:8px !important;
+}
+.racerCompareTable .riGroup th{
+  font-size:9.5px !important;
+}
+
+/* demo bet placeholder */
+.demoBetLead{
+  color:#5f7488;font-size:9px;line-height:1.65;font-weight:750;margin-bottom:10px;
+}
+.demoBetGrid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+}
+.demoBetGrid>div{
+  border:1px solid #c8ddeb;border-radius:10px;background:#f7fbfe;padding:9px 6px;text-align:center;
+}
+.demoBetGrid small{
+  display:block;font-size:7px;color:#7c8ea0;font-weight:800;margin-bottom:4px;
+}
+.demoBetGrid strong{
+  display:block;font-size:9px;color:#153b5c;font-weight:950;
+}
+
+@media(max-width:390px){
+  .racerCompareTable .riRacer strong{font-size:9px !important}
+  .racerCompareTable .riRacer span{font-size:6.8px !important}
+  .racerCompareTable tbody td{font-size:8px !important}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -1946,9 +1993,9 @@ body{letter-spacing:0 !important}
     <button data-panel="motor" onclick="showRaceData('motor',this)">モーター情報</button>
     <button data-panel="before" onclick="showRaceData('before',this)">直前情報</button>
     <button data-panel="odds" onclick="showRaceData('odds',this)">オッズ</button>
-    <button data-panel="skip" onclick="showRaceData('skip',this)">見送り度</button>
     <button data-panel="result" onclick="showRaceData('result',this)">結果</button>
     <button data-panel="replay" onclick="showRaceData('replay',this)">リプレイ</button>
+    <button data-panel="demo" onclick="showRaceData('demo',this)">デモ投票</button>
   </div>
   <div class="quickDataPanel" id="quickDataPanel"></div>
   </div>
@@ -2339,9 +2386,9 @@ function renderRaces(m){
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'motor')">モーター情報</button>
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'before')">直前情報</button>
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'odds')">オッズ</button>
-        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'skip')">見送り度</button>
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'result')">結果</button>
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'replay')">リプレイ</button>
+        <button type="button" onclick="openRaceData(${Number(r.raceNo)},'demo')">デモ投票</button>
       </div>
     </div>`;
   }).join("");
@@ -2486,6 +2533,23 @@ function renderCourseInfo(){
   </div>`;
 }
 
+function formatRacerNameTwoLines(name){
+  const s=String(name||"--").trim();
+  if(!s || s==="--") return "--";
+  const parts=s.split(/\s+/).filter(Boolean);
+  if(parts.length>=2){
+    return `${esc(parts[0])}<br>${esc(parts.slice(1).join(""))}`;
+  }
+  // If official data has no space, keep short names on one line.
+  // Longer names are visually split near the middle.
+  const chars=Array.from(s);
+  if(chars.length>=5){
+    const cut=Math.ceil(chars.length/2);
+    return `${esc(chars.slice(0,cut).join(""))}<br>${esc(chars.slice(cut).join(""))}`;
+  }
+  return esc(s);
+}
+
 function fmtStat(v, suffix=""){
   if(v===undefined||v===null||v==="")return "--";
   return `${esc(v)}${suffix}`;
@@ -2539,10 +2603,12 @@ function renderRacerInfo(){
 
   const laneHead=boats.map(b=>`<th class="riLane riLane${b.lane}">${b.lane}</th>`).join("");
   const racerHead=boats.map(b=>`<td class="riRacer riTint${b.lane}">
-    <strong>${esc(cleanRacerName(b.racerName)||"--")}</strong>
-    <span>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"--")}</span>
-    <span>${esc(b.branch||b.region||"--")}支部</span>
-    <span>${b.period?esc(b.period)+"期":"--期"} / ${b.age!=null?esc(b.age)+"歳":"--歳"}</span>
+    <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
+    <span>登録 ${esc(b.racerId||b.registrationNo||"----")}</span>
+    <span>級 ${esc(b.class||"--")}</span>
+    <span>${esc(b.origin||b.birthplace||b.branch||b.region||"--")} / ${esc(b.branch||b.region||"--")}支部</span>
+    <span>${b.period?esc(b.period)+"期":"--期"}</span>
+    <span>${b.age!=null?esc(b.age)+"歳":"--歳"}</span>
   </td>`).join("");
 
   const metricRow=(label, group, period, suffix="")=>`
@@ -2634,20 +2700,27 @@ function renderRacerInfo(){
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
-  const labels={racer:"選手情報",course:"コース別情報",meet:"節間成績",motor:"モーター情報",before:"直前情報",odds:"オッズ",skip:"見送り度",result:"結果",replay:"リプレイ"};
+  const labels={racer:"選手情報",course:"コース別情報",meet:"節間成績",motor:"モーター情報",before:"直前情報",odds:"オッズ",result:"結果",replay:"リプレイ",demo:"デモ投票"};
 
   document.querySelectorAll("#raceDataTabs button").forEach(b=>b.classList.remove("active"));
   if(btn){btn.classList.add("active");btn.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});}
 
   if(type==="racer"){panel.innerHTML=renderRacerInfo();return;}
   if(type==="course"){panel.innerHTML=renderCourseInfo();return;}
-  if(type==="skip"){
-    panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>見送り度</b><span>BOAT CHECK独自分析</span></div>
-      <div class="skipPrep"><div class="skipScoreGhost">--</div><div><strong>分析準備中</strong><p>平均ST・コース傾向・今節・モーター・展示・気象が揃い次第、見送り度と理由を表示します。</p></div></div></div>`;
-    return;
-  }
   if(type==="replay"){
     panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>リプレイ</b><span>レース終了後</span></div><p class="dataPlaceholder">公式リプレイへの導線をここに追加します。</p></div>`;
+    return;
+  }
+  if(type==="demo"){
+    panel.innerHTML=`<div class="dataSection demoBetPanel">
+      <div class="dataSectionHead"><b>デモ投票</b><span>仮想投票・実際の購入なし</span></div>
+      <div class="demoBetLead">実際のお金を使わず、買い目を組んで結果を確認できるデモ機能として実装予定です。</div>
+      <div class="demoBetGrid">
+        <div><small>方式</small><strong>3連単 / 3連複など</strong></div>
+        <div><small>投票額</small><strong>仮想金額</strong></div>
+        <div><small>収支</small><strong>デモ結果</strong></div>
+      </div>
+    </div>`;
     return;
   }
 
