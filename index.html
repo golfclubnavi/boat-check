@@ -1646,6 +1646,61 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style>
+/* v56: compact race header */
+.raceTopPro{
+  grid-template-columns:50px 96px 1fr auto !important;
+  gap:6px !important;
+  padding:7px 12px 7px !important;
+  min-height:0 !important;
+}
+.raceNoPro{
+  font-size:24px !important;
+  justify-content:flex-start !important;
+}
+.raceNoPro small{
+  font-size:10px !important;
+}
+.raceTiming{
+  text-align:left !important;
+  transform:translateX(-3px);
+}
+.raceTiming small{
+  font-size:7px !important;
+  line-height:1 !important;
+  margin-bottom:2px !important;
+}
+.raceTiming b{
+  font-size:15.5px !important;
+  line-height:1 !important;
+}
+.raceCountdownBox{
+  min-width:88px !important;
+  font-size:13px !important;
+  text-align:right !important;
+}
+
+/* reduce vertical whitespace above starter table */
+.raceTopPro + .laneStrip{
+  margin-top:0 !important;
+}
+
+@media(max-width:390px){
+  .raceTopPro{
+    grid-template-columns:46px 89px 1fr auto !important;
+    gap:5px !important;
+    padding:6px 10px 6px !important;
+  }
+  .raceNoPro{font-size:22px !important}
+  .raceNoPro small{font-size:9px !important}
+  .raceTiming{transform:translateX(-4px)}
+  .raceTiming small{font-size:6.7px !important}
+  .raceTiming b{font-size:14.5px !important}
+  .raceCountdownBox{min-width:80px !important;font-size:12.3px !important}
+}
+</style>
+
 </head>
 <body>
 <header>
