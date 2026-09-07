@@ -481,6 +481,53 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
     cache_path.parent.mkdir(parents=True,exist_ok=True)
     cache_path.write_text(json.dumps(racer_cache,ensure_ascii=False,indent=2),encoding="utf-8")
 
+def repair_missing_lane1(meetings: list[dict], racer_cache: dict, workers: int = 12):
+    """
+    Fast-mode repair:
+    only fetch racelist for races whose lane-1 metadata is still missing.
+    Once repaired, later fast runs inherit it from today.json, so this is normally a one-time cost.
+    """
+    tasks = []
+    race_lookup = {}
+
+    for m in meetings:
+        for r in m.get("races", []):
+            boats = r.get("boats", [])
+            lane1 = next((b for b in boats if int(b.get("lane", 0)) == 1), None)
+            needs = (
+                lane1 is None
+                or not lane1.get("racerId")
+                or not lane1.get("branch")
+                or lane1.get("age") in (None, "")
+            )
+            if needs:
+                key = (m["venueCode"], int(r["raceNo"]))
+                tasks.append((m["venueCode"], m["date"], int(r["raceNo"])))
+                race_lookup[key] = r
+
+    if not tasks:
+        return
+
+    print(f"[BOAT CHECK] lane1 repair tasks={len(tasks)}")
+
+    with ThreadPoolExecutor(max_workers=min(max(workers, 1), 12)) as ex:
+        futs = [ex.submit(fetch_racelist_task, *t) for t in tasks]
+        for fut in as_completed(futs):
+            code, rno, meta, err = fut.result()
+            r = race_lookup.get((code, rno))
+            if not r or len(meta) != 6:
+                continue
+
+            # Preserve lane ordering from official racelist.
+            r["boats"] = [{"lane": i, **b} for i, b in enumerate(meta, 1)]
+
+            # Re-attach cached period where available.
+            for b in r["boats"]:
+                rid = str(b.get("racerId", ""))
+                period = racer_cache.get(rid, {}).get("period")
+                if period:
+                    b["period"] = period
+
 def collect(date: str, out_path: Path, enrich: bool, workers: int) -> dict:
     old_payload = load_json(out_path, {})
     racer_cache = load_json(out_path.parent/"racers.json", {})
@@ -511,6 +558,10 @@ def collect(date: str, out_path: Path, enrich: bool, workers: int) -> dict:
                 print(f"  ERROR {code} {name}: {e}")
 
     meetings.sort(key=lambda m:int(m["venueCode"]))
+
+    # Repair lane-1 metadata even in fast mode when it is missing.
+    # Cached results are reused on subsequent runs.
+    repair_missing_lane1(meetings, racer_cache, workers=workers)
 
     payload = {
         "schemaVersion":"37.0",
