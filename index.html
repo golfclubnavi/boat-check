@@ -1871,6 +1871,41 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style id="v62-racer-profile-labels">
+.racerCompareTable .riProfileLabels{background:#ecf6fd !important;color:#0f4e7b !important;padding:0 !important;vertical-align:top;}
+.racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{display:grid;grid-template-rows:56px repeat(7,minmax(24px,auto));height:100%;}
+.racerCompareTable .riProfileGrid>div,.racerCompareTable .riRacerCard>div{display:flex;align-items:center;justify-content:center;padding:5px 3px;border-bottom:2px solid #aac7dc;}
+.racerCompareTable .riProfileGrid>div:last-child,.racerCompareTable .riRacerCard>div:last-child{border-bottom:0;}
+.racerCompareTable .riProfileGrid>div{font-size:8.6px !important;line-height:1.2 !important;font-weight:950;color:#174f78;letter-spacing:.01em;}
+.racerCompareTable .riProfileGrid .riLabelName{font-size:10px !important;}
+.racerCompareTable .riRacer{padding:0 !important;vertical-align:top;}
+.racerCompareTable .riRacerCard{height:100%;}
+.racerCompareTable .riRacerCard .riName{font-size:9.9px !important;line-height:1.18 !important;font-weight:950;color:#102f4c;padding:8px 2px;}
+.racerCompareTable .riRacerCard>div:not(.riName){font-size:8.4px !important;line-height:1.18 !important;font-weight:880;color:#435f74;}
+.racerCompareTable .riRacer.riTint1 .riRacerCard>div:not(.riName){color:#516678;}
+.racerCompareTable .riRacer.riTint2 .riRacerCard>div:not(.riName){color:#e6edf4;}
+.racerCompareTable .riRacer.riTint3 .riRacerCard>div:not(.riName){color:#627385;}
+.racerCompareTable .riRacer.riTint4 .riRacerCard>div:not(.riName){color:#5e7391;}
+.racerCompareTable .riRacer.riTint5 .riRacerCard>div:not(.riName){color:#5f6781;}
+.racerCompareTable .riRacer.riTint6 .riRacerCard>div:not(.riName){color:#577666;}
+.racerCompareTable .riRacer.riTint2 .riName{color:#ffffff;}
+.racerCompareTable .riProfileGrid>div,.racerCompareTable .riRacerCard>div{box-sizing:border-box;}
+@media (max-width: 430px){
+  .racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{grid-template-rows:52px repeat(7,minmax(22px,auto));}
+  .racerCompareTable .riProfileGrid>div{font-size:8px !important;}
+  .racerCompareTable .riProfileGrid .riLabelName{font-size:9.2px !important;}
+  .racerCompareTable .riRacerCard .riName{font-size:9.1px !important;}
+  .racerCompareTable .riRacerCard>div:not(.riName){font-size:7.9px !important;}
+}
+@media (max-width: 390px){
+  .racerCompareTable .riProfileGrid,.racerCompareTable .riRacerCard{grid-template-rows:48px repeat(7,minmax(20px,auto));}
+  .racerCompareTable .riProfileGrid>div{font-size:7.5px !important;}
+  .racerCompareTable .riProfileGrid .riLabelName{font-size:8.6px !important;}
+  .racerCompareTable .riRacerCard .riName{font-size:8.5px !important;}
+  .racerCompareTable .riRacerCard>div:not(.riName){font-size:7.3px !important;}
+}
+</style>
 </head>
 <body>
 <header>
@@ -2566,6 +2601,12 @@ function firstStat(obj, keys){
   }
   return null;
 }
+function fmtWeight(v){
+  if(v===undefined||v===null||v==="") return "--";
+  const s=String(v);
+  return /kg/i.test(s) ? esc(s) : `${esc(s)}kg`;
+}
+
 function racerMetric(b, group, period){
   const aliases={
     winRate:{
@@ -2602,14 +2643,29 @@ function renderRacerInfo(){
   }
 
   const laneHead=boats.map(b=>`<th class="riLane riLane${b.lane}">${b.lane}</th>`).join("");
-  const racerHead=boats.map(b=>`<td class="riRacer riTint${b.lane}">
-    <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
-    <span>登録 ${esc(b.racerId||b.registrationNo||"----")}</span>
-    <span>級 ${esc(b.class||"--")}</span>
-    <span>${esc(b.origin||b.birthplace||b.branch||b.region||"--")} / ${esc(b.branch||b.region||"--")}支部</span>
-    <span>${b.period?esc(b.period)+"期":"--期"}</span>
-    <span>${b.age!=null?esc(b.age)+"歳":"--歳"}</span>
-  </td>`).join("");
+  const racerHeadLabel=`<th class="riMain riProfileLabels"><div class="riProfileGrid">
+    <div class="riLabelName">選手名</div>
+    <div>登録番号</div>
+    <div>級</div>
+    <div>支部</div>
+    <div>出身地</div>
+    <div>期</div>
+    <div>年齢</div>
+    <div>体重</div>
+  </div></th>`;
+  const racerHead=boats.map(b=>{
+    const weight=firstStat(b,["weight","bodyWeight","stats.weight","stats.bodyWeight"]);
+    return `<td class="riRacer riTint${b.lane}"><div class="riRacerCard">
+      <div class="riName">${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</div>
+      <div>登録 ${esc(b.racerId||b.registrationNo||"----")}</div>
+      <div>${esc(b.class||"--")}</div>
+      <div>${esc(b.branch||b.region||"--")}支部</div>
+      <div>${esc(b.origin||b.birthplace||b.region||"--")}</div>
+      <div>${b.period?esc(b.period)+"期":"--期"}</div>
+      <div>${b.age!=null?esc(b.age)+"歳":"--歳"}</div>
+      <div>${fmtWeight(weight)}</div>
+    </div></td>`;
+  }).join("");
 
   const metricRow=(label, group, period, suffix="")=>`
     <tr>
@@ -2653,7 +2709,7 @@ function renderRacerInfo(){
       <table class="racerCompareTable">
         <thead>
           <tr><th class="riCorner">枠</th>${laneHead}</tr>
-          <tr><th class="riMain">選手</th>${racerHead}</tr>
+          <tr>${racerHeadLabel}${racerHead}</tr>
         </thead>
         <tbody>
           <tr class="riGroup"><th colspan="7">勝率</th></tr>
