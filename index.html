@@ -1518,6 +1518,78 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style>
+/* v54: race header emphasis */
+.raceTopPro{
+  grid-template-columns:78px 1fr auto !important;
+  gap:12px !important;
+  padding:14px 16px 13px !important;
+  align-items:center !important;
+}
+.raceNoPro{
+  font-size:31px !important;
+  line-height:1 !important;
+}
+.raceNoPro small{
+  font-size:14px !important;
+}
+.raceTiming small{
+  font-size:8.5px !important;
+  font-weight:800 !important;
+  margin-bottom:3px !important;
+}
+.raceTiming b{
+  font-size:20px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+}
+.raceCountdownBox{
+  min-width:92px;
+  text-align:right;
+  color:#526a81;
+  font-size:15px;
+  line-height:1.1;
+  font-weight:950;
+  white-space:nowrap;
+}
+.raceCountdownBox.urgent{
+  color:#e32939 !important;
+}
+
+/* remove old status/countdown presentation */
+.raceStatePro,
+.raceTiming .raceCountdown{
+  display:none !important;
+}
+
+/* 9 buttons: text only larger */
+.raceQuickGrid9 button{
+  font-size:15.8px !important;
+  line-height:1.05 !important;
+  font-weight:950 !important;
+}
+
+@media(max-width:390px){
+  .raceTopPro{
+    grid-template-columns:68px 1fr auto !important;
+    gap:9px !important;
+    padding:12px 12px 11px !important;
+  }
+  .raceNoPro{font-size:28px !important}
+  .raceNoPro small{font-size:13px !important}
+  .raceTiming small{font-size:8px !important}
+  .raceTiming b{font-size:18px !important}
+  .raceCountdownBox{
+    min-width:82px;
+    font-size:13.8px !important;
+  }
+  .raceQuickGrid9 button{
+    font-size:14.8px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -2013,13 +2085,15 @@ function renderRaces(m){
         <div class="raceTiming">
           <small>締切予定</small>
           <b class="${urgent?"urgent":""}">${esc(r.deadline||"-")}</b>
+        </div>
+        <div class="raceCountdownBox ${urgent?"urgent":""}">
           ${(()=>{
             const mins=raceMinutesUntil(r.deadline);
-            if(mins===null||mins<0)return "";
-            return `<span class="raceCountdown ${mins<=10?"urgent":""}">${esc(countdownText(r.deadline))}</span>`;
+            if(mins===null)return "";
+            if(mins<0)return "締切済";
+            return esc(countdownText(r.deadline));
           })()}
         </div>
-        <div class="raceStatePro ${info.cls}">${esc(info.label)}</div>
       </div>
 
       <div class="laneStrip">${boats}</div>
