@@ -1771,6 +1771,88 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style>
+/* v59: professional racer comparison table */
+.racerInfoPro{
+  margin-top:2px;
+}
+.racerInfoTop{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
+  margin-bottom:10px;
+}
+.racerInfoTop h3{
+  margin:0;font-size:18px;color:#092d4d;letter-spacing:-.02em;
+}
+.racerInfoTop p{
+  margin:3px 0 0;font-size:8px;color:#74879a;font-weight:800;
+}
+.racerInfoTop>span{
+  font-size:7.5px;color:#6d8296;background:#eef5fa;border-radius:999px;
+  padding:5px 8px;font-weight:850;white-space:nowrap;
+}
+.racerTableWrap{
+  width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  border:1.5px solid #9ec3de;border-radius:12px;background:#fff;
+  box-shadow:0 5px 14px rgba(19,65,98,.05);
+}
+.racerCompareTable{
+  width:100%;min-width:720px;border-collapse:collapse;table-layout:fixed;
+  color:#163650;font-size:10px;
+}
+.racerCompareTable th,.racerCompareTable td{
+  border-right:1px solid #bfd6e6;border-bottom:1px solid #c8dbe8;
+  text-align:center;padding:6px 4px;font-weight:850;
+}
+.racerCompareTable tr>*:last-child{border-right:0}
+.racerCompareTable .riCorner,
+.racerCompareTable .riMain{
+  width:88px;background:#e8f3fb;color:#0d4f7e;font-weight:950;
+}
+.racerCompareTable .riSub{
+  width:88px;background:#f0f7fc;color:#355c79;font-weight:900;
+}
+.racerCompareTable .riLane{
+  height:31px;font-size:13px;font-weight:950;
+}
+.racerCompareTable .riLane1{background:#fff;color:#111}
+.racerCompareTable .riLane2{background:#262b31;color:#fff}
+.racerCompareTable .riLane3{background:#ef3340;color:#fff}
+.racerCompareTable .riLane4{background:#2d5bd3;color:#fff}
+.racerCompareTable .riLane5{background:#f2d900;color:#111}
+.racerCompareTable .riLane6{background:#159447;color:#fff}
+.racerCompareTable .riRacer{
+  padding:7px 3px;vertical-align:top;
+}
+.racerCompareTable .riRacer strong{
+  display:block;font-size:10.5px;line-height:1.25;margin-bottom:4px;
+  color:#102f4c;
+}
+.racerCompareTable .riRacer span{
+  display:block;font-size:7.8px;line-height:1.45;color:#60788d;font-weight:800;
+}
+.racerCompareTable .riTint1{background:#fff}
+.racerCompareTable .riTint2{background:#eef0f2}
+.racerCompareTable .riTint3{background:#fff0f2}
+.racerCompareTable .riTint4{background:#eef4ff}
+.racerCompareTable .riTint5{background:#fff9db}
+.racerCompareTable .riTint6{background:#eef9f2}
+.racerCompareTable .riGroup th{
+  padding:7px 8px;text-align:left;background:linear-gradient(90deg,#0c6fae,#1690c9);
+  color:#fff;font-size:10px;letter-spacing:.02em;border-bottom:0;
+}
+.racerCompareTable tbody td{
+  font-size:9.5px;color:#173b58;background:#fff;
+}
+.racerCompareTable tbody tr:nth-child(even):not(.riGroup) td{
+  background:#f9fbfd;
+}
+.racerInfoNote{
+  margin-top:8px;padding:8px 10px;border-radius:9px;background:#f5f8fb;
+  color:#76899b;font-size:7.5px;line-height:1.6;font-weight:750;
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -2433,27 +2515,151 @@ function renderCourseInfo(){
   </div>`;
 }
 
+function fmtStat(v, suffix=""){
+  if(v===undefined||v===null||v==="")return "--";
+  return `${esc(v)}${suffix}`;
+}
+function firstStat(obj, keys){
+  for(const k of keys){
+    const parts=k.split(".");
+    let v=obj;
+    for(const p of parts){
+      if(v===undefined||v===null)break;
+      v=v[p];
+    }
+    if(v!==undefined&&v!==null&&v!=="")return v;
+  }
+  return null;
+}
+function racerMetric(b, group, period){
+  const aliases={
+    winRate:{
+      national:["stats.winRate.national","winRate.national","nationalWinRate"],
+      local:["stats.winRate.local","winRate.local","localWinRate"],
+      m1:["stats.winRate.m1","winRate.m1","winRate1m"],
+      m3:["stats.winRate.m3","winRate.m3","winRate3m"]
+    },
+    quinella:{
+      national:["stats.quinella.national","quinella.national","national2Rate","twoRate.national"],
+      local:["stats.quinella.local","quinella.local","local2Rate","twoRate.local"],
+      m1:["stats.quinella.m1","quinella.m1","twoRate1m"],
+      m3:["stats.quinella.m3","quinella.m3","twoRate3m"]
+    },
+    trifecta:{
+      national:["stats.trifecta.national","trifecta.national","national3Rate","threeRate.national"],
+      local:["stats.trifecta.local","trifecta.local","local3Rate","threeRate.local"],
+      m1:["stats.trifecta.m1","trifecta.m1","threeRate1m"],
+      m3:["stats.trifecta.m3","trifecta.m3","threeRate3m"]
+    },
+    st:{
+      meet:["stats.st.meet","st.meet","meetAvgST"],
+      m1:["stats.st.m1","st.m1","avgST1m"],
+      m3:["stats.st.m3","st.m3","avgST3m"]
+    }
+  };
+  return firstStat(b,aliases[group]?.[period]||[]);
+}
 function renderRacerInfo(){
   const r=state.currentRace||{};
-  const boats=r.boats||[];
+  const boats=(r.boats||[]).slice(0,6);
   if(!boats.length){
     return `<div class="qdh"><b>選手情報</b><span>公式データ取得待ち</span></div><p>出走選手データを取得中です。</p>`;
   }
-  return `<div class="dataSection">
-    <div class="dataSectionHead"><b>選手情報</b><span>6艇比較</span></div>
-    <div class="sixCompare">
-      ${boats.slice(0,6).map(b=>`
-        <div class="sixCell lane${b.lane}">
-          <div class="laneBadge">${b.lane}</div>
-          <strong>${esc(cleanRacerName(b.racerName)||"--")}</strong>
-          <small>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"--")}</small>
-          <small>${esc(b.branch||b.region||"--")}支部</small>
-          <small>${b.period?esc(b.period)+"期":"--期"} / ${b.age!=null?esc(b.age)+"歳":"--歳"}</small>
-        </div>`).join("")}
+
+  const laneHead=boats.map(b=>`<th class="riLane riLane${b.lane}">${b.lane}</th>`).join("");
+  const racerHead=boats.map(b=>`<td class="riRacer riTint${b.lane}">
+    <strong>${esc(cleanRacerName(b.racerName)||"--")}</strong>
+    <span>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"--")}</span>
+    <span>${esc(b.branch||b.region||"--")}支部</span>
+    <span>${b.period?esc(b.period)+"期":"--期"} / ${b.age!=null?esc(b.age)+"歳":"--歳"}</span>
+  </td>`).join("");
+
+  const metricRow=(label, group, period, suffix="")=>`
+    <tr>
+      <th class="riSub">${label}</th>
+      ${boats.map(b=>`<td>${fmtStat(racerMetric(b,group,period),suffix)}</td>`).join("")}
+    </tr>`;
+
+  const simpleRow=(label, getter, suffix="")=>`
+    <tr>
+      <th class="riMain">${label}</th>
+      ${boats.map(b=>`<td>${fmtStat(getter(b),suffix)}</td>`).join("")}
+    </tr>`;
+
+  const finishingRows=["逃げ","差し","まくり","まくり差し"].map(key=>{
+    return `<tr><th class="riSub">${key}</th>${boats.map(b=>{
+      const v=firstStat(b,[
+        `stats.kimarite.${key}`,
+        `kimarite.${key}`,
+        `finishMoves.${key}`
+      ]);
+      return `<td>${fmtStat(v)}</td>`;
+    }).join("")}</tr>`;
+  }).join("");
+
+  const flyingDate=b=>firstStat(b,["flying.date","stats.flying.date","flyingDate"]);
+  const flyingBreak=b=>firstStat(b,["flying.breakStart","stats.flying.breakStart","flyingBreakStart"]);
+  const flyingRemain=b=>firstStat(b,["flying.unserved","stats.flying.unserved","flyingUnserved"]);
+  const accident=b=>firstStat(b,["stats.accidentRate","accidentRate"]);
+  const wins=b=>firstStat(b,["stats.championships","championships","wins"]);
+
+  return `<div class="racerInfoPro">
+    <div class="racerInfoTop">
+      <div>
+        <h3>選手情報</h3>
+        <p>6艇の主要データを横並びで比較</p>
+      </div>
+      <span>未取得項目は -- 表示</span>
     </div>
+
+    <div class="racerTableWrap">
+      <table class="racerCompareTable">
+        <thead>
+          <tr><th class="riCorner">枠</th>${laneHead}</tr>
+          <tr><th class="riMain">選手</th>${racerHead}</tr>
+        </thead>
+        <tbody>
+          <tr class="riGroup"><th colspan="7">勝率</th></tr>
+          ${metricRow("全国","winRate","national")}
+          ${metricRow("当地","winRate","local")}
+          ${metricRow("直近1ヶ月","winRate","m1")}
+          ${metricRow("直近3ヶ月","winRate","m3")}
+
+          <tr class="riGroup"><th colspan="7">2連対率</th></tr>
+          ${metricRow("全国","quinella","national","%")}
+          ${metricRow("当地","quinella","local","%")}
+          ${metricRow("直近1ヶ月","quinella","m1","%")}
+          ${metricRow("直近3ヶ月","quinella","m3","%")}
+
+          <tr class="riGroup"><th colspan="7">3連対率</th></tr>
+          ${metricRow("全国","trifecta","national","%")}
+          ${metricRow("当地","trifecta","local","%")}
+          ${metricRow("直近1ヶ月","trifecta","m1","%")}
+          ${metricRow("直近3ヶ月","trifecta","m3","%")}
+
+          <tr class="riGroup"><th colspan="7">平均スタート</th></tr>
+          ${metricRow("今節","st","meet")}
+          ${metricRow("直近1ヶ月","st","m1")}
+          ${metricRow("直近3ヶ月","st","m3")}
+
+          <tr class="riGroup"><th colspan="7">決まり手数</th></tr>
+          ${finishingRows}
+
+          <tr class="riGroup"><th colspan="7">フライング</th></tr>
+          ${simpleRow("Fした日",flyingDate)}
+          ${simpleRow("F休み開始日",flyingBreak)}
+          ${simpleRow("未消化数",flyingRemain)}
+
+          <tr class="riGroup"><th colspan="7">その他</th></tr>
+          ${simpleRow("事故率",accident,"%")}
+          ${simpleRow("優勝数",wins)}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="racerInfoNote">※ 実データ連携前の項目は「--」で表示します。取得できた項目から順次自動反映されます。</div>
   </div>`;
 }
-
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
