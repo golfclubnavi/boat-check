@@ -1470,6 +1470,54 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style>
+/* v53: larger text only for the 9 direct-data buttons */
+.raceQuickGrid9 button{
+  font-size:14px !important;
+  line-height:1.1 !important;
+  font-weight:950 !important;
+}
+
+/* deadline countdown in race list */
+.raceTiming .raceCountdown{
+  display:block;
+  margin-top:3px;
+  font-size:8.5px;
+  line-height:1.1;
+  font-weight:900;
+  color:#60778d;
+  white-space:nowrap;
+}
+.raceTiming .raceCountdown.urgent{
+  color:#e32939 !important;
+}
+
+/* deadline countdown in race-detail header */
+.raceContextTime .ctxCountdown{
+  display:block;
+  margin-top:4px;
+  font-style:normal;
+  font-size:9px;
+  line-height:1.1;
+  font-weight:900;
+  color:rgba(255,255,255,.82);
+  white-space:nowrap;
+}
+.raceContextTime .ctxCountdown.urgent{
+  color:#ffd8dc !important;
+  text-shadow:0 0 0 transparent;
+}
+
+/* all meeting dates stay in one horizontally-scrollable strip */
+.meetDayTabs,
+.raceContextDays{
+  overflow-x:auto !important;
+  flex-wrap:nowrap !important;
+  -webkit-overflow-scrolling:touch;
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -1579,6 +1627,7 @@ body{letter-spacing:0 !important}
       <div class="raceContextTime">
         <span>締切予定</span>
         <b id="ctxDeadline">--:--</b>
+        <em id="ctxCountdown" class="ctxCountdown"></em>
       </div>
     </div>
   </div>
@@ -1964,6 +2013,11 @@ function renderRaces(m){
         <div class="raceTiming">
           <small>締切予定</small>
           <b class="${urgent?"urgent":""}">${esc(r.deadline||"-")}</b>
+          ${(()=>{
+            const mins=raceMinutesUntil(r.deadline);
+            if(mins===null||mins<0)return "";
+            return `<span class="raceCountdown ${mins<=10?"urgent":""}">${esc(countdownText(r.deadline))}</span>`;
+          })()}
         </div>
         <div class="raceStatePro ${info.cls}">${esc(info.label)}</div>
       </div>
@@ -2009,6 +2063,17 @@ function renderRaceContext(){
   $("ctxRaceNo").textContent=r.raceNo?`${r.raceNo}R`:"--R";
   $("ctxRaceLabel").textContent=raceLabel(r);
   $("ctxDeadline").textContent=r.deadline||"--:--";
+  const ctxMins=raceMinutesUntil(r.deadline);
+  const ctxCountdown=$("ctxCountdown");
+  if(ctxCountdown){
+    if(ctxMins===null||ctxMins<0){
+      ctxCountdown.textContent=ctxMins!==null&&ctxMins<0?"締切済":"";
+      ctxCountdown.classList.remove("urgent");
+    }else{
+      ctxCountdown.textContent=countdownText(r.deadline);
+      ctxCountdown.classList.toggle("urgent",ctxMins<=10);
+    }
+  }
 
   const days=normalizedMeetDays(m);
   $("ctxMeetDays").innerHTML=days.map(x=>{
@@ -2212,7 +2277,16 @@ window.addEventListener("popstate",(e)=>{
 });
 
 loadData();
-setInterval(()=>{if(state.meetings.length){renderVenues()}},30000);
+setInterval(()=>{
+  if(!state.meetings.length)return;
+  renderVenues();
+  if(!$("venue").classList.contains("hidden") && state.currentMeetingView){
+    renderRaces(state.currentMeetingView);
+  }
+  if(!$("detail").classList.contains("hidden") && state.currentRace){
+    renderRaceContext();
+  }
+},30000);
 </script>
 </body>
 </html>
