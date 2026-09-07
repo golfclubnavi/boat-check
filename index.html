@@ -1773,83 +1773,54 @@ body{letter-spacing:0 !important}
 
 
 <style>
-/* v59: professional racer comparison table */
-.racerInfoPro{
-  margin-top:2px;
-}
-.racerInfoTop{
-  display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
-  margin-bottom:10px;
-}
-.racerInfoTop h3{
-  margin:0;font-size:18px;color:#092d4d;letter-spacing:-.02em;
-}
-.racerInfoTop p{
-  margin:3px 0 0;font-size:8px;color:#74879a;font-weight:800;
-}
-.racerInfoTop>span{
-  font-size:7.5px;color:#6d8296;background:#eef5fa;border-radius:999px;
-  padding:5px 8px;font-weight:850;white-space:nowrap;
-}
-.racerTableWrap{
-  width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;
-  border:1.5px solid #9ec3de;border-radius:12px;background:#fff;
-  box-shadow:0 5px 14px rgba(19,65,98,.05);
-}
-.racerCompareTable{
-  width:100%;min-width:720px;border-collapse:collapse;table-layout:fixed;
-  color:#163650;font-size:10px;
-}
-.racerCompareTable th,.racerCompareTable td{
-  border-right:1px solid #bfd6e6;border-bottom:1px solid #c8dbe8;
-  text-align:center;padding:6px 4px;font-weight:850;
-}
+/* v60: professional racer comparison table - no horizontal scroll */
+.racerInfoPro{margin-top:2px;}
+.racerInfoTop{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.racerInfoTop h3{margin:0;font-size:17px;color:#092d4d;letter-spacing:-.02em;}
+.racerInfoTop p{margin:3px 0 0;font-size:8px;color:#74879a;font-weight:800;}
+.racerInfoTop>span{font-size:7px;color:#6d8296;background:#eef5fa;border-radius:999px;padding:5px 7px;font-weight:850;white-space:nowrap;}
+.racerTableWrap{width:100%;overflow-x:visible;-webkit-overflow-scrolling:touch;border:1.5px solid #9ec3de;border-radius:12px;background:#fff;box-shadow:0 5px 14px rgba(19,65,98,.05);}
+.racerCompareTable{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed;color:#163650;font-size:8px;}
+.racerCompareTable th,.racerCompareTable td{border-right:1px solid #bfd6e6;border-bottom:1px solid #c8dbe8;text-align:center;padding:5px 2px;font-weight:850;word-break:keep-all;overflow-wrap:anywhere;}
 .racerCompareTable tr>*:last-child{border-right:0}
-.racerCompareTable .riCorner,
-.racerCompareTable .riMain{
-  width:88px;background:#e8f3fb;color:#0d4f7e;font-weight:950;
-}
-.racerCompareTable .riSub{
-  width:88px;background:#f0f7fc;color:#355c79;font-weight:900;
-}
-.racerCompareTable .riLane{
-  height:31px;font-size:13px;font-weight:950;
-}
+.racerCompareTable .riCorner,.racerCompareTable .riMain{width:52px;background:#e8f3fb;color:#0d4f7e;font-weight:950;padding:6px 2px;}
+.racerCompareTable .riSub{width:52px;background:#f0f7fc;color:#355c79;font-weight:900;padding:5px 2px;line-height:1.25;}
+.racerCompareTable .riLane{height:26px;font-size:11px;font-weight:950;padding:4px 1px;}
 .racerCompareTable .riLane1{background:#fff;color:#111}
 .racerCompareTable .riLane2{background:#262b31;color:#fff}
 .racerCompareTable .riLane3{background:#ef3340;color:#fff}
 .racerCompareTable .riLane4{background:#2d5bd3;color:#fff}
 .racerCompareTable .riLane5{background:#f2d900;color:#111}
 .racerCompareTable .riLane6{background:#159447;color:#fff}
-.racerCompareTable .riRacer{
-  padding:7px 3px;vertical-align:top;
-}
-.racerCompareTable .riRacer strong{
-  display:block;font-size:10.5px;line-height:1.25;margin-bottom:4px;
-  color:#102f4c;
-}
-.racerCompareTable .riRacer span{
-  display:block;font-size:7.8px;line-height:1.45;color:#60788d;font-weight:800;
-}
+.racerCompareTable .riRacer{padding:6px 2px;vertical-align:top;}
+.racerCompareTable .riRacer strong{display:block;font-size:8.3px;line-height:1.22;margin-bottom:3px;color:#102f4c;letter-spacing:-.02em;}
+.racerCompareTable .riRacer span{display:block;font-size:6.5px;line-height:1.35;color:#60788d;font-weight:800;letter-spacing:-.01em;}
 .racerCompareTable .riTint1{background:#fff}
 .racerCompareTable .riTint2{background:#eef0f2}
 .racerCompareTable .riTint3{background:#fff0f2}
 .racerCompareTable .riTint4{background:#eef4ff}
 .racerCompareTable .riTint5{background:#fff9db}
 .racerCompareTable .riTint6{background:#eef9f2}
-.racerCompareTable .riGroup th{
-  padding:7px 8px;text-align:left;background:linear-gradient(90deg,#0c6fae,#1690c9);
-  color:#fff;font-size:10px;letter-spacing:.02em;border-bottom:0;
+.racerCompareTable .riGroup th{padding:6px 8px;text-align:left;background:linear-gradient(90deg,#0c6fae,#1690c9);color:#fff;font-size:9px;letter-spacing:.02em;border-bottom:0;}
+.racerCompareTable tbody td{font-size:8px;color:#173b58;background:#fff;line-height:1.25;}
+.racerCompareTable tbody tr:nth-child(even):not(.riGroup) td{background:#f9fbfd;}
+.racerInfoNote{margin-top:8px;padding:8px 10px;border-radius:9px;background:#f5f8fb;color:#76899b;font-size:7.3px;line-height:1.6;font-weight:750;}
+@media (max-width: 430px){
+  .racerInfoTop h3{font-size:16px;}
+  .racerCompareTable{font-size:7.4px;}
+  .racerCompareTable .riCorner,.racerCompareTable .riMain,.racerCompareTable .riSub{width:48px;}
+  .racerCompareTable th,.racerCompareTable td{padding:4px 1px;}
+  .racerCompareTable .riLane{height:24px;font-size:10.5px;}
+  .racerCompareTable .riRacer strong{font-size:7.8px;line-height:1.2;}
+  .racerCompareTable .riRacer span{font-size:6.1px;line-height:1.28;}
+  .racerCompareTable .riGroup th{font-size:8.4px;padding:6px 6px;}
+  .racerCompareTable tbody td{font-size:7.5px;}
 }
-.racerCompareTable tbody td{
-  font-size:9.5px;color:#173b58;background:#fff;
-}
-.racerCompareTable tbody tr:nth-child(even):not(.riGroup) td{
-  background:#f9fbfd;
-}
-.racerInfoNote{
-  margin-top:8px;padding:8px 10px;border-radius:9px;background:#f5f8fb;
-  color:#76899b;font-size:7.5px;line-height:1.6;font-weight:750;
+@media (max-width: 380px){
+  .racerCompareTable .riCorner,.racerCompareTable .riMain,.racerCompareTable .riSub{width:44px;}
+  .racerCompareTable .riRacer strong{font-size:7.3px;}
+  .racerCompareTable .riRacer span{font-size:5.8px;}
+  .racerCompareTable tbody td{font-size:7.1px;}
 }
 </style>
 
