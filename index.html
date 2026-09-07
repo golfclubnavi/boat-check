@@ -1114,6 +1114,121 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 }
 </style>
 
+
+<style>
+/* v50: race-list readability */
+.laneStrip{
+  border-top:2px solid #9eb5c8 !important;
+  border-bottom:2px solid #9eb5c8 !important;
+}
+.laneMini{
+  border-right:2px solid #a9bac9 !important;
+}
+.laneMini:last-child{border-right:0 !important}
+
+/* 1号艇は名前から下まで白 */
+.lane1::after{
+  background:#ffffff !important;
+}
+
+/* 2号艇は名前から下を濃い黒 */
+.lane2::after{
+  background:#181b20 !important;
+}
+
+/* 他艇は艇番色を薄く */
+.lane3::after{background:#ffe4e8 !important}
+.lane4::after{background:#e3ecff !important}
+.lane5::after{background:#fff4b8 !important}
+.lane6::after{background:#dff4e6 !important}
+
+.laneName{
+  min-height:132px !important;
+  padding:7px 3px 7px !important;
+  gap:6px !important;
+}
+.laneName b{
+  font-size:13.2px !important;
+  line-height:1.18 !important;
+  min-height:32px !important;
+  padding:0 2px 4px !important;
+  letter-spacing:-.02em !important;
+}
+
+/* 2号艇は濃色背景なので文字を白へ */
+.lane2 .laneName b,
+.lane2 .laneMeta .metaTop,
+.lane2 .laneMeta .metaRow{
+  color:#ffffff !important;
+}
+
+.laneMeta{
+  width:100% !important;
+  gap:0 !important;
+  border-top:2px solid rgba(48,78,105,.28) !important;
+}
+.lane2 .laneMeta{
+  border-top-color:rgba(255,255,255,.42) !important;
+}
+
+.laneMeta .metaTop,
+.laneMeta .metaRow{
+  width:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-sizing:border-box !important;
+  padding:0 2px !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+}
+.laneMeta .metaTop{
+  min-height:24px !important;
+  font-size:9.4px !important;
+  font-weight:950 !important;
+  color:#16395d !important;
+}
+.laneMeta .metaRow{
+  min-height:23px !important;
+  border-top:1.5px solid rgba(48,78,105,.24) !important;
+  font-size:9.2px !important;
+  font-weight:900 !important;
+  color:#3c5872 !important;
+}
+.lane2 .laneMeta .metaRow{
+  border-top-color:rgba(255,255,255,.30) !important;
+}
+
+/* 9 direct buttons: larger and easier to tap */
+.raceQuickGrid9 button{
+  min-height:45px !important;
+  font-size:11.2px !important;
+  line-height:1.15 !important;
+  font-weight:950 !important;
+  border-width:1.8px !important;
+}
+
+/* Stronger outer race-card borders */
+.raceCardPro{
+  border-width:1.8px !important;
+  border-color:#9fbdd4 !important;
+}
+
+/* Remove obsolete chip styling from previous versions */
+.laneMeta .metaChips,
+.laneMeta .dataChip{
+  display:none !important;
+}
+
+@media(max-width:390px){
+  .laneName{min-height:124px !important;padding:6px 2px 6px !important}
+  .laneName b{font-size:12.2px !important;min-height:30px !important}
+  .laneMeta .metaTop{font-size:8.8px !important;min-height:22px !important}
+  .laneMeta .metaRow{font-size:8.6px !important;min-height:21px !important}
+  .raceQuickGrid9 button{font-size:10.5px !important;min-height:43px !important}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -1589,8 +1704,9 @@ function renderRaces(m){
           <b>${esc(cleanRacerName(b.racerName)||"-")}</b>
           <div class="laneMeta">
             <div class="metaTop">${esc(racerNo)} / ${esc(b.class||"-")}</div>
-            <div class="metaRow"><span>級 ${esc(b.class||"-")}</span><span>${esc(branch)}</span></div>
-            <div class="metaRow"><span>${period}</span><span>${age}</span></div>
+            <div class="metaRow">${esc(branch)}</div>
+            <div class="metaRow">${period}</div>
+            <div class="metaRow">${age}</div>
           </div>
         </div>
       </div>`;
