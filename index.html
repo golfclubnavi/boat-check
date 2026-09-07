@@ -919,6 +919,35 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .raceContextTime b{font-size:19px;line-height:1}
 </style>
 
+
+<style>
+/* v47: race detail is now context header -> 9 tabs -> selected data only */
+#detail .venueBack,
+#detail .detailHero,
+#detail .section,
+#detail #boats,
+#detail .quickDataTitle,
+#detail .dataNoticePro,
+#detail .detailAnalysisNotice{
+  display:none !important;
+}
+
+/* All six racers in race list use the same metadata layout */
+.raceCardPro .laneName{
+  min-height:74px !important;
+}
+.raceCardPro .laneMeta{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  gap:1px !important;
+}
+.raceCardPro .laneMeta span{
+  display:block !important;
+  white-space:nowrap !important;
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -1045,33 +1074,6 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
     <button data-panel="replay" onclick="showRaceData('replay',this)">リプレイ</button>
   </div>
   <div class="quickDataPanel" id="quickDataPanel"></div>
-  </div>
-  <button class="venueBack" onclick="history.back()">‹ レース一覧</button>
-
-  <div class="detailHero">
-    <div class="detailHead">
-      <div>
-        <div class="sub" id="detailVenue"></div>
-        <div class="detailRaceNo" id="detailRace"></div>
-        <div class="detailMeta" id="detailTime"></div>
-      </div>
-      <div class="detailStatus" id="detailJudge"><b>BOAT CHECK</b>分析準備中</div>
-    </div>
-    <div class="reason" id="detailReason"><b>✓ 分析ステータス</b><br>現在取得済みの基本データを表示しています。見送り度は未算出です。</div>
-  </div>
-
-  <div class="section"><h3>出走データ</h3><span>BOAT RACE公式</span></div>
-  <div class="boats" id="boats"></div>
-
-  <div class="quickDataTitle">
-    <b>レースデータ</b>
-    <span>見たい情報へ直接アクセス</span>
-  </div>
-  
-
-  <div class="dataNoticePro detailAnalysisNotice">
-    <strong>✓ BOAT CHECK 独自分析</strong><br>
-    見送り度・展開安定度・異常値・2D展開予測は、必要な公式データが揃い次第ここへ追加します。
   </div>
 </section>
 </main>
@@ -1528,11 +1530,6 @@ function openRace(no, push=true){
   state.currentRace=r;
   renderRaceContext();
   $("venue").classList.add("hidden");$("detail").classList.remove("hidden");
-  $("detailVenue").textContent=`${m.venueName} ${m.day||""} ・ ${displayGrade(m)}`;
-  $("detailRace").textContent=`${r.raceNo}R`;
-  const rs=raceStatusInfo(r,m);
-  $("detailTime").textContent=`締切予定 ${r.deadline||"-"} ・ ${rs.label}`;
-  $("detailJudge").innerHTML=`<b>BOAT CHECK</b>${rs.cls==="urgent"?"締切間近":"分析準備中"}`;
 showRaceData("racer", document.querySelector('#raceDataTabs [data-panel="racer"]'));
   scrollTo({top:0,behavior:"instant"});
 }
