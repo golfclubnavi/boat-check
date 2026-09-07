@@ -2006,6 +2006,46 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style id="v67-course-info">
+.coursePanelPro{width:100%;}
+.courseSubTabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.courseSubTabs button,.coursePeriodTabs button{border:1.5px solid #b4d2e6;background:#eef7fd;color:#164d73;font-weight:950;border-radius:11px;min-height:42px;font-size:12px;}
+.courseSubTabs button.active,.coursePeriodTabs button.active{background:linear-gradient(135deg,#0875b8,#0794cf);color:#fff;border-color:#087bbb;box-shadow:0 5px 12px rgba(11,113,174,.16);}
+.coursePeriodTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 10px;}
+.coursePeriodTabs button{min-height:34px;font-size:10px;}
+.coursePlayerTable{display:grid;grid-template-columns:58px repeat(6,1fr);border:1.5px solid #9cc3dd;border-radius:13px 13px 0 0;overflow:hidden;margin-bottom:10px;}
+.coursePlayerTable>div{border-right:1.5px solid #b8d2e3;box-sizing:border-box;}
+.coursePlayerTable>div:last-child{border-right:0;}
+.courseLabel{display:flex;align-items:center;justify-content:center;background:#eaf5fc;color:#17547e;font-size:10px;font-weight:950;}
+.courseBoat{text-align:center;padding:0 2px 6px;min-width:0;}
+.courseBoat>b{display:block;margin:0 -2px 5px;padding:5px 0;font-size:12px;}
+.courseBoat strong{display:block;font-size:10.5px;line-height:1.08;color:#102f4c;font-weight:950;min-height:24px;}
+.courseBoat span{display:block;font-size:7.8px;line-height:1.38;color:#536e83;font-weight:850;}
+.courseBoat.c1{background:#fff}.courseBoat.c1>b{background:#fff;color:#111}
+.courseBoat.c2{background:#eef0f2}.courseBoat.c2>b{background:#252b31;color:#fff}
+.courseBoat.c3{background:#fff0f2}.courseBoat.c3>b{background:#ef3340;color:#fff}
+.courseBoat.c4{background:#eef4ff}.courseBoat.c4>b{background:#2d5bd3;color:#fff}
+.courseBoat.c5{background:#fff9db}.courseBoat.c5>b{background:#f2d900;color:#111}
+.courseBoat.c6{background:#eef9f2}.courseBoat.c6>b{background:#159447;color:#fff}
+.courseStatSection{margin:0 0 10px;border:1.5px solid #9cc3dd;border-radius:12px;overflow:hidden;background:#fff;}
+.courseStatBar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(90deg,#064d82,#087fbd,#0b93cb);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);}
+.courseStatBar b{font-size:12px;font-weight:950;letter-spacing:.02em}.courseStatBar span{font-size:7.5px;font-weight:800;opacity:.9;}
+.courseStatTable{width:100%;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums;}
+.courseStatTable th,.courseStatTable td{border-right:1.5px solid #bfd6e5;border-bottom:1.5px solid #cbdde9;text-align:center;padding:8px 2px;font-weight:900;color:#173b58;font-size:9.6px;}
+.courseStatTable tr:last-child th,.courseStatTable tr:last-child td{border-bottom:0}.courseStatTable tr>*:last-child{border-right:0}
+.courseStatTable th{width:58px;background:#f0f7fc;color:#285b7c;font-size:9.2px;}
+.courseStatTable td.courseBest1{background:#fae8eb;color:#ac2c3b;font-weight:950}.courseStatTable td.courseBest2{background:#fff3cf;color:#806100;font-weight:950}
+.courseDataNote{padding:9px 10px;border-radius:10px;background:#f4f8fb;color:#71869a;font-size:8px;line-height:1.5;font-weight:780;}
+.courseComing{padding:32px 16px;border:1.5px solid #c5dce9;border-radius:12px;background:#f7fbfd;text-align:center;}.courseComing b{display:block;color:#123d5e;font-size:15px;margin-bottom:6px}.courseComing span{font-size:9px;color:#7890a3;font-weight:800}
+@media(max-width:430px){
+ .coursePlayerTable{grid-template-columns:50px repeat(6,1fr)}
+ .courseBoat strong{font-size:9.4px}.courseBoat span{font-size:7px}.courseLabel{font-size:9px}
+ .courseStatTable th{width:50px;font-size:8.5px}.courseStatTable td{font-size:8.8px;padding:7px 1px}
+ .courseStatBar b{font-size:11px}.courseSubTabs button{font-size:11px}.coursePeriodTabs button{font-size:9.4px}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -2627,49 +2667,183 @@ function openRaceData(no, type){
   });
 }
 
-function renderCourseInfo(){
-  const m=state.currentMeeting||{};
-  const r=state.currentRace||{};
-  const trend=m.venueCourseTrend||null;
-  const boats=r.boats||[];
+let coursePeriod="m1";
+let courseSubTab="rate";
 
-  const headers=[1,2,3,4,5,6].map(n=>`<th class="l${n}">${n}コース</th>`).join("");
-
-  if(trend && trend.rows){
-    const rows=["1着","2着","3着"].map(label=>{
-      const vals=trend.rows[label]||[];
-      const nums=vals.map(v=>parseFloat(String(v).replace("%",""))||0);
-      const max=Math.max(...nums,0);
-      return `<tr><th>${label}</th>${vals.map((v,i)=>`<td class="${nums[i]===max&&max>0?"best":""}">${esc(v||"--")}</td>`).join("")}</tr>`;
-    }).join("");
-
-    const completed=trend.completedRaces!=null?`${trend.completedRaces}R分`:"当日終了R";
-    return `<div class="coursePanel">
-      <div class="courseHead">
-        <div class="title">コース別情報</div>
-        <div class="sub">BOAT RACE公式・${completed}</div>
-      </div>
-      <div class="courseIntro">この開催場の本日終了レースを、進入コース別に集計。水面の当日傾向を6コース横並びで比較できます。</div>
-      <table class="courseMatrix">
-        <thead><tr><th>着順</th>${headers}</tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <div class="courseMiniCards">
-        ${boats.slice(0,6).map(b=>`<div class="courseMiniCard"><small>${b.lane}コース想定</small><b>${esc(cleanRacerName(b.racerName)||"--")}</b></div>`).join("")}
-      </div>
-      <div class="courseNote">選手個人の「コース別平均ST・1着率・2連率・3連率・決まり手傾向」は過去データ蓄積後、このパネルへ追加します。情報量は増やしつつ、6艇比較を崩さない設計にします。</div>
-    </div>`;
+function courseFirstStat(b, keys){
+  for(const k of keys){
+    const parts=k.split('.');
+    let v=b;
+    for(const p of parts){
+      if(v===undefined||v===null)break;
+      v=v[p];
+    }
+    if(v!==undefined&&v!==null&&v!=="")return v;
   }
+  return null;
+}
+function courseMetric(b, courseNo, metric, period=coursePeriod){
+  const aliases={
+    win:[
+      `courseStats.${courseNo}.${period}.winRate`,
+      `courseStats.${period}.${courseNo}.winRate`,
+      `courses.${courseNo}.${period}.winRate`,
+      `course.${courseNo}.${period}.winRate`
+    ],
+    two:[
+      `courseStats.${courseNo}.${period}.twoRate`,
+      `courseStats.${courseNo}.${period}.quinellaRate`,
+      `courseStats.${period}.${courseNo}.twoRate`,
+      `courses.${courseNo}.${period}.twoRate`
+    ],
+    three:[
+      `courseStats.${courseNo}.${period}.threeRate`,
+      `courseStats.${courseNo}.${period}.trifectaRate`,
+      `courseStats.${period}.${courseNo}.threeRate`,
+      `courses.${courseNo}.${period}.threeRate`
+    ],
+    st:[
+      `courseStats.${courseNo}.${period}.avgST`,
+      `courseStats.${period}.${courseNo}.avgST`,
+      `courses.${courseNo}.${period}.avgST`
+    ],
+    stRank:[
+      `courseStats.${courseNo}.${period}.stRank`,
+      `courseStats.${period}.${courseNo}.stRank`,
+      `courses.${courseNo}.${period}.stRank`
+    ],
+    entries:[
+      `courseStats.${courseNo}.${period}.entries`,
+      `courseStats.${period}.${courseNo}.entries`,
+      `courses.${courseNo}.${period}.entries`
+    ],
+    displayRank:[
+      `courseStats.${courseNo}.${period}.displayRank`,
+      `courseStats.${period}.${courseNo}.displayRank`,
+      `courses.${courseNo}.${period}.displayRank`
+    ],
+    escape:[
+      `courseStats.${courseNo}.${period}.kimarite.escape`,
+      `courseStats.${courseNo}.${period}.escapeRate`
+    ],
+    passed:[
+      `courseStats.${courseNo}.${period}.kimarite.passed`,
+      `courseStats.${courseNo}.${period}.passedRate`
+    ],
+    makurare:[
+      `courseStats.${courseNo}.${period}.kimarite.makurare`,
+      `courseStats.${courseNo}.${period}.makurareRate`
+    ],
+    makurareSashi:[
+      `courseStats.${courseNo}.${period}.kimarite.makurareSashi`,
+      `courseStats.${courseNo}.${period}.makurareSashiRate`
+    ],
+    sashi:[
+      `courseStats.${courseNo}.${period}.kimarite.sashi`,
+      `courseStats.${courseNo}.${period}.sashiRate`
+    ],
+    makuri:[
+      `courseStats.${courseNo}.${period}.kimarite.makuri`,
+      `courseStats.${courseNo}.${period}.makuriRate`
+    ],
+    makuriSashi:[
+      `courseStats.${courseNo}.${period}.kimarite.makuriSashi`,
+      `courseStats.${courseNo}.${period}.makuriSashiRate`
+    ]
+  };
+  return courseFirstStat(b, aliases[metric]||[]);
+}
+function courseFmt(v, suffix="", digits=null){
+  if(v===undefined||v===null||v==="")return "--";
+  let s=String(v).trim();
+  if(!s||s==="--")return "--";
+  const raw=s.replace(/[％%]/g,"").replace(/,/g,"");
+  if(digits!==null && /^-?\d+(?:\.\d+)?$/.test(raw))s=Number(raw).toFixed(digits);
+  if(suffix && !s.endsWith(suffix))s+=suffix;
+  return esc(s);
+}
+function courseRankedCells(values, mode="desc", suffix="", digits=null){
+  const nums=values.map((v,i)=>({i,n:parseRankableNumber(v)})).filter(x=>x.n!==null);
+  nums.sort((a,b)=>mode==="asc"?a.n-b.n:b.n-a.n);
+  const first=nums[0]?.i;
+  let second=null;
+  for(const x of nums){if(x.i!==first){second=x.i;break;}}
+  return values.map((v,i)=>`<td class="${i===first?'courseBest1':i===second?'courseBest2':''}">${courseFmt(v,suffix,digits)}</td>`).join('');
+}
+function coursePlayerHeader(boats){
+  return `<div class="coursePlayerTable">
+    <div class="courseLabel head">選手</div>
+    ${boats.map(b=>`<div class="courseBoat c${b.lane}"><b>${b.lane}</b><strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||'--')}</strong><span>${esc(b.racerId||b.registrationNo||'----')}</span><span>${esc(b.class||'--')}</span><span>${b.period?esc(b.period)+'期':'--期'}</span><span>${esc(normalizeBranchLabel(b.branch||b.region))}</span></div>`).join('')}
+  </div>`;
+}
+function courseSection(title, rows, note=''){
+  return `<section class="courseStatSection">
+    <div class="courseStatBar"><b>${title}</b>${note?`<span>${note}</span>`:''}</div>
+    <table class="courseStatTable"><tbody>${rows}</tbody></table>
+  </section>`;
+}
+function renderCourseRate(){
+  const r=state.currentRace||{};
+  const boats=(r.boats||[]).slice(0,6);
+  if(!boats.length)return `<div class="dataSection"><p class="dataPlaceholder">出走選手データを取得中です。</p></div>`;
 
-  return `<div class="coursePanel">
-    <div class="courseHead">
-      <div class="title">コース別情報</div>
-      <div class="sub">公式データ取得待ち</div>
+  const row=(label,metric,mode='desc',suffix='',digits=null)=>{
+    const vals=boats.map((b,i)=>courseMetric(b,i+1,metric));
+    return `<tr><th>${label}</th>${courseRankedCells(vals,mode,suffix,digits)}</tr>`;
+  };
+
+  const performanceRows=[
+    row('1着率','win','desc','%',1),
+    row('2連対率','two','desc','%',1),
+    row('3連対率','three','desc','%',1),
+    row('平均ST','st','asc','',2),
+    row('ST順位','stRank','asc','',1),
+    row('進入回数','entries','desc','',0)
+  ].join('');
+
+  const kimariteRows=[
+    `<tr><th>逃げ率</th>${courseRankedCells(boats.map((b,i)=>i===0?courseMetric(b,1,'escape'):null),'desc','%',1)}</tr>`,
+    `<tr><th>差され率</th>${courseRankedCells(boats.map((b,i)=>i===0?courseMetric(b,1,'passed'):null),'asc','%',1)}</tr>`,
+    `<tr><th>捲られ率</th>${courseRankedCells(boats.map((b,i)=>i===0?courseMetric(b,1,'makurare'):null),'asc','%',1)}</tr>`,
+    `<tr><th>捲られ差し率</th>${courseRankedCells(boats.map((b,i)=>i===0?courseMetric(b,1,'makurareSashi'):null),'asc','%',1)}</tr>`,
+    `<tr><th>差し率</th>${courseRankedCells(boats.map((b,i)=>i===0?null:courseMetric(b,i+1,'sashi')),'desc','%',1)}</tr>`,
+    `<tr><th>捲り率</th>${courseRankedCells(boats.map((b,i)=>i===0?null:courseMetric(b,i+1,'makuri')),'desc','%',1)}</tr>`,
+    `<tr><th>捲り差し率</th>${courseRankedCells(boats.map((b,i)=>i===0?null:courseMetric(b,i+1,'makuriSashi')),'desc','%',1)}</tr>`
+  ].join('');
+
+  const displayRows=row('平均展示順位','displayRank','asc','',1);
+  const periodLabels={m1:'直近1ヶ月',m3:'直近3ヶ月',m6:'直近6ヶ月',y1:'1年'};
+
+  return `<div class="courseRatePanel">
+    <div class="coursePeriodTabs">
+      ${[['m1','1ヶ月'],['m3','3ヶ月'],['m6','6ヶ月'],['y1','1年']].map(([k,l])=>`<button class="${coursePeriod===k?'active':''}" onclick="setCoursePeriod('${k}')">${l}</button>`).join('')}
     </div>
-    <div class="courseIntro">当日の進入コース別結果を収集中です。終了レースが出ると、1〜6コースの1着・2着・3着率をここへ表示します。</div>
-    <div class="courseMiniCards">
-      ${boats.slice(0,6).map(b=>`<div class="courseMiniCard"><small>${b.lane}コース想定</small><b>${esc(cleanRacerName(b.racerName)||"--")}</b></div>`).join("")}
+    ${coursePlayerHeader(boats)}
+    ${courseSection('1〜6コース別成績',performanceRows,periodLabels[coursePeriod])}
+    ${courseSection('コース別決まり手',kimariteRows,'コースごとの決まり手傾向')}
+    ${courseSection('コース別平均展示順位',displayRows,periodLabels[coursePeriod])}
+    <div class="courseDataNote">※ 未取得データは「--」表示。1位は淡い赤、2位は淡いゴールドで強調します。</div>
+  </div>`;
+}
+function setCoursePeriod(period){
+  coursePeriod=period;
+  const panel=document.getElementById('courseInnerPanel');
+  if(panel)panel.innerHTML=renderCourseRate();
+}
+function setCourseSubTab(tab){
+  courseSubTab=tab;
+  const panel=document.getElementById('courseInnerPanel');
+  if(!panel)return;
+  panel.innerHTML=tab==='rate' ? renderCourseRate() : `<div class="courseComing"><b>直近20走成績</b><span>次の工程で専用レイアウトを作成します。</span></div>`;
+  document.querySelectorAll('.courseSubTabs button').forEach(b=>b.classList.toggle('active',b.dataset.courseTab===tab));
+}
+function renderCourseInfo(){
+  return `<div class="coursePanelPro">
+    <div class="courseSubTabs">
+      <button data-course-tab="rate" class="${courseSubTab==='rate'?'active':''}" onclick="setCourseSubTab('rate')">コース別勝率</button>
+      <button data-course-tab="last20" class="${courseSubTab==='last20'?'active':''}" onclick="setCourseSubTab('last20')">直近20走成績</button>
     </div>
+    <div id="courseInnerPanel">${courseSubTab==='rate'?renderCourseRate():`<div class="courseComing"><b>直近20走成績</b><span>次の工程で専用レイアウトを作成します。</span></div>`}</div>
   </div>`;
 }
 
