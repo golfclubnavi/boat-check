@@ -1934,6 +1934,78 @@ body{letter-spacing:0 !important}
   .racerCompareTable tbody td{font-size:9.1px !important;padding:7px 2px;}
 }
 </style>
+
+<style id="v66-racer-premium">
+/* Larger racer names, while preserving the 6-lane no-scroll layout */
+.racerCompareTable .riRacerCard .riName{
+  font-size:14.6px !important;
+  line-height:1.08 !important;
+  font-weight:950 !important;
+  letter-spacing:-.025em !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.28);
+}
+.racerCompareTable .riRacer.riTint2 .riName{
+  text-shadow:0 1px 1px rgba(0,0,0,.22);
+}
+
+/* Premium section headers */
+.racerCompareTable .riGroup th{
+  position:relative;
+  overflow:hidden;
+  padding:11px 13px !important;
+  background:
+    linear-gradient(90deg,#073f70 0%,#0878b8 52%,#0d8fc7 100%) !important;
+  color:#fff !important;
+  font-size:12.8px !important;
+  font-weight:950 !important;
+  letter-spacing:.035em !important;
+  border-top:1px solid rgba(255,255,255,.22) !important;
+  border-bottom:1px solid rgba(3,47,82,.38) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(0,35,62,.18);
+}
+.racerCompareTable .riGroup th::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(110deg,rgba(255,255,255,.14),rgba(255,255,255,0) 38%);
+}
+
+/* A slightly cleaner outer frame */
+.racerTableWrap{
+  border:1.5px solid #91b8d3 !important;
+  box-shadow:
+    0 10px 24px rgba(13,55,88,.08),
+    0 2px 6px rgba(13,55,88,.05) !important;
+}
+
+/* Selected-data panel spacing after auto positioning */
+.topRaceDataNav{
+  scroll-margin-top:110px;
+}
+
+@media(max-width:430px){
+  .racerCompareTable .riRacerCard .riName{
+    font-size:13.2px !important;
+  }
+  .racerCompareTable .riGroup th{
+    font-size:11.7px !important;
+    padding:10px 11px !important;
+  }
+}
+
+@media(max-width:390px){
+  .racerCompareTable .riRacerCard .riName{
+    font-size:12.4px !important;
+  }
+  .racerCompareTable .riGroup th{
+    font-size:11px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -2538,15 +2610,20 @@ function openRace(no, push=true){
 showRaceData("racer", document.querySelector('#raceDataTabs [data-panel="racer"]'));
   scrollTo({top:0,behavior:"instant"});
 }
+function scrollRaceDataToView(){
+  const nav=document.querySelector(".topRaceDataNav");
+  const header=document.querySelector("header");
+  if(!nav)return;
+  const headerH=header ? header.getBoundingClientRect().height : 0;
+  const y=window.scrollY + nav.getBoundingClientRect().top - headerH - 10;
+  window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+}
 function openRaceData(no, type){
   openRace(no);
   requestAnimationFrame(()=>{
     const btn=document.querySelector(`#raceDataTabs [data-panel="${type}"]`);
     showRaceData(type, btn);
-    const panel=document.getElementById("quickDataPanel");
-    if(panel){
-      setTimeout(()=>panel.scrollIntoView({behavior:"smooth",block:"center"}),60);
-    }
+    setTimeout(scrollRaceDataToView,90);
   });
 }
 
@@ -2846,7 +2923,10 @@ function showRaceData(type, btn){
   const labels={racer:"選手情報",course:"コース別情報",meet:"節間成績",motor:"モーター情報",before:"直前情報",odds:"オッズ",result:"結果",replay:"リプレイ",demo:"デモ投票"};
 
   document.querySelectorAll("#raceDataTabs button").forEach(b=>b.classList.remove("active"));
-  if(btn){btn.classList.add("active");btn.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});}
+  if(btn){
+    btn.classList.add("active");
+    btn.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});
+  }
 
   if(type==="racer"){panel.innerHTML=renderRacerInfo();return;}
   if(type==="course"){panel.innerHTML=renderCourseInfo();return;}
