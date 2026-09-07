@@ -174,51 +174,93 @@ def parse_meet_days(soup: BeautifulSoup, base_date: str) -> list[dict]:
     return sorted(out, key=lambda x:x["date"])
 
 def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
-    found, used = [], set()
+    """Parse all six starters robustly, including lane 1 where status text can precede the name."""
+    status_words = ("投票", "発売終了", "発売中", "投票受付中", "受付終了")
+    found = []
+    used = set()
+
+    def clean_name(v: str) -> str:
+        v = compact(v)
+        for w in status_words:
+            if v.startswith(w):
+                v = compact(v[len(w):])
+            if v.endswith(w):
+                v = compact(v[:-len(w)])
+        return v
+
+    # Primary path: profile links carrying registration number.
     for a in soup.find_all("a", href=True):
-        href = a.get("href","")
+        href = a.get("href", "")
         mt = re.search(r"(?:[?&]|&amp;)toban=(\d{4})", href)
-        if not mt: continue
+        if not mt:
+            continue
         toban = mt.group(1)
-        if toban in used: continue
-        row = a.find_parent("tr")
-        text = compact((row or a.parent or a).get_text(" ", strip=True))
+        if toban in used:
+            continue
 
-        mk = re.search(rf"{re.escape(toban)}\s*/\s*(A1|A2|B1|B2)", text)
-        klass = mk.group(1) if mk else ""
+        row = a.find_parent("tr") or a.find_parent("div") or a.parent
+        text = compact((row or a).get_text(" ", strip=True))
+        text = re.sub(r"^(?:投票|発売終了|発売中|投票受付中|受付終了)\s*", "", text)
 
-        name = compact(a.get_text(" ", strip=True))
-        if not name or name == toban or len(name) > 24:
-            mn = re.search(rf"{re.escape(toban)}\s*/\s*(?:A1|A2|B1|B2)\s+(.+?)\s+[^\s/]+/[^\s/]+\s+\d{{1,2}}歳/", text)
-            name = compact(mn.group(1)) if mn else ""
+        klass = ""
+        mk = re.search(rf"{re.escape(toban)}\s*/?\s*(A1|A2|B1|B2)", text)
+        if mk:
+            klass = mk.group(1)
+
+        name = clean_name(a.get_text(" ", strip=True))
+        if not name or name == toban or re.fullmatch(r"A1|A2|B1|B2", name):
+            # Find a Japanese name near the registration number.
+            mn = re.search(
+                rf"{re.escape(toban)}\s*/?\s*(?:A1|A2|B1|B2)\s+"
+                r"([一-龥々ヶヵぁ-んァ-ヶー・　 ]{2,24}?)(?=\s+[一-龥ぁ-んァ-ヶー]+/)",
+                text
+            )
+            if mn:
+                name = clean_name(mn.group(1))
 
         branch, age = "", None
-        mb = re.search(r"([一-龥ぁ-んァ-ヶー]+)\/([一-龥ぁ-んァ-ヶー]+)\s+(\d{1,2})歳/", text)
+        mb = re.search(r"([一-龥ぁ-んァ-ヶー]+)\/([一-龥ぁ-んァ-ヶー]+)\s+(\d{1,2})歳", text)
         if mb:
             branch = mb.group(1)
             age = int(mb.group(3))
 
-        found.append({"racerId":toban,"racerName":name,"class":klass,"branch":branch,"age":age})
+        found.append({
+            "racerId": toban,
+            "racerName": name,
+            "class": klass,
+            "branch": branch,
+            "age": age,
+        })
         used.add(toban)
-        if len(found) == 6: break
+        if len(found) == 6:
+            break
 
+    # Fallback: parse the page text as six racer records.
     if len(found) < 6:
         text = compact(soup.get_text(" ", strip=True))
+        for w in status_words:
+            text = text.replace(w, " ")
+
         pat = re.compile(
-            r"(\d{4})\s*/\s*(A1|A2|B1|B2)\s+(.{2,24}?)\s+"
-            r"([一-龥ぁ-んァ-ヶー]+)\/([一-龥ぁ-んァ-ヶー]+)\s+(\d{1,2})歳/"
+            r"(\d{4})\s*/?\s*(A1|A2|B1|B2)\s+"
+            r"([一-龥々ヶヵぁ-んァ-ヶー・　 ]{2,24}?)\s+"
+            r"([一-龥ぁ-んァ-ヶー]+)\/([一-龥ぁ-んァ-ヶー]+)\s+(\d{1,2})歳"
         )
-        found = []
-        used = set()
         for toban, klass, name, branch, _origin, age in pat.findall(text):
-            if toban in used: continue
+            if toban in used:
+                continue
             found.append({
-                "racerId":toban,"racerName":compact(name),"class":klass,
-                "branch":branch,"age":int(age)
+                "racerId": toban,
+                "racerName": clean_name(name),
+                "class": klass,
+                "branch": branch,
+                "age": int(age),
             })
             used.add(toban)
-            if len(found)==6: break
-    return found
+            if len(found) == 6:
+                break
+
+    return found[:6]
 
 def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache: dict):
     old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
