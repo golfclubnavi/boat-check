@@ -742,6 +742,98 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
   .meetDayTab{min-width:57px}
 }
 
+
+/* v48: race list boat cells refined for better readability */
+.laneStrip{background:#fff}
+.laneMini{
+  position:relative;
+  background:#fff;
+}
+.laneMini::after{
+  content:"";
+  position:absolute;left:0;right:0;top:19px;bottom:0;
+  opacity:1;pointer-events:none;
+}
+.lane1::after{background:linear-gradient(180deg,rgba(243,246,250,.98),rgba(247,249,252,.98))}
+.lane2::after{background:linear-gradient(180deg,rgba(241,243,246,.98),rgba(248,249,251,.98))}
+.lane3::after{background:linear-gradient(180deg,rgba(255,241,243,.98),rgba(255,247,248,.98))}
+.lane4::after{background:linear-gradient(180deg,rgba(240,245,255,.98),rgba(247,250,255,.98))}
+.lane5::after{background:linear-gradient(180deg,rgba(255,251,228,.98),rgba(255,253,241,.98))}
+.lane6::after{background:linear-gradient(180deg,rgba(238,250,242,.98),rgba(246,253,248,.98))}
+.laneNo,.laneName{position:relative;z-index:1}
+
+.laneName{
+  min-height:92px!important;
+  padding:5px 3px 6px!important;
+  justify-content:flex-start!important;
+  gap:4px!important;
+}
+.laneName b{
+  font-size:10.7px!important;
+  line-height:1.16!important;
+  min-height:26px!important;
+  padding:0 1px;
+}
+.laneMeta{
+  width:100%;
+  margin-top:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  gap:3px!important;
+}
+.laneMeta .metaTop{
+  font-size:7.6px;
+  line-height:1.15;
+  color:#213f61;
+  font-weight:950;
+  white-space:nowrap;
+}
+.laneMeta .metaChips{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:3px;
+  width:100%;
+}
+.laneMeta .dataChip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:17px;
+  padding:1px 5px 0;
+  border-radius:999px;
+  border:1px solid rgba(36,68,95,.16);
+  background:rgba(255,255,255,.9);
+  color:#2f4c6b;
+  font-size:7.2px;
+  line-height:1;
+  font-weight:900;
+  white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.laneMeta .chipClass{
+  background:#f4f8fc;
+  color:#153d68;
+  border-color:#bfd4e5;
+}
+.laneMeta .chipBranch{
+  background:#ffffff;
+}
+.laneMeta .chipPeriod{
+  background:#ffffff;
+}
+.laneMeta .chipAge{
+  background:#ffffff;
+}
+
+@media(max-width:390px){
+  .laneName{min-height:88px!important;padding:5px 2px 6px!important}
+  .laneName b{font-size:9.8px!important;min-height:24px!important}
+  .laneMeta .metaTop{font-size:7.2px}
+  .laneMeta .dataChip{font-size:6.8px;padding:1px 4px 0;min-height:16px}
+}
+
 </style>
 
 <style>
@@ -941,10 +1033,6 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
   flex-direction:column !important;
   align-items:center !important;
   gap:1px !important;
-}
-.raceCardPro .laneMeta span{
-  display:block !important;
-  white-space:nowrap !important;
 }
 </style>
 
@@ -1422,10 +1510,15 @@ function renderRaces(m){
         <div class="laneName">
           <b>${esc(cleanRacerName(b.racerName)||"-")}</b>
           <div class="laneMeta">
-            <span class="racerNo">${esc(racerNo)} / ${esc(b.class||"-")}</span>
-            <span>${esc(branch)}</span>
-            <span>${period}</span>
-            <span>${age}</span>
+            <div class="metaTop">${esc(racerNo)} / ${esc(b.class||"-")}</div>
+            <div class="metaChips">
+              <span class="dataChip chipClass">級 ${esc(b.class||"-")}</span>
+              <span class="dataChip chipBranch">${esc(branch)}</span>
+            </div>
+            <div class="metaChips">
+              <span class="dataChip chipPeriod">${period}</span>
+              <span class="dataChip chipAge">${age}</span>
+            </div>
           </div>
         </div>
       </div>`;
