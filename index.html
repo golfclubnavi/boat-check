@@ -2266,6 +2266,13 @@ body{letter-spacing:0 !important}
 .kimariteAttack td{
   background:#fff;
   color:#173b58;
+  min-height:34px;
+}
+.kimariteAttack tbody tr{
+  background:#fff;
+}
+.kimariteAttack table{
+  border-left:1.5px solid #bfd6e5;
 }
 .laneHead2{background:#262b31;color:#fff}
 .laneHead3{background:#ef3340;color:#fff}
@@ -3031,51 +3038,92 @@ function courseMetric(b, courseNo, metric, period=coursePeriod){
       `courseStats.${period}.${courseNo}.displayRank`,
       `courses.${courseNo}.${period}.displayRank`
     ],
-    kimariteWin:[
-      `courseStats.${courseNo}.${period}.kimarite.winRate`,
-      `courseStats.${courseNo}.${period}.kimariteWinRate`,
-      `courses.${courseNo}.${period}.kimariteWinRate`
-    ],
-    kimariteCount:[
-      `courseStats.${courseNo}.${period}.kimarite.count`,
-      `courseStats.${courseNo}.${period}.kimariteCount`,
-      `courses.${courseNo}.${period}.kimariteCount`
-    ],
     escape:[
       `courseStats.${courseNo}.${period}.kimarite.escape`,
-      `courseStats.${courseNo}.${period}.escapeRate`
+      `courseStats.${courseNo}.${period}.escapeRate`,
+      `courses.${courseNo}.${period}.escapeRate`
     ],
     passed:[
       `courseStats.${courseNo}.${period}.kimarite.passed`,
-      `courseStats.${courseNo}.${period}.passedRate`
+      `courseStats.${courseNo}.${period}.passedRate`,
+      `courses.${courseNo}.${period}.passedRate`
     ],
     makurare:[
       `courseStats.${courseNo}.${period}.kimarite.makurare`,
-      `courseStats.${courseNo}.${period}.makurareRate`
+      `courseStats.${courseNo}.${period}.makurareRate`,
+      `courses.${courseNo}.${period}.makurareRate`
     ],
     makurareSashi:[
       `courseStats.${courseNo}.${period}.kimarite.makurareSashi`,
-      `courseStats.${courseNo}.${period}.makurareSashiRate`
+      `courseStats.${courseNo}.${period}.makurareSashiRate`,
+      `courses.${courseNo}.${period}.makurareSashiRate`
     ],
     sashi:[
       `courseStats.${courseNo}.${period}.kimarite.sashi`,
-      `courseStats.${courseNo}.${period}.sashiRate`
+      `courseStats.${courseNo}.${period}.sashiRate`,
+      `courses.${courseNo}.${period}.sashiRate`
     ],
     makuri:[
       `courseStats.${courseNo}.${period}.kimarite.makuri`,
-      `courseStats.${courseNo}.${period}.makuriRate`
+      `courseStats.${courseNo}.${period}.makuriRate`,
+      `courses.${courseNo}.${period}.makuriRate`
     ],
     makuriSashi:[
       `courseStats.${courseNo}.${period}.kimarite.makuriSashi`,
-      `courseStats.${courseNo}.${period}.makuriSashiRate`
+      `courseStats.${courseNo}.${period}.makuriSashiRate`,
+      `courses.${courseNo}.${period}.makuriSashiRate`
     ],
     nigashi:[
       `courseStats.${courseNo}.${period}.kimarite.nigashi`,
       `courseStats.${courseNo}.${period}.nigashiRate`,
       `courses.${courseNo}.${period}.nigashiRate`
+    ],
+    nuki:[
+      `courseStats.${courseNo}.${period}.kimarite.nuki`,
+      `courseStats.${courseNo}.${period}.nukiRate`,
+      `courses.${courseNo}.${period}.nukiRate`
+    ],
+    entryCount:[
+      `courseStats.${courseNo}.${period}.entryCount`,
+      `courseStats.${courseNo}.${period}.entries`,
+      `courseStats.${courseNo}.${period}.startCount`,
+      `courseStats.${courseNo}.${period}.raceCount`,
+      `courseStats.${courseNo}.${period}.sampleCount`,
+      `courses.${courseNo}.${period}.entryCount`,
+      `courses.${courseNo}.${period}.entries`
     ]
   };
   return courseFirstStat(b, aliases[metric]||[]);
+}
+
+function courseMetricCount(b, courseNo, key, period=coursePeriod){
+  const aliases = [
+    `courseStats.${courseNo}.${period}.kimarite.${key}Count`,
+    `courseStats.${courseNo}.${period}.kimarite.${key}.count`,
+    `courseStats.${courseNo}.${period}.${key}Count`,
+    `courseStats.${courseNo}.${period}.kimariteCounts.${key}`,
+    `courses.${courseNo}.${period}.kimarite.${key}Count`,
+    `courses.${courseNo}.${period}.kimariteCounts.${key}`
+  ];
+  return courseFirstStat(b, aliases);
+}
+
+function courseCountText(v){
+  if(v===undefined || v===null || v==="") return "--";
+  const s = String(v).trim();
+  if(!s || s==="--") return "--";
+  const n = Number(s);
+  if(Number.isFinite(n)) return String(Math.round(n));
+  return s;
+}
+
+function courseCountDisplay(b, courseNo, key, period=coursePeriod){
+  const count = courseMetricCount(b, courseNo, key, period);
+  const total = courseMetric(b, courseNo, "entryCount", period);
+  if((count===undefined || count===null || count==="") && (total===undefined || total===null || total==="")){
+    return "--";
+  }
+  return `${courseCountText(count)}/${courseCountText(total)}`;
 }
 
 function courseFmt(v, suffix="", digits=null){
@@ -3145,21 +3193,23 @@ function renderKimariteLayout(boats, periodText){
     makurareSashi: one ? courseMetric(one,1,"makurareSashi") : null
   };
 
-  const attackRows=[
+  const attackRows = [
+    {label:"逃し率", metric:"nigashi", limited:[2,3]},
     {label:"差し率", metric:"sashi"},
     {label:"捲り率", metric:"makuri"},
     {label:"捲り差し率", metric:"makuriSashi"}
   ];
 
-  const attackTable=attackRows.map(row=>{
-    const vals=boats.map((b,i)=>i===0?null:courseMetric(b,i+1,row.metric));
-    return `<tr>
-      <th>${row.label}</th>
-      ${courseCells(vals,"desc","%",1)}
-    </tr>`;
+  const attackTable = attackRows.map(row=>{
+    const vals = [2,3,4,5,6].map((laneNo, idx)=>{
+      const boat = boats[laneNo-1];
+      const raw = boat ? courseMetric(boat, laneNo, row.metric) : null;
+      const isActive = !row.limited || row.limited.includes(laneNo);
+      const cls = isActive ? "" : "mutedCell";
+      return `<td class="${cls}">${isActive ? courseFmt(raw,"%",1) : "--"}</td>`;
+    }).join("");
+    return `<tr><th>${row.label}</th>${vals}</tr>`;
   }).join("");
-
-  const nigashiVals=boats.map((b,i)=>(i===1||i===2)?courseMetric(b,i+1,"nigashi"):null);
 
   return `<div class="kimariteUnified">
     ${courseBar("決まり手別割合",periodText)}
@@ -3190,11 +3240,7 @@ function renderKimariteLayout(boats, periodText){
             </tr>
           </thead>
           <tbody>
-            <tr class="nigashiRow">
-              <th>逃し率</th>
-              ${nigashiVals.slice(1).map((v,i)=>`<td class="${i>1?"mutedCell":""}">${i<2?courseFmt(v,"%",1):"--"}</td>`).join("")}
-            </tr>
-            ${attackTable.replaceAll("<td>--</td>","").replaceAll("<td class=\"\">--</td>","")}
+            ${attackTable}
           </tbody>
         </table>
       </div>
@@ -3231,9 +3277,15 @@ function renderCourseRate(){
   ].join("");
 
   const kimariteSummaryRows=[
-    row("勝率","kimariteWin","desc","%",1),
-    row("決まり手数","kimariteCount","desc","",0)
-  ].join("");
+    ["逃げ","escape"],
+    ["差し","sashi"],
+    ["捲り差し","makuriSashi"],
+    ["捲り","makuri"],
+    ["抜き","nuki"]
+  ].map(([label,key])=>{
+    const vals=boats.map((b,i)=>courseCountDisplay(b,i+1,key));
+    return `<tr><th>${label}</th>${vals.map(v=>`<td>${esc(v)}</td>`).join("")}</tr>`;
+  }).join("");
 
   const displayRows=row("平均展示順位","displayRank","asc","",1);
 
