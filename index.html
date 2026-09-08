@@ -2232,7 +2232,7 @@ body{letter-spacing:0 !important}
 .kimariteAttack td{
   border-right:1.5px solid #bfd6e5;
   border-bottom:1.5px solid #c9dce8;
-  padding:8px 2px;
+  padding:7px 2px;
   text-align:center;
   font-size:8.8px;
   font-weight:900;
@@ -2268,6 +2268,19 @@ body{letter-spacing:0 !important}
 .kimariteOne thead th,
 .kimariteAttack thead th{
   font-size:9px;
+  line-height:1.15;
+  height:34px;
+}
+.kimariteOne tbody tr,
+.kimariteAttack tbody tr{
+  height:52px;
+}
+.kimariteOne tbody th,
+.kimariteAttack tbody th{
+  line-height:1.25;
+}
+.kimariteOne tbody td,
+.kimariteAttack tbody td{
   line-height:1.15;
 }
 .kimariteAttack thead th:first-child{
@@ -3240,7 +3253,7 @@ function renderKimariteLayout(boats, periodText){
         <table>
           <thead>
             <tr>
-              <th>項目</th>
+              <th>&nbsp;</th>
               <th>1</th>
             </tr>
           </thead>
@@ -3257,7 +3270,7 @@ function renderKimariteLayout(boats, periodText){
         <table>
           <thead>
             <tr>
-              <th>項目</th>
+              <th>&nbsp;</th>
               ${[2,3,4,5,6].map(n=>`<th class="laneHead laneHead${n}">${n}</th>`).join("")}
             </tr>
           </thead>
