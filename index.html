@@ -4598,6 +4598,10 @@ function showRaceData(type, btn){
 
   if(type==="racer"){panel.innerHTML=renderRacerInfo();return;}
   if(type==="course"){panel.innerHTML=renderCourseInfo();return;}
+  if(type==="meet"){
+    panel.innerHTML=renderMeetResults();
+    return;
+  }
   if(type==="replay"){
     panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>リプレイ</b><span>レース終了後</span></div><p class="dataPlaceholder">公式リプレイへの導線をここに追加します。</p></div>`;
     return;
