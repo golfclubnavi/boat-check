@@ -2980,6 +2980,93 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style id="v84-meet-connected">
+/* 節間成績〜前検を1つの連続した枠に統合 */
+.meetConnectedFrame{
+  width:100%;
+  overflow:hidden;
+  margin-top:10px;
+  border:1.5px solid #91bdd8;
+  border-radius:13px;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(13,55,88,.05);
+}
+
+.meetConnectedFrame .meetFullSection{
+  margin-top:0!important;
+  width:100%;
+}
+
+.meetConnectedFrame .meetFullSection + .meetFullSection{
+  border-top:2px solid #8fbcd7;
+}
+
+/* セクション見出しはカード化せず横一線で接続 */
+.meetConnectedFrame .meetFullBar{
+  border-radius:0!important;
+  margin:0!important;
+  padding:8px 11px!important;
+  font-size:13px!important;
+}
+
+/* 内側の表は外枠を持たず、1つの大きな表として見せる */
+.meetConnectedFrame .meetRunsTable,
+.meetConnectedFrame .meetSimpleTable{
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+
+/* 節間成績の高さをコンパクト化 */
+.meetConnectedFrame .meetRunRow{
+  min-height:44px!important;
+}
+.meetConnectedFrame .meetRunCell{
+  gap:2px!important;
+  padding:3px 1px!important;
+}
+.meetConnectedFrame .meetRunCell>span:first-child{
+  font-size:7.8px!important;
+}
+.meetConnectedFrame .meetRunCell b{
+  font-size:9px!important;
+}
+.meetConnectedFrame .meetCourseBadge{
+  width:27px!important;
+  height:18px!important;
+  font-size:8.5px!important;
+}
+.meetConnectedFrame .meetDayLabel{
+  font-size:9.5px!important;
+}
+.meetConnectedFrame .meetRunLabel{
+  font-size:8px!important;
+}
+
+/* 下段も少し締めて、縦スクロール量を抑える */
+.meetConnectedFrame .meetSimpleRow{
+  min-height:42px!important;
+}
+.meetConnectedFrame .meetSimpleLabel{
+  font-size:8.5px!important;
+}
+.meetConnectedFrame .meetSimpleCell{
+  font-size:10px!important;
+}
+
+/* 最後の前検下でだけ枠を閉じる */
+.meetConnectedFrame .meetFullSection:last-child .meetSimpleTable{
+  border-bottom:0!important;
+}
+
+@media(max-width:430px){
+  .meetConnectedFrame .meetRunRow{min-height:42px!important;}
+  .meetConnectedFrame .meetFullBar{font-size:12.5px!important;padding:7px 10px!important;}
+  .meetConnectedFrame .meetSimpleRow{min-height:40px!important;}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -3948,16 +4035,18 @@ function renderMeetResultsInner(){
 
     ${racerHeader}
 
-    <div class="meetFullSection">
-      <div class="meetFullBar">節間成績</div>
-      <div class="meetRunsTable">${dayRows}</div>
-    </div>
+    <div class="meetConnectedFrame">
+      <div class="meetFullSection first">
+        <div class="meetFullBar">節間成績</div>
+        <div class="meetRunsTable">${dayRows}</div>
+      </div>
 
-    ${meetSectionTable("得点率",pointRows,boats)}
-    ${meetSectionTable("スタート",startRows,boats)}
-    ${meetSectionTable("展示",displayRows,boats)}
-    ${meetSectionTable("勝率",winRows,boats)}
-    ${meetSectionTable("前検",preRows,boats)}
+      ${meetSectionTable("得点率",pointRows,boats)}
+      ${meetSectionTable("スタート",startRows,boats)}
+      ${meetSectionTable("展示",displayRows,boats)}
+      ${meetSectionTable("勝率",winRows,boats)}
+      ${meetSectionTable("前検",preRows,boats)}
+    </div>
 
     <div class="meetLegend">
       <span><i class="one"></i>1位（最も優れた値）</span>
