@@ -2824,6 +2824,162 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style id="v83-meet-results-fullwidth">
+.meetResults{padding:0!important;}
+.meetPageTitle{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
+  margin-bottom:10px;
+}
+.meetPageTitle h3{margin:0;color:#0b3455;font-size:20px;font-weight:950;}
+.meetPageTitle p{margin:3px 0 0;color:#758da0;font-size:9px;font-weight:850;}
+.meetPageTitle>span{
+  padding:5px 8px;border-radius:999px;background:#eef5f9;
+  color:#708697;font-size:7.5px;font-weight:900;white-space:nowrap;
+}
+
+/* Six-racer header */
+.meetRacerHeader{
+  display:grid;grid-template-columns:15% repeat(6,1fr);
+  overflow:hidden;border:1.5px solid #91bdd8;border-radius:13px 13px 0 0;
+  background:#fff;
+}
+.meetHeaderLabel{
+  display:flex;align-items:center;justify-content:center;
+  background:#eaf4fb;color:#1c587d;font-size:10px;font-weight:950;
+  border-right:1px solid #bad3e3;
+}
+.meetHeaderBoat{
+  min-width:0;padding:7px 2px 8px;text-align:center;
+  border-right:1px solid #bad3e3;
+}
+.meetHeaderBoat:last-child{border-right:0;}
+.meetHeaderBoat .meetBoatNo{
+  width:27px;height:27px;margin:0 auto 5px;font-size:12px;
+}
+.meetHeaderBoat strong{
+  display:block;min-height:34px;color:#153a58;font-size:10.5px;
+  line-height:1.08;font-weight:950;
+}
+.meetHeaderBoat small{
+  display:block;margin-top:3px;color:#5e788d;font-size:6.8px;
+  line-height:1.15;font-weight:850;
+}
+
+/* Section wrapper */
+.meetFullSection{width:100%;margin-top:10px;}
+.meetFullBar{
+  padding:9px 12px;
+  border-radius:10px 10px 0 0;
+  background:linear-gradient(90deg,#064777,#087eb9,#0b94cb);
+  color:#fff;font-size:14px;font-weight:950;letter-spacing:.01em;
+}
+
+/* Meet daily race log */
+.meetRunsTable{
+  overflow:hidden;border:1.5px solid #91bdd8;border-top:0;
+  border-radius:0 0 12px 12px;background:#fff;
+}
+.meetDayGroup{
+  display:grid;grid-template-columns:12% 88%;
+  border-top:1px solid #bfd6e5;
+}
+.meetDayGroup:first-child{border-top:0;}
+.meetDayLabel{
+  display:flex;align-items:center;justify-content:center;
+  background:#eaf4fb;color:#154f76;font-size:11px;font-weight:950;
+  border-right:1px solid #b9d2e2;
+}
+.meetDayRuns{min-width:0;}
+.meetRunRow{
+  display:grid;grid-template-columns:9% repeat(6,1fr);
+  min-height:64px;
+}
+.meetRunRow+ .meetRunRow{border-top:1px solid #c4d9e6;}
+.meetRunLabel{
+  display:flex;align-items:center;justify-content:center;
+  background:#f4f9fc;color:#315f7d;font-size:9px;font-weight:950;
+  border-right:1px solid #bfd5e3;
+}
+.meetRunCell{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;min-width:0;padding:5px 2px;text-align:center;
+  border-right:1px solid #c3d8e6;background:#fff;
+}
+.meetRunCell:last-child{border-right:0;}
+.meetRunCell>span:first-child{
+  color:#365d78;font-size:8.5px;font-weight:900;font-variant-numeric:tabular-nums;
+}
+.meetRunCell b{color:#123e60;font-size:10px;font-weight:950;}
+.meetRunCell.empty{background:#f8fafb;}
+.meetRunCell.meetFinishBg1{background:#ffe8ec;}
+.meetRunCell.meetFinishBg2{background:#fff5cc;}
+
+.meetCourseBadge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:21px;border-radius:4px;font-size:10px;font-weight:950;
+}
+.meetCourseBadge.empty{background:#eef2f4;color:#91a1ac;}
+.meetCourseBadge.lane1{background:#fff;color:#111;border:1px solid #bfcbd3;}
+.meetCourseBadge.lane2{background:#20262c;color:#fff;}
+.meetCourseBadge.lane3{background:#ef3340;color:#fff;}
+.meetCourseBadge.lane4{background:#2d5bd3;color:#fff;}
+.meetCourseBadge.lane5{background:#f2d900;color:#111;}
+.meetCourseBadge.lane6{background:#159447;color:#fff;}
+
+/* All lower sections use the full width */
+.meetSimpleTable{
+  overflow:hidden;border:1.5px solid #91bdd8;border-top:0;
+  border-radius:0 0 12px 12px;background:#fff;
+}
+.meetSimpleRow{
+  display:grid;grid-template-columns:15% repeat(6,1fr);
+  min-height:48px;border-top:1px solid #c3d8e6;
+}
+.meetSimpleRow:first-child{border-top:0;}
+.meetSimpleLabel{
+  display:flex;align-items:center;justify-content:center;
+  padding:5px 3px;background:#eaf4fb;color:#205979;
+  text-align:center;font-size:9px;line-height:1.15;font-weight:950;
+  border-right:1px solid #b8d2e2;
+}
+.meetSimpleCell{
+  display:flex;align-items:center;justify-content:center;
+  min-width:0;padding:5px 2px;border-right:1px solid #c3d8e6;
+  color:#133d5d;font-size:11px;line-height:1.15;font-weight:950;
+  text-align:center;font-variant-numeric:tabular-nums;
+}
+.meetSimpleCell:last-child{border-right:0;}
+.meetSimpleCell.meetBest1{background:#ffdce3;color:#c51f34;}
+.meetSimpleCell.meetBest2{background:#fff1a9;color:#715800;}
+
+.meetLegend{
+  display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:11px;
+  padding:9px 10px;border:1px solid #c7ddea;border-radius:10px;background:#f7fafc;
+}
+.meetLegend span{
+  display:flex;align-items:center;gap:5px;color:#506d82;font-size:7.5px;font-weight:850;
+}
+.meetLegend i{width:22px;height:13px;border-radius:4px;}
+.meetLegend .one{background:#ffdce3;}
+.meetLegend .two{background:#fff1a9;}
+
+@media(max-width:430px){
+  .meetPageTitle h3{font-size:19px;}
+  .meetHeaderBoat strong{font-size:9.7px;min-height:32px;}
+  .meetHeaderBoat small{font-size:6.2px;}
+  .meetFullBar{font-size:13px;padding:8px 10px;}
+  .meetDayLabel{font-size:10px;}
+  .meetRunRow{min-height:61px;}
+  .meetRunCell>span:first-child{font-size:7.8px;}
+  .meetRunCell b{font-size:9.4px;}
+  .meetCourseBadge{width:28px;height:20px;font-size:9px;}
+  .meetSimpleRow{min-height:46px;}
+  .meetSimpleLabel{font-size:8.5px;}
+  .meetSimpleCell{font-size:10.5px;}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -3614,7 +3770,11 @@ function meetSummaryMetric(b, metric){
     twoRate:["meetStats.twoRate","seriesStats.twoRate","meet.twoRate","series.twoRate"],
     threeRate:["meetStats.threeRate","seriesStats.threeRate","meet.threeRate","series.threeRate"],
     avgCourse:["meetStats.avgCourse","seriesStats.avgCourse","meet.avgCourse","series.avgCourse","avgCourse"],
-    accidentRate:["meetStats.accidentRate","seriesStats.accidentRate","meet.accidentRate","series.accidentRate","accidentRate"]
+    accidentRate:["meetStats.accidentRate","seriesStats.accidentRate","meet.accidentRate","series.accidentRate","accidentRate"],
+    penalty:["meetStats.penalty","meetStats.deduction","seriesStats.penalty","seriesStats.deduction","meet.penalty","meet.deduction","penalty","deduction"],
+    penaltyDetail:["meetStats.penaltyDetail","meetStats.deductionDetail","seriesStats.penaltyDetail","seriesStats.deductionDetail","meet.penaltyDetail","meet.deductionDetail","penaltyDetail","deductionDetail"],
+    preTime:["meetStats.preInspectionTime","meetStats.preTime","seriesStats.preInspectionTime","seriesStats.preTime","meet.preInspectionTime","preInspectionTime","preTime"],
+    preRank:["meetStats.preInspectionRank","meetStats.preRank","seriesStats.preInspectionRank","seriesStats.preRank","meet.preInspectionRank","preInspectionRank","preRank"]
   };
   return firstStat(b,aliases[metric]||[metric]);
 }
@@ -3644,95 +3804,166 @@ function setMeetSelectedLane(lane){
   if(panel) panel.innerHTML=renderMeetResultsInner();
 }
 
+function meetRankClasses(values, mode="desc"){
+  const nums=values.map(v=>{
+    const n=Number(v);
+    return Number.isFinite(n)?n:null;
+  });
+  const valid=[...new Set(nums.filter(v=>v!==null))].sort((a,b)=>mode==="asc"?a-b:b-a);
+  return nums.map(v=>{
+    if(v===null)return "";
+    if(v===valid[0])return "meetBest1";
+    if(valid.length>1 && v===valid[1])return "meetBest2";
+    return "";
+  });
+}
+
+function meetSectionTable(title, rows, boats){
+  return `<div class="meetFullSection">
+    <div class="meetFullBar">${title}</div>
+    <div class="meetSimpleTable">
+      ${rows.map(row=>{
+        const vals=boats.map((b,i)=>row.value(b,i));
+        const classes=row.rankMode?meetRankClasses(vals,row.rankMode):vals.map(()=> "");
+        return `<div class="meetSimpleRow">
+          <div class="meetSimpleLabel">${row.label}</div>
+          ${vals.map((v,i)=>`<div class="meetSimpleCell ${classes[i]}">${row.format(v)}</div>`).join("")}
+        </div>`;
+      }).join("")}
+    </div>
+  </div>`;
+}
+
+function meetCourseBadge(v){
+  const n=Number(v);
+  if(!Number.isFinite(n)||n<1||n>6)return `<span class="meetCourseBadge empty">--</span>`;
+  return `<span class="meetCourseBadge lane${n}">${n}</span>`;
+}
+
+function meetRaceCell(item){
+  if(!item)return `<div class="meetRunCell empty"><span>ST --</span><span class="meetCourseBadge empty">--</span><b>--</b></div>`;
+  const st=meetValue(item,["st","startTiming","start"]);
+  const course=meetValue(item,["course","entry","courseNo","actualCourse"]);
+  const finish=meetValue(item,["finish","rank","arrival","finishPlace"]);
+  const finishNo=Number(finish);
+  const finishCls=finishNo===1?"meetFinishBg1":finishNo===2?"meetFinishBg2":"";
+  return `<div class="meetRunCell ${finishCls}">
+    <span>ST ${meetST(st)}</span>
+    ${meetCourseBadge(course)}
+    <b>${finish!==null&&finish!==undefined&&finish!==""?`${esc(finish)}着`:"--"}</b>
+  </div>`;
+}
+
 function renderMeetResultsInner(){
   const r=state.currentRace||{};
   const boats=(r.boats||[]).slice(0,6);
   if(!boats.length) return `<p class="dataPlaceholder">出走選手データを取得中です。</p>`;
 
-  if(!boats.some(b=>Number(b.lane)===meetSelectedLane)){
-    meetSelectedLane=Number(boats[0]?.lane)||1;
-  }
-  const selected=boats.find(b=>Number(b.lane)===meetSelectedLane)||boats[0];
-  const history=meetHistoryForBoat(selected);
+  const histories=boats.map(b=>meetHistoryForBoat(b));
 
-  const summaryRows=[
-    ["得点率",meetSummaryMetric(selected,"pointRate"),"num"],
-    ["得点率順位",meetSummaryMetric(selected,"pointRank"),"rank"],
-    ["得点",meetSummaryMetric(selected,"points"),"raw"],
-    ["平均ST",meetSummaryMetric(selected,"avgST"),"st"],
-    ["ST順位",meetSummaryMetric(selected,"stRank"),"rank"],
-    ["展示順位",meetSummaryMetric(selected,"exhibitionRank"),"rank"],
-    ["平均展示タイム",meetSummaryMetric(selected,"exhibitionTime"),"num"],
-    ["1着率",meetSummaryMetric(selected,"winRate"),"pct"],
-    ["2連対率",meetSummaryMetric(selected,"twoRate"),"pct"],
-    ["3連対率",meetSummaryMetric(selected,"threeRate"),"pct"],
-    ["平均進入",meetSummaryMetric(selected,"avgCourse"),"num"],
-    ["事故率",meetSummaryMetric(selected,"accidentRate"),"num"]
-  ];
+  // Derive the visible meet days from official/current data. No fabricated results.
+  let maxDay=0;
+  histories.flat().forEach(x=>{
+    const d=Number(meetValue(x,["day","meetDay","eventDay","dayNo"]));
+    if(Number.isFinite(d))maxDay=Math.max(maxDay,d);
+  });
+  const currentDay=Number(r.dayNo||r.day||r.meetDay||0);
+  if(Number.isFinite(currentDay))maxDay=Math.max(maxDay,currentDay);
+  if(!maxDay)maxDay=1;
 
-  const fmt=(v,type)=>{
-    if(type==="rank") return meetRank(v);
-    if(type==="pct") return meetPct(v);
-    if(type==="st") return meetST(v);
-    if(type==="num") return meetNum(v);
-    return v===undefined||v===null||v===""?"--":esc(v);
+  const raceFor=(boatIndex,day,slot)=>{
+    const list=histories[boatIndex]||[];
+    const dayItems=list.filter(x=>Number(meetValue(x,["day","meetDay","eventDay","dayNo"]))===day);
+    dayItems.sort((a,b)=>{
+      const ar=Number(meetValue(a,["race","raceNo","r"]))||99;
+      const br=Number(meetValue(b,["race","raceNo","r"]))||99;
+      return ar-br;
+    });
+    return dayItems[slot]||null;
   };
 
-  const raceRows=history.map((x,i)=>{
-    const day=meetValue(x,["day","meetDay","eventDay","dayNo"]);
-    const race=meetValue(x,["race","raceNo","r"]);
-    const frame=meetValue(x,["lane","frame","waku","boatNo"]);
-    const course=meetValue(x,["course","entry","courseNo","actualCourse"]);
-    const st=meetValue(x,["st","startTiming","start"]);
-    const finish=meetValue(x,["finish","rank","arrival","finishPlace"]);
-    const move=meetValue(x,["kimarite","winningMove","decision","move"]);
-    const exhibition=meetValue(x,["exhibitionTime","tenjiTime","displayTime"]);
-    return `<div class="meetRaceRow">
-      <div>${meetDayLabel(day)}</div>
-      <div>${race!==null?`${esc(race)}R`:"--"}</div>
-      <div>${meetLaneChip(frame)}</div>
-      <div>${course!==null?esc(course):"--"}</div>
-      <div class="st">${meetST(st)}</div>
-      <div class="finish">${meetFinish(finish)}</div>
-      <div>${move?esc(move):"--"}</div>
-      <div>${exhibition!==null?meetNum(exhibition,2):"--"}</div>
+  const racerHeader=`<div class="meetRacerHeader">
+    <div class="meetHeaderLabel">艇番</div>
+    ${boats.map(b=>`<div class="meetHeaderBoat laneBg${b.lane}">
+      <span class="meetBoatNo lane${b.lane}">${b.lane}</span>
+      <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
+      <small>${esc(b.racerId||b.registrationNo||"----")}</small>
+      <small>${esc(b.class||"--")} / ${b.period?esc(b.period)+"期":"--期"}</small>
+      <small>${esc(normalizeBranchLabel(b.branch||b.region))}</small>
+    </div>`).join("")}
+  </div>`;
+
+  const dayRows=Array.from({length:maxDay},(_,di)=>{
+    const day=di+1;
+    return `<div class="meetDayGroup">
+      <div class="meetDayLabel">${day}日目</div>
+      <div class="meetDayRuns">
+        ${[0,1].map(slot=>`<div class="meetRunRow">
+          <div class="meetRunLabel">${slot+1}走</div>
+          ${boats.map((b,bi)=>meetRaceCell(raceFor(bi,day,slot))).join("")}
+        </div>`).join("")}
+      </div>
     </div>`;
   }).join("");
 
+  const fmtNum=v=>v===undefined||v===null||v===""?"--":meetNum(v,2);
+  const fmtPct=v=>v===undefined||v===null||v===""?"--":meetPct(v,1);
+  const fmtRank=v=>v===undefined||v===null||v===""?"--":meetRank(v);
+  const fmtRaw=v=>v===undefined||v===null||v===""?"--":esc(v);
+  const fmtST=v=>v===undefined||v===null||v===""?"--":meetST(v);
+
+  const pointRows=[
+    {label:"順位", rankMode:"asc", value:b=>meetSummaryMetric(b,"pointRank"), format:fmtRank},
+    {label:"得点率", rankMode:"desc", value:b=>meetSummaryMetric(b,"pointRate"), format:fmtNum},
+    {label:"減点", value:b=>meetSummaryMetric(b,"penalty"), format:fmtRaw},
+    {label:"減点詳細", value:b=>meetSummaryMetric(b,"penaltyDetail"), format:fmtRaw}
+  ];
+
+  const startRows=[
+    {label:"平均ST", rankMode:"asc", value:b=>meetSummaryMetric(b,"avgST"), format:fmtST},
+    {label:"ST順位", rankMode:"asc", value:b=>meetSummaryMetric(b,"stRank"), format:fmtRank}
+  ];
+
+  const displayRows=[
+    {label:"展示順位", rankMode:"asc", value:b=>meetSummaryMetric(b,"exhibitionRank"), format:fmtRank},
+    {label:"平均展示タイム", rankMode:"asc", value:b=>meetSummaryMetric(b,"exhibitionTime"), format:fmtNum}
+  ];
+
+  const winRows=[
+    {label:"1着率", rankMode:"desc", value:b=>meetSummaryMetric(b,"winRate"), format:fmtPct},
+    {label:"2連率", rankMode:"desc", value:b=>meetSummaryMetric(b,"twoRate"), format:fmtPct},
+    {label:"3連率", rankMode:"desc", value:b=>meetSummaryMetric(b,"threeRate"), format:fmtPct}
+  ];
+
+  const preRows=[
+    {label:"前検タイム", rankMode:"asc", value:b=>meetSummaryMetric(b,"preTime"), format:fmtNum},
+    {label:"前検順位", rankMode:"asc", value:b=>meetSummaryMetric(b,"preRank"), format:fmtRank}
+  ];
+
   return `
-    ${meetSelector(boats)}
-
-    <div class="meetSelectedTitle">
-      <span class="meetBoatNo lane${selected.lane}">${selected.lane}</span>
-      <div>
-        <small>選択選手</small>
-        <strong>${esc(cleanRacerName(selected.racerName)||"--")}</strong>
-      </div>
+    <div class="meetPageTitle">
+      <div><h3>節間成績</h3><p>6艇の今節データを横並びで比較</p></div>
+      <span>未取得は --</span>
     </div>
 
-    <div class="meetSectionTitle"><span>今節サマリー</span><em>CURRENT SERIES</em></div>
-    <div class="meetSummaryGrid">
-      ${summaryRows.map(([label,v,type])=>`
-        <div class="meetMetric">
-          <span>${label}</span>
-          <strong>${fmt(v,type)}</strong>
-        </div>`).join("")}
+    ${racerHeader}
+
+    <div class="meetFullSection">
+      <div class="meetFullBar">節間成績</div>
+      <div class="meetRunsTable">${dayRows}</div>
     </div>
 
-    <div class="meetSectionTitle"><span>節間レース成績</span><em>RACE LOG</em></div>
-    <div class="meetRaceTable">
-      <div class="meetRaceHead">
-        <div>日目</div><div>R</div><div>枠</div><div>進入</div>
-        <div>ST</div><div>着</div><div>決まり手</div><div>展示</div>
-      </div>
-      <div class="meetRaceBody">
-        ${raceRows || `<div class="meetEmpty"><b>節間成績データは未取得です</b><span>取得後、今節のレース履歴をここに表示します。</span></div>`}
-      </div>
-    </div>
+    ${meetSectionTable("得点率",pointRows,boats)}
+    ${meetSectionTable("スタート",startRows,boats)}
+    ${meetSectionTable("展示",displayRows,boats)}
+    ${meetSectionTable("勝率",winRows,boats)}
+    ${meetSectionTable("前検",preRows,boats)}
 
-    <div class="meetDataNote">
-      ※ 現在の節の成績のみ表示。未取得項目は「--」で表示します。
+    <div class="meetLegend">
+      <span><i class="one"></i>1位（最も優れた値）</span>
+      <span><i class="two"></i>2位（2番目に優れた値）</span>
     </div>
+    <div class="meetDataNote">※ 公式データ取得後に自動反映します。未取得項目は「--」表示。</div>
   `;
 }
 
