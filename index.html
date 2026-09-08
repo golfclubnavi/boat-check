@@ -3007,7 +3007,7 @@ function scrollRaceDataToView(){
   if(!nav)return;
   const headerH=header ? header.getBoundingClientRect().height : 0;
   const y=window.scrollY + nav.getBoundingClientRect().top - headerH - 10;
-  window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+  window.scrollTo({top:Math.max(0,y),behavior:"instant"});
 }
 function openRaceData(no, type){
   openRace(no);
@@ -3676,7 +3676,7 @@ function showRaceData(type, btn){
   document.querySelectorAll("#raceDataTabs button").forEach(b=>b.classList.remove("active"));
   if(btn){
     btn.classList.add("active");
-    btn.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});
+    btn.scrollIntoView({behavior:"instant",inline:"center",block:"nearest"});
   }
 
   if(type==="racer"){panel.innerHTML=renderRacerInfo();return;}
