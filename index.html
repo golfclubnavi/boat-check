@@ -3067,6 +3067,124 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style id="v85-meet-schedule-fix">
+.meetRunsTable{
+  overflow:hidden!important;
+  width:100%!important;
+}
+.meetRunsGrid{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  background:#fff;
+}
+.meetRunsGrid col.dayCol{width:12%;}
+.meetRunsGrid col.runCol{width:8%;}
+.meetRunsGrid th,
+.meetRunsGrid td{
+  border-right:1px solid #bfd5e3;
+  border-bottom:1px solid #c5dae7;
+  padding:0;
+  text-align:center;
+  vertical-align:middle;
+}
+.meetRunsGrid tr>*:last-child{border-right:0;}
+.meetRunsGrid thead th{
+  height:31px;
+  background:#eaf4fb;
+  color:#245a79;
+  font-size:8.5px;
+  font-weight:950;
+}
+.meetRunsGrid thead th.laneHead1{background:#fff;color:#111;}
+.meetRunsGrid thead th.laneHead2{background:#20262c;color:#fff;}
+.meetRunsGrid thead th.laneHead3{background:#ef3340;color:#fff;}
+.meetRunsGrid thead th.laneHead4{background:#2d5bd3;color:#fff;}
+.meetRunsGrid thead th.laneHead5{background:#f2d900;color:#111;}
+.meetRunsGrid thead th.laneHead6{background:#159447;color:#fff;}
+
+.meetDayCell{
+  background:#eaf4fb!important;
+  color:#164f74!important;
+  font-weight:950!important;
+}
+.meetDayCell b{
+  display:block;
+  font-size:9.5px;
+  line-height:1.1;
+}
+.meetDayCell span{
+  display:block;
+  margin-top:3px;
+  color:#728a9c;
+  font-size:6.4px;
+  font-weight:850;
+}
+.meetRunNo{
+  background:#f5f9fc!important;
+  color:#315f7d!important;
+  font-size:7.8px!important;
+  font-weight:950!important;
+}
+
+.meetRunsGrid td{
+  height:48px;
+  background:#fff;
+}
+.meetRunsGrid .meetRunCell{
+  min-height:48px!important;
+  height:48px!important;
+  width:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:2px!important;
+  padding:3px 1px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.meetRunsGrid .meetRunCell>span:first-child{
+  font-size:7.6px!important;
+  line-height:1!important;
+}
+.meetRunsGrid .meetRunCell b{
+  font-size:8.8px!important;
+  line-height:1!important;
+}
+.meetRunsGrid .meetCourseBadge{
+  width:25px!important;
+  height:17px!important;
+  border-radius:3px!important;
+  font-size:8px!important;
+  line-height:1!important;
+}
+.meetRunsGrid .meetRunCell.empty{
+  background:#f8fafb!important;
+}
+.meetRunsGrid .meetRunCell.meetFinishBg1{
+  background:#ffe8ec!important;
+}
+.meetRunsGrid .meetRunCell.meetFinishBg2{
+  background:#fff5cc!important;
+}
+
+/* Old div-grid classes are no longer used; prevent accidental oversized layout. */
+.meetDayGroup,.meetDayRuns,.meetRunRow,.meetRunLabel{all:unset;}
+
+@media(max-width:430px){
+  .meetRunsGrid td{height:45px;}
+  .meetRunsGrid .meetRunCell{min-height:45px!important;height:45px!important;}
+  .meetDayCell b{font-size:9px;}
+  .meetRunNo{font-size:7.3px!important;}
+  .meetRunsGrid .meetRunCell>span:first-child{font-size:7.1px!important;}
+  .meetRunsGrid .meetRunCell b{font-size:8.2px!important;}
+  .meetRunsGrid .meetCourseBadge{width:23px!important;height:16px!important;font-size:7.5px!important;}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -3948,15 +4066,22 @@ function renderMeetResultsInner(){
 
   const histories=boats.map(b=>meetHistoryForBoat(b));
 
-  // Derive the visible meet days from official/current data. No fabricated results.
-  let maxDay=0;
-  histories.flat().forEach(x=>{
-    const d=Number(meetValue(x,["day","meetDay","eventDay","dayNo"]));
-    if(Number.isFinite(d))maxDay=Math.max(maxDay,d);
-  });
-  const currentDay=Number(r.dayNo||r.day||r.meetDay||0);
-  if(Number.isFinite(currentDay))maxDay=Math.max(maxDay,currentDay);
-  if(!maxDay)maxDay=1;
+  // 開催日程は会場データの全日程を基準に表示。
+  // 成績が未取得の未来日も「--」で枠だけ表示する。
+  const meeting=state.currentMeeting||state.currentMeetingView||{};
+  const scheduleDays=normalizedMeetDays(meeting);
+  let totalDays=scheduleDays.length;
+
+  if(!totalDays){
+    let detected=0;
+    histories.flat().forEach(x=>{
+      const d=Number(meetValue(x,["day","meetDay","eventDay","dayNo"]));
+      if(Number.isFinite(d))detected=Math.max(detected,d);
+    });
+    const currentDay=Number(r.dayNo||r.day||r.meetDay||0);
+    if(Number.isFinite(currentDay))detected=Math.max(detected,currentDay);
+    totalDays=detected||1;
+  }
 
   const raceFor=(boatIndex,day,slot)=>{
     const list=histories[boatIndex]||[];
@@ -3967,6 +4092,15 @@ function renderMeetResultsInner(){
       return ar-br;
     });
     return dayItems[slot]||null;
+  };
+
+  const dayDateLabel=(day)=>{
+    const item=scheduleDays[day-1];
+    const s=String(item?.date||"");
+    if(s.length>=8){
+      return `${Number(s.slice(4,6))}/${Number(s.slice(6,8))}`;
+    }
+    return "";
   };
 
   const racerHeader=`<div class="meetRacerHeader">
@@ -3980,17 +4114,14 @@ function renderMeetResultsInner(){
     </div>`).join("")}
   </div>`;
 
-  const dayRows=Array.from({length:maxDay},(_,di)=>{
+  const dayRows=Array.from({length:totalDays},(_,di)=>{
     const day=di+1;
-    return `<div class="meetDayGroup">
-      <div class="meetDayLabel">${day}日目</div>
-      <div class="meetDayRuns">
-        ${[0,1].map(slot=>`<div class="meetRunRow">
-          <div class="meetRunLabel">${slot+1}走</div>
-          ${boats.map((b,bi)=>meetRaceCell(raceFor(bi,day,slot))).join("")}
-        </div>`).join("")}
-      </div>
-    </div>`;
+    const dateLabel=dayDateLabel(day);
+    return [0,1].map(slot=>`<tr>
+      ${slot===0?`<th class="meetDayCell" rowspan="2"><b>${day}日目</b>${dateLabel?`<span>${dateLabel}</span>`:""}</th>`:""}
+      <th class="meetRunNo">${slot+1}走</th>
+      ${boats.map((b,bi)=>`<td>${meetRaceCell(raceFor(bi,day,slot))}</td>`).join("")}
+    </tr>`).join("");
   }).join("");
 
   const fmtNum=v=>v===undefined||v===null||v===""?"--":meetNum(v,2);
@@ -4038,7 +4169,22 @@ function renderMeetResultsInner(){
     <div class="meetConnectedFrame">
       <div class="meetFullSection first">
         <div class="meetFullBar">節間成績</div>
-        <div class="meetRunsTable">${dayRows}</div>
+        <div class="meetRunsTable">
+          <table class="meetRunsGrid">
+            <colgroup>
+              <col class="dayCol">
+              <col class="runCol">
+              <col><col><col><col><col><col>
+            </colgroup>
+            <thead>
+              <tr>
+                <th>日程</th><th>走</th>
+                ${boats.map(b=>`<th class="laneHead laneHead${b.lane}">${b.lane}</th>`).join("")}
+              </tr>
+            </thead>
+            <tbody>${dayRows}</tbody>
+          </table>
+        </div>
       </div>
 
       ${meetSectionTable("得点率",pointRows,boats)}
