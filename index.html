@@ -2540,6 +2540,135 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style id="v76-course-change-visual">
+/* course-change confirmation */
+.courseChangeToast{
+  position:fixed;
+  left:50%;
+  bottom:calc(28px + env(safe-area-inset-bottom));
+  z-index:99999;
+  transform:translate(-50%,18px);
+  opacity:0;
+  pointer-events:none;
+  max-width:88vw;
+  padding:10px 15px;
+  border-radius:999px;
+  background:rgba(5,48,82,.96);
+  color:#fff;
+  box-shadow:0 10px 30px rgba(0,32,58,.25);
+  font-size:11px;
+  line-height:1.25;
+  font-weight:950;
+  white-space:nowrap;
+  transition:opacity .16s ease,transform .16s ease;
+}
+.courseChangeToast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* visual course positions */
+.coursePositionBar{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  overflow:hidden;
+  border:1.5px solid #9ec4dc;
+  border-bottom:0;
+  border-radius:14px 14px 0 0;
+  background:linear-gradient(90deg,#064777,#0a89c4);
+}
+.coursePositionBar>div{
+  padding:7px 1px 6px;
+  border-right:1px solid rgba(255,255,255,.28);
+  color:#fff;
+  text-align:center;
+  font-size:12px;
+  line-height:1;
+  font-weight:950;
+}
+.coursePositionBar>div:last-child{border-right:0}
+.coursePositionBar span{
+  display:block;
+  margin-top:3px;
+  font-size:6.5px;
+  opacity:.88;
+  font-weight:850;
+}
+
+.courseChangeGrid.visualOrder{
+  border-radius:0 0 14px 14px!important;
+  border-top:0!important;
+}
+.courseChangeGrid.visualOrder .courseChangeCard{
+  position:relative;
+  min-height:153px;
+  transition:box-shadow .15s ease,transform .15s ease;
+}
+.courseChangeGrid.visualOrder .courseChangeCard::after{
+  content:"";
+  position:absolute;
+  left:9%;
+  right:9%;
+  bottom:38px;
+  height:1px;
+  background:rgba(20,81,119,.13);
+}
+.courseChangeCard select{
+  position:relative;
+  z-index:1;
+  margin-top:9px;
+  width:88%!important;
+  height:32px!important;
+  background:#fff!important;
+  border-color:#8ebbd6!important;
+  color:#075785!important;
+  font-size:9px!important;
+  box-shadow:0 2px 6px rgba(12,94,143,.07);
+}
+.courseChangeCard small{
+  display:block!important;
+  margin-top:3px!important;
+  font-size:7px!important;
+}
+
+.courseChangeHint{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  margin-top:10px;
+  padding:10px 8px;
+  border:1px solid #c3dbe9;
+  border-radius:11px;
+  background:#f6fafc;
+  text-align:center;
+}
+.courseChangeHint b{
+  color:#0e527d;
+  font-size:9.5px;
+  font-weight:950;
+}
+.courseChangeHint span{
+  color:#7a90a1;
+  font-size:7.5px;
+  line-height:1.4;
+  font-weight:800;
+}
+
+/* textual course marker removed: visual order is the indicator */
+.courseBoat i,
+.r20RacerCard i{display:none!important;}
+
+@media(max-width:430px){
+  .coursePositionBar>div{font-size:11px;padding:6px 1px}
+  .coursePositionBar span{font-size:6px}
+  .courseChangeGrid.visualOrder .courseChangeCard{min-height:146px}
+  .courseChangeCard select{font-size:8px!important}
+  .courseChangeToast{font-size:10px;padding:9px 13px}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -3167,6 +3296,30 @@ let recent20SelectedLane=1;
 let courseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
 
 
+
+function orderedBoatsByAssignedCourse(boats){
+  return [...boats].sort((a,b)=>{
+    const ac=assignedCourseForLane(a.lane||1);
+    const bc=assignedCourseForLane(b.lane||1);
+    return ac-bc;
+  });
+}
+function showCourseChangeToast(message){
+  let toast=document.getElementById("courseChangeToast");
+  if(!toast){
+    toast=document.createElement("div");
+    toast.id="courseChangeToast";
+    toast.className="courseChangeToast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent=message;
+  toast.classList.remove("show");
+  void toast.offsetWidth;
+  toast.classList.add("show");
+  clearTimeout(showCourseChangeToast._timer);
+  showCourseChangeToast._timer=setTimeout(()=>toast.classList.remove("show"),1800);
+}
+
 function assignedCourseForLane(lane){
   const n=Number(lane)||1;
   return Number(courseAssignments[n])||n;
@@ -3174,18 +3327,24 @@ function assignedCourseForLane(lane){
 function resetCourseAssignments(){
   courseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
   renderCurrentCourseSubTab();
+  showCourseChangeToast("進入を初期配置に戻しました");
 }
 function setAssignedCourse(lane,newCourse){
   lane=Number(lane); newCourse=Number(newCourse);
   if(!lane||!newCourse||lane<1||lane>6||newCourse<1||newCourse>6)return;
   const oldCourse=assignedCourseForLane(lane);
-  if(oldCourse===newCourse)return;
+  if(oldCourse===newCourse){
+    showCourseChangeToast(`${lane}号艇は現在 ${newCourse}コースです`);
+    return;
+  }
   const otherLane=Object.keys(courseAssignments)
     .map(Number)
     .find(l=>l!==lane && assignedCourseForLane(l)===newCourse);
   courseAssignments[lane]=newCourse;
   if(otherLane) courseAssignments[otherLane]=oldCourse;
   renderCurrentCourseSubTab();
+  const swapText=otherLane ? `・${otherLane}号艇→${oldCourse}C` : "";
+  showCourseChangeToast(`進入を変更しました　${lane}号艇→${newCourse}C${swapText}`);
 }
 function renderCurrentCourseSubTab(){
   const panel=document.getElementById("courseInnerPanel");
@@ -3383,7 +3542,6 @@ function coursePlayerHeader(boats){
         <span>${esc(b.class||"--")}</span>
         <span>${b.period?esc(b.period)+"期":"--期"}</span>
         <span>${esc(normalizeBranchLabel(b.branch||b.region))}</span>
-        <i>進入 ${assigned}コース</i>
       </div>`;
     }).join("")}
   </div>`;
@@ -3612,7 +3770,6 @@ function recent20Selector(boats){
         <span class="r20Meta">${esc(b.class||"--")}</span>
         <span class="r20Meta">${b.period?esc(b.period)+"期":"--期"}</span>
         <span class="r20Meta">${esc(pref)}</span>
-        <i>${course}コース想定</i>
         ${active?`<em>選択中</em>`:""}
       </button>`;
     }).join("")}
@@ -3694,41 +3851,42 @@ function renderCourseChange(){
   const boats=(r.boats||[]).slice(0,6);
   if(!boats.length)return `<div class="dataSection"><p class="dataPlaceholder">出走選手データを取得中です。</p></div>`;
 
+  const ordered=orderedBoatsByAssignedCourse(boats);
+
   return `<div class="courseChangePanel">
     <div class="courseChangeHead">
       <div>
         <h3>進入コース変更</h3>
-        <p>想定進入を変更すると「コース別勝率」と「直近20走成績」に反映</p>
+        <p>艇のカード位置そのものが想定進入順に並び替わります</p>
       </div>
-      <button type="button" onclick="resetCourseAssignments()">初期配置に戻す</button>
+      <button type="button" onclick="resetCourseAssignments()">初期配置</button>
     </div>
 
-    <div class="courseChangeGrid">
-      ${boats.map(b=>{
+    <div class="coursePositionBar">
+      ${[1,2,3,4,5,6].map(c=>`<div>${c}<span>コース</span></div>`).join("")}
+    </div>
+
+    <div class="courseChangeGrid visualOrder">
+      ${ordered.map(b=>{
         const lane=Number(b.lane)||1;
         const current=assignedCourseForLane(lane);
-        return `<div class="courseChangeCard laneBg${lane}">
+        const pref=normalizeOriginLabel(b.origin||b.birthplace||b.prefecture||b.hometown||b.branch||b.region);
+        return `<div class="courseChangeCard laneBg${lane}" data-lane="${lane}">
           <span class="ccBoat lane${lane}">${lane}</span>
           <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
-          <small>${esc(b.racerId||b.registrationNo||"----")} / ${esc(b.class||"--")}</small>
-          <label>進入コース</label>
-          <select onchange="setAssignedCourse(${lane},this.value)">
-            ${[1,2,3,4,5,6].map(c=>`<option value="${c}" ${c===current?"selected":""}>${c}コース</option>`).join("")}
+          <small>${esc(b.racerId||b.registrationNo||"----")}</small>
+          <small>${esc(b.class||"--")} / ${b.period?esc(b.period)+"期":"--期"}</small>
+          <small>${esc(pref)}</small>
+          <select aria-label="${lane}号艇の進入コース" onchange="setAssignedCourse(${lane},this.value)">
+            ${[1,2,3,4,5,6].map(c=>`<option value="${c}" ${c===current?"selected":""}>${c}C</option>`).join("")}
           </select>
         </div>`;
       }).join("")}
     </div>
 
-    <div class="courseOrderPreview">
-      <span>想定進入</span>
-      <strong>${[1,2,3,4,5,6]
-        .sort((a,b)=>assignedCourseForLane(a)-assignedCourseForLane(b))
-        .map(l=>`${l}号艇→${assignedCourseForLane(l)}C`)
-        .join("　")}</strong>
-    </div>
-
-    <div class="courseChangeNote">
-      コースを重複して選んだ場合は、入れ替え方式で自動調整します。
+    <div class="courseChangeHint">
+      <b>カードの並び＝想定進入順</b>
+      <span>コース変更するとカード位置がその場で入れ替わります。艇番色は変わりません。</span>
     </div>
   </div>`;
 }
