@@ -2687,6 +2687,143 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style id="v80-meet-results">
+.meetResults{padding:0!important;}
+.meetSelector{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  overflow:hidden;border:1.5px solid #9bc1d9;border-radius:14px;
+  background:#fff;box-shadow:0 8px 22px rgba(13,55,88,.06);
+}
+.meetRacerCard{
+  appearance:none;position:relative;min-width:0;min-height:128px;
+  padding:8px 2px;border:0;border-right:1.5px solid #bdd5e5;
+  text-align:center;color:#153a58;
+}
+.meetRacerCard:last-child{border-right:0;}
+.meetRacerCard.active{
+  z-index:2;box-shadow:inset 0 0 0 3px #087fc0;
+}
+.meetBoatNo{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:29px;height:29px;margin-bottom:5px;border-radius:7px;
+  font-size:13px;font-weight:950;
+}
+.meetRacerCard strong{
+  display:block;min-height:34px;font-size:10px;line-height:1.08;font-weight:950;
+}
+.meetRacerCard>span:not(.meetBoatNo){
+  display:block;margin-top:2px;color:#607a8e;
+  font-size:6.8px;line-height:1.18;font-weight:850;
+}
+.meetRacerCard em{
+  display:inline-block;margin-top:5px;padding:4px 6px;border-radius:999px;
+  background:#087fc0;color:#fff;font-size:6.8px;font-style:normal;font-weight:950;
+}
+
+.meetSelectedTitle{
+  display:flex;align-items:center;gap:9px;margin:10px 0 8px;
+  padding:8px 10px;border:1px solid #c2dbe9;border-radius:11px;background:#f7fbfd;
+}
+.meetSelectedTitle small{
+  display:block;color:#758da0;font-size:7px;font-weight:900;
+}
+.meetSelectedTitle strong{
+  display:block;color:#123b5c;font-size:12px;font-weight:950;
+}
+
+.meetSectionTitle{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:10px;padding:8px 10px;
+  background:linear-gradient(90deg,#064777,#087eb9,#0b94cb);
+  color:#fff;border-radius:10px 10px 0 0;
+}
+.meetSectionTitle span{font-size:10.5px;font-weight:950;}
+.meetSectionTitle em{
+  font-size:6.5px;font-style:normal;font-weight:900;opacity:.78;letter-spacing:.08em;
+}
+
+.meetSummaryGrid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  overflow:hidden;border:1.5px solid #9dc2d9;border-top:0;
+  border-radius:0 0 11px 11px;background:#fff;
+}
+.meetMetric{
+  min-height:55px;padding:8px 4px;text-align:center;
+  border-right:1px solid #c7dbe8;border-bottom:1px solid #c7dbe8;
+}
+.meetMetric:nth-child(3n){border-right:0;}
+.meetMetric:nth-last-child(-n+3){border-bottom:0;}
+.meetMetric span{
+  display:block;color:#668095;font-size:7.5px;font-weight:900;
+}
+.meetMetric strong{
+  display:block;margin-top:5px;color:#123f60;
+  font-size:13px;font-weight:950;font-variant-numeric:tabular-nums;
+}
+
+.meetRaceTable{
+  overflow:hidden;border:1.5px solid #97bed7;border-top:0;
+  border-radius:0 0 12px 12px;background:#fff;
+}
+.meetRaceHead,.meetRaceRow{
+  display:grid;
+  grid-template-columns:.8fr .55fr .55fr .65fr .72fr .7fr 1.05fr .82fr;
+}
+.meetRaceHead{
+  background:#eaf4fb;color:#245c7d;font-size:7.5px;font-weight:950;
+}
+.meetRaceHead>div{
+  padding:7px 1px;text-align:center;border-right:1px solid #bdd5e5;
+}
+.meetRaceHead>div:last-child{border-right:0;}
+.meetRaceRow{
+  min-height:43px;border-top:1px solid #c8dce8;
+}
+.meetRaceRow>div{
+  display:flex;align-items:center;justify-content:center;min-width:0;
+  padding:5px 2px;border-right:1px solid #c6dae7;
+  color:#173b58;text-align:center;font-size:8.1px;line-height:1.15;font-weight:900;
+  font-variant-numeric:tabular-nums;
+}
+.meetRaceRow>div:last-child{border-right:0;}
+.meetRaceRow:nth-child(even)>div{background:#fafcfd;}
+.meetRaceRow .st{font-size:9px;}
+.meetRaceRow .finish{font-size:9.5px;}
+.meetLane{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:23px;height:23px;border-radius:5px;font-size:10px;font-weight:950;
+}
+.meetFinish1{
+  display:inline-flex;padding:4px 6px;border-radius:6px;
+  background:#ffe4e8;color:#c63845;font-weight:950;
+}
+.meetFinish2{
+  display:inline-flex;padding:4px 6px;border-radius:6px;
+  background:#fff1c9;color:#8c6900;font-weight:950;
+}
+.meetEmpty{
+  grid-column:1/-1;min-height:105px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:18px;text-align:center;background:#fbfdfe;
+}
+.meetEmpty b{color:#375a74;font-size:10.5px;font-weight:950;}
+.meetEmpty span{margin-top:5px;color:#8799a7;font-size:8px;font-weight:800;}
+.meetDataNote{
+  margin-top:9px;padding:9px 10px;border:1px solid #c9ddea;border-radius:10px;
+  background:#f5f9fc;color:#71869a;font-size:7.7px;line-height:1.5;font-weight:780;
+}
+
+@media(max-width:430px){
+  .meetRacerCard{min-height:122px;padding:7px 2px;}
+  .meetRacerCard strong{font-size:9.2px;min-height:31px;}
+  .meetRacerCard>span:not(.meetBoatNo){font-size:6.2px;}
+  .meetMetric strong{font-size:12px;}
+  .meetRaceHead{font-size:7px;}
+  .meetRaceRow>div{font-size:7.6px;padding:5px 1px;}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -3314,6 +3451,7 @@ let recent20SelectedLane=1;
 let courseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
 let pendingCourseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
 let courseChangeSequence=[];
+let meetSelectedLane=1;
 
 
 
@@ -3388,6 +3526,218 @@ function renderCurrentCourseSubTab(){
   if(courseSubTab==="rate") panel.innerHTML=renderCourseRate();
   else if(courseSubTab==="last20") panel.innerHTML=renderRecent20();
   else panel.innerHTML=renderCourseChange();
+}
+
+
+function meetHistoryForBoat(b){
+  const sources=[
+    b?.meetResults,
+    b?.seriesResults,
+    b?.currentMeetResults,
+    b?.meet?.results,
+    b?.series?.results,
+    b?.meetHistory,
+    b?.currentSeries
+  ];
+  for(const s of sources){
+    if(Array.isArray(s)) return s;
+  }
+  return [];
+}
+
+function meetValue(obj, keys){
+  for(const key of keys){
+    const parts=key.split(".");
+    let v=obj;
+    for(const p of parts){
+      if(v===undefined || v===null) break;
+      v=v[p];
+    }
+    if(v!==undefined && v!==null && v!=="") return v;
+  }
+  return null;
+}
+
+function meetNum(v,digits=2){
+  const n=Number(v);
+  if(!Number.isFinite(n)) return "--";
+  return n.toFixed(digits);
+}
+function meetPct(v,digits=1){
+  const n=Number(v);
+  if(!Number.isFinite(n)) return "--";
+  return `${n.toFixed(digits)}%`;
+}
+function meetRank(v){
+  if(v===undefined || v===null || v==="") return "--";
+  const n=Number(v);
+  return Number.isFinite(n) ? `${n}位` : esc(v);
+}
+function meetFinish(v){
+  if(v===undefined || v===null || v==="") return "--";
+  const s=String(v);
+  const n=parseInt(s,10);
+  if(Number.isFinite(n) && n>=1 && n<=6){
+    const cls=n===1?"meetFinish1":n===2?"meetFinish2":"";
+    return `<span class="${cls}">${n}着</span>`;
+  }
+  return esc(s);
+}
+function meetLaneChip(v){
+  const n=Number(v);
+  if(!Number.isFinite(n)||n<1||n>6) return "--";
+  return `<span class="meetLane lane${n}">${n}</span>`;
+}
+function meetST(v){
+  if(v===undefined || v===null || v==="") return "--";
+  const n=Number(v);
+  if(!Number.isFinite(n)) return esc(v);
+  return n.toFixed(2).replace(/^0/,"");
+}
+function meetDayLabel(v){
+  if(v===undefined || v===null || v==="") return "--";
+  const s=String(v);
+  if(/^\d+$/.test(s)) return `${s}日目`;
+  return esc(s);
+}
+
+function meetSummaryMetric(b, metric){
+  const aliases={
+    pointRate:["meetStats.pointRate","seriesStats.pointRate","meet.pointRate","series.pointRate","pointRate"],
+    pointRank:["meetStats.pointRank","seriesStats.pointRank","meet.pointRank","series.pointRank","pointRank"],
+    points:["meetStats.points","seriesStats.points","meet.points","series.points","points"],
+    avgST:["meetStats.avgST","seriesStats.avgST","meet.avgST","series.avgST","avgST"],
+    stRank:["meetStats.stRank","seriesStats.stRank","meet.stRank","series.stRank","stRank"],
+    exhibitionRank:["meetStats.exhibitionRank","seriesStats.exhibitionRank","meet.exhibitionRank","exhibitionRank"],
+    exhibitionTime:["meetStats.exhibitionTime","seriesStats.exhibitionTime","meet.exhibitionTime","exhibitionTime"],
+    winRate:["meetStats.winRate","seriesStats.winRate","meet.winRate","series.winRate"],
+    twoRate:["meetStats.twoRate","seriesStats.twoRate","meet.twoRate","series.twoRate"],
+    threeRate:["meetStats.threeRate","seriesStats.threeRate","meet.threeRate","series.threeRate"],
+    avgCourse:["meetStats.avgCourse","seriesStats.avgCourse","meet.avgCourse","series.avgCourse","avgCourse"],
+    accidentRate:["meetStats.accidentRate","seriesStats.accidentRate","meet.accidentRate","series.accidentRate","accidentRate"]
+  };
+  return firstPath(b,aliases[metric]||[metric]);
+}
+
+function meetSelector(boats){
+  return `<div class="meetSelector">
+    ${boats.map(b=>{
+      const lane=Number(b.lane)||1;
+      const active=lane===meetSelectedLane;
+      return `<button type="button" class="meetRacerCard laneBg${lane} ${active?"active":""}"
+        onclick="setMeetSelectedLane(${lane})">
+        <span class="meetBoatNo lane${lane}">${lane}</span>
+        <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
+        <span>${esc(b.racerId||b.registrationNo||"----")}</span>
+        <span>${esc(b.class||"--")}</span>
+        <span>${b.period?esc(b.period)+"期":"--期"}</span>
+        <span>${esc(normalizeBranchLabel(b.branch||b.region))}</span>
+        ${active?`<em>選択中</em>`:""}
+      </button>`;
+    }).join("")}
+  </div>`;
+}
+
+function setMeetSelectedLane(lane){
+  meetSelectedLane=Number(lane)||1;
+  const panel=document.getElementById("meetResultsPanel");
+  if(panel) panel.innerHTML=renderMeetResultsInner();
+}
+
+function renderMeetResultsInner(){
+  const r=state.currentRace||{};
+  const boats=(r.boats||[]).slice(0,6);
+  if(!boats.length) return `<p class="dataPlaceholder">出走選手データを取得中です。</p>`;
+
+  if(!boats.some(b=>Number(b.lane)===meetSelectedLane)){
+    meetSelectedLane=Number(boats[0]?.lane)||1;
+  }
+  const selected=boats.find(b=>Number(b.lane)===meetSelectedLane)||boats[0];
+  const history=meetHistoryForBoat(selected);
+
+  const summaryRows=[
+    ["得点率",meetSummaryMetric(selected,"pointRate"),"num"],
+    ["得点率順位",meetSummaryMetric(selected,"pointRank"),"rank"],
+    ["得点",meetSummaryMetric(selected,"points"),"raw"],
+    ["平均ST",meetSummaryMetric(selected,"avgST"),"st"],
+    ["ST順位",meetSummaryMetric(selected,"stRank"),"rank"],
+    ["展示順位",meetSummaryMetric(selected,"exhibitionRank"),"rank"],
+    ["平均展示タイム",meetSummaryMetric(selected,"exhibitionTime"),"num"],
+    ["1着率",meetSummaryMetric(selected,"winRate"),"pct"],
+    ["2連対率",meetSummaryMetric(selected,"twoRate"),"pct"],
+    ["3連対率",meetSummaryMetric(selected,"threeRate"),"pct"],
+    ["平均進入",meetSummaryMetric(selected,"avgCourse"),"num"],
+    ["事故率",meetSummaryMetric(selected,"accidentRate"),"num"]
+  ];
+
+  const fmt=(v,type)=>{
+    if(type==="rank") return meetRank(v);
+    if(type==="pct") return meetPct(v);
+    if(type==="st") return meetST(v);
+    if(type==="num") return meetNum(v);
+    return v===undefined||v===null||v===""?"--":esc(v);
+  };
+
+  const raceRows=history.map((x,i)=>{
+    const day=meetValue(x,["day","meetDay","eventDay","dayNo"]);
+    const race=meetValue(x,["race","raceNo","r"]);
+    const frame=meetValue(x,["lane","frame","waku","boatNo"]);
+    const course=meetValue(x,["course","entry","courseNo","actualCourse"]);
+    const st=meetValue(x,["st","startTiming","start"]);
+    const finish=meetValue(x,["finish","rank","arrival","finishPlace"]);
+    const move=meetValue(x,["kimarite","winningMove","decision","move"]);
+    const exhibition=meetValue(x,["exhibitionTime","tenjiTime","displayTime"]);
+    return `<div class="meetRaceRow">
+      <div>${meetDayLabel(day)}</div>
+      <div>${race!==null?`${esc(race)}R`:"--"}</div>
+      <div>${meetLaneChip(frame)}</div>
+      <div>${course!==null?esc(course):"--"}</div>
+      <div class="st">${meetST(st)}</div>
+      <div class="finish">${meetFinish(finish)}</div>
+      <div>${move?esc(move):"--"}</div>
+      <div>${exhibition!==null?meetNum(exhibition,2):"--"}</div>
+    </div>`;
+  }).join("");
+
+  return `
+    ${meetSelector(boats)}
+
+    <div class="meetSelectedTitle">
+      <span class="meetBoatNo lane${selected.lane}">${selected.lane}</span>
+      <div>
+        <small>選択選手</small>
+        <strong>${esc(cleanRacerName(selected.racerName)||"--")}</strong>
+      </div>
+    </div>
+
+    <div class="meetSectionTitle"><span>今節サマリー</span><em>CURRENT SERIES</em></div>
+    <div class="meetSummaryGrid">
+      ${summaryRows.map(([label,v,type])=>`
+        <div class="meetMetric">
+          <span>${label}</span>
+          <strong>${fmt(v,type)}</strong>
+        </div>`).join("")}
+    </div>
+
+    <div class="meetSectionTitle"><span>節間レース成績</span><em>RACE LOG</em></div>
+    <div class="meetRaceTable">
+      <div class="meetRaceHead">
+        <div>日目</div><div>R</div><div>枠</div><div>進入</div>
+        <div>ST</div><div>着</div><div>決まり手</div><div>展示</div>
+      </div>
+      <div class="meetRaceBody">
+        ${raceRows || `<div class="meetEmpty"><b>節間成績データは未取得です</b><span>取得後、今節のレース履歴をここに表示します。</span></div>`}
+      </div>
+    </div>
+
+    <div class="meetDataNote">
+      ※ 現在の節の成績のみ表示。未取得項目は「--」で表示します。
+    </div>
+  `;
+}
+
+function renderMeetResults(){
+  return `<div class="dataSection meetResults" id="meetResultsPanel">${renderMeetResultsInner()}</div>`;
 }
 
 function courseFirstStat(b, keys){
