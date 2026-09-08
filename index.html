@@ -3616,7 +3616,7 @@ function meetSummaryMetric(b, metric){
     avgCourse:["meetStats.avgCourse","seriesStats.avgCourse","meet.avgCourse","series.avgCourse","avgCourse"],
     accidentRate:["meetStats.accidentRate","seriesStats.accidentRate","meet.accidentRate","series.accidentRate","accidentRate"]
   };
-  return firstPath(b,aliases[metric]||[metric]);
+  return firstStat(b,aliases[metric]||[metric]);
 }
 
 function meetSelector(boats){
@@ -4599,7 +4599,15 @@ function showRaceData(type, btn){
   if(type==="racer"){panel.innerHTML=renderRacerInfo();return;}
   if(type==="course"){panel.innerHTML=renderCourseInfo();return;}
   if(type==="meet"){
-    panel.innerHTML=renderMeetResults();
+    try{
+      panel.innerHTML=renderMeetResults();
+    }catch(err){
+      console.error("meet results render error",err);
+      panel.innerHTML=`<div class="dataSection meetResults">
+        <div class="dataSectionHead"><b>節間成績</b><span>表示準備中</span></div>
+        <p class="dataPlaceholder">節間成績の表示処理を読み込み中です。</p>
+      </div>`;
+    }
     return;
   }
   if(type==="replay"){
