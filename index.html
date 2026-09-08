@@ -2541,131 +2541,147 @@ body{letter-spacing:0 !important}
 </style>
 
 
-<style id="v76-course-change-visual">
-/* course-change confirmation */
-.courseChangeToast{
-  position:fixed;
-  left:50%;
-  bottom:calc(28px + env(safe-area-inset-bottom));
-  z-index:99999;
-  transform:translate(-50%,18px);
-  opacity:0;
-  pointer-events:none;
-  max-width:88vw;
-  padding:10px 15px;
-  border-radius:999px;
-  background:rgba(5,48,82,.96);
-  color:#fff;
-  box-shadow:0 10px 30px rgba(0,32,58,.25);
-  font-size:11px;
-  line-height:1.25;
-  font-weight:950;
-  white-space:nowrap;
-  transition:opacity .16s ease,transform .16s ease;
+
+
+
+<style id="v77-course-change-tap-confirm">
+.courseChangePanel{width:100%;}
+.courseChangeHead{margin-bottom:9px;}
+.courseChangeHead h3{
+  margin:0;color:#0b3455;font-size:18px;font-weight:950;letter-spacing:-.02em;
 }
-.courseChangeToast.show{
-  opacity:1;
-  transform:translate(-50%,0);
+.courseChangeHead p{
+  margin:4px 0 0;color:#71899b;font-size:9px;font-weight:850;
 }
 
-/* visual course positions */
-.coursePositionBar{
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
-  overflow:hidden;
-  border:1.5px solid #9ec4dc;
-  border-bottom:0;
-  border-radius:14px 14px 0 0;
-  background:linear-gradient(90deg,#064777,#0a89c4);
+.courseOrderSummary{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:9px;padding:9px 11px;
+  border:1px solid #c1dae9;border-radius:11px;background:#f6fafc;
 }
-.coursePositionBar>div{
-  padding:7px 1px 6px;
-  border-right:1px solid rgba(255,255,255,.28);
-  color:#fff;
-  text-align:center;
-  font-size:12px;
-  line-height:1;
-  font-weight:950;
+.courseOrderSummary span{
+  color:#70889b;font-size:8px;font-weight:900;
 }
-.coursePositionBar>div:last-child{border-right:0}
-.coursePositionBar span{
-  display:block;
-  margin-top:3px;
-  font-size:6.5px;
-  opacity:.88;
-  font-weight:850;
+.courseOrderSummary strong{
+  color:#0b4f7b;font-size:14px;font-weight:950;letter-spacing:.08em;
+}
+.courseOrderSummary em{
+  margin-left:auto;padding:4px 7px;border-radius:999px;
+  background:#fff0d7;color:#c26a00;font-size:7px;font-style:normal;font-weight:950;
+}
+.courseOrderSummary em.saved{
+  background:#eaf5ee;color:#28724a;
 }
 
-.courseChangeGrid.visualOrder{
-  border-radius:0 0 14px 14px!important;
-  border-top:0!important;
+.coursePositionBar.tapTargets{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  overflow:hidden;border:1.5px solid #91bdd8;border-bottom:0;
+  border-radius:14px 14px 0 0;background:linear-gradient(90deg,#064777,#0a89c4);
 }
-.courseChangeGrid.visualOrder .courseChangeCard{
-  position:relative;
-  min-height:153px;
-  transition:box-shadow .15s ease,transform .15s ease;
+.coursePositionBar.tapTargets button{
+  appearance:none;border:0;border-right:1px solid rgba(255,255,255,.28);
+  padding:8px 1px 7px;background:transparent;color:#fff;
+  font-size:12px;line-height:1;font-weight:950;
 }
-.courseChangeGrid.visualOrder .courseChangeCard::after{
-  content:"";
-  position:absolute;
-  left:9%;
-  right:9%;
-  bottom:38px;
-  height:1px;
-  background:rgba(20,81,119,.13);
+.coursePositionBar.tapTargets button:last-child{border-right:0;}
+.coursePositionBar.tapTargets button span{
+  display:block;margin-top:3px;font-size:6.4px;opacity:.9;font-weight:850;
 }
-.courseChangeCard select{
-  position:relative;
-  z-index:1;
-  margin-top:9px;
-  width:88%!important;
-  height:32px!important;
-  background:#fff!important;
-  border-color:#8ebbd6!important;
-  color:#075785!important;
-  font-size:9px!important;
-  box-shadow:0 2px 6px rgba(12,94,143,.07);
+.coursePositionBar.tapTargets button.ready{
+  animation:courseTargetPulse 1.3s ease-in-out infinite;
+}
+@keyframes courseTargetPulse{
+  0%,100%{background:rgba(255,255,255,0);}
+  50%{background:rgba(255,255,255,.18);}
+}
+
+.courseChangeGrid.visualOrder.tapSwap{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  overflow:hidden;border:1.5px solid #91bdd8;border-top:0;
+  border-radius:0 0 14px 14px;background:#fff;
+}
+.courseChangeGrid.tapSwap .courseChangeCard{
+  appearance:none;position:relative;min-width:0;min-height:142px;
+  padding:9px 3px 9px;border:0;border-right:1.5px solid #bdd5e5;
+  text-align:center;transition:transform .12s ease,box-shadow .12s ease;
+}
+.courseChangeGrid.tapSwap .courseChangeCard:last-child{border-right:0;}
+.courseChangeGrid.tapSwap .courseChangeCard.selected{
+  z-index:2;
+  transform:translateY(-2px);
+  box-shadow:inset 0 0 0 3px #087fc0,0 7px 16px rgba(8,127,192,.2);
+}
+.courseChangeCard .ccBoat{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;margin-bottom:6px;border-radius:7px;
+  font-size:13px;font-weight:950;
+}
+.courseChangeCard strong{
+  display:block;min-height:38px;color:#153a58;
+  font-size:10px;line-height:1.08;font-weight:950;
 }
 .courseChangeCard small{
-  display:block!important;
-  margin-top:3px!important;
-  font-size:7px!important;
+  display:block;margin-top:3px;color:#667f92;
+  font-size:6.8px;line-height:1.18;font-weight:850;
+}
+.courseChangeCard em{
+  display:inline-block;margin-top:7px;padding:4px 6px;border-radius:999px;
+  background:#087fc0;color:#fff;font-size:7px;font-style:normal;font-weight:950;
 }
 
-.courseChangeHint{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:3px;
-  margin-top:10px;
-  padding:10px 8px;
-  border:1px solid #c3dbe9;
-  border-radius:11px;
-  background:#f6fafc;
-  text-align:center;
+.courseChangeGuide{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  margin-top:9px;padding:9px 8px;border:1px solid #c5dce9;
+  border-radius:10px;background:#f6fafc;text-align:center;
 }
-.courseChangeHint b{
-  color:#0e527d;
-  font-size:9.5px;
-  font-weight:950;
+.courseChangeGuide.active{
+  border-color:#9fcbe4;background:#eef8fd;
 }
-.courseChangeHint span{
-  color:#7a90a1;
-  font-size:7.5px;
-  line-height:1.4;
-  font-weight:800;
+.courseChangeGuide b{color:#18577d;font-size:9px;font-weight:950;}
+.courseChangeGuide span{color:#7890a1;font-size:7.4px;line-height:1.35;font-weight:800;}
+
+.courseChangeActions{
+  position:sticky;bottom:0;z-index:20;
+  display:grid;grid-template-columns:.85fr 1.35fr;gap:8px;
+  margin-top:10px;padding:10px 0 4px;
+  background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 28%);
+}
+.courseChangeActions button{
+  min-height:45px;border-radius:12px;font-size:10.5px;font-weight:950;
+}
+.courseChangeActions .reset{
+  border:1.5px solid #b9cedc;background:#f3f7fa;color:#536f82;
+}
+.courseChangeActions .confirm{
+  border:1.5px solid #087bb9;
+  background:linear-gradient(135deg,#0872b5,#0797d0);
+  color:#fff;box-shadow:0 7px 16px rgba(7,119,181,.17);
+}
+.courseChangeActions .confirm.changed{
+  box-shadow:0 0 0 3px rgba(7,151,208,.1),0 8px 18px rgba(7,119,181,.2);
 }
 
-/* textual course marker removed: visual order is the indicator */
-.courseBoat i,
-.r20RacerCard i{display:none!important;}
+/* original boat colours remain tied to boat number */
+.lane1{background:#fff;color:#111;border:1px solid #ccd7df;}
+.lane2{background:#20262c;color:#fff;}
+.lane3{background:#ef3340;color:#fff;}
+.lane4{background:#2d5bd3;color:#fff;}
+.lane5{background:#f2d900;color:#111;}
+.lane6{background:#159447;color:#fff;}
+.laneBg1{background:#fff;}
+.laneBg2{background:#f0f2f4;}
+.laneBg3{background:#fff1f3;}
+.laneBg4{background:#eef4ff;}
+.laneBg5{background:#fff9dc;}
+.laneBg6{background:#eef9f2;}
 
 @media(max-width:430px){
-  .coursePositionBar>div{font-size:11px;padding:6px 1px}
-  .coursePositionBar span{font-size:6px}
-  .courseChangeGrid.visualOrder .courseChangeCard{min-height:146px}
-  .courseChangeCard select{font-size:8px!important}
-  .courseChangeToast{font-size:10px;padding:9px 13px}
+  .courseOrderSummary strong{font-size:12.5px;}
+  .coursePositionBar.tapTargets button{font-size:11px;}
+  .courseChangeGrid.tapSwap .courseChangeCard{min-height:136px;padding:8px 2px;}
+  .courseChangeCard strong{font-size:9.2px;min-height:34px;}
+  .courseChangeCard small{font-size:6.3px;}
+  .courseChangeActions button{min-height:43px;font-size:9.8px;}
 }
 </style>
 
@@ -3294,57 +3310,66 @@ let coursePeriod="m6";
 let courseSubTab="rate";
 let recent20SelectedLane=1;
 let courseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
+let pendingCourseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
+let courseChangeSelectedLane=null;
 
 
 
-function orderedBoatsByAssignedCourse(boats){
+function assignedCourseForLane(lane, usePending=false){
+  const n=Number(lane)||1;
+  const source=usePending ? pendingCourseAssignments : courseAssignments;
+  return Number(source[n])||n;
+}
+function orderedBoatsByAssignedCourse(boats, usePending=false){
   return [...boats].sort((a,b)=>{
-    const ac=assignedCourseForLane(a.lane||1);
-    const bc=assignedCourseForLane(b.lane||1);
+    const ac=assignedCourseForLane(a.lane||1,usePending);
+    const bc=assignedCourseForLane(b.lane||1,usePending);
     return ac-bc;
   });
 }
-function showCourseChangeToast(message){
-  let toast=document.getElementById("courseChangeToast");
-  if(!toast){
-    toast=document.createElement("div");
-    toast.id="courseChangeToast";
-    toast.className="courseChangeToast";
-    document.body.appendChild(toast);
-  }
-  toast.textContent=message;
-  toast.classList.remove("show");
-  void toast.offsetWidth;
-  toast.classList.add("show");
-  clearTimeout(showCourseChangeToast._timer);
-  showCourseChangeToast._timer=setTimeout(()=>toast.classList.remove("show"),1800);
+function cloneAssignments(src){
+  return {
+    1:Number(src[1])||1,2:Number(src[2])||2,3:Number(src[3])||3,
+    4:Number(src[4])||4,5:Number(src[5])||5,6:Number(src[6])||6
+  };
 }
-
-function assignedCourseForLane(lane){
-  const n=Number(lane)||1;
-  return Number(courseAssignments[n])||n;
+function openCourseChangeEditor(){
+  pendingCourseAssignments=cloneAssignments(courseAssignments);
+  courseChangeSelectedLane=null;
 }
-function resetCourseAssignments(){
-  courseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
+function resetPendingCourseAssignments(){
+  pendingCourseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
+  courseChangeSelectedLane=null;
   renderCurrentCourseSubTab();
-  showCourseChangeToast("進入を初期配置に戻しました");
 }
-function setAssignedCourse(lane,newCourse){
-  lane=Number(lane); newCourse=Number(newCourse);
-  if(!lane||!newCourse||lane<1||lane>6||newCourse<1||newCourse>6)return;
-  const oldCourse=assignedCourseForLane(lane);
-  if(oldCourse===newCourse){
-    showCourseChangeToast(`${lane}号艇は現在 ${newCourse}コースです`);
+function commitCourseAssignments(){
+  courseAssignments=cloneAssignments(pendingCourseAssignments);
+  courseChangeSelectedLane=null;
+  renderCurrentCourseSubTab();
+}
+function selectCourseChangeLane(lane){
+  lane=Number(lane);
+  if(!lane)return;
+  courseChangeSelectedLane = courseChangeSelectedLane===lane ? null : lane;
+  renderCurrentCourseSubTab();
+}
+function moveSelectedLaneToCourse(courseNo){
+  courseNo=Number(courseNo);
+  if(!courseChangeSelectedLane || !courseNo)return;
+  const lane=courseChangeSelectedLane;
+  const oldCourse=assignedCourseForLane(lane,true);
+  if(oldCourse===courseNo){
+    courseChangeSelectedLane=null;
+    renderCurrentCourseSubTab();
     return;
   }
-  const otherLane=Object.keys(courseAssignments)
+  const otherLane=Object.keys(pendingCourseAssignments)
     .map(Number)
-    .find(l=>l!==lane && assignedCourseForLane(l)===newCourse);
-  courseAssignments[lane]=newCourse;
-  if(otherLane) courseAssignments[otherLane]=oldCourse;
+    .find(l=>l!==lane && assignedCourseForLane(l,true)===courseNo);
+  pendingCourseAssignments[lane]=courseNo;
+  if(otherLane) pendingCourseAssignments[otherLane]=oldCourse;
+  courseChangeSelectedLane=null;
   renderCurrentCourseSubTab();
-  const swapText=otherLane ? `・${otherLane}号艇→${oldCourse}C` : "";
-  showCourseChangeToast(`進入を変更しました　${lane}号艇→${newCourse}C${swapText}`);
 }
 function renderCurrentCourseSubTab(){
   const panel=document.getElementById("courseInnerPanel");
@@ -3851,42 +3876,60 @@ function renderCourseChange(){
   const boats=(r.boats||[]).slice(0,6);
   if(!boats.length)return `<div class="dataSection"><p class="dataPlaceholder">出走選手データを取得中です。</p></div>`;
 
-  const ordered=orderedBoatsByAssignedCourse(boats);
+  const ordered=orderedBoatsByAssignedCourse(boats,true);
+  const orderText=ordered.map(b=>b.lane).join(" - ");
+  const hasChanges=JSON.stringify(cloneAssignments(pendingCourseAssignments))!==JSON.stringify(cloneAssignments(courseAssignments));
 
   return `<div class="courseChangePanel">
     <div class="courseChangeHead">
       <div>
         <h3>進入コース変更</h3>
-        <p>艇のカード位置そのものが想定進入順に並び替わります</p>
+        <p>動かしたい艇をタップ → 移動先コースをタップ</p>
       </div>
-      <button type="button" onclick="resetCourseAssignments()">初期配置</button>
     </div>
 
-    <div class="coursePositionBar">
-      ${[1,2,3,4,5,6].map(c=>`<div>${c}<span>コース</span></div>`).join("")}
+    <div class="courseOrderSummary">
+      <span>現在の想定進入</span>
+      <strong>${orderText}</strong>
+      ${hasChanges?`<em>変更あり</em>`:`<em class="saved">現在の設定</em>`}
     </div>
 
-    <div class="courseChangeGrid visualOrder">
+    <div class="coursePositionBar tapTargets">
+      ${[1,2,3,4,5,6].map(c=>`<button type="button"
+        class="${courseChangeSelectedLane ? "ready" : ""}"
+        onclick="moveSelectedLaneToCourse(${c})">
+        ${c}<span>コース</span>
+      </button>`).join("")}
+    </div>
+
+    <div class="courseChangeGrid visualOrder tapSwap">
       ${ordered.map(b=>{
         const lane=Number(b.lane)||1;
-        const current=assignedCourseForLane(lane);
+        const selected=courseChangeSelectedLane===lane;
         const pref=normalizeOriginLabel(b.origin||b.birthplace||b.prefecture||b.hometown||b.branch||b.region);
-        return `<div class="courseChangeCard laneBg${lane}" data-lane="${lane}">
+        return `<button type="button"
+          class="courseChangeCard laneBg${lane} ${selected?"selected":""}"
+          data-lane="${lane}"
+          onclick="selectCourseChangeLane(${lane})">
           <span class="ccBoat lane${lane}">${lane}</span>
           <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
           <small>${esc(b.racerId||b.registrationNo||"----")}</small>
           <small>${esc(b.class||"--")} / ${b.period?esc(b.period)+"期":"--期"}</small>
           <small>${esc(pref)}</small>
-          <select aria-label="${lane}号艇の進入コース" onchange="setAssignedCourse(${lane},this.value)">
-            ${[1,2,3,4,5,6].map(c=>`<option value="${c}" ${c===current?"selected":""}>${c}C</option>`).join("")}
-          </select>
-        </div>`;
+          ${selected?`<em>選択中</em>`:""}
+        </button>`;
       }).join("")}
     </div>
 
-    <div class="courseChangeHint">
-      <b>カードの並び＝想定進入順</b>
-      <span>コース変更するとカード位置がその場で入れ替わります。艇番色は変わりません。</span>
+    <div class="courseChangeGuide ${courseChangeSelectedLane?"active":""}">
+      ${courseChangeSelectedLane
+        ? `<b>${courseChangeSelectedLane}号艇を選択中</b><span>上の1〜6コースから移動先をタップしてください</span>`
+        : `<b>艇を1つ選択</b><span>選択後、移動したいコース位置をタップします</span>`}
+    </div>
+
+    <div class="courseChangeActions">
+      <button type="button" class="reset" onclick="resetPendingCourseAssignments()">初期位置に戻す</button>
+      <button type="button" class="confirm ${hasChanges?"changed":""}" onclick="commitCourseAssignments()">この進入で決定</button>
     </div>
   </div>`;
 }
@@ -3900,6 +3943,7 @@ function setCoursePeriod(period){
 
 function setCourseSubTab(tab){
   courseSubTab=tab;
+  if(tab==="change") openCourseChangeEditor();
   const panel=document.getElementById("courseInnerPanel");
   if(!panel)return;
   if(tab==="rate") panel.innerHTML=renderCourseRate();
