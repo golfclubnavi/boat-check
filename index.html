@@ -2195,7 +2195,7 @@ body{letter-spacing:0 !important}
 
 .kimariteHead{
   display:grid;
-  grid-template-columns:34% 66%;
+  grid-template-columns:25% 75%;
   background:#5f82d3;
   color:#fff;
   font-size:9px;
@@ -2203,7 +2203,7 @@ body{letter-spacing:0 !important}
   text-align:center;
 }
 .kimariteHead>div{
-  padding:7px 4px;
+  padding:8px 4px;
   border-right:1px solid rgba(255,255,255,.45);
 }
 .kimariteHead>div:last-child{
@@ -2212,7 +2212,7 @@ body{letter-spacing:0 !important}
 
 .kimariteSplit{
   display:grid;
-  grid-template-columns:34% 66%;
+  grid-template-columns:25% 75%;
   align-items:stretch;
 }
 .kimariteOne{
@@ -2225,6 +2225,14 @@ body{letter-spacing:0 !important}
   table-layout:fixed;
   border-collapse:collapse;
   font-variant-numeric:tabular-nums;
+}
+.kimariteOne col,
+.kimariteAttack col{
+  width:auto;
+}
+.kimariteOne .eqCol,
+.kimariteAttack .eqCol{
+  width:12.5%;
 }
 .kimariteOne th,
 .kimariteOne td,
@@ -2253,7 +2261,6 @@ body{letter-spacing:0 !important}
   color:#173b58;
 }
 .kimariteOne tbody th{
-  width:54%;
   background:#f0f7fc;
   color:#285b7c;
 }
@@ -2278,6 +2285,8 @@ body{letter-spacing:0 !important}
 .kimariteOne tbody th,
 .kimariteAttack tbody th{
   line-height:1.25;
+  font-size:8.6px;
+  letter-spacing:.01em;
 }
 .kimariteOne tbody td,
 .kimariteAttack tbody td{
@@ -2288,7 +2297,6 @@ body{letter-spacing:0 !important}
   color:#285b7c;
 }
 .kimariteAttack tbody th{
-  width:25%;
   background:#f0f7fc;
   color:#285b7c;
 }
@@ -3251,6 +3259,10 @@ function renderKimariteLayout(boats, periodText){
     <div class="kimariteSplit">
       <div class="kimariteOne">
         <table>
+          <colgroup>
+            <col class="eqCol">
+            <col class="eqCol">
+          </colgroup>
           <thead>
             <tr>
               <th>&nbsp;</th>
@@ -3268,6 +3280,14 @@ function renderKimariteLayout(boats, periodText){
 
       <div class="kimariteAttack">
         <table>
+          <colgroup>
+            <col class="eqCol">
+            <col class="eqCol">
+            <col class="eqCol">
+            <col class="eqCol">
+            <col class="eqCol">
+            <col class="eqCol">
+          </colgroup>
           <thead>
             <tr>
               <th>&nbsp;</th>
