@@ -2667,6 +2667,26 @@ body{letter-spacing:0 !important}
 }
 </style>
 
+
+<style id="v79-course-order-reflect">
+.courseBoat{
+  position:relative;
+  padding-top:24px!important;
+}
+.courseBoat .coursePosLabel{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:19px;
+  display:flex;align-items:center;justify-content:center;
+  background:#eaf5fc;
+  border-bottom:1px solid #c5ddea;
+  color:#17658f;
+  font-size:7px;
+  line-height:1;
+  font-weight:950;
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -3552,6 +3572,7 @@ function coursePlayerHeader(boats){
       const lane=Number(b.lane)||1;
       const assigned=assignedCourseForLane(lane);
       return `<div class="courseBoat c${lane}">
+        <div class="coursePosLabel">${assigned}コース</div>
         <b>${lane}</b>
         <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
         <span>${esc(b.racerId||b.registrationNo||"----")}</span>
@@ -3575,12 +3596,17 @@ function courseSimpleTable(rows, extraClass=""){
 }
 
 function renderKimariteLayout(boats, periodText){
-  const one = boats[0];
+  const course1Boat = boats.find(b=>assignedCourseForLane(b.lane||1)===1) || boats[0];
+  const outerBoats = [2,3,4,5,6].map(courseNo=>
+    boats.find(b=>assignedCourseForLane(b.lane||1)===courseNo)
+  ).filter(Boolean);
+
+  const oneCourse=course1Boat ? assignedCourseForLane(course1Boat.lane||1) : 1;
   const oneVals = {
-    escape: one ? courseMetric(one,assignedCourseForLane(one.lane||1),"escape") : null,
-    passed: one ? courseMetric(one,assignedCourseForLane(one.lane||1),"passed") : null,
-    makurare: one ? courseMetric(one,assignedCourseForLane(one.lane||1),"makurare") : null,
-    makurareSashi: one ? courseMetric(one,assignedCourseForLane(one.lane||1),"makurareSashi") : null
+    escape: course1Boat ? courseMetric(course1Boat,oneCourse,"escape") : null,
+    passed: course1Boat ? courseMetric(course1Boat,oneCourse,"passed") : null,
+    makurare: course1Boat ? courseMetric(course1Boat,oneCourse,"makurare") : null,
+    makurareSashi: course1Boat ? courseMetric(course1Boat,oneCourse,"makurareSashi") : null
   };
 
   const attackRows = [
@@ -3591,13 +3617,12 @@ function renderKimariteLayout(boats, periodText){
   ];
 
   const attackTable = attackRows.map(row=>{
-    const vals = [2,3,4,5,6].map((laneNo, idx)=>{
-      const boat = boats[laneNo-1];
-      const assigned = boat ? assignedCourseForLane(boat.lane||laneNo) : laneNo;
-      const raw = boat ? courseMetric(boat,assigned,row.metric) : null;
-      const isActive = !row.limited || row.limited.includes(assigned);
-      const cls = isActive ? "" : "mutedCell";
-      return `<td class="${cls}">${isActive ? courseFmt(raw,"%",1) : "--"}</td>`;
+    const vals = outerBoats.map(boat=>{
+      const laneNo=Number(boat.lane)||1;
+      const assigned=assignedCourseForLane(laneNo);
+      const raw=courseMetric(boat,assigned,row.metric);
+      const isActive=!row.limited || row.limited.includes(assigned);
+      return `<td class="${isActive?"":"mutedCell"}">${isActive?courseFmt(raw,"%",1):"--"}</td>`;
     }).join("");
     return `<tr><th>${row.label}</th>${vals}</tr>`;
   }).join("");
@@ -3606,21 +3631,18 @@ function renderKimariteLayout(boats, periodText){
     ${courseBar("決まり手別割合",periodText)}
 
     <div class="kimariteHead">
-      <div class="kimariteHeadOne">1号艇の守備的決まり手</div>
-      <div class="kimariteHeadAttack">2〜6号艇の攻撃的決まり手</div>
+      <div class="kimariteHeadOne">1コースの守備的決まり手</div>
+      <div class="kimariteHeadAttack">2〜6コースの攻撃的決まり手</div>
     </div>
 
     <div class="kimariteSplit">
       <div class="kimariteOne">
         <table>
-          <colgroup>
-            <col class="eqCol">
-            <col class="eqCol">
-          </colgroup>
+          <colgroup><col class="eqCol"><col class="eqCol"></colgroup>
           <thead>
             <tr>
               <th>&nbsp;</th>
-              <th>1</th>
+              <th class="laneHead laneHead${course1Boat?.lane||1}">${course1Boat?.lane||1}</th>
             </tr>
           </thead>
           <tbody>
@@ -3635,22 +3657,16 @@ function renderKimariteLayout(boats, periodText){
       <div class="kimariteAttack">
         <table>
           <colgroup>
-            <col class="eqCol">
-            <col class="eqCol">
-            <col class="eqCol">
-            <col class="eqCol">
-            <col class="eqCol">
-            <col class="eqCol">
+            <col class="eqCol"><col class="eqCol"><col class="eqCol">
+            <col class="eqCol"><col class="eqCol"><col class="eqCol">
           </colgroup>
           <thead>
             <tr>
               <th>&nbsp;</th>
-              ${[2,3,4,5,6].map(n=>`<th class="laneHead laneHead${n}">${n}</th>`).join("")}
+              ${outerBoats.map(b=>`<th class="laneHead laneHead${b.lane}">${b.lane}</th>`).join("")}
             </tr>
           </thead>
-          <tbody>
-            ${attackTable}
-          </tbody>
+          <tbody>${attackTable}</tbody>
         </table>
       </div>
     </div>
@@ -3659,7 +3675,8 @@ function renderKimariteLayout(boats, periodText){
 
 function renderCourseRate(){
   const r=state.currentRace||{};
-  const boats=(r.boats||[]).slice(0,6);
+  const sourceBoats=(r.boats||[]).slice(0,6);
+  const boats=orderedBoatsByAssignedCourse(sourceBoats,false);
   if(!boats.length){
     return `<div class="dataSection"><p class="dataPlaceholder">出走選手データを取得中です。</p></div>`;
   }
@@ -3771,8 +3788,9 @@ function recent20Result(v){
   const s=String(v).trim(),nums=s.match(/[1-6]/g);if(nums&&nums.length>=2)return `<span class="r20Result">${nums.slice(0,3).map(x=>recent20LaneChip(x)).join("")}</span>`;return esc(s);
 }
 function recent20Selector(boats){
+  const displayBoats=orderedBoatsByAssignedCourse(boats,false);
   return `<div class="r20Selector">
-    ${boats.map(b=>{
+    ${displayBoats.map(b=>{
       const lane=Number(b.lane)||1;
       const active=lane===recent20SelectedLane;
       const pref=normalizeOriginLabel(b.origin||b.birthplace||b.prefecture||b.hometown||b.branch||b.region);
@@ -3868,9 +3886,11 @@ function renderCourseChange(){
   if(!boats.length)return `<div class="dataSection"><p class="dataPlaceholder">出走選手データを取得中です。</p></div>`;
 
   const pickedCount=courseChangeSequence.length;
+  const confirmedOrdered=orderedBoatsByAssignedCourse(boats,false);
+  const displayBoats=pickedCount ? boats : confirmedOrdered;
   const orderText=courseChangeSequence.length
     ? courseChangeSequence.join(" - ")
-    : orderedBoatsByAssignedCourse(boats,false).map(b=>b.lane).join(" - ");
+    : confirmedOrdered.map(b=>b.lane).join(" - ");
   const complete=pickedCount===6;
 
   return `<div class="courseChangePanel">
