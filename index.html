@@ -5154,6 +5154,332 @@ function renderRacerInfo(){
     <div class="racerInfoNote">※ 実データ連携前の項目は「--」で表示します。取得できた項目から順次自動反映されます。</div>
   </div>`;
 }
+
+function motorPath(obj, keys){
+  for(const key of keys){
+    const parts=String(key).split(".");
+    let v=obj;
+    for(const p of parts){
+      if(v===undefined || v===null) break;
+      v=v[p];
+    }
+    if(v!==undefined && v!==null && v!=="") return v;
+  }
+  return null;
+}
+
+function motorObjectForBoat(boat, race){
+  const direct=[
+    boat?.motor, boat?.motorData, boat?.motorStats,
+    boat?.equipment?.motor, boat?.stats?.motor
+  ];
+  for(const x of direct){
+    if(x && typeof x==="object" && !Array.isArray(x)) return x;
+  }
+
+  const root=race?.motorData || race?.motors || race?.motorStats || null;
+  if(!root) return {};
+
+  if(Array.isArray(root)){
+    return root.find(x=>
+      Number(x?.lane||x?.boatNo||x?.frame)===Number(boat?.lane) ||
+      String(x?.racerId||x?.registrationNo||"")===String(boat?.racerId||boat?.registrationNo||"")
+    ) || {};
+  }
+
+  if(typeof root==="object"){
+    const lane=Number(boat?.lane)||1;
+    const candidates=[
+      root[lane], root[String(lane)], root[`lane${lane}`], root[`boat${lane}`],
+      root.byLane?.[lane], root.byLane?.[String(lane)]
+    ];
+    for(const x of candidates){
+      if(x && typeof x==="object") return x;
+    }
+  }
+  return {};
+}
+
+function motorMetric(motor, boat, metric){
+  const aliases={
+    no:[
+      "motorNo","motorNumber","number","no","id",
+      "motor.no","motor.number"
+    ],
+    rank:[
+      "rank","motorRank","ranking","motor.rank"
+    ],
+    win:[
+      "winRate","rate","motorWinRate","motor.winRate"
+    ],
+    first:[
+      "firstRate","win1Rate","firstPlaceRate","oneRate","motor.firstRate"
+    ],
+    two:[
+      "twoRate","quinellaRate","twoPlaceRate","motor.twoRate"
+    ],
+    three:[
+      "threeRate","trifectaRate","threePlaceRate","motor.threeRate"
+    ],
+    starts:[
+      "starts","startCount","raceCount","runs","entries","motor.starts"
+    ],
+    finalist:[
+      "finalistCount","finals","finalCount","yushutsu","motor.finalistCount"
+    ],
+    champion:[
+      "championships","championCount","wins","yusho","motor.championships"
+    ],
+    ikiashi:[
+      "ikiashi","ikiAshi","straight","leg.ikiashi","legs.ikiashi","ratings.ikiashi"
+    ],
+    deashi:[
+      "deashi","deAshi","acceleration","leg.deashi","legs.deashi","ratings.deashi"
+    ],
+    mawari:[
+      "mawariashi","mawariAshi","turn","turning","leg.mawariashi","legs.mawariashi","ratings.mawariashi"
+    ],
+    maintenance:[
+      "maintenance","midMaintenance","intermediateMaintenance","maintenanceNote","maintenanceDate","motor.maintenance"
+    ]
+  };
+  let v=motorPath(motor, aliases[metric]||[metric]);
+  if(v!==null) return v;
+
+  // Flexible fallbacks for collector schemas where motor fields are stored directly on boat.
+  const boatAliases={
+    no:["motorNo","motorNumber","motor.no","equipment.motorNo"],
+    rank:["motorRank","motor.rank"],
+    win:["motorWinRate","motor.winRate"],
+    first:["motorFirstRate","motor.firstRate"],
+    two:["motorTwoRate","motor2Rate","motor.twoRate"],
+    three:["motorThreeRate","motor3Rate","motor.threeRate"],
+    starts:["motorStarts","motorRaceCount","motor.starts"],
+    finalist:["motorFinalistCount","motor.finalistCount"],
+    champion:["motorChampionCount","motor.championships"],
+    ikiashi:["motorIkiashi","motor.ikiashi"],
+    deashi:["motorDeashi","motor.deashi"],
+    mawari:["motorMawariashi","motor.mawariashi"],
+    maintenance:["motorMaintenance","motor.maintenance"]
+  };
+  return firstStat(boat,boatAliases[metric]||[]);
+}
+
+function motorRecent20(motor, boat){
+  const sources=[
+    motor?.recent20, motor?.recent20Races, motor?.last20, motor?.history20,
+    motor?.recentRaces, motor?.history?.recent20,
+    boat?.motorRecent20, boat?.motorHistory20, boat?.motor?.recent20
+  ];
+  for(const s of sources){
+    if(Array.isArray(s)) return s.slice(0,20);
+  }
+  return [];
+}
+
+function motorFmt(v, suffix="", digits=null){
+  if(v===undefined || v===null || v==="") return "--";
+  if(typeof v==="number" && Number.isFinite(v)){
+    return `${digits!==null?v.toFixed(digits):v}${suffix}`;
+  }
+  const s=String(v).trim();
+  if(!s || s==="--") return "--";
+  if(digits!==null){
+    const clean=s.replace(/[％%位]/g,"").replace(/,/g,"");
+    if(/^-?\d+(?:\.\d+)?$/.test(clean)){
+      return `${Number(clean).toFixed(digits)}${suffix}`;
+    }
+  }
+  return suffix && !s.endsWith(suffix) ? `${s}${suffix}` : s;
+}
+
+function motorRankText(v){
+  if(v===undefined || v===null || v==="") return "--";
+  const s=String(v).trim();
+  if(!s || s==="--") return "--";
+  return /位$/.test(s) ? esc(s) : `${esc(s)}位`;
+}
+
+function normalizeLegRating(v){
+  if(v===undefined || v===null || v==="") return "--";
+  const s=String(v).trim()
+    .replace(/×/g,"✕")
+    .replace(/✖︎|✖/g,"✕");
+  if(["◎","○","◯","△","✕"].includes(s)) return s==="◯"?"○":s;
+  const n=Number(s);
+  if(Number.isFinite(n)){
+    if(n>=4)return "◎";
+    if(n>=3)return "○";
+    if(n>=2)return "△";
+    return "✕";
+  }
+  return esc(s);
+}
+
+function motorLegScore(v){
+  const s=String(normalizeLegRating(v));
+  return s==="◎"?4:s==="○"?3:s==="△"?2:s==="✕"?1:null;
+}
+
+function motorRankClasses(values, mode="desc", leg=false){
+  const parsed=values.map(v=>{
+    if(leg) return motorLegScore(v);
+    return parseRankableNumber(v);
+  });
+  const valid=[...new Set(parsed.filter(v=>v!==null))].sort((a,b)=>mode==="asc"?a-b:b-a);
+  return parsed.map(v=>{
+    if(v===null)return "";
+    if(v===valid[0])return "motorBest1";
+    if(valid.length>1 && v===valid[1])return "motorBest2";
+    return "";
+  });
+}
+
+function motorRacerHeader(boats){
+  return `<div class="motorRacerHeader">
+    ${boats.map(b=>{
+      const lane=Number(b.lane)||1;
+      return `<div class="motorRacer laneBg${lane}">
+        <span class="motorLane lane${lane}">${lane}</span>
+        <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
+        <small>${esc(b.racerId||b.registrationNo||"----")}</small>
+        <small>${esc(b.class||"--")}</small>
+        <small>${esc(normalizeBranchLabel(b.branch||b.region))}</small>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function motorBasicTable(boats, motors){
+  const defs=[
+    {label:"モーター番号", key:"no", fmt:v=>motorFmt(v), rank:null},
+    {label:"モーター順位", key:"rank", fmt:v=>motorRankText(v), rank:"asc"},
+    {label:"勝率", key:"win", fmt:v=>motorFmt(v,"",2), rank:"desc"},
+    {label:"1着率", key:"first", fmt:v=>motorFmt(v,"%",1), rank:"desc"},
+    {label:"2連対率", key:"two", fmt:v=>motorFmt(v,"%",1), rank:"desc"},
+    {label:"3連対率", key:"three", fmt:v=>motorFmt(v,"%",1), rank:"desc"},
+    {label:"出走数", key:"starts", fmt:v=>motorFmt(v), rank:"desc"},
+    {label:"優出数", key:"finalist", fmt:v=>motorFmt(v), rank:"desc"},
+    {label:"優勝数", key:"champion", fmt:v=>motorFmt(v), rank:"desc"},
+    {label:"行き足", key:"ikiashi", fmt:v=>normalizeLegRating(v), rank:"desc", leg:true},
+    {label:"出足", key:"deashi", fmt:v=>normalizeLegRating(v), rank:"desc", leg:true},
+    {label:"回り足", key:"mawari", fmt:v=>normalizeLegRating(v), rank:"desc", leg:true},
+    {label:"中間整備", key:"maintenance", fmt:v=>v===null||v===undefined||v===""?"--":esc(v), rank:null}
+  ];
+
+  return `<div class="motorBasicTable">
+    <div class="motorBasicHead">
+      <div>項目</div>
+      ${boats.map((b,i)=>{
+        const no=motorMetric(motors[i],b,"no");
+        return `<div class="motorHeadLane laneHead${b.lane}">
+          <b>${b.lane}号艇</b>
+          <span>${no!==null&&no!==undefined&&no!==""?`${esc(no)}号機`:"--号機"}</span>
+        </div>`;
+      }).join("")}
+    </div>
+    ${defs.map(d=>{
+      const vals=boats.map((b,i)=>motorMetric(motors[i],b,d.key));
+      const classes=d.rank?motorRankClasses(vals,d.rank,!!d.leg):vals.map(()=> "");
+      return `<div class="motorBasicRow">
+        <div class="motorBasicLabel">${d.label}</div>
+        ${vals.map((v,i)=>`<div class="motorBasicCell ${classes[i]} ${d.leg?"motorLegCell":""}">${d.fmt(v)}</div>`).join("")}
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function motorHistoryCell(item){
+  if(!item) return `<div class="motorHistCell empty">
+    <span>${meetCourseBadge(null)}</span><span>--</span><span>--</span><b>--</b>
+  </div>`;
+
+  const course=motorPath(item,["course","entry","courseNo","actualCourse","lane"]);
+  const exhibition=motorPath(item,["exhibitionTime","tenjiTime","displayTime","exhibition","time"]);
+  const racerClass=motorPath(item,["class","grade","racerClass","rankClass"]);
+  const finish=motorPath(item,["finish","rank","arrival","finishPlace","result"]);
+  const f=Number(finish);
+  const cls=f===1?"motorFinish1":f===2?"motorFinish2":"";
+
+  return `<div class="motorHistCell ${cls}">
+    ${meetCourseBadge(course)}
+    <span>${motorFmt(exhibition,"",2)}</span>
+    <span>${racerClass?esc(racerClass):"--"}</span>
+    <b>${finish!==null&&finish!==undefined&&finish!==""?esc(finish):"--"}</b>
+  </div>`;
+}
+
+function motorHistoryTable(boats,motors){
+  const histories=motors.map((m,i)=>motorRecent20(m,boats[i]));
+  const maxRows=Math.min(20,Math.max(0,...histories.map(x=>x.length)));
+  const rows=maxRows||20;
+
+  return `<div class="motorHistoryWrap">
+    <div class="motorHistoryHead">
+      <div class="motorNoCol">No.</div>
+      ${boats.map((b,i)=>{
+        const no=motorMetric(motors[i],b,"no");
+        return `<div class="motorHistoryLane laneHead${b.lane}">
+          <b>${b.lane}号艇</b>
+          <span>${no!==null&&no!==undefined&&no!==""?`${esc(no)}号機`:"--号機"}</span>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <div class="motorHistorySubHead">
+      <div></div>
+      ${boats.map(()=>`<div class="motorHistLabels"><span>進入</span><span>展示</span><span>級</span><span>着</span></div>`).join("")}
+    </div>
+
+    ${Array.from({length:rows},(_,row)=>`<div class="motorHistoryRow">
+      <div class="motorHistoryNo">${row+1}</div>
+      ${boats.map((b,i)=>motorHistoryCell(histories[i]?.[row]||null)).join("")}
+    </div>`).join("")}
+  </div>`;
+}
+
+function renderMotorInfo(){
+  const r=state.currentRace||{};
+  const boats=(r.boats||[]).slice(0,6);
+  if(!boats.length){
+    return `<div class="dataSection"><p class="dataPlaceholder">出走選手データを取得中です。</p></div>`;
+  }
+
+  const motors=boats.map(b=>motorObjectForBoat(b,r));
+
+  return `<div class="motorInfoPage">
+    <div class="motorPageTitle">
+      <div>
+        <h3>モーター情報</h3>
+        <p>6艇のモーター性能と直近の走りを比較</p>
+      </div>
+      <span>未取得は --</span>
+    </div>
+
+    ${motorRacerHeader(boats)}
+
+    <div class="motorConnectedFrame">
+      <div class="motorSectionBar">
+        <b>⚙ モーター基本データ</b>
+        <span>モーターの力を6艇比較</span>
+      </div>
+      ${motorBasicTable(boats,motors)}
+
+      <div class="motorSectionBar motorHistoryBar">
+        <b>▥ モーター過去20走成績</b>
+        <span>進入・展示・級・着</span>
+      </div>
+      ${motorHistoryTable(boats,motors)}
+    </div>
+
+    <div class="motorLegend">
+      <span><i class="first"></i>1位（ベスト値）</span>
+      <span><i class="second"></i>2位（次点）</span>
+      <small>※ 未取得項目は「--」で表示します。</small>
+    </div>
+  </div>`;
+}
+
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
@@ -5175,6 +5501,18 @@ function showRaceData(type, btn){
       panel.innerHTML=`<div class="dataSection meetResults">
         <div class="dataSectionHead"><b>節間成績</b><span>表示準備中</span></div>
         <p class="dataPlaceholder">節間成績の表示処理を読み込み中です。</p>
+      </div>`;
+    }
+    return;
+  }
+  if(type==="motor"){
+    try{
+      panel.innerHTML=renderMotorInfo();
+    }catch(err){
+      console.error("motor info render error",err);
+      panel.innerHTML=`<div class="dataSection">
+        <div class="dataSectionHead"><b>モーター情報</b><span>表示準備中</span></div>
+        <p class="dataPlaceholder">モーター情報の表示処理を読み込み中です。</p>
       </div>`;
     }
     return;
@@ -5529,3 +5867,389 @@ document.addEventListener("DOMContentLoaded",()=>{
   display:none !important;
 }
 </style>
+
+
+<style id="v87-motor-info">
+.motorInfoPage{
+  width:100%;
+  color:#123b5b;
+}
+.motorPageTitle{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.motorPageTitle h3{
+  margin:0;
+  color:#0a3455;
+  font-size:20px;
+  line-height:1;
+  font-weight:950;
+}
+.motorPageTitle p{
+  margin:5px 0 0;
+  color:#71889a;
+  font-size:9px;
+  font-weight:850;
+}
+.motorPageTitle>span{
+  padding:5px 8px;
+  border-radius:999px;
+  background:#edf5fa;
+  color:#708799;
+  font-size:7.5px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+/* Approved 6-racer strip: no face photos */
+.motorRacerHeader{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  overflow:hidden;
+  border:1.5px solid #8fbad5;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 8px 20px rgba(13,55,88,.06);
+}
+.motorRacer{
+  min-width:0;
+  min-height:114px;
+  padding:8px 3px 9px;
+  text-align:center;
+  border-right:1.5px solid #b9d3e3;
+}
+.motorRacer:last-child{border-right:0;}
+.motorLane{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:29px;
+  height:29px;
+  margin-bottom:6px;
+  border-radius:7px;
+  font-size:13px;
+  font-weight:950;
+}
+.motorRacer strong{
+  display:block;
+  min-height:35px;
+  color:#143a58;
+  font-size:10.4px;
+  line-height:1.08;
+  font-weight:950;
+}
+.motorRacer small{
+  display:block;
+  margin-top:3px;
+  color:#607b8f;
+  font-size:7px;
+  line-height:1.15;
+  font-weight:850;
+}
+
+/* one continuous frame */
+.motorConnectedFrame{
+  width:100%;
+  overflow:hidden;
+  margin-top:11px;
+  border:1.5px solid #88b7d4;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 10px 24px rgba(8,57,91,.07);
+}
+.motorSectionBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 11px;
+  background:linear-gradient(90deg,#074b7d 0%,#087eb9 52%,#13a1d0 100%);
+  color:#fff;
+}
+.motorSectionBar b{
+  font-size:13px;
+  font-weight:950;
+}
+.motorSectionBar span{
+  font-size:7.4px;
+  font-weight:850;
+  opacity:.88;
+  white-space:nowrap;
+}
+.motorHistoryBar{
+  border-top:2px solid #8ab8d5;
+}
+
+/* basic comparison table */
+.motorBasicTable{
+  width:100%;
+  background:#fff;
+}
+.motorBasicHead,
+.motorBasicRow{
+  display:grid;
+  grid-template-columns:17% repeat(6,1fr);
+}
+.motorBasicHead{
+  min-height:48px;
+  border-bottom:1px solid #b8d3e3;
+}
+.motorBasicHead>div{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-right:1px solid #b8d3e3;
+  font-size:8.5px;
+  font-weight:950;
+}
+.motorBasicHead>div:last-child{border-right:0;}
+.motorBasicHead>div:first-child{
+  background:#eaf4fb;
+  color:#225b7b;
+}
+.motorHeadLane{
+  flex-direction:column;
+  gap:2px;
+}
+.motorHeadLane b{
+  font-size:9px;
+  line-height:1;
+}
+.motorHeadLane span{
+  font-size:7.2px;
+  line-height:1;
+  font-weight:900;
+}
+.motorHeadLane.laneHead1{background:#fff;color:#111;}
+.motorHeadLane.laneHead2{background:#20262c;color:#fff;}
+.motorHeadLane.laneHead3{background:#ef3340;color:#fff;}
+.motorHeadLane.laneHead4{background:#2d5bd3;color:#fff;}
+.motorHeadLane.laneHead5{background:#f2d900;color:#111;}
+.motorHeadLane.laneHead6{background:#159447;color:#fff;}
+
+.motorBasicRow{
+  min-height:42px;
+  border-bottom:1px solid #c5d9e7;
+}
+.motorBasicRow:last-child{border-bottom:0;}
+.motorBasicLabel,
+.motorBasicCell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  padding:5px 2px;
+  border-right:1px solid #c3d8e6;
+  text-align:center;
+}
+.motorBasicLabel{
+  background:#eef6fb;
+  color:#245b7a;
+  font-size:8.5px;
+  line-height:1.15;
+  font-weight:950;
+}
+.motorBasicCell{
+  background:#fff;
+  color:#153b59;
+  font-size:10.5px;
+  line-height:1.15;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+}
+.motorBasicRow>*:last-child{border-right:0;}
+.motorBasicCell.motorBest1{
+  background:#ffdce3;
+  color:#c0273b;
+}
+.motorBasicCell.motorBest2{
+  background:#fff0a8;
+  color:#765c00;
+}
+.motorLegCell{
+  font-size:15px;
+  letter-spacing:.02em;
+}
+
+/* 20-run motor history */
+.motorHistoryWrap{
+  width:100%;
+  background:#fff;
+}
+.motorHistoryHead,
+.motorHistorySubHead,
+.motorHistoryRow{
+  display:grid;
+  grid-template-columns:7% repeat(6,1fr);
+}
+.motorHistoryHead{
+  min-height:47px;
+  border-bottom:1px solid #b6d2e2;
+}
+.motorHistoryHead>div{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-right:1px solid #b6d2e2;
+}
+.motorHistoryHead>div:last-child{border-right:0;}
+.motorNoCol{
+  background:#eaf4fb;
+  color:#245b7a;
+  font-size:8px;
+  font-weight:950;
+}
+.motorHistoryLane{
+  flex-direction:column;
+  gap:2px;
+}
+.motorHistoryLane b{font-size:8.5px;line-height:1;}
+.motorHistoryLane span{font-size:7px;line-height:1;font-weight:900;}
+.motorHistoryLane.laneHead1{background:#fff;color:#111;}
+.motorHistoryLane.laneHead2{background:#20262c;color:#fff;}
+.motorHistoryLane.laneHead3{background:#ef3340;color:#fff;}
+.motorHistoryLane.laneHead4{background:#2d5bd3;color:#fff;}
+.motorHistoryLane.laneHead5{background:#f2d900;color:#111;}
+.motorHistoryLane.laneHead6{background:#159447;color:#fff;}
+
+.motorHistorySubHead{
+  min-height:27px;
+  border-bottom:1px solid #bfd5e3;
+}
+.motorHistorySubHead>div{
+  border-right:1px solid #bfd5e3;
+}
+.motorHistorySubHead>div:last-child{border-right:0;}
+.motorHistorySubHead>div:first-child{
+  background:#f1f7fb;
+}
+.motorHistLabels{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  background:#eaf4fb;
+  color:#315f7d;
+}
+.motorHistLabels span{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid #c4d8e5;
+  font-size:6px;
+  font-weight:950;
+}
+.motorHistLabels span:last-child{border-right:0;}
+
+.motorHistoryRow{
+  min-height:38px;
+  border-bottom:1px solid #c9dce8;
+}
+.motorHistoryRow:last-child{border-bottom:0;}
+.motorHistoryNo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#f4f9fc;
+  color:#315f7d;
+  border-right:1px solid #c4d8e5;
+  font-size:7.5px;
+  font-weight:950;
+}
+.motorHistCell{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  min-width:0;
+  background:#fff;
+  border-right:1px solid #c4d8e5;
+}
+.motorHistCell:last-child{border-right:0;}
+.motorHistCell>*{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  margin:0!important;
+  border-right:1px solid #d2e1eb;
+  text-align:center;
+  font-size:6.8px;
+  line-height:1;
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+}
+.motorHistCell>*:last-child{border-right:0;}
+.motorHistCell b{
+  font-size:7.5px;
+  color:#143d5b;
+}
+.motorHistCell.empty{
+  background:#f8fafb;
+  color:#95a5b0;
+}
+.motorHistCell.motorFinish1{
+  background:#ffe8ec;
+}
+.motorHistCell.motorFinish2{
+  background:#fff5c8;
+}
+.motorHistCell .meetCourseBadge{
+  width:20px!important;
+  height:19px!important;
+  border-radius:3px!important;
+  font-size:8px!important;
+}
+
+.motorLegend{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px 15px;
+  margin-top:10px;
+  padding:9px 10px;
+  border:1px solid #c5dce9;
+  border-radius:10px;
+  background:#f7fafc;
+}
+.motorLegend span{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#516f83;
+  font-size:7.5px;
+  font-weight:850;
+}
+.motorLegend i{
+  width:22px;
+  height:13px;
+  border-radius:4px;
+}
+.motorLegend .first{background:#ffdce3;}
+.motorLegend .second{background:#fff0a8;}
+.motorLegend small{
+  margin-left:auto;
+  color:#7a8f9e;
+  font-size:7px;
+  font-weight:800;
+}
+
+@media(max-width:430px){
+  .motorPageTitle h3{font-size:19px;}
+  .motorRacer{min-height:108px;padding:7px 2px 8px;}
+  .motorRacer strong{font-size:9.5px;min-height:32px;}
+  .motorRacer small{font-size:6.4px;}
+  .motorSectionBar{padding:8px 9px;}
+  .motorSectionBar b{font-size:12px;}
+  .motorBasicRow{min-height:39px;}
+  .motorBasicLabel{font-size:7.8px;}
+  .motorBasicCell{font-size:9.5px;}
+  .motorLegCell{font-size:14px;}
+  .motorHistoryRow{min-height:36px;}
+  .motorHistLabels span{font-size:5.6px;}
+  .motorHistCell>*{font-size:6.2px;}
+  .motorHistCell b{font-size:7px;}
+}
+</style>
+
