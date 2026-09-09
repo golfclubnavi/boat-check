@@ -1,6 +1,6 @@
 {
   "schemaVersion": "37.0",
-  "updatedAt": "2026-09-09T09:16:45+09:00",
+  "updatedAt": "2026-09-09T09:48:45+09:00",
   "dateJST": "20260909",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -20178,7 +20178,7 @@
         },
         {
           "raceNo": 3,
-          "deadline": "09:36",
+          "deadline": "09:59",
           "boats": [
             {
               "lane": 1,
@@ -20238,7 +20238,7 @@
         },
         {
           "raceNo": 4,
-          "deadline": "10:02",
+          "deadline": "10:25",
           "boats": [
             {
               "lane": 1,
@@ -20298,7 +20298,7 @@
         },
         {
           "raceNo": 5,
-          "deadline": "10:28",
+          "deadline": "10:51",
           "boats": [
             {
               "lane": 1,
@@ -20358,7 +20358,7 @@
         },
         {
           "raceNo": 6,
-          "deadline": "10:58",
+          "deadline": "11:21",
           "boats": [
             {
               "lane": 1,
@@ -20418,7 +20418,7 @@
         },
         {
           "raceNo": 7,
-          "deadline": "11:28",
+          "deadline": "11:51",
           "boats": [
             {
               "lane": 1,
@@ -20478,7 +20478,7 @@
         },
         {
           "raceNo": 8,
-          "deadline": "12:05",
+          "deadline": "12:28",
           "boats": [
             {
               "lane": 1,
@@ -20538,7 +20538,7 @@
         },
         {
           "raceNo": 9,
-          "deadline": "12:38",
+          "deadline": "13:01",
           "boats": [
             {
               "lane": 1,
@@ -20598,7 +20598,7 @@
         },
         {
           "raceNo": 10,
-          "deadline": "13:09",
+          "deadline": "13:32",
           "boats": [
             {
               "lane": 1,
@@ -20658,7 +20658,7 @@
         },
         {
           "raceNo": 11,
-          "deadline": "13:49",
+          "deadline": "14:12",
           "boats": [
             {
               "lane": 1,
@@ -20718,7 +20718,7 @@
         },
         {
           "raceNo": 12,
-          "deadline": "14:28",
+          "deadline": "14:51",
           "boats": [
             {
               "lane": 1,
@@ -22798,7 +22798,7 @@
             },
             {
               "raceNo": 3,
-              "deadline": "09:36",
+              "deadline": "09:59",
               "boats": [
                 {
                   "lane": 1,
@@ -22858,7 +22858,7 @@
             },
             {
               "raceNo": 4,
-              "deadline": "10:02",
+              "deadline": "10:25",
               "boats": [
                 {
                   "lane": 1,
@@ -22918,7 +22918,7 @@
             },
             {
               "raceNo": 5,
-              "deadline": "10:28",
+              "deadline": "10:51",
               "boats": [
                 {
                   "lane": 1,
@@ -22978,7 +22978,7 @@
             },
             {
               "raceNo": 6,
-              "deadline": "10:58",
+              "deadline": "11:21",
               "boats": [
                 {
                   "lane": 1,
@@ -23038,7 +23038,7 @@
             },
             {
               "raceNo": 7,
-              "deadline": "11:28",
+              "deadline": "11:51",
               "boats": [
                 {
                   "lane": 1,
@@ -23098,7 +23098,7 @@
             },
             {
               "raceNo": 8,
-              "deadline": "12:05",
+              "deadline": "12:28",
               "boats": [
                 {
                   "lane": 1,
@@ -23158,7 +23158,7 @@
             },
             {
               "raceNo": 9,
-              "deadline": "12:38",
+              "deadline": "13:01",
               "boats": [
                 {
                   "lane": 1,
@@ -23218,7 +23218,7 @@
             },
             {
               "raceNo": 10,
-              "deadline": "13:09",
+              "deadline": "13:32",
               "boats": [
                 {
                   "lane": 1,
@@ -23278,7 +23278,7 @@
             },
             {
               "raceNo": 11,
-              "deadline": "13:49",
+              "deadline": "14:12",
               "boats": [
                 {
                   "lane": 1,
@@ -23338,7 +23338,7 @@
             },
             {
               "raceNo": 12,
-              "deadline": "14:28",
+              "deadline": "14:51",
               "boats": [
                 {
                   "lane": 1,
@@ -23439,7 +23439,7 @@
             "0%"
           ]
         },
-        "completedRaces": 1
+        "completedRaces": 2
       }
     },
     {
@@ -30460,8 +30460,8 @@
             "0%",
             "0%",
             "0%",
-            "100%",
-            "0%",
+            "66%",
+            "33%",
             "0%"
           ],
           "3着": [
@@ -30473,7 +30473,7 @@
             "0%"
           ]
         },
-        "completedRaces": 2
+        "completedRaces": 3
       }
     },
     {
