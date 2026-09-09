@@ -6838,6 +6838,15 @@ function demoSetStakeFromInput(v){
   if(panel)panel.innerHTML=renderDemoBetInner();
 }
 
+function demoSetBetStake(key,v){
+  let n=Math.floor(Number(v)||0);
+  if(n<1)n=1;
+  if(n>demoPoints)n=demoPoints;
+  demoBetList=demoBetList.map(x=>x.key===key?({...x,stake:n}):x);
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+
 function demoTotalStake(){
   return demoBetList.reduce((sum,x)=>sum+(Number(x.stake)||0),0);
 }
@@ -6903,14 +6912,23 @@ function renderDemoBetList(){
             <strong>${oddsComboHtml(x.combo)}</strong>
           </div>
           <div class="demoBetOdds"><small>オッズ</small><b>${x.odds!==null?oddsFmt(x.odds):"--"}</b></div>
-          <div class="demoBetStake"><small>投資</small><b>${demoFormatPt(x.stake)}</b></div>
+          <div class="demoBetStake">
+            <small>投資pt</small>
+            <div class="demoBetStakeInput">
+              <input type="number" inputmode="numeric" min="1" max="${demoPoints}" step="1"
+                value="${Number(x.stake)||demoStake}"
+                onchange="demoSetBetStake('${x.key}',this.value)"
+                aria-label="${demoBetLabel(x.type)} ${x.combo.join("-")} の投資ポイント">
+              <span>pt</span>
+            </div>
+          </div>
           <button onclick="demoRemoveBet('${x.key}')">×</button>
         </div>`).join("")}
       </div>`:`<div class="demoBetListEmpty">選択した買い目を追加するとここに表示されます。</div>`}
     <div class="demoStakeArea">
       <div class="demoStakeTitle">
-        <label>1点あたりの投資pt</label>
-        <span>自由に入力できます</span>
+        <label>全買い目の投資ptをまとめて変更</label>
+        <span>各買い目ごとの変更も可能</span>
       </div>
       <div class="demoStakeButtons">
         ${[100,200,500,1000].map(v=>`<button class="${demoStake===v?"active":""}" onclick="demoSetStake(${v})">${v.toLocaleString()}pt</button>`).join("")}
@@ -8927,6 +8945,117 @@ document.addEventListener("DOMContentLoaded",()=>{
   .demoLanePick{height:50px!important;}
   .demoLanePick .demoLaneNumber{font-size:16px!important;}
   .demoStakeInputWrap input{font-size:17px;}
+}
+</style>
+
+
+
+<style id="v96-demo-bet-fix">
+/* 選択時に数字が動かないようサイズとborder幅を固定 */
+.demoLanePick{
+  box-sizing:border-box!important;
+  border-width:2px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 2px 15px!important;
+}
+.demoLanePick.selected{
+  border-width:2px!important;
+  border-color:#0086c9!important;
+  outline:3px solid #0086c9!important;
+  outline-offset:-5px!important;
+  box-shadow:0 5px 12px rgba(0,134,201,.16)!important;
+  transform:none!important;
+}
+
+/* チェックマーク廃止 */
+.demoLanePick.selected::after{
+  content:none!important;
+  display:none!important;
+}
+.demoLaneNumber{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:1!important;
+  transform:none!important;
+}
+.demoSelectedMark{
+  position:absolute!important;
+  left:2px!important;
+  right:2px!important;
+  bottom:2px!important;
+  height:13px!important;
+  padding:2px 0 0!important;
+  border-radius:0 0 5px 5px!important;
+  background:#0086c9!important;
+  color:#fff!important;
+  font-size:6px!important;
+  line-height:1!important;
+  font-weight:950!important;
+  pointer-events:none!important;
+}
+
+/* ベットリスト内で各買い目のptを個別変更 */
+.demoBetItem{
+  grid-template-columns:40% 16% 32% 12%!important;
+}
+.demoBetStake{
+  padding:5px 4px!important;
+}
+.demoBetStakeInput{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  overflow:hidden;
+  margin-top:4px;
+  border:1.5px solid #0a7dc0;
+  border-radius:7px;
+  background:#fff;
+}
+.demoBetStakeInput input{
+  width:100%;
+  min-width:0;
+  height:32px;
+  padding:0 4px;
+  border:0;
+  outline:0;
+  background:#fff;
+  color:#123b59;
+  text-align:right;
+  font-family:inherit;
+  font-size:10px;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+}
+.demoBetStakeInput span{
+  padding:0 5px 0 2px;
+  color:#0a6fa9;
+  font-size:7px;
+  font-weight:950;
+}
+.demoBetStake small{
+  font-size:6.3px!important;
+}
+
+@media(max-width:430px){
+  .demoLanePick{
+    padding:0 1px 14px!important;
+  }
+  .demoSelectedMark{
+    left:1px!important;
+    right:1px!important;
+    bottom:1px!important;
+  }
+  .demoBetStakeInput input{
+    font-size:9.5px;
+  }
 }
 </style>
 
