@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "37.0",
-  "updatedAt": "2026-09-09T20:40:13+09:00",
+  "schemaVersion": "38.0",
+  "updatedAt": "2026-09-09T21:11:26+09:00",
   "dateJST": "20260909",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -69,7 +69,11 @@
               "age": 22,
               "period": 137
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -125,7 +129,11 @@
               "age": 36,
               "period": 104
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -181,7 +189,11 @@
               "age": 46,
               "period": 84
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -237,7 +249,11 @@
               "age": 41,
               "period": 96
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -293,7 +309,11 @@
               "age": 50,
               "period": 82
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -349,7 +369,11 @@
               "age": 52,
               "period": 72
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -405,7 +429,11 @@
               "age": 28,
               "period": 128
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -461,7 +489,11 @@
               "age": 23,
               "period": 134
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -517,7 +549,11 @@
               "age": 43,
               "period": 90
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -573,7 +609,11 @@
               "age": 37,
               "period": 103
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -629,7 +669,11 @@
               "age": 60,
               "period": 59
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -685,7 +729,11 @@
               "age": 51,
               "period": 73
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -3020,6 +3068,12 @@
               ]
             }
           ]
+        },
+        {
+          "date": "20260910",
+          "label": "最終日",
+          "day": "最終日",
+          "races": []
         }
       ]
     },
@@ -3087,7 +3141,11 @@
               "age": 37,
               "period": 105
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -3143,7 +3201,11 @@
               "age": 24,
               "period": 137
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -3199,7 +3261,11 @@
               "age": 52,
               "period": 73
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -3255,7 +3321,11 @@
               "age": 59,
               "period": 58
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -3311,7 +3381,11 @@
               "age": 51,
               "period": 78
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -3367,7 +3441,11 @@
               "age": 39,
               "period": 99
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -3423,7 +3501,11 @@
               "age": 50,
               "period": 81
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -3479,7 +3561,11 @@
               "age": 22,
               "period": 135
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -3535,7 +3621,11 @@
               "age": 43,
               "period": 90
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -3591,7 +3681,11 @@
               "age": 25,
               "period": 133
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -3647,7 +3741,11 @@
               "age": 47,
               "period": 81
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -3703,7 +3801,11 @@
               "age": 38,
               "period": 117
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -6111,7 +6213,11 @@
               "age": 47,
               "period": 83
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -6167,7 +6273,11 @@
               "age": 39,
               "period": 99
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -6223,7 +6333,11 @@
               "age": 31,
               "period": 115
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -6279,7 +6393,11 @@
               "age": 21,
               "period": 134
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -6335,7 +6453,11 @@
               "age": 32,
               "period": 116
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -6391,7 +6513,11 @@
               "age": 20,
               "period": 138
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -6447,7 +6573,11 @@
               "age": 42,
               "period": 94
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -6503,7 +6633,11 @@
               "age": 23,
               "period": 128
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -6559,7 +6693,11 @@
               "age": 39,
               "period": 113
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -6615,7 +6753,11 @@
               "age": 49,
               "period": 78
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -6671,7 +6813,11 @@
               "age": 36,
               "period": 103
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -6727,7 +6873,11 @@
               "age": 35,
               "period": 117
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -9130,7 +9280,11 @@
               "branch": "愛知",
               "age": 49
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -9181,7 +9335,11 @@
               "branch": "群馬",
               "age": 52
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -9232,7 +9390,11 @@
               "branch": "大阪",
               "age": 47
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -9283,7 +9445,11 @@
               "branch": "静岡",
               "age": 59
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -9334,7 +9500,11 @@
               "branch": "兵庫",
               "age": 48
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -9385,7 +9555,11 @@
               "branch": "静岡",
               "age": 47
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -9436,7 +9610,11 @@
               "branch": "滋賀",
               "age": 53
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -9487,7 +9665,11 @@
               "branch": "東京",
               "age": 23
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -9538,7 +9720,11 @@
               "branch": "埼玉",
               "age": 42
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -9589,7 +9775,11 @@
               "branch": "埼玉",
               "age": 52
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -9640,7 +9830,11 @@
               "branch": "静岡",
               "age": 42
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -9691,7 +9885,11 @@
               "branch": "群馬",
               "age": 46
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=5&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -9767,7 +9965,11 @@
               "age": 23,
               "period": 134
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -9823,7 +10025,11 @@
               "age": 24,
               "period": 130
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -9879,7 +10085,11 @@
               "age": 25,
               "period": 131
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -9935,7 +10145,11 @@
               "age": 22,
               "period": 135
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -9991,7 +10205,11 @@
               "age": 25,
               "period": 131
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -10047,7 +10265,11 @@
               "age": 27,
               "period": 129
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -10103,7 +10325,11 @@
               "age": 29,
               "period": 128
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -10159,7 +10385,11 @@
               "age": 29,
               "period": 121
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -10215,7 +10445,11 @@
               "age": 28,
               "period": 126
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -10271,7 +10505,11 @@
               "age": 28,
               "period": 130
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -10327,7 +10565,11 @@
               "age": 30,
               "period": 127
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -10383,7 +10625,11 @@
               "age": 26,
               "period": 126
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=11&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -13224,7 +13470,11 @@
               "age": 68,
               "period": 43
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -13280,7 +13530,11 @@
               "age": 53,
               "period": 75
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -13336,7 +13590,11 @@
               "age": 45,
               "period": 85
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -13392,7 +13650,11 @@
               "age": 47,
               "period": 85
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -13448,7 +13710,11 @@
               "age": 36,
               "period": 106
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -13504,7 +13770,11 @@
               "age": 23,
               "period": 138
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -13560,7 +13830,11 @@
               "age": 39,
               "period": 112
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -13616,7 +13890,11 @@
               "age": 42,
               "period": 95
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -13672,7 +13950,11 @@
               "age": 40,
               "period": 90
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -13728,7 +14010,11 @@
               "age": 40,
               "period": 109
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -13784,7 +14070,11 @@
               "age": 47,
               "period": 85
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -13840,7 +14130,11 @@
               "age": 47,
               "period": 87
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=13&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -15370,7 +15664,11 @@
               "age": 31,
               "period": 111
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -15426,7 +15724,11 @@
               "age": 25,
               "period": 128
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -15482,7 +15784,11 @@
               "age": 27,
               "period": 125
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -15538,7 +15844,11 @@
               "age": 28,
               "period": 119
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -15594,7 +15904,11 @@
               "age": 41,
               "period": 96
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -15650,7 +15964,11 @@
               "age": 19,
               "period": 135
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -15706,7 +16024,11 @@
               "age": 20,
               "period": 137
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -15762,7 +16084,11 @@
               "age": 45,
               "period": 86
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -15818,7 +16144,11 @@
               "age": 33,
               "period": 115
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -15874,7 +16204,11 @@
               "age": 31,
               "period": 116
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -15930,7 +16264,11 @@
               "age": 34,
               "period": 107
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -15986,7 +16324,11 @@
               "age": 39,
               "period": 100
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -17955,7 +18297,11 @@
               "age": 30,
               "period": 124
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -18011,7 +18357,11 @@
               "age": 42,
               "period": 98
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -18067,7 +18417,11 @@
               "age": 58,
               "period": 59
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -18123,7 +18477,11 @@
               "age": 27,
               "period": 125
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -18179,7 +18537,11 @@
               "age": 19,
               "period": 138
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -18235,7 +18597,11 @@
               "age": 24,
               "period": 137
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -18291,7 +18657,11 @@
               "age": 38,
               "period": 112
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -18347,7 +18717,11 @@
               "age": 24,
               "period": 132
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -18403,7 +18777,11 @@
               "age": 33,
               "period": 118
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -18459,7 +18837,11 @@
               "age": 22,
               "period": 133
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -18515,7 +18897,11 @@
               "age": 46,
               "period": 89
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -18571,7 +18957,11 @@
               "age": 42,
               "period": 94
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -20096,7 +20486,11 @@
               "branch": "埼玉",
               "age": 51
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -20147,7 +20541,11 @@
               "branch": "埼玉",
               "age": 44
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -20198,7 +20596,11 @@
               "branch": "広島",
               "age": 20
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -20249,7 +20651,11 @@
               "branch": "埼玉",
               "age": 36
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -20300,7 +20706,11 @@
               "branch": "埼玉",
               "age": 58
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -20352,7 +20762,11 @@
               "branch": "山口",
               "age": 52
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -20403,7 +20817,11 @@
               "branch": "大阪",
               "age": 23
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -20454,7 +20872,11 @@
               "branch": "徳島",
               "age": 37
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -20505,7 +20927,11 @@
               "branch": "愛知",
               "age": 43
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -20556,7 +20982,11 @@
               "branch": "埼玉",
               "age": 56
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -20607,7 +21037,11 @@
               "branch": "徳島",
               "age": 36
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -20658,7 +21092,11 @@
               "branch": "大阪",
               "age": 39
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=17&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -20729,7 +21167,11 @@
               "branch": "福岡",
               "age": 21
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -20780,7 +21222,11 @@
               "branch": "東京",
               "age": 36
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -20831,7 +21277,11 @@
               "branch": "佐賀",
               "age": 23
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -20882,7 +21332,11 @@
               "branch": "山口",
               "age": 47
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -20933,7 +21387,11 @@
               "branch": "福岡",
               "age": 19
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -20984,7 +21442,11 @@
               "branch": "福井",
               "age": 27
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -21035,7 +21497,11 @@
               "branch": "福岡",
               "age": 37
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -21086,7 +21552,11 @@
               "branch": "山口",
               "age": 58
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -21137,7 +21607,11 @@
               "branch": "岡山",
               "age": 38
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -21188,7 +21662,11 @@
               "branch": "大阪",
               "age": 40
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -21239,7 +21717,11 @@
               "branch": "三重",
               "age": 47
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -21290,663 +21772,18 @@
               "branch": "広島",
               "age": 41
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
         {
-          "date": "20260909",
-          "label": "初日",
-          "day": "初日",
-          "races": [
-            {
-              "raceNo": 1,
-              "deadline": "15:20",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 中島 真二",
-                  "class": "B1"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "金子 順一",
-                  "class": "B1",
-                  "racerId": "3539",
-                  "branch": "山口",
-                  "age": 58
-                },
-                {
-                  "lane": 3,
-                  "racerName": "渡辺 千草",
-                  "class": "B1",
-                  "racerId": "3175",
-                  "branch": "東京",
-                  "age": 62
-                },
-                {
-                  "lane": 4,
-                  "racerName": "大田 直弥",
-                  "class": "B1",
-                  "racerId": "4396",
-                  "branch": "山口",
-                  "age": 40
-                },
-                {
-                  "lane": 5,
-                  "racerName": "梶山 涼斗",
-                  "class": "B1",
-                  "racerId": "5014",
-                  "branch": "佐賀",
-                  "age": 28
-                },
-                {
-                  "lane": 6,
-                  "racerName": "山下 心一",
-                  "class": "B1",
-                  "racerId": "5382",
-                  "branch": "福岡",
-                  "age": 21
-                }
-              ]
-            },
-            {
-              "raceNo": 2,
-              "deadline": "15:48",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 杉田 篤光",
-                  "class": "B1"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "村松 将平",
-                  "class": "B1",
-                  "racerId": "5316",
-                  "branch": "静岡",
-                  "age": 25
-                },
-                {
-                  "lane": 3,
-                  "racerName": "濱崎 直矢",
-                  "class": "A2",
-                  "racerId": "4230",
-                  "branch": "埼玉",
-                  "age": 43
-                },
-                {
-                  "lane": 4,
-                  "racerName": "間嶋 仁志",
-                  "class": "B1",
-                  "racerId": "3362",
-                  "branch": "三重",
-                  "age": 57
-                },
-                {
-                  "lane": 5,
-                  "racerName": "松尾 昂明",
-                  "class": "A2",
-                  "racerId": "4424",
-                  "branch": "福岡",
-                  "age": 41
-                },
-                {
-                  "lane": 6,
-                  "racerName": "稲生 夏季",
-                  "class": "B1",
-                  "racerId": "4484",
-                  "branch": "東京",
-                  "age": 36
-                }
-              ]
-            },
-            {
-              "raceNo": 3,
-              "deadline": "16:13",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 佐藤 旭",
-                  "class": "B1"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "藤原 孝斗",
-                  "class": "B1",
-                  "racerId": "5033",
-                  "branch": "愛知",
-                  "age": 28
-                },
-                {
-                  "lane": 3,
-                  "racerName": "大須賀 友",
-                  "class": "A1",
-                  "racerId": "4518",
-                  "branch": "愛知",
-                  "age": 39
-                },
-                {
-                  "lane": 4,
-                  "racerName": "森口 和紀",
-                  "class": "B1",
-                  "racerId": "5219",
-                  "branch": "福岡",
-                  "age": 25
-                },
-                {
-                  "lane": 5,
-                  "racerName": "片岡 恵里",
-                  "class": "A2",
-                  "racerId": "4014",
-                  "branch": "山口",
-                  "age": 46
-                },
-                {
-                  "lane": 6,
-                  "racerName": "吉川 颯汰",
-                  "class": "B2",
-                  "racerId": "5429",
-                  "branch": "佐賀",
-                  "age": 23
-                }
-              ]
-            },
-            {
-              "raceNo": 4,
-              "deadline": "16:41",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 蒲原 健太",
-                  "class": "B1"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "花田 凱成",
-                  "class": "B1",
-                  "racerId": "5263",
-                  "branch": "福岡",
-                  "age": 27
-                },
-                {
-                  "lane": 3,
-                  "racerName": "夏山 亮平",
-                  "class": "B1",
-                  "racerId": "4462",
-                  "branch": "大阪",
-                  "age": 40
-                },
-                {
-                  "lane": 4,
-                  "racerName": "井内 将太郎",
-                  "class": "A1",
-                  "racerId": "4600",
-                  "branch": "広島",
-                  "age": 41
-                },
-                {
-                  "lane": 5,
-                  "racerName": "嶋 義信",
-                  "class": "A1",
-                  "racerId": "4529",
-                  "branch": "香川",
-                  "age": 37
-                },
-                {
-                  "lane": 6,
-                  "racerName": "小林 一樹",
-                  "class": "A2",
-                  "racerId": "4009",
-                  "branch": "山口",
-                  "age": 47
-                }
-              ]
-            },
-            {
-              "raceNo": 5,
-              "deadline": "17:10",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 村松 修二",
-                  "class": "A2"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "桐本 康臣",
-                  "class": "A2",
-                  "racerId": "4043",
-                  "branch": "三重",
-                  "age": 47
-                },
-                {
-                  "lane": 3,
-                  "racerName": "寺島 美里",
-                  "class": "B1",
-                  "racerId": "4891",
-                  "branch": "東京",
-                  "age": 36
-                },
-                {
-                  "lane": 4,
-                  "racerName": "田中 和也",
-                  "class": "A1",
-                  "racerId": "4357",
-                  "branch": "大阪",
-                  "age": 42
-                },
-                {
-                  "lane": 5,
-                  "racerName": "西原 明生",
-                  "class": "B1",
-                  "racerId": "4034",
-                  "branch": "香川",
-                  "age": 47
-                },
-                {
-                  "lane": 6,
-                  "racerName": "山口 隼人",
-                  "class": "B2",
-                  "racerId": "5468",
-                  "branch": "福岡",
-                  "age": 19
-                }
-              ]
-            },
-            {
-              "raceNo": 6,
-              "deadline": "17:37",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 長畑 友輔",
-                  "class": "B1"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "今垣 光太郎",
-                  "class": "A1",
-                  "racerId": "3388",
-                  "branch": "福井",
-                  "age": 56
-                },
-                {
-                  "lane": 3,
-                  "racerName": "中島 真二",
-                  "class": "B1",
-                  "racerId": "4094",
-                  "branch": "福岡",
-                  "age": 45
-                },
-                {
-                  "lane": 4,
-                  "racerName": "浅見 宗孝",
-                  "class": "B1",
-                  "racerId": "3880",
-                  "branch": "埼玉",
-                  "age": 53
-                },
-                {
-                  "lane": 5,
-                  "racerName": "藤田 竜弘",
-                  "class": "A2",
-                  "racerId": "4209",
-                  "branch": "静岡",
-                  "age": 43
-                },
-                {
-                  "lane": 6,
-                  "racerName": "中村 栄治",
-                  "class": "A2",
-                  "racerId": "5085",
-                  "branch": "福井",
-                  "age": 27
-                }
-              ]
-            },
-            {
-              "raceNo": 7,
-              "deadline": "18:04",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 岡崎 恭裕",
-                  "class": "A2"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "荻野 裕介",
-                  "class": "B1",
-                  "racerId": "4085",
-                  "branch": "東京",
-                  "age": 46
-                },
-                {
-                  "lane": 3,
-                  "racerName": "山下 心一",
-                  "class": "B1",
-                  "racerId": "5382",
-                  "branch": "福岡",
-                  "age": 21
-                },
-                {
-                  "lane": 4,
-                  "racerName": "大瀧 明日香",
-                  "class": "A2",
-                  "racerId": "3999",
-                  "branch": "愛知",
-                  "age": 47
-                },
-                {
-                  "lane": 5,
-                  "racerName": "杉田 篤光",
-                  "class": "B1",
-                  "racerId": "4076",
-                  "branch": "静岡",
-                  "age": 48
-                },
-                {
-                  "lane": 6,
-                  "racerName": "三川 昂暁",
-                  "class": "A2",
-                  "racerId": "4551",
-                  "branch": "福岡",
-                  "age": 37
-                }
-              ]
-            },
-            {
-              "raceNo": 8,
-              "deadline": "18:33",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 上平 真二",
-                  "class": "A1"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "濱崎 直矢",
-                  "class": "A2",
-                  "racerId": "4230",
-                  "branch": "埼玉",
-                  "age": 43
-                },
-                {
-                  "lane": 3,
-                  "racerName": "小林 一樹",
-                  "class": "A2",
-                  "racerId": "4009",
-                  "branch": "山口",
-                  "age": 47
-                },
-                {
-                  "lane": 4,
-                  "racerName": "藤原 孝斗",
-                  "class": "B1",
-                  "racerId": "5033",
-                  "branch": "愛知",
-                  "age": 28
-                },
-                {
-                  "lane": 5,
-                  "racerName": "諏訪 玲奈",
-                  "class": "B2",
-                  "racerId": "5373",
-                  "branch": "岡山",
-                  "age": 23
-                },
-                {
-                  "lane": 6,
-                  "racerName": "金子 順一",
-                  "class": "B1",
-                  "racerId": "3539",
-                  "branch": "山口",
-                  "age": 58
-                }
-              ]
-            },
-            {
-              "raceNo": 9,
-              "deadline": "19:04",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 中辻 博訓",
-                  "class": "A2"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "柴田 大輔",
-                  "class": "B1",
-                  "racerId": "4204",
-                  "branch": "福岡",
-                  "age": 44
-                },
-                {
-                  "lane": 3,
-                  "racerName": "大田 直弥",
-                  "class": "B1",
-                  "racerId": "4396",
-                  "branch": "山口",
-                  "age": 40
-                },
-                {
-                  "lane": 4,
-                  "racerName": "本田 愛",
-                  "class": "B1",
-                  "racerId": "5248",
-                  "branch": "静岡",
-                  "age": 24
-                },
-                {
-                  "lane": 5,
-                  "racerName": "山口 隼人",
-                  "class": "B2",
-                  "racerId": "5468",
-                  "branch": "福岡",
-                  "age": 19
-                },
-                {
-                  "lane": 6,
-                  "racerName": "若狭 奈美子",
-                  "class": "A1",
-                  "racerId": "4373",
-                  "branch": "岡山",
-                  "age": 38
-                }
-              ]
-            },
-            {
-              "raceNo": 10,
-              "deadline": "19:36",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 松尾 昂明",
-                  "class": "A2"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "梶山 涼斗",
-                  "class": "B1",
-                  "racerId": "5014",
-                  "branch": "佐賀",
-                  "age": 28
-                },
-                {
-                  "lane": 3,
-                  "racerName": "中村 栄治",
-                  "class": "A2",
-                  "racerId": "5085",
-                  "branch": "福井",
-                  "age": 27
-                },
-                {
-                  "lane": 4,
-                  "racerName": "村松 修二",
-                  "class": "A2",
-                  "racerId": "4816",
-                  "branch": "広島",
-                  "age": 35
-                },
-                {
-                  "lane": 5,
-                  "racerName": "佐藤 旭",
-                  "class": "B1",
-                  "racerId": "4273",
-                  "branch": "静岡",
-                  "age": 44
-                },
-                {
-                  "lane": 6,
-                  "racerName": "夏山 亮平",
-                  "class": "B1",
-                  "racerId": "4462",
-                  "branch": "大阪",
-                  "age": 40
-                }
-              ]
-            },
-            {
-              "raceNo": 11,
-              "deadline": "20:07",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 嶋 義信",
-                  "class": "A1"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "大瀧 明日香",
-                  "class": "A2",
-                  "racerId": "3999",
-                  "branch": "愛知",
-                  "age": 47
-                },
-                {
-                  "lane": 3,
-                  "racerName": "森口 和紀",
-                  "class": "B1",
-                  "racerId": "5219",
-                  "branch": "福岡",
-                  "age": 25
-                },
-                {
-                  "lane": 4,
-                  "racerName": "藤田 竜弘",
-                  "class": "A2",
-                  "racerId": "4209",
-                  "branch": "静岡",
-                  "age": 43
-                },
-                {
-                  "lane": 5,
-                  "racerName": "村松 将平",
-                  "class": "B1",
-                  "racerId": "5316",
-                  "branch": "静岡",
-                  "age": 25
-                },
-                {
-                  "lane": 6,
-                  "racerName": "桐本 康臣",
-                  "class": "A2",
-                  "racerId": "4043",
-                  "branch": "三重",
-                  "age": 47
-                }
-              ]
-            },
-            {
-              "raceNo": 12,
-              "deadline": "20:38",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerName": "発売終了 今垣 光太郎",
-                  "class": "A1"
-                },
-                {
-                  "lane": 2,
-                  "racerName": "上平 真二",
-                  "class": "A1",
-                  "racerId": "3737",
-                  "branch": "広島",
-                  "age": 52
-                },
-                {
-                  "lane": 3,
-                  "racerName": "田中 和也",
-                  "class": "A1",
-                  "racerId": "4357",
-                  "branch": "大阪",
-                  "age": 42
-                },
-                {
-                  "lane": 4,
-                  "racerName": "岡崎 恭裕",
-                  "class": "A2",
-                  "racerId": "4296",
-                  "branch": "福岡",
-                  "age": 39
-                },
-                {
-                  "lane": 5,
-                  "racerName": "大須賀 友",
-                  "class": "A1",
-                  "racerId": "4518",
-                  "branch": "愛知",
-                  "age": 39
-                },
-                {
-                  "lane": 6,
-                  "racerName": "井内 将太郎",
-                  "class": "A1",
-                  "racerId": "4600",
-                  "branch": "広島",
-                  "age": 41
-                }
-              ]
-            }
-          ]
-        },
-        {
           "date": "20260910",
           "label": "２日目",
           "day": "２日目",
-          "races": []
-        },
-        {
-          "date": "20260911",
-          "label": "３日目",
-          "day": "３日目",
-          "races": []
-        },
-        {
-          "date": "20260912",
-          "label": "４日目",
-          "day": "４日目",
-          "races": []
-        },
-        {
-          "date": "20260913",
-          "label": "５日目",
-          "day": "５日目",
-          "races": []
-        },
-        {
-          "date": "20260914",
-          "label": "６日目",
-          "day": "６日目",
-          "races": []
-        },
-        {
-          "date": "20260915",
-          "label": "最終日",
-          "day": "最終日",
           "races": []
         }
       ]
@@ -22010,7 +21847,11 @@
               "branch": "岡山",
               "age": 24
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -22061,7 +21902,11 @@
               "branch": "長崎",
               "age": 20
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -22112,7 +21957,11 @@
               "branch": "福岡",
               "age": 33
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -22163,7 +22012,11 @@
               "branch": "香川",
               "age": 40
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -22214,7 +22067,11 @@
               "branch": "大阪",
               "age": 40
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -22265,7 +22122,11 @@
               "branch": "福岡",
               "age": 27
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -22316,7 +22177,11 @@
               "branch": "佐賀",
               "age": 17
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -22367,7 +22232,11 @@
               "branch": "大阪",
               "age": 38
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -22418,7 +22287,11 @@
               "branch": "大阪",
               "age": 38
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -22469,7 +22342,11 @@
               "branch": "福岡",
               "age": 38
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -22520,7 +22397,11 @@
               "branch": "静岡",
               "age": 36
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -22571,7 +22452,11 @@
               "branch": "広島",
               "age": 33
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -22647,7 +22532,11 @@
               "age": 33,
               "period": 109
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=1"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=1"
         },
         {
           "raceNo": 2,
@@ -22703,7 +22592,11 @@
               "age": 51,
               "period": 74
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=2"
         },
         {
           "raceNo": 3,
@@ -22759,7 +22652,11 @@
               "age": 39,
               "period": 97
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=3"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=3"
         },
         {
           "raceNo": 4,
@@ -22815,7 +22712,11 @@
               "age": 45,
               "period": 91
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=4"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=4"
         },
         {
           "raceNo": 5,
@@ -22871,7 +22772,11 @@
               "age": 50,
               "period": 76
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=5"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=5"
         },
         {
           "raceNo": 6,
@@ -22927,7 +22832,11 @@
               "age": 41,
               "period": 95
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=6"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=6"
         },
         {
           "raceNo": 7,
@@ -22983,7 +22892,11 @@
               "age": 53,
               "period": 78
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=7"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=7"
         },
         {
           "raceNo": 8,
@@ -23039,7 +22952,11 @@
               "age": 31,
               "period": 122
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=8"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=8"
         },
         {
           "raceNo": 9,
@@ -23095,7 +23012,11 @@
               "age": 29,
               "period": 123
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=9"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=9"
         },
         {
           "raceNo": 10,
@@ -23151,7 +23072,11 @@
               "age": 46,
               "period": 87
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=10"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=10"
         },
         {
           "raceNo": 11,
@@ -23207,7 +23132,11 @@
               "age": 48,
               "period": 83
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=11"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=11"
         },
         {
           "raceNo": 12,
@@ -23215,7 +23144,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 丸野 一樹",
+              "racerName": "発売終了 丸野 一樹",
               "class": "A1"
             },
             {
@@ -23263,7 +23192,11 @@
               "age": 30,
               "period": 119
             }
-          ]
+          ],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=12"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260909&race=12"
         }
       ],
       "meetDays": [
@@ -24720,6 +24653,12 @@
               ]
             }
           ]
+        },
+        {
+          "date": "20260910",
+          "label": "４日目",
+          "day": "４日目",
+          "races": []
         }
       ]
     }
