@@ -1,6 +1,6 @@
 {
   "schemaVersion": "37.0",
-  "updatedAt": "2026-09-09T09:48:45+09:00",
+  "updatedAt": "2026-09-09T10:11:25+09:00",
   "dateJST": "20260909",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -6897,734 +6897,13 @@
           ]
         },
         {
-          "date": "20260909",
+          "date": "20260910",
           "label": "５日目",
           "day": "５日目",
-          "races": [
-            {
-              "raceNo": 1,
-              "deadline": "11:14",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "5279",
-                  "racerName": "石渡 翔一郎",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 23,
-                  "period": 131
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4004",
-                  "racerName": "山本 浩輔",
-                  "class": "B1",
-                  "branch": "長崎",
-                  "age": 48,
-                  "period": 84
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4407",
-                  "racerName": "鹿島 敏弘",
-                  "class": "B1",
-                  "branch": "群馬",
-                  "age": 40,
-                  "period": 99
-                },
-                {
-                  "lane": 4,
-                  "racerId": "5053",
-                  "racerName": "山口 広樹",
-                  "class": "B1",
-                  "branch": "福岡",
-                  "age": 30,
-                  "period": 123
-                },
-                {
-                  "lane": 5,
-                  "racerId": "3857",
-                  "racerName": "阿波 勝哉",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 53,
-                  "period": 79
-                },
-                {
-                  "lane": 6,
-                  "racerId": "4583",
-                  "racerName": "古田 祐貴",
-                  "class": "B1",
-                  "branch": "香川",
-                  "age": 37,
-                  "period": 105
-                }
-              ]
-            },
-            {
-              "raceNo": 2,
-              "deadline": "11:41",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "4142",
-                  "racerName": "平野 和明",
-                  "class": "A2",
-                  "branch": "愛知",
-                  "age": 45,
-                  "period": 89
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4427",
-                  "racerName": "秦 英悟",
-                  "class": "A1",
-                  "branch": "大阪",
-                  "age": 40,
-                  "period": 100
-                },
-                {
-                  "lane": 3,
-                  "racerId": "5138",
-                  "racerName": "村本 大成",
-                  "class": "B1",
-                  "branch": "福岡",
-                  "age": 26,
-                  "period": 126
-                },
-                {
-                  "lane": 4,
-                  "racerId": "5120",
-                  "racerName": "山本 稔太朗",
-                  "class": "B1",
-                  "branch": "愛知",
-                  "age": 25,
-                  "period": 125
-                },
-                {
-                  "lane": 5,
-                  "racerId": "3303",
-                  "racerName": "渡辺 豊",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 58,
-                  "period": 60
-                },
-                {
-                  "lane": 6,
-                  "racerId": "5427",
-                  "racerName": "港 理樹",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 24,
-                  "period": 137
-                }
-              ]
-            },
-            {
-              "raceNo": 3,
-              "deadline": "12:08",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "4888",
-                  "racerName": "金児 隆太",
-                  "class": "B1",
-                  "branch": "群馬",
-                  "age": 38,
-                  "period": 117
-                },
-                {
-                  "lane": 2,
-                  "racerId": "5071",
-                  "racerName": "野見山 拓己",
-                  "class": "B1",
-                  "branch": "福岡",
-                  "age": 32,
-                  "period": 124
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4623",
-                  "racerName": "中北 将史",
-                  "class": "B1",
-                  "branch": "三重",
-                  "age": 41,
-                  "period": 107
-                },
-                {
-                  "lane": 4,
-                  "racerId": "3859",
-                  "racerName": "多羅尾 達之",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 53,
-                  "period": 79
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4471",
-                  "racerName": "新田 泰章",
-                  "class": "A1",
-                  "branch": "広島",
-                  "age": 39,
-                  "period": 101
-                },
-                {
-                  "lane": 6,
-                  "racerId": "3685",
-                  "racerName": "荒井 輝年",
-                  "class": "A2",
-                  "branch": "岡山",
-                  "age": 52,
-                  "period": 73
-                }
-              ]
-            },
-            {
-              "raceNo": 4,
-              "deadline": "12:35",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "3944",
-                  "racerName": "山口 裕二",
-                  "class": "A1",
-                  "branch": "長崎",
-                  "age": 47,
-                  "period": 81
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4896",
-                  "racerName": "花本 剛",
-                  "class": "B1",
-                  "branch": "山口",
-                  "age": 34,
-                  "period": 117
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4173",
-                  "racerName": "岡谷 健吾",
-                  "class": "B1",
-                  "branch": "広島",
-                  "age": 43,
-                  "period": 90
-                },
-                {
-                  "lane": 4,
-                  "racerId": "4257",
-                  "racerName": "古川 健",
-                  "class": "B1",
-                  "branch": "広島",
-                  "age": 42,
-                  "period": 93
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4189",
-                  "racerName": "川上 剛",
-                  "class": "A1",
-                  "branch": "福岡",
-                  "age": 45,
-                  "period": 91
-                },
-                {
-                  "lane": 6,
-                  "racerId": "3256",
-                  "racerName": "三角 哲男",
-                  "class": "A1",
-                  "branch": "東京",
-                  "age": 59,
-                  "period": 58
-                }
-              ]
-            },
-            {
-              "raceNo": 5,
-              "deadline": "13:02",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "3664",
-                  "racerName": "鈴木 賢一",
-                  "class": "B1",
-                  "branch": "埼玉",
-                  "age": 56,
-                  "period": 73
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4452",
-                  "racerName": "松尾 祭",
-                  "class": "A2",
-                  "branch": "香川",
-                  "age": 38,
-                  "period": 100
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4258",
-                  "racerName": "関根 彰人",
-                  "class": "B1",
-                  "branch": "埼玉",
-                  "age": 42,
-                  "period": 93
-                },
-                {
-                  "lane": 4,
-                  "racerId": "4438",
-                  "racerName": "森作 雄大",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 40,
-                  "period": 100
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4179",
-                  "racerName": "広次 修",
-                  "class": "A2",
-                  "branch": "山口",
-                  "age": 43,
-                  "period": 90
-                },
-                {
-                  "lane": 6,
-                  "racerId": "3839",
-                  "racerName": "川合 理司",
-                  "class": "B1",
-                  "branch": "静岡",
-                  "age": 51,
-                  "period": 78
-                }
-              ]
-            },
-            {
-              "raceNo": 6,
-              "deadline": "13:29",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "3850",
-                  "racerName": "小川 知行",
-                  "class": "B1",
-                  "branch": "群馬",
-                  "age": 54,
-                  "period": 79
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4640",
-                  "racerName": "山ノ内 雅人",
-                  "class": "A2",
-                  "branch": "福岡",
-                  "age": 35,
-                  "period": 107
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4981",
-                  "racerName": "牧山 敦也",
-                  "class": "B1",
-                  "branch": "佐賀",
-                  "age": 30,
-                  "period": 120
-                },
-                {
-                  "lane": 4,
-                  "racerId": "4598",
-                  "racerName": "加藤 政彦",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 42,
-                  "period": 106
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4583",
-                  "racerName": "古田 祐貴",
-                  "class": "B1",
-                  "branch": "香川",
-                  "age": 37,
-                  "period": 105
-                },
-                {
-                  "lane": 6,
-                  "racerId": "4418",
-                  "racerName": "茅原 悠紀",
-                  "class": "A1",
-                  "branch": "岡山",
-                  "age": 39,
-                  "period": 99
-                }
-              ]
-            },
-            {
-              "raceNo": 7,
-              "deadline": "13:56",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "5138",
-                  "racerName": "村本 大成",
-                  "class": "B1",
-                  "branch": "福岡",
-                  "age": 26,
-                  "period": 126
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4880",
-                  "racerName": "澤崎 雄哉",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 31,
-                  "period": 116
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4661",
-                  "racerName": "中島 昂章",
-                  "class": "A2",
-                  "branch": "佐賀",
-                  "age": 34,
-                  "period": 108
-                },
-                {
-                  "lane": 4,
-                  "racerId": "4004",
-                  "racerName": "山本 浩輔",
-                  "class": "B1",
-                  "branch": "長崎",
-                  "age": 48,
-                  "period": 84
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4604",
-                  "racerName": "岩瀬 裕亮",
-                  "class": "A1",
-                  "branch": "愛知",
-                  "age": 38,
-                  "period": 106
-                },
-                {
-                  "lane": 6,
-                  "racerId": "3931",
-                  "racerName": "黒崎 竜也",
-                  "class": "A2",
-                  "branch": "三重",
-                  "age": 50,
-                  "period": 81
-                }
-              ]
-            },
-            {
-              "raceNo": 8,
-              "deadline": "14:24",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "5098",
-                  "racerName": "大江 純",
-                  "class": "B1",
-                  "branch": "愛知",
-                  "age": 30,
-                  "period": 125
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4257",
-                  "racerName": "古川 健",
-                  "class": "B1",
-                  "branch": "広島",
-                  "age": 42,
-                  "period": 93
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4000",
-                  "racerName": "松本 博昭",
-                  "class": "A2",
-                  "branch": "広島",
-                  "age": 49,
-                  "period": 84
-                },
-                {
-                  "lane": 4,
-                  "racerId": "3655",
-                  "racerName": "本橋 克洋",
-                  "class": "B1",
-                  "branch": "群馬",
-                  "age": 52,
-                  "period": 72
-                },
-                {
-                  "lane": 5,
-                  "racerId": "3685",
-                  "racerName": "荒井 輝年",
-                  "class": "A2",
-                  "branch": "岡山",
-                  "age": 52,
-                  "period": 73
-                },
-                {
-                  "lane": 6,
-                  "racerId": "5378",
-                  "racerName": "鈴木 結平太",
-                  "class": "B2",
-                  "branch": "静岡",
-                  "age": 22,
-                  "period": 135
-                }
-              ]
-            },
-            {
-              "raceNo": 9,
-              "deadline": "14:52",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "4623",
-                  "racerName": "中北 将史",
-                  "class": "B1",
-                  "branch": "三重",
-                  "age": 41,
-                  "period": 107
-                },
-                {
-                  "lane": 2,
-                  "racerId": "5120",
-                  "racerName": "山本 稔太朗",
-                  "class": "B1",
-                  "branch": "愛知",
-                  "age": 25,
-                  "period": 125
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4179",
-                  "racerName": "広次 修",
-                  "class": "A2",
-                  "branch": "山口",
-                  "age": 43,
-                  "period": 90
-                },
-                {
-                  "lane": 4,
-                  "racerId": "5087",
-                  "racerName": "佐藤 航",
-                  "class": "A1",
-                  "branch": "埼玉",
-                  "age": 26,
-                  "period": 124
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4407",
-                  "racerName": "鹿島 敏弘",
-                  "class": "B1",
-                  "branch": "群馬",
-                  "age": 40,
-                  "period": 99
-                },
-                {
-                  "lane": 6,
-                  "racerId": "4173",
-                  "racerName": "岡谷 健吾",
-                  "class": "B1",
-                  "branch": "広島",
-                  "age": 43,
-                  "period": 90
-                }
-              ]
-            },
-            {
-              "raceNo": 10,
-              "deadline": "15:22",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "4189",
-                  "racerName": "川上 剛",
-                  "class": "A1",
-                  "branch": "福岡",
-                  "age": 45,
-                  "period": 91
-                },
-                {
-                  "lane": 2,
-                  "racerId": "3857",
-                  "racerName": "阿波 勝哉",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 53,
-                  "period": 79
-                },
-                {
-                  "lane": 3,
-                  "racerId": "3956",
-                  "racerName": "横澤 剛治",
-                  "class": "A2",
-                  "branch": "静岡",
-                  "age": 49,
-                  "period": 82
-                },
-                {
-                  "lane": 4,
-                  "racerId": "5071",
-                  "racerName": "野見山 拓己",
-                  "class": "B1",
-                  "branch": "福岡",
-                  "age": 32,
-                  "period": 124
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4258",
-                  "racerName": "関根 彰人",
-                  "class": "B1",
-                  "branch": "埼玉",
-                  "age": 42,
-                  "period": 93
-                },
-                {
-                  "lane": 6,
-                  "racerId": "5315",
-                  "racerName": "浅井 翼",
-                  "class": "B2",
-                  "branch": "埼玉",
-                  "age": 25,
-                  "period": 133
-                }
-              ]
-            },
-            {
-              "raceNo": 11,
-              "deadline": "15:53",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "4418",
-                  "racerName": "茅原 悠紀",
-                  "class": "A1",
-                  "branch": "岡山",
-                  "age": 39,
-                  "period": 99
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4471",
-                  "racerName": "新田 泰章",
-                  "class": "A1",
-                  "branch": "広島",
-                  "age": 39,
-                  "period": 101
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4438",
-                  "racerName": "森作 雄大",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 40,
-                  "period": 100
-                },
-                {
-                  "lane": 4,
-                  "racerId": "4661",
-                  "racerName": "中島 昂章",
-                  "class": "A2",
-                  "branch": "佐賀",
-                  "age": 34,
-                  "period": 108
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4427",
-                  "racerName": "秦 英悟",
-                  "class": "A1",
-                  "branch": "大阪",
-                  "age": 40,
-                  "period": 100
-                },
-                {
-                  "lane": 6,
-                  "racerId": "3944",
-                  "racerName": "山口 裕二",
-                  "class": "A1",
-                  "branch": "長崎",
-                  "age": 47,
-                  "period": 81
-                }
-              ]
-            },
-            {
-              "raceNo": 12,
-              "deadline": "16:25",
-              "boats": [
-                {
-                  "lane": 1,
-                  "racerId": "3256",
-                  "racerName": "三角 哲男",
-                  "class": "A1",
-                  "branch": "東京",
-                  "age": 59,
-                  "period": 58
-                },
-                {
-                  "lane": 2,
-                  "racerId": "4604",
-                  "racerName": "岩瀬 裕亮",
-                  "class": "A1",
-                  "branch": "愛知",
-                  "age": 38,
-                  "period": 106
-                },
-                {
-                  "lane": 3,
-                  "racerId": "4598",
-                  "racerName": "加藤 政彦",
-                  "class": "B1",
-                  "branch": "東京",
-                  "age": 42,
-                  "period": 106
-                },
-                {
-                  "lane": 4,
-                  "racerId": "4000",
-                  "racerName": "松本 博昭",
-                  "class": "A2",
-                  "branch": "広島",
-                  "age": 49,
-                  "period": 84
-                },
-                {
-                  "lane": 5,
-                  "racerId": "4452",
-                  "racerName": "松尾 祭",
-                  "class": "A2",
-                  "branch": "香川",
-                  "age": 38,
-                  "period": 100
-                },
-                {
-                  "lane": 6,
-                  "racerId": "4888",
-                  "racerName": "金児 隆太",
-                  "class": "B1",
-                  "branch": "群馬",
-                  "age": 38,
-                  "period": 117
-                }
-              ]
-            }
-          ]
+          "races": []
         },
         {
-          "date": "20260910",
+          "date": "20260911",
           "label": "最終日",
           "day": "最終日",
           "races": []
@@ -7634,28 +6913,28 @@
         "source": "BOAT RACE official resultlist",
         "rows": {
           "1着": [
-            "58%",
-            "8%",
-            "8%",
-            "8%",
-            "16%",
+            "0%",
+            "0%",
+            "0%",
+            "0%",
+            "0%",
             "0%"
           ],
           "2着": [
-            "25%",
-            "33%",
-            "8%",
-            "16%",
-            "8%",
-            "8%"
+            "0%",
+            "0%",
+            "0%",
+            "0%",
+            "0%",
+            "0%"
           ],
           "3着": [
-            "16%",
-            "16%",
-            "25%",
-            "16%",
-            "8%",
-            "16%"
+            "0%",
+            "0%",
+            "0%",
+            "0%",
+            "0%",
+            "0%"
           ]
         },
         "completedRaces": 12
@@ -20478,7 +19757,7 @@
         },
         {
           "raceNo": 8,
-          "deadline": "12:28",
+          "deadline": "12:21",
           "boats": [
             {
               "lane": 1,
@@ -20538,7 +19817,7 @@
         },
         {
           "raceNo": 9,
-          "deadline": "13:01",
+          "deadline": "12:52",
           "boats": [
             {
               "lane": 1,
@@ -20598,7 +19877,7 @@
         },
         {
           "raceNo": 10,
-          "deadline": "13:32",
+          "deadline": "13:23",
           "boats": [
             {
               "lane": 1,
@@ -20658,7 +19937,7 @@
         },
         {
           "raceNo": 11,
-          "deadline": "14:12",
+          "deadline": "13:55",
           "boats": [
             {
               "lane": 1,
@@ -20718,7 +19997,7 @@
         },
         {
           "raceNo": 12,
-          "deadline": "14:51",
+          "deadline": "14:28",
           "boats": [
             {
               "lane": 1,
@@ -23098,7 +22377,7 @@
             },
             {
               "raceNo": 8,
-              "deadline": "12:28",
+              "deadline": "12:21",
               "boats": [
                 {
                   "lane": 1,
@@ -23158,7 +22437,7 @@
             },
             {
               "raceNo": 9,
-              "deadline": "13:01",
+              "deadline": "12:52",
               "boats": [
                 {
                   "lane": 1,
@@ -23218,7 +22497,7 @@
             },
             {
               "raceNo": 10,
-              "deadline": "13:32",
+              "deadline": "13:23",
               "boats": [
                 {
                   "lane": 1,
@@ -23278,7 +22557,7 @@
             },
             {
               "raceNo": 11,
-              "deadline": "14:12",
+              "deadline": "13:55",
               "boats": [
                 {
                   "lane": 1,
@@ -23338,7 +22617,7 @@
             },
             {
               "raceNo": 12,
-              "deadline": "14:51",
+              "deadline": "14:28",
               "boats": [
                 {
                   "lane": 1,
@@ -23415,31 +22694,31 @@
         "source": "BOAT RACE official resultlist",
         "rows": {
           "1着": [
-            "100%",
+            "50%",
             "0%",
-            "0%",
+            "50%",
             "0%",
             "0%",
             "0%"
           ],
           "2着": [
             "0%",
+            "50%",
             "0%",
             "0%",
-            "0%",
-            "100%",
+            "50%",
             "0%"
           ],
           "3着": [
             "0%",
-            "100%",
+            "50%",
             "0%",
-            "0%",
+            "50%",
             "0%",
             "0%"
           ]
         },
-        "completedRaces": 2
+        "completedRaces": 3
       }
     },
     {
@@ -30458,22 +29737,22 @@
           ],
           "2着": [
             "0%",
+            "25%",
             "0%",
-            "0%",
-            "66%",
-            "33%",
+            "50%",
+            "25%",
             "0%"
           ],
           "3着": [
             "0%",
-            "100%",
+            "75%",
             "0%",
             "0%",
-            "0%",
+            "25%",
             "0%"
           ]
         },
-        "completedRaces": 3
+        "completedRaces": 4
       }
     },
     {
