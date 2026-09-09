@@ -6506,6 +6506,149 @@ function renderResultInfo(){
   </div>`;
 }
 
+
+function replayPath(obj, keys){
+  for(const key of keys){
+    const parts=String(key).split(".");
+    let v=obj;
+    for(const p of parts){
+      if(v===undefined || v===null) break;
+      v=v[p];
+    }
+    if(v!==undefined && v!==null && v!=="") return v;
+  }
+  return null;
+}
+
+function replayRoot(race){
+  return race?.replay || race?.replays || race?.video || race?.videos || {};
+}
+
+function normalizeVideoUrl(v){
+  if(!v) return "";
+  const s=String(v).trim();
+  if(!s) return "";
+  let m=s.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+  if(m) return `https://www.youtube.com/embed/${m[1]}`;
+  m=s.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/);
+  if(m) return `https://www.youtube.com/embed/${m[1]}`;
+  if(/^https?:\/\//i.test(s)) return s;
+  if(/^[A-Za-z0-9_-]{6,}$/.test(s)) return `https://www.youtube.com/embed/${s}`;
+  return "";
+}
+
+function replayUrls(race){
+  const root=replayRoot(race);
+  const raceReplay =
+    replayPath(root,["race","raceReplay","raceVideo","resultReplay","replay","race.url","raceReplay.url","videos.race"]) ??
+    firstStat(race,["raceReplayUrl","replayUrl","raceVideoUrl","video.race","replay.race"]);
+  const exhibitionReplay =
+    replayPath(root,["exhibition","exhibitionReplay","startExhibition","exhibitionVideo","startExhibitionVideo","exhibition.url","videos.exhibition"]) ??
+    firstStat(race,["exhibitionReplayUrl","startExhibitionReplayUrl","exhibitionVideoUrl","video.exhibition","replay.exhibition"]);
+  return {
+    race: normalizeVideoUrl(raceReplay),
+    exhibition: normalizeVideoUrl(exhibitionReplay),
+    raceRaw: raceReplay || "",
+    exhibitionRaw: exhibitionReplay || ""
+  };
+}
+
+function externalVideoUrl(embedUrl, rawUrl){
+  if(rawUrl && /^https?:\/\//i.test(String(rawUrl))) return String(rawUrl);
+  const m=String(embedUrl||"").match(/youtube\.com\/embed\/([A-Za-z0-9_-]+)/);
+  if(m) return `https://www.youtube.com/watch?v=${m[1]}`;
+  return embedUrl || "";
+}
+
+function renderReplayVideo(title, embedUrl, rawUrl){
+  const external=externalVideoUrl(embedUrl,rawUrl);
+  if(!embedUrl){
+    return `<div class="replaySection">
+      <div class="replaySectionHead">
+        <div><span class="replayAccent"></span><b>${title}</b></div>
+      </div>
+      <div class="replayEmpty">
+        <strong>${title}はまだ取得されていません</strong>
+        <span>公式動画URL取得後にここへ直接表示します。</span>
+      </div>
+    </div>`;
+  }
+  return `<div class="replaySection">
+    <div class="replaySectionHead">
+      <div><span class="replayAccent"></span><b>${title}</b></div>
+      ${external?`<a href="${esc(external)}" target="_blank" rel="noopener">別画面で開く ↗</a>`:""}
+    </div>
+    <div class="replayVideoFrame">
+      <iframe
+        src="${esc(embedUrl)}"
+        title="${title}"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin">
+      </iframe>
+    </div>
+  </div>`;
+}
+
+function adjacentRaceNo(delta){
+  const m=state.currentMeetingView||state.currentMeeting||{};
+  const races=(m.races||[]).map(r=>Number(r.raceNo)).filter(Number.isFinite).sort((a,b)=>a-b);
+  const current=Number(state.currentRace?.raceNo);
+  if(!current || !races.length) return null;
+  const idx=races.indexOf(current);
+  if(idx<0) return null;
+  const target=races[idx+delta];
+  return Number.isFinite(target)?target:null;
+}
+
+function replayRaceNav(){
+  const prev=adjacentRaceNo(-1);
+  const next=adjacentRaceNo(1);
+  return `<div class="replayRaceNav">
+    <button ${prev?"":'disabled'} onclick="${prev?`openRace(${prev})`:""}">
+      <span>‹</span>${prev?`${prev}R 前のレース`:"前のレースなし"}
+    </button>
+    <button ${next?"":'disabled'} onclick="${next?`openRace(${next})`:""}">
+      ${next?`次のレース ${next}R`:"次のレースなし"}<span>›</span>
+    </button>
+  </div>`;
+}
+
+function renderReplayInfo(){
+  const r=state.currentRace||{};
+  const urls=replayUrls(r);
+  return `<div class="replayInfoPage">
+    <div class="replayPageTitle">
+      <div>
+        <h3>リプレイ</h3>
+        <p>レース動画・展示動画をこのページで直接再生</p>
+      </div>
+      <span>OFFICIAL VIDEO</span>
+    </div>
+
+    <div class="replayRaceStatus">
+      <div>
+        <b>${r.raceNo||"--"}R</b>
+        <strong>${esc(r.title||"レース")}</strong>
+      </div>
+      <small>締切 ${esc(r.deadline||"--:--")}</small>
+    </div>
+
+    ${renderReplayVideo("レースリプレイ",urls.race,urls.raceRaw)}
+    ${renderReplayVideo("展示リプレイ",urls.exhibition,urls.exhibitionRaw)}
+
+    <div class="replayNotice">
+      <b>ご注意</b>
+      <span>動画は公式配信元の埋め込み再生に対応しています。</span>
+      <span>配信元の設定により、サイト内再生できない動画は別画面で開く必要があります。</span>
+      <span>通信環境によって再生開始まで時間がかかる場合があります。</span>
+    </div>
+
+    ${replayRaceNav()}
+  </div>`;
+}
+
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
@@ -6580,7 +6723,15 @@ function showRaceData(type, btn){
     return;
   }
   if(type==="replay"){
-    panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>リプレイ</b><span>レース終了後</span></div><p class="dataPlaceholder">公式リプレイへの導線をここに追加します。</p></div>`;
+    try{
+      panel.innerHTML=renderReplayInfo();
+    }catch(err){
+      console.error("replay render error",err);
+      panel.innerHTML=`<div class="dataSection">
+        <div class="dataSectionHead"><b>リプレイ</b><span>表示準備中</span></div>
+        <p class="dataPlaceholder">リプレイ表示処理を読み込み中です。</p>
+      </div>`;
+    }
     return;
   }
   if(type==="demo"){
@@ -7927,6 +8078,75 @@ document.addEventListener("DOMContentLoaded",()=>{
   .resultPayoutAmount{font-size:9.3px;}
   .resultWeatherTable>div{min-height:63px;}
   .resultWeatherTable strong{font-size:9px;}
+}
+</style>
+
+
+
+<style id="v93-replay">
+.replayInfoPage{width:100%;color:#133b59;}
+.replayPageTitle{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px;
+}
+.replayPageTitle h3{margin:0;color:#0a3455;font-size:20px;font-weight:950;}
+.replayPageTitle p{margin:4px 0 0;color:#748a9b;font-size:9px;font-weight:850;}
+.replayPageTitle>span{
+  padding:5px 8px;border-radius:999px;background:#edf5fa;color:#44708d;
+  font-size:7.5px;font-weight:950;white-space:nowrap;
+}
+.replayRaceStatus{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:10px;padding:9px 11px;border-radius:11px;
+  background:linear-gradient(90deg,#075181,#0782ba,#0d9bc9);color:#fff;
+}
+.replayRaceStatus>div{display:flex;align-items:center;gap:9px;}
+.replayRaceStatus b{font-size:16px;font-weight:950;}
+.replayRaceStatus strong{font-size:10px;font-weight:950;}
+.replayRaceStatus small{font-size:7px;font-weight:850;opacity:.9;}
+.replaySection{
+  width:100%;margin-top:11px;overflow:hidden;
+  border:1.5px solid #a4c7dd;border-radius:13px;background:#fff;
+  box-shadow:0 8px 20px rgba(13,55,88,.05);
+}
+.replaySectionHead{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:9px 11px;background:#fff;
+}
+.replaySectionHead>div{display:flex;align-items:center;gap:8px;}
+.replayAccent{display:block;width:5px;height:24px;border-radius:2px;background:#ff7a23;}
+.replaySectionHead b{color:#0b3555;font-size:13px;font-weight:950;}
+.replaySectionHead a{
+  padding:6px 8px;border:1px solid #0a7cc0;border-radius:7px;
+  color:#0a6ca8;text-decoration:none;font-size:7.4px;font-weight:900;
+}
+.replayVideoFrame{position:relative;width:100%;aspect-ratio:16/9;background:#071827;}
+.replayVideoFrame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.replayEmpty{
+  min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:20px;text-align:center;background:#f6fafc;
+}
+.replayEmpty strong{color:#365b75;font-size:11px;font-weight:950;}
+.replayEmpty span{color:#8296a5;font-size:8px;font-weight:800;}
+.replayNotice{
+  display:flex;flex-direction:column;gap:4px;margin-top:11px;padding:10px 11px;
+  border:1px solid #c6ddea;border-radius:10px;background:#f2f7fa;
+}
+.replayNotice b{color:#245b79;font-size:9px;font-weight:950;}
+.replayNotice span{color:#688094;font-size:7.4px;line-height:1.4;font-weight:800;}
+.replayRaceNav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.replayRaceNav button{
+  min-height:44px;padding:7px 10px;border:1.5px solid #9fc7e0;border-radius:10px;
+  background:#f5faff;color:#0d63a1;font-family:inherit;font-size:9px;font-weight:950;
+}
+.replayRaceNav button:first-child{text-align:left;}
+.replayRaceNav button:last-child{text-align:right;}
+.replayRaceNav button span{font-size:17px;vertical-align:-1px;}
+.replayRaceNav button:disabled{opacity:.42;}
+@media(max-width:430px){
+  .replayPageTitle h3{font-size:19px;}
+  .replaySectionHead b{font-size:12px;}
+  .replaySectionHead a{font-size:7px;}
+  .replayRaceNav button{font-size:8.5px;}
 }
 </style>
 
