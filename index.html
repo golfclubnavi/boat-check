@@ -5265,6 +5265,60 @@ function motorMetric(motor, boat, metric){
   return firstStat(boat,boatAliases[metric]||[]);
 }
 
+
+function motorMoveMetric(motor, boat, move, kind){
+  const moveAliases={
+    escape:["escape","nige","runaway"],
+    sashi:["sashi","insert"],
+    makuri:["makuri","turningAttack"],
+    makuriSashi:["makuriSashi","makurisashi","wrapInsert"]
+  };
+  const moveKeys=moveAliases[move]||[move];
+  const keys=[];
+  for(const mk of moveKeys){
+    if(kind==="count"){
+      keys.push(
+        `kimarite.${mk}.count`,`kimarite.${mk}.num`,`kimarite.${mk}.value`,
+        `winningMoves.${mk}.count`,`winningMoves.${mk}.num`,
+        `moveStats.${mk}.count`,`moveStats.${mk}.num`,
+        `${mk}Count`,`${mk}Wins`,`motor.${mk}Count`,`motorKimarite.${mk}.count`
+      );
+    }else{
+      keys.push(
+        `kimarite.${mk}.rate`,`kimarite.${mk}.winRate`,`kimarite.${mk}.ratio`,
+        `winningMoves.${mk}.rate`,`winningMoves.${mk}.winRate`,
+        `moveStats.${mk}.rate`,`moveStats.${mk}.winRate`,
+        `${mk}Rate`,`${mk}WinRate`,`motor.${mk}Rate`,`motorKimarite.${mk}.rate`
+      );
+    }
+  }
+  let v=motorPath(motor, keys);
+  if(v!==null) return v;
+  const boatKeys=[];
+  for(const mk of moveKeys){
+    if(kind==="count"){
+      boatKeys.push(`motor${mk[0].toUpperCase()+mk.slice(1)}Count`,`${mk}Count`,`${mk}Wins`);
+    }else{
+      boatKeys.push(`motor${mk[0].toUpperCase()+mk.slice(1)}Rate`,`${mk}Rate`,`${mk}WinRate`);
+    }
+  }
+  return firstStat(boat, boatKeys);
+}
+
+function motorMoveCountRate(motor, boat, move){
+  const count=motorMoveMetric(motor, boat, move, "count");
+  const rate=motorMoveMetric(motor, boat, move, "rate");
+  const countTxt=(count===undefined||count===null||count==="") ? "--" : esc(String(count));
+  let rateTxt="--";
+  if(rate!==undefined && rate!==null && rate!==""){
+    const s=String(rate).trim();
+    const clean=s.replace(/[％%]/g,"").replace(/,/g,"");
+    rateTxt = /^-?\d+(?:\.\d+)?$/.test(clean) ? `${Number(clean).toFixed(1)}%` : (s.endsWith('%')||s.endsWith('％') ? esc(s) : `${esc(s)}%`);
+  }
+  if(countTxt==="--" && rateTxt==="--") return "--";
+  return `<span class="motorMoveCombo"><b>${countTxt}</b><small>${rateTxt}</small></span>`;
+}
+
 function motorRecent20(motor, boat){
   const sources=[
     motor?.recent20, motor?.recent20Races, motor?.last20, motor?.history20,
@@ -5364,6 +5418,10 @@ function motorBasicTable(boats, motors){
     {label:"行き足", key:"ikiashi", fmt:v=>normalizeLegRating(v), rank:"desc", leg:true},
     {label:"出足", key:"deashi", fmt:v=>normalizeLegRating(v), rank:"desc", leg:true},
     {label:"回り足", key:"mawari", fmt:v=>normalizeLegRating(v), rank:"desc", leg:true},
+    {label:"逃げ 数/率", custom:(motor,boat)=>motorMoveCountRate(motor,boat,"escape"), rank:null},
+    {label:"差し 数/率", custom:(motor,boat)=>motorMoveCountRate(motor,boat,"sashi"), rank:null},
+    {label:"捲り 数/率", custom:(motor,boat)=>motorMoveCountRate(motor,boat,"makuri"), rank:null},
+    {label:"捲り差し 数/率", custom:(motor,boat)=>motorMoveCountRate(motor,boat,"makuriSashi"), rank:null},
     {label:"中間整備", key:"maintenance", fmt:v=>v===null||v===undefined||v===""?"--":esc(v), rank:null}
   ];
 
@@ -5379,18 +5437,18 @@ function motorBasicTable(boats, motors){
       }).join("")}
     </div>
     ${defs.map(d=>{
-      const vals=boats.map((b,i)=>motorMetric(motors[i],b,d.key));
-      const classes=d.rank?motorRankClasses(vals,d.rank,!!d.leg):vals.map(()=> "");
+      const vals=d.custom ? boats.map((b,i)=>d.custom(motors[i],b,i)) : boats.map((b,i)=>motorMetric(motors[i],b,d.key));
+      const classes=(d.rank && !d.custom)?motorRankClasses(vals,d.rank,!!d.leg):vals.map(()=> "");
       return `<div class="motorBasicRow">
         <div class="motorBasicLabel">${d.label}</div>
-        ${vals.map((v,i)=>`<div class="motorBasicCell ${classes[i]} ${d.leg?"motorLegCell":""}">${d.fmt(v)}</div>`).join("")}
+        ${vals.map((v,i)=>`<div class="motorBasicCell ${classes[i]} ${d.leg?"motorLegCell":""} ${d.custom?"motorComboCell":""}">${d.custom?v:d.fmt(v)}</div>`).join("")}
       </div>`;
     }).join("")}
   </div>`;
 }
 
 function motorHistoryCell(item){
-  if(!item) return `<div class="motorHistCell empty">
+  if(!item) return `<div class="motorHistCell motorHistEmpty">
     <span>${meetCourseBadge(null)}</span><span>--</span><span>--</span><b>--</b>
   </div>`;
 
@@ -6074,6 +6132,27 @@ document.addEventListener("DOMContentLoaded",()=>{
   font-size:15px;
   letter-spacing:.02em;
 }
+.motorComboCell{
+  padding:4px 1px;
+}
+.motorMoveCombo{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  line-height:1.05;
+}
+.motorMoveCombo b{
+  color:#143b59;
+  font-size:9.2px;
+  font-weight:950;
+}
+.motorMoveCombo small{
+  margin-top:3px;
+  color:#6a8396;
+  font-size:7px;
+  font-weight:900;
+}
 
 /* 20-run motor history */
 .motorHistoryWrap{
@@ -6163,6 +6242,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   min-width:0;
+  min-height:38px;
   background:#fff;
   border-right:1px solid #c4d8e5;
 }
@@ -6172,7 +6252,9 @@ document.addEventListener("DOMContentLoaded",()=>{
   align-items:center;
   justify-content:center;
   min-width:0;
+  min-height:38px;
   margin:0!important;
+  padding:0 1px;
   border-right:1px solid #d2e1eb;
   text-align:center;
   font-size:6.8px;
@@ -6185,8 +6267,11 @@ document.addEventListener("DOMContentLoaded",()=>{
   font-size:7.5px;
   color:#143d5b;
 }
-.motorHistCell.empty{
+.motorHistCell.motorHistEmpty{
   background:#f8fafb;
+  color:#95a5b0;
+}
+.motorHistCell.motorHistEmpty>*{
   color:#95a5b0;
 }
 .motorHistCell.motorFinish1{
@@ -6245,6 +6330,8 @@ document.addEventListener("DOMContentLoaded",()=>{
   .motorBasicRow{min-height:39px;}
   .motorBasicLabel{font-size:7.8px;}
   .motorBasicCell{font-size:9.5px;}
+  .motorMoveCombo b{font-size:8.3px;}
+  .motorMoveCombo small{font-size:6.2px;}
   .motorLegCell{font-size:14px;}
   .motorHistoryRow{min-height:36px;}
   .motorHistLabels span{font-size:5.6px;}
