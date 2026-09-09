@@ -1,6 +1,6 @@
 {
   "schemaVersion": "37.0",
-  "updatedAt": "2026-09-09T16:39:59+09:00",
+  "updatedAt": "2026-09-09T17:09:15+09:00",
   "dateJST": "20260909",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -245,7 +245,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 林 美憲",
+              "racerName": "発売終了 林 美憲",
               "class": "A1"
             },
             {
@@ -9636,7 +9636,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 田中 豪",
+              "racerName": "発売終了 田中 豪",
               "class": "A1"
             },
             {
@@ -10255,7 +10255,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 田中 豪",
+                  "racerName": "発売終了 田中 豪",
                   "class": "A1"
                 },
                 {
@@ -19136,7 +19136,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 森永 淳",
+              "racerName": "発売終了 森永 淳",
               "class": "A1"
             },
             {
@@ -22084,7 +22084,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 蒲原 健太",
+              "racerName": "発売終了 蒲原 健太",
               "class": "B1"
             },
             {
@@ -22703,7 +22703,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 蒲原 健太",
+                  "racerName": "発売終了 蒲原 健太",
                   "class": "B1"
                 },
                 {
@@ -24655,7 +24655,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 松田 大志郎",
+              "racerName": "発売終了 松田 大志郎",
               "class": "A1"
             },
             {
