@@ -1,6 +1,6 @@
 {
   "schemaVersion": "37.0",
-  "updatedAt": "2026-09-09T18:08:55+09:00",
+  "updatedAt": "2026-09-09T18:40:58+09:00",
   "dateJST": "20260909",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -413,7 +413,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 伊藤 将吉",
+              "racerName": "発売終了 伊藤 将吉",
               "class": "A2"
             },
             {
@@ -21043,7 +21043,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 上平 真二",
+              "racerName": "発売終了 上平 真二",
               "class": "A1"
             },
             {
@@ -21662,7 +21662,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 上平 真二",
+                  "racerName": "発売終了 上平 真二",
                   "class": "A1"
                 },
                 {
@@ -22935,7 +22935,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 深谷 知博",
+              "racerName": "発売終了 深谷 知博",
               "class": "A1"
             },
             {
