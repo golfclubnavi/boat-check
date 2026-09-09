@@ -1,6 +1,6 @@
 {
   "schemaVersion": "38.0",
-  "updatedAt": "2026-09-10T08:07:40+09:00",
+  "updatedAt": "2026-09-10T08:37:40+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -18480,7 +18480,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 藤森 陸斗",
+              "racerName": "発売終了 藤森 陸斗",
               "class": "A2"
             },
             {
