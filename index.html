@@ -3998,6 +3998,8 @@ let demoBetType="trifecta";
 let demoMethod="normal";
 let demoSelections={first:[],second:[],third:[]};
 let demoBetList=[];
+let demoDraftList=[];
+let demoBetModalOpen=false;
 let demoStake=100;
 let demoPoints=Number(localStorage.getItem("boatCheckDemoPoints")||10000);
 
@@ -6824,18 +6826,61 @@ function demoCurrentOdds(combo){
 function demoAddSelections(){
   const combos=demoBuildCombos();
   if(!combos.length)return;
-  combos.forEach(combo=>{
-    const key=`${demoBetType}:${combo.join("-")}`;
-    if(demoBetList.some(x=>x.key===key))return;
-    demoBetList.push({
-      key,type:demoBetType,combo:[...combo],
-      odds:demoCurrentOdds(combo),
-      stake:demoStake
-    });
+
+  demoDraftList=combos.map(combo=>({
+    key:`${demoBetType}:${combo.join("-")}`,
+    type:demoBetType,
+    combo:[...combo],
+    odds:demoCurrentOdds(combo),
+    stake:demoStake
+  }));
+
+  demoBetModalOpen=true;
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+
+function demoCloseDraftModal(){
+  demoBetModalOpen=false;
+  demoDraftList=[];
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoSetDraftStake(v){
+  let n=Math.floor(Number(v)||0);
+  if(n<1)n=1;
+  if(n>demoPoints)n=demoPoints;
+  demoStake=n;
+  demoDraftList=demoDraftList.map(x=>({...x,stake:n}));
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoDraftTotal(){
+  return demoDraftList.reduce((sum,x)=>sum+(Number(x.stake)||0),0);
+}
+function demoMergeDraft(){
+  demoDraftList.forEach(item=>{
+    const idx=demoBetList.findIndex(x=>x.key===item.key);
+    if(idx>=0)demoBetList[idx]={...demoBetList[idx],...item};
+    else demoBetList.push({...item});
   });
+}
+function demoDraftContinue(){
+  demoMergeDraft();
+  demoBetModalOpen=false;
+  demoDraftList=[];
+  demoResetSelection();
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner(`<div class="demoSuccess">ベットリストに追加しました。</div>`);
+}
+function demoDraftVote(){
+  demoMergeDraft();
+  demoBetModalOpen=false;
+  demoDraftList=[];
   demoResetSelection();
   const panel=document.getElementById("demoBetRoot");
   if(panel)panel.innerHTML=renderDemoBetInner();
+  demoConfirmBet();
 }
 function demoRemoveBet(key){
   demoBetList=demoBetList.filter(x=>x.key!==key);
@@ -6976,8 +7021,7 @@ function renderDemoNormalBet(){
       ${demoSelectionArea()}
     </div>
     <button class="demoAddBtn" onclick="demoAddSelections()">ベットリストに追加</button>
-  </div>
-  ${renderDemoBetList()}`;
+  </div>`;
 }
 function renderDemoOddsBet(){
   const r=state.currentRace||{};
@@ -6997,19 +7041,82 @@ function renderDemoOddsBet(){
         </button>`;
       }).join(""):`<div class="demoOddsEmpty">この券種のオッズはまだ取得されていません。</div>`}
     </div>
-  </div>
-  ${renderDemoBetList()}`;
+  </div>`;
 }
 function demoAddOddsBet(comboStr){
   const combo=String(comboStr).split("-").map(Number).filter(Boolean);
   if(!combo.length)return;
-  const key=`${demoBetType}:${combo.join("-")}`;
-  if(!demoBetList.some(x=>x.key===key)){
-    demoBetList.push({key,type:demoBetType,combo,odds:demoCurrentOdds(combo),stake:demoStake});
-  }
+  demoDraftList=[{
+    key:`${demoBetType}:${combo.join("-")}`,
+    type:demoBetType,
+    combo,
+    odds:demoCurrentOdds(combo),
+    stake:demoStake
+  }];
+  demoBetModalOpen=true;
   const panel=document.getElementById("demoBetRoot");
   if(panel)panel.innerHTML=renderDemoBetInner();
 }
+
+function demoVenueLabel(){
+  const m=state.currentMeetingView||state.currentMeeting||{};
+  return m.name || m.venueName || VENUES.find(v=>v.code===state.currentVenue)?.name || "--";
+}
+function renderDemoDraftModal(){
+  if(!demoBetModalOpen)return "";
+  const r=state.currentRace||{};
+  const total=demoDraftTotal();
+
+  return `<div class="demoModalBackdrop">
+    <div class="demoDraftModal" role="dialog" aria-modal="true" aria-label="ベットリスト追加">
+      <div class="demoDraftHead">
+        <b>ベットリスト追加</b>
+        <button onclick="demoCloseDraftModal()">×</button>
+      </div>
+
+      <div class="demoDraftRace">
+        <strong>${esc(demoVenueLabel())} ${r.raceNo||"--"}R</strong>
+        <span>${demoBetLabel(demoBetType)}</span>
+      </div>
+
+      <div class="demoDraftTable">
+        <div class="demoDraftTableHead">
+          <span>勝式</span><span>組番</span><span>オッズ</span>
+        </div>
+        ${demoDraftList.map(x=>`<div class="demoDraftRow">
+          <span>${demoBetLabel(x.type)}</span>
+          <strong>${oddsComboHtml(x.combo)}</strong>
+          <b>${x.odds!==null?oddsFmt(x.odds):"--"}</b>
+        </div>`).join("")}
+      </div>
+
+      <div class="demoDraftStake">
+        <div>
+          <label>購入ポイント</label>
+          <small>1点あたり</small>
+        </div>
+        <div class="demoDraftStakeInput">
+          <input type="number" inputmode="numeric" min="1" max="${demoPoints}" step="1"
+            value="${demoStake}" onchange="demoSetDraftStake(this.value)">
+          <span>pt</span>
+        </div>
+      </div>
+
+      <div class="demoDraftSummary">
+        <span>合計 ${demoDraftList.length}点</span>
+        <strong>${demoFormatPt(total)}</strong>
+      </div>
+
+      <div class="demoDraftActions">
+        <button class="continue" onclick="demoDraftContinue()">ベットリストに追加して<br>入力を続ける</button>
+        <button class="vote" onclick="demoDraftVote()">ベットリストに追加して<br>投票する</button>
+      </div>
+
+      <button class="demoDraftClose" onclick="demoCloseDraftModal()">閉じる</button>
+    </div>
+  </div>`;
+}
+
 function renderDemoBetInner(message=""){
   const r=state.currentRace||{};
   return `<div class="demoBetPage">
@@ -7042,6 +7149,8 @@ function renderDemoBetInner(message=""){
       <b>デモ投票について</b>
       <span>これは仮想ptを使った練習機能です。実際の舟券購入・換金・現金の授受は行いません。</span>
     </div>
+
+    ${renderDemoDraftModal()}
   </div>`;
 }
 
@@ -9150,6 +9259,90 @@ document.addEventListener("DOMContentLoaded",()=>{
   .demoPickButtons.hasAll .demoLaneNumber{
     font-size:14px!important;
   }
+}
+</style>
+
+
+
+<style id="v98-demo-modal-flow">
+.demoBody > .demoBetListBox{display:none!important;}
+
+.demoModalBackdrop{
+  position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
+  padding:18px;background:rgba(5,25,42,.56);backdrop-filter:blur(2px);
+}
+.demoDraftModal{
+  width:min(94vw,430px);max-height:82vh;overflow:auto;border-radius:15px;background:#fff;
+  box-shadow:0 22px 55px rgba(0,0,0,.28);border:1px solid #9fc4da;
+}
+.demoDraftHead{
+  position:sticky;top:0;z-index:2;display:grid;grid-template-columns:1fr 34px;align-items:center;
+  min-height:48px;padding:0 8px 0 14px;background:#fff;border-bottom:2px solid #0a8bc8;
+}
+.demoDraftHead b{text-align:center;color:#0a6fa9;font-size:14px;font-weight:950;}
+.demoDraftHead button{
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;padding:0;border:0;
+  border-radius:50%;background:#edf3f6;color:#6d8190;font-size:20px;line-height:1;font-weight:900;
+}
+.demoDraftRace{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;
+  background:#e8f5fd;border-bottom:1px solid #bcd7e7;
+}
+.demoDraftRace strong{color:#155b84;font-size:11px;font-weight:950;}
+.demoDraftRace span{color:#53758b;font-size:8px;font-weight:900;}
+.demoDraftTable{margin:9px;border:1px solid #a9c9dc;border-radius:8px;overflow:hidden;}
+.demoDraftTableHead,.demoDraftRow{display:grid;grid-template-columns:26% 48% 26%;align-items:center;}
+.demoDraftTableHead{min-height:30px;background:#0a8bc8;color:#fff;}
+.demoDraftTableHead span{
+  display:flex;align-items:center;justify-content:center;height:100%;border-right:1px solid rgba(255,255,255,.35);
+  font-size:7px;font-weight:950;
+}
+.demoDraftRow{min-height:38px;border-bottom:1px solid #cbdde8;}
+.demoDraftRow:last-child{border-bottom:0;}
+.demoDraftRow>span,.demoDraftRow>strong,.demoDraftRow>b{
+  display:flex;align-items:center;justify-content:center;height:100%;padding:5px 3px;border-right:1px solid #cbdde8;text-align:center;
+}
+.demoDraftRow>*:last-child{border-right:0;}
+.demoDraftRow>span{color:#42667d;font-size:7px;font-weight:900;}
+.demoDraftRow>strong{font-size:9px;}
+.demoDraftRow>b{color:#173d5a;font-size:9px;font-weight:950;}
+
+.demoDraftStake{display:grid;grid-template-columns:38% 62%;align-items:center;gap:8px;margin:10px 12px 6px;}
+.demoDraftStake>div:first-child{display:flex;flex-direction:column;}
+.demoDraftStake label{color:#245b79;font-size:9px;font-weight:950;}
+.demoDraftStake small{margin-top:2px;color:#7b8f9e;font-size:7px;font-weight:850;}
+.demoDraftStakeInput{
+  display:grid;grid-template-columns:1fr auto;align-items:center;overflow:hidden;border:2px solid #0a87c6;
+  border-radius:8px;background:#fff;
+}
+.demoDraftStakeInput input{
+  width:100%;min-width:0;height:42px;padding:0 8px;border:0;outline:0;background:#fff;color:#133b59;
+  text-align:right;font-family:inherit;font-size:18px;font-weight:950;
+}
+.demoDraftStakeInput span{padding:0 9px 0 2px;color:#0a6fa9;font-size:9px;font-weight:950;}
+.demoDraftSummary{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 12px 10px;padding:8px 10px;
+  border-radius:8px;background:#f1f7fb;
+}
+.demoDraftSummary span{color:#607b8f;font-size:8px;font-weight:900;}
+.demoDraftSummary strong{color:#075f95;font-size:13px;font-weight:950;}
+.demoDraftActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 12px 9px;}
+.demoDraftActions button{
+  min-height:50px;padding:7px 5px;border-radius:9px;font-family:inherit;font-size:8.5px;line-height:1.3;font-weight:950;
+}
+.demoDraftActions .continue{border:1.5px solid #0a84c4;background:#fff;color:#0872ad;}
+.demoDraftActions .vote{
+  border:1.5px solid #0874b1;background:linear-gradient(135deg,#0872b5,#078fd0);color:#fff;
+}
+.demoDraftClose{
+  display:block;min-width:100px;min-height:34px;margin:0 auto 12px;border:1px solid #a9c7d9;border-radius:7px;
+  background:#fff;color:#58748a;font-family:inherit;font-size:8px;font-weight:900;
+}
+@media(max-width:430px){
+  .demoModalBackdrop{padding:12px;}
+  .demoDraftModal{width:96vw;max-height:84vh;}
+  .demoDraftHead b{font-size:13px;}
+  .demoDraftActions button{font-size:8px;}
 }
 </style>
 
