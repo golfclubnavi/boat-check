@@ -3917,6 +3917,8 @@ let pendingCourseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
 let courseChangeSequence=[];
 let meetSelectedLane=1;
 let beforeSubTab="info";
+let oddsSubTab="trifecta";
+let oddsSortMode="normal";
 
 
 
@@ -5879,6 +5881,299 @@ function renderBeforeInfo(){
   </div>`;
 }
 
+
+function oddsPath(obj, keys){
+  for(const key of keys){
+    const parts=String(key).split(".");
+    let v=obj;
+    for(const p of parts){
+      if(v===undefined || v===null) break;
+      v=v[p];
+    }
+    if(v!==undefined && v!==null && v!=="") return v;
+  }
+  return null;
+}
+
+function oddsRoot(race){
+  return race?.odds || race?.oddsData || race?.bettingOdds || {};
+}
+
+function normalizeOddsEntries(src){
+  if(!src) return [];
+  if(Array.isArray(src)){
+    return src.map(x=>{
+      if(Array.isArray(x)){
+        return {combination:x[0],odds:x[1]};
+      }
+      return x;
+    }).filter(Boolean);
+  }
+  if(typeof src==="object"){
+    return Object.entries(src).map(([k,v])=>{
+      if(v && typeof v==="object" && !Array.isArray(v)){
+        return {combination:k,...v,odds:v.odds??v.value??v.rate};
+      }
+      return {combination:k,odds:v};
+    });
+  }
+  return [];
+}
+
+function oddsEntriesFor(race,type){
+  const root=oddsRoot(race);
+  const aliases={
+    trifecta:["trifecta","3t","sanrentan","tripleExacta","trifectaOdds"],
+    trio:["trio","3f","sanrenpuku","tripleQuinella","trioOdds"],
+    exacta:["exacta","2t","nirentan","exactaOdds"],
+    quinella:["quinella","2f","nirenpuku","quinellaOdds"],
+    wide:["wide","wakuren","kakurenpuku","wideOdds"],
+    win:["win","tansho","single","winOdds"],
+    place:["place","fukusho","placeOdds"]
+  };
+  for(const k of aliases[type]||[type]){
+    const v=oddsPath(root,[k,`odds.${k}`,`data.${k}`]);
+    if(v!==null) return normalizeOddsEntries(v);
+  }
+  return [];
+}
+
+function parseCombo(raw){
+  if(raw===undefined||raw===null) return [];
+  if(Array.isArray(raw)) return raw.map(Number).filter(n=>n>=1&&n<=6);
+  const nums=String(raw).match(/[1-6]/g);
+  return nums ? nums.map(Number) : [];
+}
+
+function oddsNumber(v){
+  const n=parseRankableNumber(v);
+  return n===null?null:n;
+}
+
+function oddsFmt(v){
+  const n=oddsNumber(v);
+  if(n===null) return "--";
+  if(n>=1000) return n.toFixed(0);
+  if(n>=100) return n.toFixed(1);
+  return n.toFixed(1);
+}
+
+function oddsLaneChip(n){
+  n=Number(n);
+  if(!Number.isFinite(n)||n<1||n>6) return `<span class="oddsChip empty">--</span>`;
+  return `<span class="oddsChip lane${n}">${n}</span>`;
+}
+
+function oddsComboHtml(combo,sep="-"){
+  const nums=parseCombo(combo);
+  if(!nums.length) return "--";
+  return nums.map(oddsLaneChip).join(`<span class="oddsSep">${sep}</span>`);
+}
+
+function sortOdds(entries,mode){
+  const arr=[...entries];
+  if(mode==="popular"){
+    arr.sort((a,b)=>{
+      const ao=oddsNumber(a.odds??a.value??a.rate);
+      const bo=oddsNumber(b.odds??b.value??b.rate);
+      if(ao===null && bo===null)return 0;
+      if(ao===null)return 1;
+      if(bo===null)return -1;
+      return ao-bo;
+    });
+  }else if(mode==="high"){
+    arr.sort((a,b)=>{
+      const ao=oddsNumber(a.odds??a.value??a.rate);
+      const bo=oddsNumber(b.odds??b.value??b.rate);
+      if(ao===null && bo===null)return 0;
+      if(ao===null)return 1;
+      if(bo===null)return -1;
+      return bo-ao;
+    });
+  }
+  return arr;
+}
+
+function setOddsSubTab(tab){
+  oddsSubTab=tab;
+  oddsSortMode="normal";
+  const body=document.getElementById("oddsInnerPanel");
+  if(body) body.innerHTML=renderOddsInner();
+  document.querySelectorAll(".oddsSubTabs button").forEach(
+    b=>b.classList.toggle("active",b.dataset.oddsTab===tab)
+  );
+}
+
+function setOddsSort(mode){
+  oddsSortMode=mode;
+  const body=document.getElementById("oddsInnerPanel");
+  if(body) body.innerHTML=renderOddsInner();
+}
+
+function oddsEmpty(text="オッズデータは未取得です"){
+  return `<div class="oddsEmpty"><b>${text}</b><span>公式データ取得後に自動反映します。</span></div>`;
+}
+
+function renderOddsTrifecta(entries){
+  if(!entries.length) return oddsEmpty("3連単オッズは未取得です");
+
+  const groups={1:[],2:[],3:[],4:[],5:[],6:[]};
+  entries.forEach(e=>{
+    const c=parseCombo(e.combination??e.combo??e.number);
+    if(c.length>=3 && groups[c[0]]) groups[c[0]].push({...e,_combo:c});
+  });
+
+  Object.values(groups).forEach(g=>g.sort((a,b)=>{
+    const ac=a._combo,bc=b._combo;
+    return (ac[1]-bc[1]) || (ac[2]-bc[2]);
+  }));
+
+  return `<div class="oddsMainSection">
+    <div class="oddsSectionBar">
+      <b>3連単 オッズ</b>
+      <div class="oddsSort">
+        <button class="${oddsSortMode==="normal"?"active":""}" onclick="setOddsSort('normal')">通常</button>
+        <button class="${oddsSortMode==="popular"?"active":""}" onclick="setOddsSort('popular')">人気順</button>
+      </div>
+    </div>
+    ${oddsSortMode==="normal"
+      ? `<div class="oddsTrifectaGrid">
+          ${[1,2,3,4,5,6].map(first=>`
+            <div class="oddsFirstCard">
+              <div class="oddsFirstHead laneHead${first}"><span>1着</span><b>${first}</b></div>
+              <div class="oddsFirstTable">
+                <div class="oddsFirstTableHead"><span>2着</span><span>3着</span><span>オッズ</span></div>
+                ${(groups[first]||[]).map(e=>`
+                  <div class="oddsFirstRow">
+                    <div>${oddsLaneChip(e._combo[1])}</div>
+                    <div>${oddsLaneChip(e._combo[2])}</div>
+                    <div>${oddsFmt(e.odds??e.value??e.rate)}</div>
+                  </div>`).join("") || `<div class="oddsMiniEmpty">--</div>`}
+              </div>
+            </div>`).join("")}
+        </div>`
+      : renderOddsRankList(sortOdds(entries,"popular"),"人気順",10)
+    }
+    ${renderOddsBestPanels(entries)}
+  </div>`;
+}
+
+function renderOddsRankList(entries,title,limit=10){
+  const arr=entries.slice(0,limit);
+  return `<div class="oddsRankBox">
+    <div class="oddsRankTitle">${title}</div>
+    <div class="oddsRankHead"><span>順位</span><span>組番</span><span>オッズ</span></div>
+    ${arr.map((e,i)=>`
+      <div class="oddsRankRow">
+        <span>${i+1}</span>
+        <div>${oddsComboHtml(e.combination??e.combo??e.number)}</div>
+        <b>${oddsFmt(e.odds??e.value??e.rate)}</b>
+      </div>`).join("") || `<div class="oddsMiniEmpty">--</div>`}
+  </div>`;
+}
+
+function renderOddsBestPanels(entries){
+  if(!entries.length)return "";
+  return `<div class="oddsBestGrid">
+    ${renderOddsRankList(sortOdds(entries,"popular"),"👑 人気順ベスト10",10)}
+    ${renderOddsRankList(sortOdds(entries,"high"),"🎯 高配当ベスト10",10)}
+  </div>`;
+}
+
+function renderOddsSimple(entries,title,comboLen=2){
+  if(!entries.length) return oddsEmpty(`${title}は未取得です`);
+  const sorted=sortOdds(entries,oddsSortMode==="popular"?"popular":"normal");
+  return `<div class="oddsMainSection">
+    <div class="oddsSectionBar">
+      <b>${title}</b>
+      <div class="oddsSort">
+        <button class="${oddsSortMode==="normal"?"active":""}" onclick="setOddsSort('normal')">通常</button>
+        <button class="${oddsSortMode==="popular"?"active":""}" onclick="setOddsSort('popular')">人気順</button>
+      </div>
+    </div>
+    <div class="oddsSimpleTable">
+      <div class="oddsSimpleHead"><span>組番</span><span>オッズ</span></div>
+      ${sorted.map(e=>`
+        <div class="oddsSimpleRow">
+          <div>${oddsComboHtml(e.combination??e.combo??e.number)}</div>
+          <b>${oddsFmt(e.odds??e.value??e.rate)}</b>
+        </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderOddsPairGroup(exacta,quinella){
+  return `<div class="oddsDualGrid">
+    <div>${renderOddsSimple(exacta,"2連単")}</div>
+    <div>${renderOddsSimple(quinella,"2連複")}</div>
+  </div>`;
+}
+
+function renderOddsWinPlace(win,place){
+  const rows=[1,2,3,4,5,6].map(lane=>{
+    const w=win.find(e=>parseCombo(e.combination??e.combo??e.number)[0]===lane);
+    const p=place.find(e=>parseCombo(e.combination??e.combo??e.number)[0]===lane);
+    const pv=p?.odds??p?.value??p?.rate;
+    let placeText="--";
+    if(Array.isArray(pv)) placeText=pv.map(oddsFmt).join(" - ");
+    else if(p?.min!==undefined || p?.max!==undefined) placeText=`${oddsFmt(p.min)} - ${oddsFmt(p.max)}`;
+    else if(typeof pv==="string" && /[-〜~]/.test(pv)) placeText=esc(pv);
+    else if(pv!==undefined) placeText=oddsFmt(pv);
+    return `<div class="oddsWPRow">
+      <div>${oddsLaneChip(lane)}</div>
+      <strong>--</strong>
+      <b>${w?oddsFmt(w.odds??w.value??w.rate):"--"}</b>
+      <b>${placeText}</b>
+    </div>`;
+  }).join("");
+  return `<div class="oddsMainSection">
+    <div class="oddsSectionBar"><b>単勝・複勝</b></div>
+    <div class="oddsWPTable">
+      <div class="oddsWPHead"><span>C</span><span>名称</span><span>単勝</span><span>複勝</span></div>
+      ${rows}
+    </div>
+  </div>`;
+}
+
+function renderOddsInner(){
+  const r=state.currentRace||{};
+  if(oddsSubTab==="trifecta") return renderOddsTrifecta(oddsEntriesFor(r,"trifecta"));
+  if(oddsSubTab==="trio") return renderOddsSimple(oddsEntriesFor(r,"trio"),"3連複");
+  if(oddsSubTab==="pair") return renderOddsPairGroup(oddsEntriesFor(r,"exacta"),oddsEntriesFor(r,"quinella"));
+  if(oddsSubTab==="wide") return renderOddsSimple(oddsEntriesFor(r,"wide"),"拡連複");
+  return renderOddsWinPlace(oddsEntriesFor(r,"win"),oddsEntriesFor(r,"place"));
+}
+
+function renderOddsInfo(){
+  const r=state.currentRace||{};
+  return `<div class="oddsInfoPage">
+    <div class="oddsPageTitle">
+      <div>
+        <h3>オッズ</h3>
+        <p>舟券種別ごとにオッズを見やすく比較</p>
+      </div>
+      <span>未取得は --</span>
+    </div>
+
+    <div class="oddsRaceStatus">
+      <div><b>${r.raceNo||"--"}R</b><span>${meetingGrade(state.currentMeeting||{})}</span><strong>締切 ${esc(r.deadline||"--:--")}</strong></div>
+      <small>最終更新 ${esc(state.updatedAt?formatUpdated(state.updatedAt):"--")}</small>
+    </div>
+
+    <div class="oddsSubTabs">
+      <button data-odds-tab="trifecta" class="${oddsSubTab==="trifecta"?"active":""}" onclick="setOddsSubTab('trifecta')">3連単</button>
+      <button data-odds-tab="trio" class="${oddsSubTab==="trio"?"active":""}" onclick="setOddsSubTab('trio')">3連複</button>
+      <button data-odds-tab="pair" class="${oddsSubTab==="pair"?"active":""}" onclick="setOddsSubTab('pair')">2連単・2連複</button>
+      <button data-odds-tab="wide" class="${oddsSubTab==="wide"?"active":""}" onclick="setOddsSubTab('wide')">拡連複</button>
+      <button data-odds-tab="winplace" class="${oddsSubTab==="winplace"?"active":""}" onclick="setOddsSubTab('winplace')">単勝・複勝</button>
+    </div>
+
+    <div id="oddsInnerPanel">${renderOddsInner()}</div>
+
+    <div class="oddsNote">※ オッズは主催者発表のものと照合してください。</div>
+  </div>`;
+}
+
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
@@ -5924,6 +6219,18 @@ function showRaceData(type, btn){
       panel.innerHTML=`<div class="dataSection">
         <div class="dataSectionHead"><b>直前情報</b><span>表示準備中</span></div>
         <p class="dataPlaceholder">直前情報の表示処理を読み込み中です。</p>
+      </div>`;
+    }
+    return;
+  }
+  if(type==="odds"){
+    try{
+      panel.innerHTML=renderOddsInfo();
+    }catch(err){
+      console.error("odds render error",err);
+      panel.innerHTML=`<div class="dataSection">
+        <div class="dataSectionHead"><b>オッズ</b><span>表示準備中</span></div>
+        <p class="dataPlaceholder">オッズ表示処理を読み込み中です。</p>
       </div>`;
     }
     return;
@@ -6900,6 +7207,198 @@ document.addEventListener("DOMContentLoaded",()=>{
   .startSlitRow>div{font-size:8.3px;}
   .weatherGrid>div{min-height:78px;}
   .weatherGrid strong,.weatherGrid b{font-size:10px;}
+}
+</style>
+
+
+
+<style id="v90-odds">
+.oddsInfoPage{width:100%;color:#133b59;}
+.oddsPageTitle{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px;
+}
+.oddsPageTitle h3{margin:0;color:#0a3455;font-size:20px;font-weight:950;}
+.oddsPageTitle p{margin:4px 0 0;color:#748a9b;font-size:9px;font-weight:850;}
+.oddsPageTitle>span{
+  padding:5px 8px;border-radius:999px;background:#edf5fa;color:#708697;
+  font-size:7.5px;font-weight:900;white-space:nowrap;
+}
+.oddsRaceStatus{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:9px;padding:9px 11px;border-radius:11px;
+  background:linear-gradient(90deg,#075181,#0782ba,#0d9bc9);color:#fff;
+}
+.oddsRaceStatus>div{display:flex;align-items:center;gap:8px;}
+.oddsRaceStatus b{font-size:16px;font-weight:950;}
+.oddsRaceStatus span{font-size:8px;font-weight:900;opacity:.9;}
+.oddsRaceStatus strong{font-size:10px;font-weight:950;}
+.oddsRaceStatus small{font-size:7px;font-weight:850;opacity:.9;}
+
+.oddsSubTabs{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px;
+}
+.oddsSubTabs button{
+  min-height:43px;padding:5px 2px;border:1.5px solid #9fc7e0;border-radius:9px;
+  background:#fff;color:#13527d;font-family:inherit;font-size:9px;line-height:1.12;font-weight:950;
+}
+.oddsSubTabs button.active{
+  border-color:#087cc0;background:linear-gradient(135deg,#0871b5,#079ed1);
+  color:#fff;box-shadow:0 5px 12px rgba(7,126,193,.14);
+}
+
+.oddsMainSection{
+  width:100%;overflow:hidden;border:1.5px solid #91bdd8;border-radius:13px;background:#fff;
+}
+.oddsSectionBar{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 10px;background:linear-gradient(90deg,#074a7c,#087fba,#0a99cd);color:#fff;
+}
+.oddsSectionBar>b{font-size:13px;font-weight:950;}
+.oddsSort{display:flex;gap:4px;}
+.oddsSort button{
+  min-width:52px;height:29px;border:1px solid rgba(255,255,255,.55);border-radius:7px;
+  background:rgba(255,255,255,.1);color:#fff;font-size:7.5px;font-weight:900;
+}
+.oddsSort button.active{background:#fff;color:#0a6fa9;}
+
+.oddsTrifectaGrid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:8px;background:#f7fbfd;
+}
+.oddsFirstCard{
+  overflow:hidden;border:1px solid #a8c8dc;border-radius:9px;background:#fff;
+}
+.oddsFirstHead{
+  display:flex;align-items:center;gap:6px;padding:6px 7px;font-weight:950;
+}
+.oddsFirstHead span{font-size:7px;}
+.oddsFirstHead b{font-size:14px;}
+.oddsFirstTableHead,.oddsFirstRow{
+  display:grid;grid-template-columns:.7fr .7fr 1.15fr;align-items:center;
+}
+.oddsFirstTableHead{
+  min-height:29px;background:#eaf4fb;color:#2a607f;border-bottom:1px solid #bfd5e3;
+}
+.oddsFirstTableHead span{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  border-right:1px solid #c4d9e6;font-size:6.8px;font-weight:950;
+}
+.oddsFirstTableHead span:last-child{border-right:0;}
+.oddsFirstRow{min-height:28px;border-bottom:1px solid #d1e0e9;}
+.oddsFirstRow:last-child{border-bottom:0;}
+.oddsFirstRow>div{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  border-right:1px solid #d1e0e9;font-size:8px;font-weight:900;
+}
+.oddsFirstRow>div:last-child{border-right:0;font-size:8.8px;font-variant-numeric:tabular-nums;}
+
+.oddsChip{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:23px;height:22px;border-radius:4px;font-size:9px;font-weight:950;
+}
+.oddsChip.empty{background:#edf2f5;color:#91a1ad;}
+.oddsSep{display:inline-block;margin:0 3px;color:#698296;font-size:8px;font-weight:900;}
+
+.oddsBestGrid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 8px 8px;background:#f7fbfd;
+}
+.oddsRankBox{
+  overflow:hidden;border:1px solid #a8c8dc;border-radius:9px;background:#fff;
+}
+.oddsRankTitle{
+  padding:7px 8px;background:linear-gradient(90deg,#075181,#0784bc);color:#fff;
+  font-size:9px;font-weight:950;
+}
+.oddsRankHead,.oddsRankRow{
+  display:grid;grid-template-columns:18% 52% 30%;align-items:center;
+}
+.oddsRankHead{
+  min-height:28px;background:#eaf4fb;color:#2a607f;border-bottom:1px solid #c3d8e6;
+}
+.oddsRankHead>*{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  border-right:1px solid #c7dbe7;font-size:6.8px;font-weight:950;
+}
+.oddsRankRow{
+  min-height:29px;border-bottom:1px solid #d1e0e9;
+}
+.oddsRankRow:last-child{border-bottom:0;}
+.oddsRankRow>*{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  border-right:1px solid #d1e0e9;font-size:7.8px;font-weight:900;
+}
+.oddsRankRow>*:last-child{border-right:0;}
+.oddsRankRow b{font-size:8.8px;font-variant-numeric:tabular-nums;}
+
+.oddsSimpleTable{width:100%;}
+.oddsSimpleHead,.oddsSimpleRow{
+  display:grid;grid-template-columns:60% 40%;align-items:center;
+}
+.oddsSimpleHead{
+  min-height:32px;background:#eaf4fb;color:#2a607f;border-bottom:1px solid #bfd5e3;
+}
+.oddsSimpleHead span{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  border-right:1px solid #c4d9e6;font-size:8px;font-weight:950;
+}
+.oddsSimpleRow{
+  min-height:36px;border-bottom:1px solid #d0dfe9;
+}
+.oddsSimpleRow:last-child{border-bottom:0;}
+.oddsSimpleRow>*{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  border-right:1px solid #d0dfe9;font-size:9px;font-weight:900;
+}
+.oddsSimpleRow>*:last-child{border-right:0;}
+.oddsSimpleRow b{font-size:10px;font-variant-numeric:tabular-nums;}
+
+.oddsDualGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.oddsDualGrid .oddsMainSection{height:100%;}
+
+.oddsWPTable{width:100%;}
+.oddsWPHead,.oddsWPRow{
+  display:grid;grid-template-columns:9% 47% 19% 25%;align-items:center;
+}
+.oddsWPHead{
+  min-height:34px;background:#eaf4fb;color:#2a607f;border-bottom:1px solid #bfd5e3;
+}
+.oddsWPHead span,.oddsWPRow>*{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  border-right:1px solid #c6dae7;text-align:center;
+}
+.oddsWPHead span{font-size:8px;font-weight:950;}
+.oddsWPRow{
+  min-height:42px;border-bottom:1px solid #d0dfe9;
+}
+.oddsWPRow:last-child{border-bottom:0;}
+.oddsWPRow strong{font-size:8px;color:#71899b;font-weight:850;}
+.oddsWPRow b{font-size:10px;font-weight:950;font-variant-numeric:tabular-nums;}
+
+.oddsEmpty{
+  min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:18px;text-align:center;background:#fbfdfe;
+}
+.oddsEmpty b{color:#365b75;font-size:11px;font-weight:950;}
+.oddsEmpty span{color:#8397a5;font-size:8px;font-weight:800;}
+.oddsMiniEmpty{padding:13px;text-align:center;color:#8fa1ad;font-size:8px;}
+
+.oddsNote{
+  margin-top:9px;padding:9px 10px;border:1px solid #c8ddea;border-radius:10px;
+  background:#f3f8fb;color:#667f92;font-size:8px;line-height:1.4;font-weight:850;
+}
+
+@media(max-width:430px){
+  .oddsPageTitle h3{font-size:19px;}
+  .oddsSubTabs{gap:4px;}
+  .oddsSubTabs button{font-size:8px;min-height:40px;}
+  .oddsRaceStatus b{font-size:15px;}
+  .oddsRaceStatus strong{font-size:9px;}
+  .oddsTrifectaGrid{gap:5px;padding:6px;}
+  .oddsFirstHead{padding:5px 6px;}
+  .oddsFirstRow{min-height:27px;}
+  .oddsFirstRow>div{font-size:7.3px;}
+  .oddsFirstRow>div:last-child{font-size:8px;}
+  .oddsChip{width:21px;height:20px;font-size:8px;}
+  .oddsBestGrid{gap:6px;padding:0 6px 6px;}
 }
 </style>
 
