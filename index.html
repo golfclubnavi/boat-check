@@ -6248,6 +6248,264 @@ function renderOddsInfo(){
   </div>`;
 }
 
+
+function resultPath(obj, keys){
+  for(const key of keys){
+    const parts=String(key).split(".");
+    let v=obj;
+    for(const p of parts){
+      if(v===undefined || v===null) break;
+      v=v[p];
+    }
+    if(v!==undefined && v!==null && v!=="") return v;
+  }
+  return null;
+}
+
+function resultRoot(race){
+  return race?.result || race?.raceResult || race?.results || {};
+}
+
+function resultEntries(race){
+  const root=resultRoot(race);
+  const sources=[
+    root?.finishers,root?.order,root?.entries,root?.racers,root?.boats,
+    race?.finishers,race?.resultEntries
+  ];
+  for(const s of sources){
+    if(Array.isArray(s)) return s;
+  }
+  if(Array.isArray(root)) return root;
+  return [];
+}
+
+function resultEntryValue(item, keys){
+  return resultPath(item,keys);
+}
+
+function resultRankText(v){
+  if(v===undefined||v===null||v==="") return "--";
+  const s=String(v).trim();
+  if(/^F$/i.test(s)) return "F";
+  if(/^L$/i.test(s)) return "L";
+  if(/^[1-6]$/.test(s)) return s;
+  const n=parseInt(s,10);
+  return Number.isFinite(n)?String(n):esc(s);
+}
+
+function resultTime(v){
+  if(v===undefined||v===null||v==="") return "--";
+  return esc(String(v));
+}
+
+function resultST(v){
+  if(v===undefined||v===null||v==="") return "--";
+  const s=String(v).trim();
+  if(/^F/i.test(s)) return `<span class="resultSTFlag">${esc(s)}</span>`;
+  const n=Number(s);
+  if(Number.isFinite(n)) return n.toFixed(2).replace(/^0/,"");
+  return esc(s);
+}
+
+function resultBoatVisual(lane, move=""){
+  lane=Number(lane)||1;
+  return `<div class="resultBoatVisual lane${lane}">
+    <span class="resultBoatHull"></span>
+    <span class="resultBoatDriver"></span>
+    ${move?`<em>${esc(move)}</em>`:""}
+  </div>`;
+}
+
+function resultFinishRows(race){
+  const boats=(race?.boats||[]).slice(0,6);
+  const entries=resultEntries(race);
+
+  const normalized=[];
+  if(entries.length){
+    entries.forEach((x,i)=>{
+      const lane=Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"])) || Number(x?.lane) || i+1;
+      const rank=resultEntryValue(x,["rank","finish","arrival","place","finishPlace"]);
+      const racerName=resultEntryValue(x,["racerName","name","playerName"]) ||
+        boats.find(b=>Number(b.lane)===lane)?.racerName || "--";
+      const time=resultEntryValue(x,["time","raceTime","finishTime"]);
+      const st=resultEntryValue(x,["st","startTiming","start"]);
+      const move=resultEntryValue(x,["kimarite","winningMove","decision","move"]);
+      normalized.push({lane,rank,racerName,time,st,move});
+    });
+  }else{
+    boats.forEach(b=>{
+      const lane=Number(b.lane)||1;
+      normalized.push({
+        lane,
+        rank:firstStat(b,["result.rank","result.finish","finish","rank"]),
+        racerName:b.racerName||"--",
+        time:firstStat(b,["result.time","raceTime","finishTime"]),
+        st:firstStat(b,["result.st","result.startTiming","st"]),
+        move:firstStat(b,["result.kimarite","result.winningMove","kimarite"])
+      });
+    });
+  }
+
+  normalized.sort((a,b)=>{
+    const ar=/^[1-6]$/.test(String(a.rank||""))?Number(a.rank):99;
+    const br=/^[1-6]$/.test(String(b.rank||""))?Number(b.rank):99;
+    return ar-br;
+  });
+
+  const winnerMove = normalized.find(x=>String(x.rank)==="1")?.move ||
+    resultPath(resultRoot(race),["kimarite","winningMove","decision","move"]) || "";
+
+  return normalized.map(x=>{
+    const rank=resultRankText(x.rank);
+    const isWinner=rank==="1";
+    const isSecond=rank==="2";
+    const rankClass=isWinner?"resultWinner":isSecond?"resultSecond":"";
+    return `<div class="resultFinishRow ${rankClass}">
+      <div class="resultFinishRank">${rank}</div>
+      <div>${oddsLaneChip(x.lane)}</div>
+      <div class="resultRacerName">${formatRacerNameTwoLines(cleanRacerName(x.racerName)||"--")}</div>
+      <div class="resultTime">${resultTime(x.time)}</div>
+      <div class="resultBoatArea">${resultBoatVisual(x.lane,isWinner?winnerMove:"")}</div>
+      <div class="resultST">${resultST(x.st)}</div>
+    </div>`;
+  }).join("");
+}
+
+function payoutSources(race){
+  const root=resultRoot(race);
+  return root?.payouts || root?.refunds || race?.payouts || race?.refunds || {};
+}
+
+function payoutValue(root, keys){
+  return resultPath(root,keys);
+}
+
+function normalizePayoutCombos(v){
+  if(v===undefined||v===null||v==="") return [];
+  if(Array.isArray(v)){
+    return v.map(x=>{
+      if(typeof x==="object") return {
+        combination:x.combination??x.combo??x.number??x.bet,
+        payout:x.payout??x.amount??x.value
+      };
+      return {combination:x,payout:null};
+    });
+  }
+  if(typeof v==="object"){
+    return Object.entries(v).map(([k,val])=>{
+      if(val && typeof val==="object") return {combination:k,payout:val.payout??val.amount??val.value};
+      return {combination:k,payout:val};
+    });
+  }
+  return [{combination:v,payout:null}];
+}
+
+function payoutRow(label, combos){
+  const arr=normalizePayoutCombos(combos);
+  if(!arr.length){
+    return `<div class="resultPayoutRow">
+      <div class="resultPayoutLabel">${label}</div>
+      <div class="resultPayoutCombo">--</div>
+      <div class="resultPayoutAmount">--</div>
+    </div>`;
+  }
+  return arr.map((x,i)=>`<div class="resultPayoutRow">
+    ${i===0?`<div class="resultPayoutLabel" style="grid-row:span ${arr.length}">${label}</div>`:""}
+    <div class="resultPayoutCombo">${oddsComboHtml(x.combination??"",String(label).includes("複")?"=":"-")}</div>
+    <div class="resultPayoutAmount">${x.payout!==undefined&&x.payout!==null&&x.payout!==""?`${esc(x.payout)}円`:"--"}</div>
+  </div>`).join("");
+}
+
+function renderPayouts(race){
+  const p=payoutSources(race);
+  const defs=[
+    ["2連勝単式",payoutValue(p,["exacta","2t","nirentan"])],
+    ["2連勝複式",payoutValue(p,["quinella","2f","nirenpuku"])],
+    ["3連勝単式",payoutValue(p,["trifecta","3t","sanrentan"])],
+    ["3連勝複式",payoutValue(p,["trio","3f","sanrenpuku"])],
+    ["拡大2連勝複式",payoutValue(p,["wide","wakuren","kakurenpuku"])],
+    ["単勝式",payoutValue(p,["win","tansho"])],
+    ["複勝式",payoutValue(p,["place","fukusho"])]
+  ];
+
+  const refund=resultPath(resultRoot(race),["refund","returnedBoat","return","refundBoat"]);
+  const note=resultPath(resultRoot(race),["note","remarks","remark"]);
+
+  return `<div class="resultPayoutTable">
+    ${defs.map(([label,val])=>payoutRow(label,val)).join("")}
+    ${refund!==null?`<div class="resultExtraRow"><span>返還</span><b>${oddsComboHtml(refund)}</b></div>`:""}
+    ${note?`<div class="resultExtraRow"><span>備考</span><b>${esc(note)}</b></div>`:""}
+  </div>`;
+}
+
+function resultWeather(race){
+  const root=resultRoot(race);
+  const w=root?.weather || race?.weather || race?.weatherData || race?.conditions || {};
+  return {
+    weather:resultPath(w,["weather","condition","sky"]) ?? firstStat(race,["weatherName","weather.condition"]),
+    windDir:resultPath(w,["windDirection","windDir","direction"]) ?? firstStat(race,["windDirection","weather.windDirection"]),
+    windSpeed:resultPath(w,["windSpeed","wind","speed"]) ?? firstStat(race,["windSpeed","weather.windSpeed"]),
+    wave:resultPath(w,["waveHeight","wave","waves"]) ?? firstStat(race,["waveHeight","weather.waveHeight"]),
+    air:resultPath(w,["airTemperature","temperature","airTemp"]) ?? firstStat(race,["temperature","airTemperature"]),
+    water:resultPath(w,["waterTemperature","waterTemp"]) ?? firstStat(race,["waterTemperature"])
+  };
+}
+
+function renderResultWeather(race){
+  const w=resultWeather(race);
+  const f=(v,suffix="")=>v===undefined||v===null||v===""?"--":`${esc(v)}${suffix}`;
+  return `<div class="resultWeatherTable">
+    <div><small>天候</small><strong>${w.weather?esc(w.weather):"--"}</strong></div>
+    <div><small>風向</small><strong>${w.windDir?esc(w.windDir):"--"}</strong></div>
+    <div><small>風速</small><strong>${f(w.windSpeed,"m")}</strong></div>
+    <div><small>波高</small><strong>${f(w.wave,"cm")}</strong></div>
+    <div><small>気温</small><strong>${f(w.air,"℃")}</strong></div>
+    <div><small>水温</small><strong>${f(w.water,"℃")}</strong></div>
+  </div>`;
+}
+
+function renderResultInfo(){
+  const r=state.currentRace||{};
+  const root=resultRoot(r);
+  const hasResult=Object.keys(root||{}).length || resultEntries(r).length;
+
+  return `<div class="resultInfoPage">
+    <div class="resultPageTitle">
+      <div>
+        <h3>結果</h3>
+        <p>競争成績・払戻金・気象状況</p>
+      </div>
+      <span>${hasResult?"確定データ":"未取得は --"}</span>
+    </div>
+
+    <div class="resultRaceStatus">
+      <div>
+        <b>${r.raceNo||"--"}R</b>
+        <strong>${esc(r.title||"レース結果")}</strong>
+      </div>
+      <small>締切 ${esc(r.deadline||"--:--")}</small>
+    </div>
+
+    <div class="resultConnectedFrame">
+      <div class="resultSectionBar">競争成績</div>
+      <div class="resultFinishTable">
+        <div class="resultFinishHead">
+          <div>着</div><div>枠</div><div>選手名</div><div>タイム</div><div>レース</div><div>ST</div>
+        </div>
+        ${resultFinishRows(r)}
+      </div>
+
+      <div class="resultSectionBar">払戻金</div>
+      ${renderPayouts(r)}
+
+      <div class="resultSectionBar">気象状況</div>
+      ${renderResultWeather(r)}
+    </div>
+
+    <div class="resultNote">※ 結果・払戻金は主催者発表のものと照合してください。</div>
+  </div>`;
+}
+
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
@@ -6305,6 +6563,18 @@ function showRaceData(type, btn){
       panel.innerHTML=`<div class="dataSection">
         <div class="dataSectionHead"><b>オッズ</b><span>表示準備中</span></div>
         <p class="dataPlaceholder">オッズ表示処理を読み込み中です。</p>
+      </div>`;
+    }
+    return;
+  }
+  if(type==="result"){
+    try{
+      panel.innerHTML=renderResultInfo();
+    }catch(err){
+      console.error("result render error",err);
+      panel.innerHTML=`<div class="dataSection">
+        <div class="dataSectionHead"><b>結果</b><span>表示準備中</span></div>
+        <p class="dataPlaceholder">結果表示処理を読み込み中です。</p>
       </div>`;
     }
     return;
@@ -7514,5 +7784,149 @@ document.addEventListener("DOMContentLoaded",()=>{
 .raceCardPro.raceCancelled .laneMini{opacity:.68;}
 .raceTiming.cancelledTiming b{color:#fff!important;font-size:14px!important;}
 .raceTiming.cancelledTiming small{color:#ffe9ea!important;}
+</style>
+
+
+
+<style id="v92-result">
+.resultInfoPage{width:100%;color:#133b59;}
+.resultPageTitle{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px;
+}
+.resultPageTitle h3{margin:0;color:#0a3455;font-size:20px;font-weight:950;}
+.resultPageTitle p{margin:4px 0 0;color:#748a9b;font-size:9px;font-weight:850;}
+.resultPageTitle>span{
+  padding:5px 8px;border-radius:999px;background:#edf5fa;color:#708697;
+  font-size:7.5px;font-weight:900;white-space:nowrap;
+}
+.resultRaceStatus{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:10px;padding:9px 11px;border-radius:11px;
+  background:linear-gradient(90deg,#075181,#0782ba,#0d9bc9);color:#fff;
+}
+.resultRaceStatus>div{display:flex;align-items:center;gap:8px;}
+.resultRaceStatus b{font-size:16px;font-weight:950;}
+.resultRaceStatus strong{font-size:10px;font-weight:950;}
+.resultRaceStatus small{font-size:7px;font-weight:850;opacity:.9;}
+
+.resultConnectedFrame{
+  width:100%;overflow:hidden;border:1.5px solid #91bdd8;border-radius:13px;
+  background:#fff;box-shadow:0 8px 20px rgba(13,55,88,.05);
+}
+.resultSectionBar{
+  padding:9px 11px;background:linear-gradient(90deg,#074a7c,#087fba,#0a99cd);
+  color:#fff;font-size:13px;font-weight:950;
+  border-top:2px solid #8bb9d5;
+}
+.resultSectionBar:first-child{border-top:0;}
+
+.resultFinishHead,.resultFinishRow{
+  display:grid;grid-template-columns:7% 8% 25% 15% 35% 10%;align-items:stretch;
+}
+.resultFinishHead{
+  min-height:34px;background:#eaf4fb;color:#2a607f;border-bottom:1px solid #bed4e2;
+}
+.resultFinishHead>div{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  border-right:1px solid #c4d9e6;font-size:7.5px;font-weight:950;
+}
+.resultFinishHead>div:last-child{border-right:0;}
+.resultFinishRow{
+  min-height:58px;border-bottom:1px solid #cbdde8;
+}
+.resultFinishRow:last-child{border-bottom:0;}
+.resultFinishRow>div{
+  display:flex;align-items:center;justify-content:center;min-width:0;
+  padding:4px 2px;border-right:1px solid #c7dbe7;text-align:center;
+  font-size:9px;font-weight:900;
+}
+.resultFinishRow>div:last-child{border-right:0;}
+.resultFinishRow.resultWinner{background:#fff3f5;}
+.resultFinishRow.resultSecond{background:#fffbea;}
+.resultFinishRank{font-size:12px!important;font-weight:950!important;}
+.resultRacerName{font-size:9.5px!important;line-height:1.08;}
+.resultTime{font-size:9.5px!important;font-variant-numeric:tabular-nums;}
+.resultST{font-size:10px!important;font-variant-numeric:tabular-nums;}
+.resultSTFlag{color:#e12633!important;font-weight:950!important;}
+
+.resultBoatArea{
+  position:relative!important;overflow:hidden!important;
+  background:repeating-linear-gradient(135deg,#def3fd 0,#def3fd 9px,#eaf8ff 9px,#eaf8ff 18px)!important;
+}
+.resultBoatVisual{
+  position:relative;width:76%;height:32px;border:0!important;background:transparent!important;
+}
+.resultBoatHull{
+  position:absolute;left:12%;right:8%;bottom:6px;height:9px;
+  background:#c7d3da;border-radius:2px 12px 6px 4px;transform:skewX(-12deg);
+}
+.resultBoatDriver{
+  position:absolute;left:36%;bottom:14px;width:18px;height:14px;border-radius:9px 9px 3px 3px;
+  background:currentColor;
+}
+.resultBoatVisual.lane1{color:#d6d9dc;}
+.resultBoatVisual.lane2{color:#2b2f33;}
+.resultBoatVisual.lane3{color:#ef3340;}
+.resultBoatVisual.lane4{color:#2d5bd3;}
+.resultBoatVisual.lane5{color:#f2d900;}
+.resultBoatVisual.lane6{color:#159447;}
+.resultBoatVisual em{
+  position:absolute;right:3px;top:0;padding:3px 5px;border-radius:999px;
+  background:#074f80;color:#fff;font-size:6.7px;font-style:normal;font-weight:950;
+}
+
+.resultPayoutRow{
+  display:grid;grid-template-columns:24% 46% 30%;min-height:39px;
+  border-bottom:1px solid #c8dce7;
+}
+.resultPayoutRow>*{
+  display:flex;align-items:center;justify-content:center;padding:5px 4px;
+  border-right:1px solid #c6dae7;text-align:center;
+}
+.resultPayoutRow>*:last-child{border-right:0;}
+.resultPayoutLabel{
+  background:#fff0dc;color:#5b4a37;font-size:8px;font-weight:950;
+}
+.resultPayoutCombo{font-size:9px;font-weight:900;}
+.resultPayoutAmount{font-size:10px;font-weight:950;font-variant-numeric:tabular-nums;}
+.resultExtraRow{
+  display:grid;grid-template-columns:24% 76%;min-height:38px;border-bottom:1px solid #c8dce7;
+}
+.resultExtraRow span,.resultExtraRow b{
+  display:flex;align-items:center;justify-content:center;padding:5px 4px;
+}
+.resultExtraRow span{
+  background:#eef6fb;border-right:1px solid #c6dae7;color:#245b79;font-size:8px;font-weight:950;
+}
+.resultExtraRow b{font-size:9px;font-weight:950;}
+
+.resultWeatherTable{
+  display:grid;grid-template-columns:repeat(6,1fr);
+}
+.resultWeatherTable>div{
+  min-height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:7px 3px;border-right:1px solid #c6dae7;
+}
+.resultWeatherTable>div:last-child{border-right:0;}
+.resultWeatherTable small{color:#6c8395;font-size:7.3px;font-weight:900;}
+.resultWeatherTable strong{color:#153d5d;font-size:10px;font-weight:950;}
+
+.resultNote{
+  margin-top:9px;padding:9px 10px;border:1px solid #c8ddea;border-radius:10px;
+  background:#f3f8fb;color:#667f92;font-size:8px;line-height:1.4;font-weight:850;
+}
+
+@media(max-width:430px){
+  .resultPageTitle h3{font-size:19px;}
+  .resultFinishRow{min-height:54px;}
+  .resultFinishRow>div{font-size:8.3px;}
+  .resultRacerName{font-size:8.8px!important;}
+  .resultBoatVisual{width:82%;}
+  .resultPayoutRow{min-height:37px;}
+  .resultPayoutLabel{font-size:7.4px;}
+  .resultPayoutAmount{font-size:9.3px;}
+  .resultWeatherTable>div{min-height:63px;}
+  .resultWeatherTable strong{font-size:9px;}
+}
 </style>
 
