@@ -3916,6 +3916,7 @@ let courseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
 let pendingCourseAssignments={1:1,2:2,3:3,4:4,5:5,6:6};
 let courseChangeSequence=[];
 let meetSelectedLane=1;
+let beforeSubTab="info";
 
 
 
@@ -5538,6 +5539,346 @@ function renderMotorInfo(){
   </div>`;
 }
 
+
+function beforeValue(obj, keys){
+  for(const key of keys){
+    const parts=String(key).split(".");
+    let v=obj;
+    for(const p of parts){
+      if(v===undefined || v===null) break;
+      v=v[p];
+    }
+    if(v!==undefined && v!==null && v!=="") return v;
+  }
+  return null;
+}
+
+function beforeDataForBoat(boat, race){
+  const roots=[
+    boat?.before, boat?.beforeData, boat?.exhibition, boat?.exhibitionData,
+    boat?.preRace, boat?.preRaceData, boat?.currentExhibition
+  ];
+  for(const x of roots){
+    if(x && typeof x==="object" && !Array.isArray(x)) return x;
+  }
+
+  const root=race?.beforeData || race?.before || race?.exhibition || race?.exhibitionData || race?.preRaceData || null;
+  if(!root) return {};
+  if(Array.isArray(root)){
+    return root.find(x=>
+      Number(x?.lane||x?.boatNo||x?.frame)===Number(boat?.lane) ||
+      String(x?.racerId||x?.registrationNo||"")===String(boat?.racerId||boat?.registrationNo||"")
+    ) || {};
+  }
+  if(typeof root==="object"){
+    const lane=Number(boat?.lane)||1;
+    const candidates=[
+      root[lane],root[String(lane)],root[`lane${lane}`],root[`boat${lane}`],
+      root.boats?.[lane-1],root.runners?.[lane-1],root.byLane?.[lane],root.byLane?.[String(lane)]
+    ];
+    for(const x of candidates){
+      if(x && typeof x==="object") return x;
+    }
+  }
+  return {};
+}
+
+function beforeMetric(d, boat, key){
+  const aliases={
+    course:["course","entry","courseNo","actualCourse","startCourse"],
+    exhibition:["exhibitionTime","tenjiTime","displayTime","exhibition","time"],
+    st:["st","startTiming","startTime","start"],
+    weight:["weight","bodyWeight","racerWeight"],
+    adjust:["weightAdjustment","adjustWeight","weightAdjust","adjustment"],
+    parts:["partsExchange","partExchange","parts","replacement","exchange"],
+    tilt:["tilt","tiltAngle","tiltValue"],
+    lap:["lapTime","oneLapTime","lap","oneRoundTime"],
+    turn:["turnTime","mawariashiTime","turningTime","cornerTime"],
+    straight:["straightTime","straight","straightRunTime"]
+  };
+  let v=beforeValue(d,aliases[key]||[key]);
+  if(v!==null) return v;
+
+  const boatAliases={
+    course:["before.course","exhibition.course"],
+    exhibition:["exhibitionTime","tenjiTime","before.exhibitionTime","exhibition.time"],
+    st:["exhibitionST","beforeST","before.st","exhibition.st"],
+    weight:["weight","bodyWeight"],
+    adjust:["weightAdjustment","adjustWeight"],
+    parts:["partsExchange","partExchange"],
+    tilt:["tilt","tiltAngle"],
+    lap:["lapTime","oneLapTime"],
+    turn:["turnTime","mawariashiTime"],
+    straight:["straightTime"]
+  };
+  return firstStat(boat,boatAliases[key]||[]);
+}
+
+function beforeRacerHeader(boats){
+  return `<div class="beforeRacerHeader">
+    ${boats.map(b=>{
+      const lane=Number(b.lane)||1;
+      return `<div class="beforeRacer laneBg${lane}">
+        <span class="beforeLane lane${lane}">${lane}</span>
+        <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
+        <small>${esc(b.racerId||b.registrationNo||"----")}</small>
+        <small>${esc(b.class||"--")}</small>
+        <small>${b.period?esc(b.period)+"期":"--期"}</small>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function beforeFmt(v, digits=null, suffix=""){
+  if(v===undefined||v===null||v==="") return "--";
+  if(typeof v==="number" && Number.isFinite(v)){
+    return `${digits!==null?v.toFixed(digits):v}${suffix}`;
+  }
+  const s=String(v).trim();
+  if(!s) return "--";
+  if(digits!==null){
+    const clean=s.replace(/[％%kgＫＧ]/g,"").replace(/,/g,"");
+    if(/^-?\d+(?:\.\d+)?$/.test(clean)) return `${Number(clean).toFixed(digits)}${suffix}`;
+  }
+  return suffix && !s.endsWith(suffix) ? `${esc(s)}${suffix}` : esc(s);
+}
+
+function beforeTilt(v){
+  if(v===undefined||v===null||v==="") return {text:"--",danger:false};
+  const n=parseRankableNumber(v);
+  const text=beforeFmt(v,1);
+  return {text,danger:n!==null && n>=1.5 && n<=3.0};
+}
+
+function beforeCourseChip(v){
+  const n=Number(v);
+  if(!Number.isFinite(n)||n<1||n>6) return `<span class="beforeCourse empty">--</span>`;
+  return `<span class="beforeCourse lane${n}">${n}</span>`;
+}
+
+function beforeTable(boats,data){
+  const rows=[
+    {label:"進入コース",key:"course",fmt:v=>beforeCourseChip(v)},
+    {label:"展示タイム",key:"exhibition",fmt:v=>beforeFmt(v,2)},
+    {label:"ST",key:"st",fmt:v=>beforeFmt(v,2)},
+    {label:"体重",key:"weight",fmt:v=>beforeFmt(v,1,"kg")},
+    {label:"重量調整",key:"adjust",fmt:v=>beforeFmt(v,1,"kg")},
+    {label:"部品交換",key:"parts",fmt:v=>v===null||v===undefined||v===""?"--":esc(v)},
+    {label:"チルト",key:"tilt",tilt:true}
+  ];
+
+  return `<div class="beforeCompareTable">
+    <div class="beforeCompareHead">
+      <div>項目</div>
+      ${boats.map(b=>`<div class="beforeHeadLane laneHead${b.lane}">${b.lane}</div>`).join("")}
+    </div>
+    ${rows.map(row=>{
+      const vals=boats.map((b,i)=>beforeMetric(data[i],b,row.key));
+      return `<div class="beforeCompareRow">
+        <div class="beforeCompareLabel">${row.label}</div>
+        ${vals.map(v=>{
+          if(row.tilt){
+            const t=beforeTilt(v);
+            return `<div class="beforeCompareCell ${t.danger?"tiltDanger":""}">${t.text}</div>`;
+          }
+          return `<div class="beforeCompareCell">${row.fmt(v)}</div>`;
+        }).join("")}
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function beforeRankClasses(values,mode="asc"){
+  const nums=values.map(parseRankableNumber);
+  const valid=[...new Set(nums.filter(v=>v!==null))].sort((a,b)=>mode==="asc"?a-b:b-a);
+  return nums.map(v=>{
+    if(v===null)return "";
+    if(v===valid[0])return "beforeBest1";
+    if(valid.length>1 && v===valid[1])return "beforeBest2";
+    return "";
+  });
+}
+
+function renderOriginalExhibition(boats,data){
+  const defs=[
+    {label:"展示タイム",key:"exhibition",digits:2,mode:"asc"},
+    {label:"一周タイム",key:"lap",digits:2,mode:"asc"},
+    {label:"まわり足タイム",key:"turn",digits:2,mode:"asc"},
+    {label:"直線タイム",key:"straight",digits:2,mode:"asc"},
+    {label:"チルト",key:"tilt",digits:1,mode:null,tilt:true}
+  ];
+  return `<div class="beforeOriginalTable">
+    <div class="beforeOriginalHead">
+      <div>項目</div>
+      ${boats.map(b=>`<div class="beforeHeadLane laneHead${b.lane}">${b.lane}</div>`).join("")}
+    </div>
+    ${defs.map(row=>{
+      const vals=boats.map((b,i)=>beforeMetric(data[i],b,row.key));
+      const cls=row.mode?beforeRankClasses(vals,row.mode):vals.map(()=> "");
+      return `<div class="beforeOriginalRow">
+        <div class="beforeOriginalLabel">${row.label}</div>
+        ${vals.map((v,i)=>{
+          if(row.tilt){
+            const t=beforeTilt(v);
+            return `<div class="beforeOriginalCell ${t.danger?"tiltDanger":""}">${t.text}</div>`;
+          }
+          return `<div class="beforeOriginalCell ${cls[i]}">${beforeFmt(v,row.digits)}</div>`;
+        }).join("")}
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function beforeWeather(race){
+  const root=race?.weather || race?.weatherData || race?.conditions || race?.before?.weather || race?.beforeData?.weather || {};
+  const direction=beforeValue(root,["windDirection","windDir","direction"]) ?? firstStat(race,["windDirection","weather.windDirection"]);
+  const speed=beforeValue(root,["windSpeed","wind","speed"]) ?? firstStat(race,["windSpeed","weather.windSpeed"]);
+  const wave=beforeValue(root,["waveHeight","wave","waves"]) ?? firstStat(race,["waveHeight","weather.waveHeight"]);
+  const weather=beforeValue(root,["weather","condition","sky"]) ?? firstStat(race,["weatherName","weather.condition"]);
+  const air=beforeValue(root,["airTemperature","temperature","airTemp"]) ?? firstStat(race,["temperature","airTemperature"]);
+  const water=beforeValue(root,["waterTemperature","waterTemp"]) ?? firstStat(race,["waterTemperature"]);
+  return {direction,speed,wave,weather,air,water};
+}
+
+function beforeWindArrow(direction){
+  const d=String(direction||"").toUpperCase();
+  const map={N:0,北:0,NE:45,北東:45,E:90,東:90,SE:135,南東:135,S:180,南:180,SW:225,南西:225,W:270,西:270,NW:315,北西:315};
+  let deg=map[d];
+  if(deg===undefined){
+    for(const [k,v] of Object.entries(map)){
+      if(d.includes(k)){deg=v;break;}
+    }
+  }
+  return Number.isFinite(deg)?deg:0;
+}
+
+function renderWeatherPanel(race){
+  const w=beforeWeather(race);
+  const angle=beforeWindArrow(w.direction);
+  const f=(v,suffix="")=>v===undefined||v===null||v===""?"--":`${esc(v)}${suffix}`;
+  return `<div class="beforeWeatherBlock">
+    <div class="beforeSubSectionTitle">水面気象状況</div>
+    <div class="weatherGrid">
+      <div class="weatherWind">
+        <small>風向</small>
+        <div class="windCompass">
+          <span>N</span>
+          <i style="transform:rotate(${angle}deg)">▲</i>
+        </div>
+        <b>${w.direction?esc(w.direction):"--"}</b>
+      </div>
+      <div><small>風速</small><strong>${f(w.speed,"m/s")}</strong></div>
+      <div><small>波高</small><strong>${f(w.wave,"cm")}</strong></div>
+      <div><small>天候</small><strong>${w.weather?esc(w.weather):"--"}</strong></div>
+      <div><small>気温</small><strong>${f(w.air,"℃")}</strong></div>
+      <div><small>水温</small><strong>${f(w.water,"℃")}</strong></div>
+    </div>
+  </div>`;
+}
+
+function renderStartSlit(boats,data){
+  const stVals=boats.map((b,i)=>beforeMetric(data[i],b,"st"));
+  const avgVals=boats.map(b=>firstStat(b,["stats.st.meet","st.meet","meetAvgST","avgST"]));
+  const rankVals=stVals.map((v,i)=>{
+    const n=parseRankableNumber(v);
+    if(n===null)return null;
+    const nums=stVals.map(parseRankableNumber).filter(x=>x!==null).sort((a,b)=>a-b);
+    return nums.indexOf(n)+1;
+  });
+
+  const visualPos=v=>{
+    const n=parseRankableNumber(v);
+    if(n===null)return 50;
+    return Math.max(8,Math.min(88,72-(n*170)));
+  };
+
+  return `<div class="startSlitPanel">
+    <div class="startSlitTable">
+      <div class="startSlitHead">
+        <div>コース</div><div>枠</div><div>今節平均ST<br>スタート順</div><div>スタート展示</div><div>ST</div>
+      </div>
+      ${boats.map((b,i)=>{
+        const course=beforeMetric(data[i],b,"course");
+        const st=stVals[i];
+        const pos=visualPos(st);
+        return `<div class="startSlitRow">
+          <div>${course!==null?esc(course):"--"}</div>
+          <div>${beforeCourseChip(b.lane)}</div>
+          <div class="startAvg"><b>${beforeFmt(avgVals[i],2)}</b><span>${rankVals[i]||"--"}</span></div>
+          <div class="slitTrack">
+            <div class="slitStartLine"></div>
+            <div class="slitBoat lane${b.lane}" style="left:${pos}%">
+              <span>${b.lane}</span>
+            </div>
+          </div>
+          <div class="slitST">${beforeFmt(st,2)}</div>
+        </div>`;
+      }).join("")}
+    </div>
+  </div>`;
+}
+
+function setBeforeSubTab(tab){
+  beforeSubTab=tab;
+  const body=document.getElementById("beforeInnerPanel");
+  if(body) body.innerHTML=renderBeforeInner();
+  document.querySelectorAll(".beforeSubTabs button").forEach(
+    b=>b.classList.toggle("active",b.dataset.beforeTab===tab)
+  );
+}
+
+function renderBeforeInner(){
+  const r=state.currentRace||{};
+  const boats=(r.boats||[]).slice(0,6);
+  if(!boats.length) return `<p class="dataPlaceholder">出走選手データを取得中です。</p>`;
+  const data=boats.map(b=>beforeDataForBoat(b,r));
+
+  if(beforeSubTab==="start"){
+    return `${beforeRacerHeader(boats)}
+      <div class="beforeSectionBlock">
+        <div class="beforeSubSectionTitle">スタート展示</div>
+        ${renderStartSlit(boats,data)}
+      </div>
+      ${renderWeatherPanel(r)}`;
+  }
+
+  if(beforeSubTab==="original"){
+    return `${beforeRacerHeader(boats)}
+      <div class="beforeSectionBlock">
+        <div class="beforeSubSectionTitle">オリジナル展示データ
+          <span class="beforeHighlightLegend"><i></i>1位 <i></i>2位</span>
+        </div>
+        ${renderOriginalExhibition(boats,data)}
+      </div>`;
+  }
+
+  return `${beforeRacerHeader(boats)}
+    <div class="beforeSectionBlock">
+      <div class="beforeSubSectionTitle">直前情報</div>
+      ${beforeTable(boats,data)}
+    </div>`;
+}
+
+function renderBeforeInfo(){
+  return `<div class="beforeInfoPage">
+    <div class="beforePageTitle">
+      <div>
+        <h3>直前情報</h3>
+        <p>展示・スタート・水面状況をレース直前に確認</p>
+      </div>
+      <span>未取得は --</span>
+    </div>
+
+    <div class="beforeSubTabs">
+      <button data-before-tab="info" class="${beforeSubTab==="info"?"active":""}" onclick="setBeforeSubTab('info')">直前情報</button>
+      <button data-before-tab="start" class="${beforeSubTab==="start"?"active":""}" onclick="setBeforeSubTab('start')">スタート展示</button>
+      <button data-before-tab="original" class="${beforeSubTab==="original"?"active":""}" onclick="setBeforeSubTab('original')">オリジナル展示データ</button>
+    </div>
+
+    <div id="beforeInnerPanel">${renderBeforeInner()}</div>
+  </div>`;
+}
+
 function showRaceData(type, btn){
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
@@ -5571,6 +5912,18 @@ function showRaceData(type, btn){
       panel.innerHTML=`<div class="dataSection">
         <div class="dataSectionHead"><b>モーター情報</b><span>表示準備中</span></div>
         <p class="dataPlaceholder">モーター情報の表示処理を読み込み中です。</p>
+      </div>`;
+    }
+    return;
+  }
+  if(type==="before"){
+    try{
+      panel.innerHTML=renderBeforeInfo();
+    }catch(err){
+      console.error("before info render error",err);
+      panel.innerHTML=`<div class="dataSection">
+        <div class="dataSectionHead"><b>直前情報</b><span>表示準備中</span></div>
+        <p class="dataPlaceholder">直前情報の表示処理を読み込み中です。</p>
       </div>`;
     }
     return;
@@ -6337,6 +6690,216 @@ document.addEventListener("DOMContentLoaded",()=>{
   .motorHistLabels span{font-size:5.6px;}
   .motorHistCell>*{font-size:6.2px;}
   .motorHistCell b{font-size:7px;}
+}
+</style>
+
+
+
+<style id="v89-before-info">
+.beforeInfoPage{width:100%;color:#123b5a;}
+.beforePageTitle{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
+  margin-bottom:10px;
+}
+.beforePageTitle h3{margin:0;color:#0a3455;font-size:20px;font-weight:950;}
+.beforePageTitle p{margin:4px 0 0;color:#748a9b;font-size:9px;font-weight:850;}
+.beforePageTitle>span{
+  padding:5px 8px;border-radius:999px;background:#edf5fa;
+  color:#708697;font-size:7.5px;font-weight:900;white-space:nowrap;
+}
+
+.beforeSubTabs{
+  display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:7px;
+  margin-bottom:11px;
+}
+.beforeSubTabs button{
+  min-height:44px;padding:6px 3px;border:1.5px solid #9fc7e0;
+  border-radius:10px;background:#fff;color:#13527d;
+  font-family:inherit;font-size:10px;line-height:1.15;font-weight:950;
+}
+.beforeSubTabs button.active{
+  border-color:#087dc0;background:linear-gradient(135deg,#0872b5,#08a0d4);
+  color:#fff;box-shadow:0 6px 14px rgba(7,125,192,.15);
+}
+
+/* common racer strip */
+.beforeRacerHeader{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  overflow:hidden;border:1.5px solid #8fbad5;border-radius:13px;
+  background:#fff;box-shadow:0 7px 18px rgba(13,55,88,.05);
+}
+.beforeRacer{
+  min-width:0;min-height:112px;padding:8px 3px 9px;
+  text-align:center;border-right:1px solid #b9d3e3;
+}
+.beforeRacer:last-child{border-right:0;}
+.beforeLane{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:29px;height:29px;margin-bottom:6px;border-radius:7px;
+  font-size:13px;font-weight:950;
+}
+.beforeRacer strong{
+  display:block;min-height:35px;color:#143a58;
+  font-size:10.2px;line-height:1.08;font-weight:950;
+}
+.beforeRacer small{
+  display:block;margin-top:3px;color:#607a8e;
+  font-size:7px;line-height:1.14;font-weight:850;
+}
+
+.beforeSectionBlock,.beforeWeatherBlock{
+  width:100%;margin-top:10px;overflow:hidden;
+  border:1.5px solid #91bdd8;border-radius:13px;background:#fff;
+  box-shadow:0 8px 20px rgba(13,55,88,.05);
+}
+.beforeSubSectionTitle{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:9px 11px;background:linear-gradient(90deg,#074a7c,#087eb9,#0c9ed0);
+  color:#fff;font-size:13px;font-weight:950;
+}
+.beforeHighlightLegend{
+  display:flex;align-items:center;gap:4px;font-size:7px;font-weight:850;
+}
+.beforeHighlightLegend i{
+  display:inline-block;width:16px;height:10px;border-radius:3px;background:#ffdce3;
+}
+.beforeHighlightLegend i:nth-of-type(2){background:#fff0a8;}
+
+/* direct before info table */
+.beforeCompareHead,.beforeCompareRow,
+.beforeOriginalHead,.beforeOriginalRow{
+  display:grid;grid-template-columns:17% repeat(6,1fr);
+}
+.beforeCompareHead,.beforeOriginalHead{
+  min-height:43px;border-bottom:1px solid #b9d2e2;
+}
+.beforeCompareHead>div,.beforeOriginalHead>div{
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;border-right:1px solid #b9d2e2;
+  font-size:8.5px;font-weight:950;
+}
+.beforeCompareHead>div:first-child,.beforeOriginalHead>div:first-child{
+  background:#eaf4fb;color:#255b7a;
+}
+.beforeCompareHead>div:last-child,.beforeOriginalHead>div:last-child{border-right:0;}
+.beforeHeadLane.laneHead1{background:#fff;color:#111;}
+.beforeHeadLane.laneHead2{background:#20262c;color:#fff;}
+.beforeHeadLane.laneHead3{background:#ef3340;color:#fff;}
+.beforeHeadLane.laneHead4{background:#2d5bd3;color:#fff;}
+.beforeHeadLane.laneHead5{background:#f2d900;color:#111;}
+.beforeHeadLane.laneHead6{background:#159447;color:#fff;}
+
+.beforeCompareRow,.beforeOriginalRow{
+  min-height:43px;border-bottom:1px solid #c7dbe7;
+}
+.beforeCompareRow:last-child,.beforeOriginalRow:last-child{border-bottom:0;}
+.beforeCompareLabel,.beforeOriginalLabel,
+.beforeCompareCell,.beforeOriginalCell{
+  display:flex;align-items:center;justify-content:center;min-width:0;
+  padding:5px 2px;border-right:1px solid #c4d9e6;text-align:center;
+}
+.beforeCompareLabel,.beforeOriginalLabel{
+  background:#eef6fb;color:#245b79;font-size:8.5px;line-height:1.15;font-weight:950;
+}
+.beforeCompareCell,.beforeOriginalCell{
+  background:#fff;color:#153b59;font-size:10.2px;line-height:1.15;
+  font-weight:950;font-variant-numeric:tabular-nums;
+}
+.beforeCompareRow>*:last-child,.beforeOriginalRow>*:last-child{border-right:0;}
+.beforeCourse{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:25px;height:22px;border-radius:5px;font-size:10px;font-weight:950;
+}
+.beforeCourse.empty{background:#edf2f5;color:#8ea0ad;}
+.tiltDanger{color:#e01e2d!important;font-weight:950!important;}
+.beforeBest1{background:#ffdce3!important;color:#c0273b!important;}
+.beforeBest2{background:#fff0a8!important;color:#765c00!important;}
+
+/* start exhibition slit */
+.startSlitPanel{width:100%;}
+.startSlitHead,.startSlitRow{
+  display:grid;grid-template-columns:8% 8% 18% 54% 12%;
+}
+.startSlitHead{
+  min-height:40px;background:#edf6fb;border-bottom:1px solid #b8d2e2;
+}
+.startSlitHead>div{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  border-right:1px solid #bfd5e3;color:#285e7e;font-size:7.8px;line-height:1.15;font-weight:950;
+}
+.startSlitHead>div:last-child{border-right:0;}
+.startSlitRow{
+  min-height:53px;border-bottom:1px solid #c4d9e6;
+}
+.startSlitRow:last-child{border-bottom:0;}
+.startSlitRow>div{
+  display:flex;align-items:center;justify-content:center;
+  border-right:1px solid #c4d9e6;font-size:9px;font-weight:950;
+}
+.startSlitRow>div:last-child{border-right:0;}
+.startAvg{flex-direction:column;gap:3px;}
+.startAvg b{font-size:9.5px;}
+.startAvg span{color:#71889a;font-size:7px;}
+
+.slitTrack{
+  position:relative!important;overflow:hidden!important;
+  justify-content:flex-start!important;background:
+    repeating-linear-gradient(135deg,#dff3fd 0,#dff3fd 9px,#eaf8ff 9px,#eaf8ff 18px);
+}
+.slitStartLine{
+  position:absolute;top:0;bottom:0;left:72%;
+  width:3px;background:#fff;box-shadow:0 0 0 1px rgba(25,92,137,.08);
+}
+.slitBoat{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:31px;height:20px;border-radius:14px 14px 5px 5px;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  border:1px solid rgba(0,0,0,.12);box-shadow:0 2px 4px rgba(0,0,0,.08);
+}
+.slitBoat span{font-size:8px;font-weight:950;}
+.slitST{font-size:10px!important;font-variant-numeric:tabular-nums;}
+
+/* weather */
+.weatherGrid{
+  display:grid;grid-template-columns:1.1fr repeat(5,1fr);
+}
+.weatherGrid>div{
+  min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:7px 3px;border-right:1px solid #c4d9e6;
+}
+.weatherGrid>div:last-child{border-right:0;}
+.weatherGrid small{color:#6b8395;font-size:7.5px;font-weight:900;}
+.weatherGrid strong,.weatherGrid b{color:#153d5d;font-size:11px;font-weight:950;}
+.windCompass{
+  position:relative;width:41px;height:41px;border:1.5px solid #507fa3;border-radius:50%;
+}
+.windCompass span{
+  position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  color:#365d7b;font-size:7px;font-weight:950;
+}
+.windCompass i{
+  position:absolute;left:50%;top:5px;transform-origin:50% 15px;
+  color:#1476ba;font-size:19px;font-style:normal;
+}
+
+/* original exhibition */
+.beforeOriginalCell{font-size:10.5px;}
+
+@media(max-width:430px){
+  .beforePageTitle h3{font-size:19px;}
+  .beforeSubTabs button{font-size:9px;min-height:42px;}
+  .beforeRacer{min-height:107px;padding:7px 2px 8px;}
+  .beforeRacer strong{font-size:9.4px;min-height:32px;}
+  .beforeRacer small{font-size:6.4px;}
+  .beforeSubSectionTitle{font-size:12px;padding:8px 9px;}
+  .beforeCompareRow,.beforeOriginalRow{min-height:40px;}
+  .beforeCompareLabel,.beforeOriginalLabel{font-size:7.8px;}
+  .beforeCompareCell,.beforeOriginalCell{font-size:9.4px;}
+  .startSlitRow{min-height:50px;}
+  .startSlitHead>div{font-size:7.1px;}
+  .startSlitRow>div{font-size:8.3px;}
+  .weatherGrid>div{min-height:78px;}
+  .weatherGrid strong,.weatherGrid b{font-size:10px;}
 }
 </style>
 
