@@ -1,6 +1,6 @@
 {
   "schemaVersion": "37.0",
-  "updatedAt": "2026-09-09T16:10:08+09:00",
+  "updatedAt": "2026-09-09T16:39:59+09:00",
   "dateJST": "20260909",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -189,7 +189,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 武富 智亮",
+              "racerName": "発売終了 武富 智亮",
               "class": "A2"
             },
             {
@@ -6673,7 +6673,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 長田 頼宗",
+              "racerName": "発売終了 長田 頼宗",
               "class": "A1"
             },
             {
@@ -9585,7 +9585,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 木田 峰由季",
+              "racerName": "発売終了 木田 峰由季",
               "class": "A1"
             },
             {
@@ -10204,7 +10204,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 木田 峰由季",
+                  "racerName": "発売終了 木田 峰由季",
                   "class": "A1"
                 },
                 {
@@ -10960,7 +10960,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 竹下 大樹",
+              "racerName": "発売終了 竹下 大樹",
               "class": "A1"
             },
             {
@@ -14417,7 +14417,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山田 哲也",
+              "racerName": "発売終了 山田 哲也",
               "class": "A1"
             },
             {
@@ -21222,7 +21222,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 田中 信一郎",
+              "racerName": "発売終了 田中 信一郎",
               "class": "A1"
             },
             {
@@ -21842,7 +21842,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 田中 信一郎",
+                  "racerName": "発売終了 田中 信一郎",
                   "class": "A1"
                 },
                 {
@@ -22033,7 +22033,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 佐藤 旭",
+              "racerName": "発売終了 佐藤 旭",
               "class": "B1"
             },
             {
@@ -22652,7 +22652,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 佐藤 旭",
+                  "racerName": "発売終了 佐藤 旭",
                   "class": "B1"
                 },
                 {
@@ -24599,7 +24599,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 河野 大",
+              "racerName": "発売終了 河野 大",
               "class": "A1"
             },
             {
