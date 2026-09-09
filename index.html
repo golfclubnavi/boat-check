@@ -6671,7 +6671,7 @@ function demoBetLabel(type){
   }[type]||type;
 }
 function demoSelectionCount(type){
-  return ["trifecta"].includes(type)?3:["trio","exacta","quinella","wide"].includes(type)?2:1;
+  return ["trifecta","trio"].includes(type)?3:["exacta","quinella","wide"].includes(type)?2:1;
 }
 function demoAllowedMethods(type){
   return demoSelectionCount(type)>=2 ? ["normal","box","formation"] : ["normal"];
@@ -6716,6 +6716,14 @@ function demoToggleLane(group,lane){
   const panel=document.getElementById("demoBetRoot");
   if(panel)panel.innerHTML=renderDemoBetInner();
 }
+function demoSelectAll(group){
+  if(demoMethod!=="formation")return;
+  const current=demoSelections[group]||[];
+  demoSelections[group]=current.length===6 ? [] : [1,2,3,4,5,6];
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+
 function demoSelectionChip(lane){
   return oddsLaneChip(lane);
 }
@@ -6732,15 +6740,22 @@ function demoRacerHeader(){
 }
 function demoLanePicker(group,label){
   const selected=demoSelections[group]||[];
+  const showAll=demoMethod==="formation";
+  const allSelected=selected.length===6;
   return `<div class="demoPickRow">
     <div class="demoPickLabel">${label}</div>
-    <div class="demoPickButtons">
+    <div class="demoPickButtons ${showAll?"hasAll":""}">
       ${[1,2,3,4,5,6].map(lane=>`
         <button type="button" class="demoLanePick lane${lane} ${selected.includes(lane)?"selected":""}"
           onclick="demoToggleLane('${group}',${lane})">
           <span class="demoLaneNumber">${lane}</span>
           ${selected.includes(lane)?'<span class="demoSelectedMark">選択中</span>':""}
         </button>`).join("")}
+      ${showAll?`<button type="button" class="demoLanePick demoAllPick ${allSelected?"selected":""}"
+        onclick="demoSelectAll('${group}')">
+        <span class="demoLaneNumber">全</span>
+        ${allSelected?'<span class="demoSelectedMark">全選択</span>':""}
+      </button>`:""}
     </div>
   </div>`;
 }
@@ -6777,7 +6792,13 @@ function demoBuildCombos(){
       }));
     }else{
       s1.forEach(a=>s2.forEach(b=>s3.forEach(c=>{
-        if(a!==b&&a!==c&&b!==c)combos.push([a,b,c]);
+        if(a===b||a===c||b===c)return;
+        if(demoBetType==="trio"){
+          const combo=[a,b,c].sort((x,y)=>x-y);
+          if(!combos.some(x=>x.join("-")===combo.join("-")))combos.push(combo);
+        }else{
+          combos.push([a,b,c]);
+        }
       })));
     }
   }
@@ -9055,6 +9076,79 @@ document.addEventListener("DOMContentLoaded",()=>{
   }
   .demoBetStakeInput input{
     font-size:9.5px;
+  }
+}
+</style>
+
+
+
+<style id="v97-demo-bet-formation-fix">
+/* フォーメーション時は6艇＋「全」の7列 */
+.demoPickButtons.hasAll{
+  grid-template-columns:repeat(7,1fr)!important;
+  gap:4px!important;
+}
+.demoAllPick{
+  background:#eef6fb!important;
+  color:#0b5f91!important;
+  border-color:#8fb9d1!important;
+}
+.demoAllPick.selected{
+  background:#dff3fc!important;
+  color:#075c8e!important;
+  border-color:#0086c9!important;
+}
+
+/* ベットリスト削除ボタンの×を完全に中央へ */
+.demoBetItem>button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  line-height:1!important;
+  text-align:center!important;
+  font-family:Arial,sans-serif!important;
+}
+.demoBetItem>button::before{
+  content:none!important;
+}
+.demoBetItem>button{
+  font-size:0!important;
+}
+.demoBetItem>button::after{
+  content:"×";
+  display:block;
+  width:100%;
+  text-align:center;
+  font-size:18px;
+  line-height:1;
+  font-weight:900;
+  transform:translateY(-1px);
+}
+
+/* 7列でも数字が潰れない */
+.demoPickButtons.hasAll .demoLanePick{
+  min-width:0!important;
+  padding-left:0!important;
+  padding-right:0!important;
+}
+.demoPickButtons.hasAll .demoLaneNumber{
+  font-size:15px!important;
+}
+.demoPickButtons.hasAll .demoSelectedMark{
+  font-size:5.3px!important;
+}
+
+@media(max-width:430px){
+  .demoPickButtons.hasAll{
+    gap:3px!important;
+    padding:7px 5px!important;
+  }
+  .demoPickButtons.hasAll .demoLanePick{
+    height:48px!important;
+  }
+  .demoPickButtons.hasAll .demoLaneNumber{
+    font-size:14px!important;
   }
 }
 </style>
