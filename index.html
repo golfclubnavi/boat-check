@@ -6539,17 +6539,26 @@ function normalizeVideoUrl(v){
 
 function replayUrls(race){
   const root=replayRoot(race);
+  const officialPage =
+    replayPath(root,["officialPage","boatcast","page","url"]) ??
+    firstStat(race,["officialReplayPage","boatcastReplayUrl","replay.officialPage"]);
+
   const raceReplay =
     replayPath(root,["race","raceReplay","raceVideo","resultReplay","replay","race.url","raceReplay.url","videos.race"]) ??
-    firstStat(race,["raceReplayUrl","replayUrl","raceVideoUrl","video.race","replay.race"]);
+    firstStat(race,["raceReplayUrl","replayUrl","raceVideoUrl","video.race","replay.race"]) ??
+    officialPage;
+
   const exhibitionReplay =
     replayPath(root,["exhibition","exhibitionReplay","startExhibition","exhibitionVideo","startExhibitionVideo","exhibition.url","videos.exhibition"]) ??
     firstStat(race,["exhibitionReplayUrl","startExhibitionReplayUrl","exhibitionVideoUrl","video.exhibition","replay.exhibition"]);
+
   return {
     race: normalizeVideoUrl(raceReplay),
     exhibition: normalizeVideoUrl(exhibitionReplay),
+    official: normalizeVideoUrl(officialPage),
     raceRaw: raceReplay || "",
-    exhibitionRaw: exhibitionReplay || ""
+    exhibitionRaw: exhibitionReplay || "",
+    officialRaw: officialPage || ""
   };
 }
 
@@ -6635,8 +6644,29 @@ function renderReplayInfo(){
       <small>締切 ${esc(r.deadline||"--:--")}</small>
     </div>
 
-    ${renderReplayVideo("レースリプレイ",urls.race,urls.raceRaw)}
-    ${renderReplayVideo("展示リプレイ",urls.exhibition,urls.exhibitionRaw)}
+    ${urls.exhibition
+      ? `${renderReplayVideo("レースリプレイ",urls.race,urls.raceRaw)}
+         ${renderReplayVideo("展示リプレイ",urls.exhibition,urls.exhibitionRaw)}`
+      : urls.official
+        ? `<div class="replaySection">
+            <div class="replaySectionHead">
+              <div><span class="replayAccent"></span><b>レース・展示リプレイ</b></div>
+              <a href="${esc(externalVideoUrl(urls.official,urls.officialRaw))}" target="_blank" rel="noopener">別画面で開く ↗</a>
+            </div>
+            <div class="replayVideoFrame">
+              <iframe
+                src="${esc(urls.official)}"
+                title="BOATCAST公式リプレイ"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+            <div class="replayOfficialHint">公式プレイヤー内で「結果リプレイ / 展示リプレイ」を切り替えられます。</div>
+          </div>`
+        : `${renderReplayVideo("レースリプレイ","","")}
+           ${renderReplayVideo("展示リプレイ","","")}`
+    }
 
     <div class="replayNotice">
       <b>ご注意</b>
@@ -8147,6 +8177,21 @@ document.addEventListener("DOMContentLoaded",()=>{
   .replaySectionHead b{font-size:12px;}
   .replaySectionHead a{font-size:7px;}
   .replayRaceNav button{font-size:8.5px;}
+}
+</style>
+
+
+
+<style id="v94-replay-auto">
+.replayOfficialHint{
+  padding:8px 10px;
+  border-top:1px solid #c8ddea;
+  background:#f6fafc;
+  color:#627e92;
+  font-size:7.5px;
+  line-height:1.4;
+  font-weight:850;
+  text-align:center;
 }
 </style>
 
