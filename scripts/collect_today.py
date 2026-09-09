@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v37 collector
+BOAT CHECK v38 collector
 
 FAST（通常・30分ごと）
 - BOAT RACE公式の当日開催場 + 各場raceindexだけを並列取得
@@ -36,6 +36,7 @@ INDEX_URL = BASE + "/owpc/pc/race/index"
 RACEINDEX_URL = BASE + "/owpc/pc/race/raceindex"
 RACELIST_URL = BASE + "/owpc/pc/race/racelist"
 PROFILE_URL = BASE + "/owpc/pc/data/racersearch/profile"
+BOATCAST_REPLAY_URL = "https://race.boatcast.jp/replay"
 
 VENUES = {
     "01":"桐生","02":"戸田","03":"江戸川","04":"平和島","05":"多摩川","06":"浜名湖",
@@ -45,12 +46,30 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.37; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.38; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
 def compact(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
+
+
+def boatcast_replay_url(code: str, date: str, race_no: int) -> str:
+    # BOATCAST official per-race replay route.
+    # Example format confirmed publicly: ?jo=4&ymd=YYYYMMDD&race=11
+    return f"{BOATCAST_REPLAY_URL}?jo={int(code)}&ymd={date}&race={int(race_no)}"
+
+def attach_replay_urls(code: str, date: str, races: list[dict]) -> None:
+    for race in races:
+        rno = int(race.get("raceNo") or 0)
+        if not rno:
+            continue
+        page = boatcast_replay_url(code, date, rno)
+        replay = race.setdefault("replay", {})
+        replay.setdefault("officialPage", page)
+        # The same official replay page provides both result replay and exhibition replay.
+        # If a future collector finds separate media URLs, those keys can override this fallback.
+        race.setdefault("officialReplayPage", page)
 
 def get_soup(url: str, params: dict, timeout: int = 18) -> BeautifulSoup:
     r = requests.get(url, params=params, headers=HEADERS, timeout=timeout)
@@ -289,6 +308,9 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
     text = compact(soup.get_text(" ", strip=True))
     meeting_status, status_label = detect_meeting_status(text, races)
 
+    if races:
+        attach_replay_urls(code, date, races)
+
     if not races and meeting_status == "open":
         return None
 
@@ -466,7 +488,7 @@ def collect(date: str, out_path: Path, enrich: bool, workers: int) -> dict:
     meetings.sort(key=lambda m:int(m["venueCode"]))
 
     payload = {
-        "schemaVersion":"37.0",
+        "schemaVersion":"38.0",
         "updatedAt":datetime.now(JST).isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
