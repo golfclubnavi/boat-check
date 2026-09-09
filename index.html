@@ -3993,6 +3993,14 @@ let meetSelectedLane=1;
 let beforeSubTab="info";
 let oddsSubTab="trifecta";
 let oddsSortMode="normal";
+let demoMainTab="bet";
+let demoBetType="trifecta";
+let demoMethod="normal";
+let demoSelections={first:[],second:[],third:[]};
+let demoBetList=[];
+let demoStake=100;
+let demoPoints=Number(localStorage.getItem("boatCheckDemoPoints")||10000);
+
 
 
 
@@ -6539,26 +6547,17 @@ function normalizeVideoUrl(v){
 
 function replayUrls(race){
   const root=replayRoot(race);
-  const officialPage =
-    replayPath(root,["officialPage","boatcast","page","url"]) ??
-    firstStat(race,["officialReplayPage","boatcastReplayUrl","replay.officialPage"]);
-
   const raceReplay =
     replayPath(root,["race","raceReplay","raceVideo","resultReplay","replay","race.url","raceReplay.url","videos.race"]) ??
-    firstStat(race,["raceReplayUrl","replayUrl","raceVideoUrl","video.race","replay.race"]) ??
-    officialPage;
-
+    firstStat(race,["raceReplayUrl","replayUrl","raceVideoUrl","video.race","replay.race"]);
   const exhibitionReplay =
     replayPath(root,["exhibition","exhibitionReplay","startExhibition","exhibitionVideo","startExhibitionVideo","exhibition.url","videos.exhibition"]) ??
     firstStat(race,["exhibitionReplayUrl","startExhibitionReplayUrl","exhibitionVideoUrl","video.exhibition","replay.exhibition"]);
-
   return {
     race: normalizeVideoUrl(raceReplay),
     exhibition: normalizeVideoUrl(exhibitionReplay),
-    official: normalizeVideoUrl(officialPage),
     raceRaw: raceReplay || "",
-    exhibitionRaw: exhibitionReplay || "",
-    officialRaw: officialPage || ""
+    exhibitionRaw: exhibitionReplay || ""
   };
 }
 
@@ -6644,29 +6643,8 @@ function renderReplayInfo(){
       <small>締切 ${esc(r.deadline||"--:--")}</small>
     </div>
 
-    ${urls.exhibition
-      ? `${renderReplayVideo("レースリプレイ",urls.race,urls.raceRaw)}
-         ${renderReplayVideo("展示リプレイ",urls.exhibition,urls.exhibitionRaw)}`
-      : urls.official
-        ? `<div class="replaySection">
-            <div class="replaySectionHead">
-              <div><span class="replayAccent"></span><b>レース・展示リプレイ</b></div>
-              <a href="${esc(externalVideoUrl(urls.official,urls.officialRaw))}" target="_blank" rel="noopener">別画面で開く ↗</a>
-            </div>
-            <div class="replayVideoFrame">
-              <iframe
-                src="${esc(urls.official)}"
-                title="BOATCAST公式リプレイ"
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-                referrerpolicy="strict-origin-when-cross-origin"></iframe>
-            </div>
-            <div class="replayOfficialHint">公式プレイヤー内で「結果リプレイ / 展示リプレイ」を切り替えられます。</div>
-          </div>`
-        : `${renderReplayVideo("レースリプレイ","","")}
-           ${renderReplayVideo("展示リプレイ","","")}`
-    }
+    ${renderReplayVideo("レースリプレイ",urls.race,urls.raceRaw)}
+    ${renderReplayVideo("展示リプレイ",urls.exhibition,urls.exhibitionRaw)}
 
     <div class="replayNotice">
       <b>ご注意</b>
@@ -6676,6 +6654,330 @@ function renderReplayInfo(){
     </div>
 
     ${replayRaceNav()}
+  </div>`;
+}
+
+
+function demoSavePoints(){
+  localStorage.setItem("boatCheckDemoPoints",String(Math.max(0,Math.floor(demoPoints))));
+}
+function demoFormatPt(v){
+  return `${Number(v||0).toLocaleString("ja-JP")}pt`;
+}
+function demoBetLabel(type){
+  return {
+    trifecta:"3連単",trio:"3連複",exacta:"2連単",quinella:"2連複",
+    wide:"拡連複",win:"単勝",place:"複勝"
+  }[type]||type;
+}
+function demoSelectionCount(type){
+  return ["trifecta"].includes(type)?3:["trio","exacta","quinella","wide"].includes(type)?2:1;
+}
+function demoAllowedMethods(type){
+  return demoSelectionCount(type)>=2 ? ["normal","box","formation"] : ["normal"];
+}
+function demoMethodLabel(method){
+  return {normal:"通常",box:"ボックス",formation:"フォーメーション"}[method]||method;
+}
+function demoResetSelection(){
+  demoSelections={first:[],second:[],third:[]};
+}
+function setDemoMainTab(tab){
+  demoMainTab=tab;
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function setDemoBetType(type){
+  demoBetType=type;
+  if(!demoAllowedMethods(type).includes(demoMethod))demoMethod="normal";
+  demoResetSelection();
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function setDemoMethod(method){
+  demoMethod=method;
+  demoResetSelection();
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoToggleLane(group,lane){
+  lane=Number(lane);
+  const arr=demoSelections[group]||[];
+  const idx=arr.indexOf(lane);
+
+  if(demoMethod==="normal"){
+    demoSelections[group]=idx>=0?[]:[lane];
+  }else{
+    if(idx>=0)arr.splice(idx,1); else arr.push(lane);
+    arr.sort((a,b)=>a-b);
+    demoSelections[group]=arr;
+  }
+
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoSelectionChip(lane){
+  return oddsLaneChip(lane);
+}
+function demoRacerHeader(){
+  const boats=(state.currentRace?.boats||[]).slice(0,6);
+  return `<div class="demoRacerStrip">
+    ${boats.map(b=>`<div class="demoRacer laneBg${b.lane}">
+      <span class="demoLane lane${b.lane}">${b.lane}</span>
+      <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
+      <small>${esc(b.racerId||b.registrationNo||"----")}</small>
+      <small>${esc(b.class||"--")} / ${b.period?esc(b.period)+"期":"--期"}</small>
+    </div>`).join("")}
+  </div>`;
+}
+function demoLanePicker(group,label){
+  const selected=demoSelections[group]||[];
+  return `<div class="demoPickRow">
+    <div class="demoPickLabel">${label}</div>
+    <div class="demoPickButtons">
+      ${[1,2,3,4,5,6].map(lane=>`
+        <button type="button" class="demoLanePick lane${lane} ${selected.includes(lane)?"selected":""}"
+          onclick="demoToggleLane('${group}',${lane})">${lane}</button>`).join("")}
+    </div>
+  </div>`;
+}
+function demoBuildCombos(){
+  const count=demoSelectionCount(demoBetType);
+  const s1=[...demoSelections.first];
+  const s2=[...demoSelections.second];
+  const s3=[...demoSelections.third];
+  const combos=[];
+
+  if(count===1){
+    s1.forEach(a=>combos.push([a]));
+  }else if(demoMethod==="box"){
+    const base=s1;
+    if(demoBetType==="trifecta"){
+      base.forEach(a=>base.forEach(b=>base.forEach(c=>{
+        if(a!==b&&a!==c&&b!==c)combos.push([a,b,c]);
+      })));
+    }else if(demoBetType==="trio"){
+      for(let i=0;i<base.length;i++)for(let j=i+1;j<base.length;j++)for(let k=j+1;k<base.length;k++)combos.push([base[i],base[j],base[k]]);
+    }else if(["exacta"].includes(demoBetType)){
+      base.forEach(a=>base.forEach(b=>{if(a!==b)combos.push([a,b]);}));
+    }else{
+      for(let i=0;i<base.length;i++)for(let j=i+1;j<base.length;j++)combos.push([base[i],base[j]]);
+    }
+  }else{
+    if(count===2){
+      s1.forEach(a=>s2.forEach(b=>{
+        if(a===b)return;
+        if(["quinella","wide"].includes(demoBetType)){
+          const c=[a,b].sort((x,y)=>x-y);
+          if(!combos.some(x=>x[0]===c[0]&&x[1]===c[1]))combos.push(c);
+        }else combos.push([a,b]);
+      }));
+    }else{
+      s1.forEach(a=>s2.forEach(b=>s3.forEach(c=>{
+        if(a!==b&&a!==c&&b!==c)combos.push([a,b,c]);
+      })));
+    }
+  }
+  return combos;
+}
+function demoCurrentOdds(combo){
+  const r=state.currentRace||{};
+  const typeMap={
+    trifecta:"trifecta",trio:"trio",exacta:"exacta",quinella:"quinella",
+    wide:"wide",win:"win",place:"place"
+  };
+  const entries=oddsEntriesFor(r,typeMap[demoBetType]);
+  const key=combo.join("-");
+  const alt=[...combo].sort((a,b)=>a-b).join("-");
+  const ordered=["trifecta","exacta"].includes(demoBetType);
+  const found=entries.find(e=>{
+    const c=parseCombo(e.combination??e.combo??e.number);
+    if(!c.length)return false;
+    return (ordered?c.join("-"):[...c].sort((a,b)=>a-b).join("-")) === (ordered?key:alt);
+  });
+  return found?oddsNumber(found.odds??found.value??found.rate):null;
+}
+function demoAddSelections(){
+  const combos=demoBuildCombos();
+  if(!combos.length)return;
+  combos.forEach(combo=>{
+    const key=`${demoBetType}:${combo.join("-")}`;
+    if(demoBetList.some(x=>x.key===key))return;
+    demoBetList.push({
+      key,type:demoBetType,combo:[...combo],
+      odds:demoCurrentOdds(combo),
+      stake:demoStake
+    });
+  });
+  demoResetSelection();
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoRemoveBet(key){
+  demoBetList=demoBetList.filter(x=>x.key!==key);
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoSetStake(v){
+  const n=Math.max(100,Math.floor(Number(v)||100));
+  demoStake=n;
+  demoBetList=demoBetList.map(x=>({...x,stake:n}));
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoTotalStake(){
+  return demoBetList.reduce((sum,x)=>sum+(Number(x.stake)||0),0);
+}
+function demoConfirmBet(){
+  const total=demoTotalStake();
+  if(!demoBetList.length||total<=0)return;
+  if(total>demoPoints){
+    alert("所持ptが不足しています。");
+    return;
+  }
+  demoPoints-=total;
+  demoSavePoints();
+
+  const r=state.currentRace||{};
+  const history=JSON.parse(localStorage.getItem("boatCheckDemoHistory")||"[]");
+  history.unshift({
+    at:new Date().toISOString(),
+    venue:state.currentVenue||"",
+    raceNo:r.raceNo||"",
+    date:(state.currentMeetingView||state.currentMeeting||{}).date||"",
+    total,
+    bets:demoBetList
+  });
+  localStorage.setItem("boatCheckDemoHistory",JSON.stringify(history.slice(0,100)));
+  demoBetList=[];
+  demoResetSelection();
+
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner(`<div class="demoSuccess">デモ投票が完了しました。投資 ${demoFormatPt(total)}</div>`);
+}
+function demoBetTypeButtons(){
+  const types=["trifecta","trio","exacta","quinella","wide","win","place"];
+  return `<div class="demoBetTypes">
+    ${types.map(t=>`<button class="${demoBetType===t?"active":""}" onclick="setDemoBetType('${t}')">${demoBetLabel(t)}</button>`).join("")}
+  </div>`;
+}
+function demoMethodButtons(){
+  return `<div class="demoMethods">
+    ${demoAllowedMethods(demoBetType).map(m=>`<button class="${demoMethod===m?"active":""}" onclick="setDemoMethod('${m}')">${demoMethodLabel(m)}</button>`).join("")}
+  </div>`;
+}
+function demoSelectionArea(){
+  const count=demoSelectionCount(demoBetType);
+  if(demoMethod==="box"){
+    return `${demoLanePicker("first","選択艇")}<div class="demoHint">選択した艇の組み合わせを自動で作成します。</div>`;
+  }
+  if(count===1)return demoLanePicker("first","選択");
+  if(count===2)return `${demoLanePicker("first",demoBetType==="exacta"?"1着":"1艇目")}${demoLanePicker("second",demoBetType==="exacta"?"2着":"2艇目")}`;
+  return `${demoLanePicker("first","1着")}${demoLanePicker("second","2着")}${demoLanePicker("third","3着")}`;
+}
+function renderDemoBetList(){
+  const total=demoTotalStake();
+  return `<div class="demoBetListBox">
+    <div class="demoBetListHead">
+      <div><b>ベットリスト</b><span>${demoBetList.length}点</span></div>
+      <strong>${demoFormatPt(total)}</strong>
+    </div>
+    ${demoBetList.length?`
+      <div class="demoBetListRows">
+        ${demoBetList.map(x=>`<div class="demoBetItem">
+          <div>
+            <small>${demoBetLabel(x.type)}</small>
+            <strong>${oddsComboHtml(x.combo)}</strong>
+          </div>
+          <div class="demoBetOdds"><small>オッズ</small><b>${x.odds!==null?oddsFmt(x.odds):"--"}</b></div>
+          <div class="demoBetStake"><small>投資</small><b>${demoFormatPt(x.stake)}</b></div>
+          <button onclick="demoRemoveBet('${x.key}')">×</button>
+        </div>`).join("")}
+      </div>`:`<div class="demoBetListEmpty">選択した買い目を追加するとここに表示されます。</div>`}
+    <div class="demoStakeRow">
+      <label>1点あたり</label>
+      <div class="demoStakeButtons">
+        ${[100,200,500,1000].map(v=>`<button class="${demoStake===v?"active":""}" onclick="demoSetStake(${v})">${v.toLocaleString()}pt</button>`).join("")}
+      </div>
+    </div>
+    <button class="demoConfirmBtn" ${demoBetList.length?"":"disabled"} onclick="demoConfirmBet()">デモ投票を確定</button>
+  </div>`;
+}
+function renderDemoNormalBet(){
+  return `<div class="demoBetCard">
+    <div class="demoCardTitle"><b>買い目を選択</b><span>${demoBetLabel(demoBetType)} / ${demoMethodLabel(demoMethod)}</span></div>
+    ${demoBetTypeButtons()}
+    ${demoMethodButtons()}
+    <div class="demoSelectionPanel">
+      ${demoSelectionArea()}
+    </div>
+    <button class="demoAddBtn" onclick="demoAddSelections()">ベットリストに追加</button>
+  </div>
+  ${renderDemoBetList()}`;
+}
+function renderDemoOddsBet(){
+  const r=state.currentRace||{};
+  const entries=sortOdds(oddsEntriesFor(r,demoBetType),"popular");
+  return `<div class="demoBetCard">
+    <div class="demoCardTitle"><b>オッズから選択</b><span>タップしてベットリストへ追加</span></div>
+    ${demoBetTypeButtons()}
+    <div class="demoOddsGrid">
+      ${entries.length?entries.slice(0,60).map(e=>{
+        const combo=parseCombo(e.combination??e.combo??e.number);
+        const key=`${demoBetType}:${combo.join("-")}`;
+        const exists=demoBetList.some(x=>x.key===key);
+        return `<button class="demoOddsItem ${exists?"selected":""}" onclick="demoAddOddsBet('${combo.join("-")}')">
+          <div>${oddsComboHtml(combo)}</div>
+          <strong>${oddsFmt(e.odds??e.value??e.rate)}</strong>
+          <span>${exists?"追加済":"追加"}</span>
+        </button>`;
+      }).join(""):`<div class="demoOddsEmpty">この券種のオッズはまだ取得されていません。</div>`}
+    </div>
+  </div>
+  ${renderDemoBetList()}`;
+}
+function demoAddOddsBet(comboStr){
+  const combo=String(comboStr).split("-").map(Number).filter(Boolean);
+  if(!combo.length)return;
+  const key=`${demoBetType}:${combo.join("-")}`;
+  if(!demoBetList.some(x=>x.key===key)){
+    demoBetList.push({key,type:demoBetType,combo,odds:demoCurrentOdds(combo),stake:demoStake});
+  }
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function renderDemoBetInner(message=""){
+  const r=state.currentRace||{};
+  return `<div class="demoBetPage">
+    ${message}
+    <div class="demoTop">
+      <div>
+        <h3>デモ投票</h3>
+        <p>実際のお金は使用しません</p>
+      </div>
+      <div class="demoPoints"><small>所持pt</small><b>${demoFormatPt(demoPoints)}</b></div>
+    </div>
+
+    <div class="demoRaceBar">
+      <div><b>${r.raceNo||"--"}R</b><span>${esc(r.title||"レース")}</span></div>
+      <strong>締切 ${esc(r.deadline||"--:--")}</strong>
+    </div>
+
+    <div class="demoMainTabs">
+      <button class="${demoMainTab==="bet"?"active":""}" onclick="setDemoMainTab('bet')">投票</button>
+      <button class="${demoMainTab==="odds"?"active":""}" onclick="setDemoMainTab('odds')">オッズ投票</button>
+    </div>
+
+    ${demoRacerHeader()}
+
+    <div class="demoBody">
+      ${demoMainTab==="bet"?renderDemoNormalBet():renderDemoOddsBet()}
+    </div>
+
+    <div class="demoSafety">
+      <b>デモ投票について</b>
+      <span>これは仮想ptを使った練習機能です。実際の舟券購入・換金・現金の授受は行いません。</span>
+    </div>
   </div>`;
 }
 
@@ -6765,15 +7067,15 @@ function showRaceData(type, btn){
     return;
   }
   if(type==="demo"){
-    panel.innerHTML=`<div class="dataSection demoBetPanel">
-      <div class="dataSectionHead"><b>デモ投票</b><span>仮想投票・実際の購入なし</span></div>
-      <div class="demoBetLead">実際のお金を使わず、買い目を組んで結果を確認できるデモ機能として実装予定です。</div>
-      <div class="demoBetGrid">
-        <div><small>方式</small><strong>3連単 / 3連複など</strong></div>
-        <div><small>投票額</small><strong>仮想金額</strong></div>
-        <div><small>収支</small><strong>デモ結果</strong></div>
-      </div>
-    </div>`;
+    try{
+      panel.innerHTML=`<div id="demoBetRoot">${renderDemoBetInner()}</div>`;
+    }catch(err){
+      console.error("demo bet render error",err);
+      panel.innerHTML=`<div class="dataSection">
+        <div class="dataSectionHead"><b>デモ投票</b><span>表示準備中</span></div>
+        <p class="dataPlaceholder">デモ投票画面を読み込み中です。</p>
+      </div>`;
+    }
     return;
   }
 
@@ -8182,16 +8484,196 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 
 
-<style id="v94-replay-auto">
-.replayOfficialHint{
-  padding:8px 10px;
-  border-top:1px solid #c8ddea;
-  background:#f6fafc;
-  color:#627e92;
-  font-size:7.5px;
-  line-height:1.4;
-  font-weight:850;
-  text-align:center;
+<style id="v94-demo-bet">
+.demoBetPage{width:100%;color:#123b59;}
+.demoTop{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:9px;
+}
+.demoTop h3{margin:0;color:#0a3455;font-size:20px;font-weight:950;}
+.demoTop p{margin:4px 0 0;color:#748a9b;font-size:9px;font-weight:850;}
+.demoPoints{
+  min-width:112px;padding:7px 10px;border:1.5px solid #9fc7e0;border-radius:11px;
+  background:#f5fbff;text-align:right;
+}
+.demoPoints small{display:block;color:#6a8295;font-size:7px;font-weight:900;}
+.demoPoints b{display:block;margin-top:2px;color:#0875b6;font-size:15px;font-weight:950;}
+
+.demoRaceBar{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:9px;padding:9px 11px;border-radius:11px;
+  background:linear-gradient(90deg,#075181,#0782ba,#0d9bc9);color:#fff;
+}
+.demoRaceBar>div{display:flex;align-items:center;gap:8px;}
+.demoRaceBar b{font-size:16px;font-weight:950;}
+.demoRaceBar span{font-size:9px;font-weight:900;}
+.demoRaceBar strong{font-size:8px;font-weight:900;}
+
+.demoMainTabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px;
+}
+.demoMainTabs button{
+  min-height:45px;border:1.5px solid #96c2dc;border-radius:11px;
+  background:#fff;color:#15567f;font-family:inherit;font-size:11px;font-weight:950;
+}
+.demoMainTabs button.active{
+  border-color:#087dc0;background:linear-gradient(135deg,#0872b5,#079fd1);color:#fff;
+  box-shadow:0 6px 15px rgba(7,125,192,.16);
+}
+
+.demoRacerStrip{
+  display:grid;grid-template-columns:repeat(6,1fr);overflow:hidden;
+  border:1.5px solid #8fbad5;border-radius:13px;background:#fff;
+}
+.demoRacer{
+  min-width:0;min-height:104px;padding:7px 2px 8px;
+  text-align:center;border-right:1px solid #b9d3e3;
+}
+.demoRacer:last-child{border-right:0;}
+.demoLane{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;margin-bottom:5px;border-radius:7px;font-size:13px;font-weight:950;
+}
+.demoRacer strong{
+  display:block;min-height:33px;color:#143a58;font-size:9.5px;line-height:1.08;font-weight:950;
+}
+.demoRacer small{
+  display:block;margin-top:3px;color:#607a8e;font-size:6.3px;line-height:1.14;font-weight:850;
+}
+
+.demoBody{margin-top:10px;}
+.demoBetCard,.demoBetListBox{
+  overflow:hidden;border:1.5px solid #9fc3d9;border-radius:13px;background:#fff;
+  box-shadow:0 7px 18px rgba(13,55,88,.05);
+}
+.demoBetListBox{margin-top:10px;}
+.demoCardTitle,.demoBetListHead{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:9px 10px;background:linear-gradient(90deg,#074b7d,#087fba,#0a9bce);color:#fff;
+}
+.demoCardTitle b,.demoBetListHead b{font-size:12px;font-weight:950;}
+.demoCardTitle span,.demoBetListHead span{font-size:7px;font-weight:850;opacity:.9;}
+.demoBetListHead>div{display:flex;align-items:center;gap:7px;}
+.demoBetListHead strong{font-size:12px;font-weight:950;}
+
+.demoBetTypes{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:8px;background:#f7fbfd;
+}
+.demoBetTypes button,.demoMethods button{
+  min-height:35px;border:1px solid #bad4e4;border-radius:8px;
+  background:#fff;color:#245b7a;font-family:inherit;font-size:8px;font-weight:950;
+}
+.demoBetTypes button.active,.demoMethods button.active{
+  border-color:#0a7dc0;background:#e7f5fd;color:#0871ad;
+  box-shadow:inset 0 0 0 1px #0a7dc0;
+}
+.demoMethods{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:0 8px 8px;background:#f7fbfd;
+}
+
+.demoSelectionPanel{
+  border-top:1px solid #c7dbe7;background:#fff;
+}
+.demoPickRow{
+  display:grid;grid-template-columns:18% 82%;min-height:55px;border-bottom:1px solid #c8dce7;
+}
+.demoPickLabel{
+  display:flex;align-items:center;justify-content:center;
+  background:#edf6fb;color:#245b79;font-size:9px;font-weight:950;
+  border-right:1px solid #c3d8e6;
+}
+.demoPickButtons{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:5px;padding:8px;
+}
+.demoLanePick{
+  min-width:0;height:38px;border:2px solid transparent;border-radius:8px;
+  font-family:inherit;font-size:13px;font-weight:950;opacity:.72;
+}
+.demoLanePick.selected{
+  opacity:1;transform:translateY(-1px);
+  border-color:#0784c6;box-shadow:0 5px 11px rgba(7,132,198,.18);
+}
+.demoHint{
+  padding:8px;text-align:center;color:#71889a;font-size:7.5px;font-weight:850;
+}
+.demoAddBtn{
+  width:calc(100% - 16px);min-height:43px;margin:8px;border:0;border-radius:10px;
+  background:linear-gradient(135deg,#0872b5,#079fd1);color:#fff;
+  font-family:inherit;font-size:10px;font-weight:950;
+}
+
+.demoBetListRows{background:#fff;}
+.demoBetItem{
+  display:grid;grid-template-columns:43% 18% 27% 12%;align-items:center;
+  min-height:55px;border-bottom:1px solid #cbdde8;
+}
+.demoBetItem>div{padding:5px;text-align:center;}
+.demoBetItem small{display:block;color:#70889a;font-size:6.5px;font-weight:850;}
+.demoBetItem strong{display:flex;align-items:center;justify-content:center;margin-top:4px;}
+.demoBetOdds b,.demoBetStake b{display:block;margin-top:3px;color:#153b59;font-size:9px;font-weight:950;}
+.demoBetItem>button{
+  width:28px;height:28px;margin:auto;border:0;border-radius:50%;
+  background:#edf2f5;color:#6c7f8f;font-size:14px;font-weight:900;
+}
+.demoBetListEmpty{
+  padding:20px;text-align:center;color:#8799a7;font-size:8px;font-weight:800;
+}
+.demoStakeRow{
+  display:flex;align-items:center;gap:8px;padding:8px;border-top:1px solid #cbdde8;background:#f7fbfd;
+}
+.demoStakeRow label{min-width:55px;color:#245b79;font-size:8px;font-weight:950;}
+.demoStakeButtons{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;flex:1;}
+.demoStakeButtons button{
+  min-height:32px;border:1px solid #bdd5e3;border-radius:7px;
+  background:#fff;color:#315f7d;font-size:7.5px;font-weight:900;
+}
+.demoStakeButtons button.active{background:#0a7dc0;color:#fff;border-color:#0a7dc0;}
+.demoConfirmBtn{
+  width:calc(100% - 16px);min-height:45px;margin:8px;border:0;border-radius:10px;
+  background:linear-gradient(135deg,#f28b23,#ef651f);color:#fff;
+  font-family:inherit;font-size:11px;font-weight:950;
+}
+.demoConfirmBtn:disabled{background:#d8e1e7;color:#8b9aa5;}
+
+.demoOddsGrid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px;background:#f7fbfd;
+}
+.demoOddsItem{
+  min-height:68px;padding:7px 4px;border:1px solid #bad4e4;border-radius:9px;
+  background:#fff;font-family:inherit;text-align:center;
+}
+.demoOddsItem>div{display:flex;align-items:center;justify-content:center;min-height:24px;}
+.demoOddsItem strong{display:block;margin-top:4px;color:#163d5b;font-size:10px;font-weight:950;}
+.demoOddsItem span{display:block;margin-top:3px;color:#7b8f9e;font-size:6px;font-weight:850;}
+.demoOddsItem.selected{
+  border-color:#0784c6;background:#e9f7ff;box-shadow:inset 0 0 0 1px #0784c6;
+}
+.demoOddsEmpty{
+  grid-column:1/-1;padding:24px;text-align:center;color:#8497a5;font-size:8px;font-weight:850;
+}
+
+.demoSafety{
+  display:flex;flex-direction:column;gap:4px;margin-top:10px;padding:9px 10px;
+  border:1px solid #c8ddea;border-radius:10px;background:#f4f8fb;
+}
+.demoSafety b{color:#245b79;font-size:8.5px;font-weight:950;}
+.demoSafety span{color:#6e8495;font-size:7.3px;line-height:1.45;font-weight:800;}
+.demoSuccess{
+  margin-bottom:9px;padding:10px;border:1px solid #9fd6b4;border-radius:10px;
+  background:#ecfaf1;color:#237749;font-size:9px;font-weight:950;text-align:center;
+}
+
+@media(max-width:430px){
+  .demoTop h3{font-size:19px;}
+  .demoPoints{min-width:105px;}
+  .demoPoints b{font-size:14px;}
+  .demoRacer{min-height:100px;}
+  .demoRacer strong{font-size:8.9px;min-height:31px;}
+  .demoBetTypes{grid-template-columns:repeat(4,1fr);}
+  .demoBetTypes button{font-size:7.4px;}
+  .demoPickButtons{gap:4px;padding:7px;}
+  .demoLanePick{height:36px;font-size:12px;}
+  .demoOddsGrid{gap:5px;padding:7px;}
+  .demoOddsItem{min-height:64px;}
 }
 </style>
 
