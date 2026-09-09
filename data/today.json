@@ -1,6 +1,6 @@
 {
   "schemaVersion": "37.0",
-  "updatedAt": "2026-09-09T15:43:16+09:00",
+  "updatedAt": "2026-09-09T16:10:08+09:00",
   "dateJST": "20260909",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -133,7 +133,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 齋藤 勇",
+              "racerName": "発売終了 齋藤 勇",
               "class": "B1"
             },
             {
@@ -6617,7 +6617,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 佐藤 隆太郎",
+              "racerName": "発売終了 佐藤 隆太郎",
               "class": "A1"
             },
             {
@@ -10904,7 +10904,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 竹間 隆晟",
+              "racerName": "発売終了 竹間 隆晟",
               "class": "A1"
             },
             {
@@ -19080,7 +19080,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 和田 兼輔",
+              "racerName": "発売終了 和田 兼輔",
               "class": "A1"
             },
             {
@@ -21171,7 +21171,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 前田 聖文",
+              "racerName": "発売終了 前田 聖文",
               "class": "A1"
             },
             {
@@ -21791,7 +21791,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 前田 聖文",
+                  "racerName": "発売終了 前田 聖文",
                   "class": "A1"
                 },
                 {
@@ -21982,7 +21982,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 杉田 篤光",
+              "racerName": "発売終了 杉田 篤光",
               "class": "B1"
             },
             {
@@ -22601,7 +22601,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 杉田 篤光",
+                  "racerName": "発売終了 杉田 篤光",
                   "class": "B1"
                 },
                 {
@@ -24543,7 +24543,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 石橋 道友",
+              "racerName": "発売終了 石橋 道友",
               "class": "A1"
             },
             {
