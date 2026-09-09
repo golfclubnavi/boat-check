@@ -6737,7 +6737,10 @@ function demoLanePicker(group,label){
     <div class="demoPickButtons">
       ${[1,2,3,4,5,6].map(lane=>`
         <button type="button" class="demoLanePick lane${lane} ${selected.includes(lane)?"selected":""}"
-          onclick="demoToggleLane('${group}',${lane})">${lane}</button>`).join("")}
+          onclick="demoToggleLane('${group}',${lane})">
+          <span class="demoLaneNumber">${lane}</span>
+          ${selected.includes(lane)?'<span class="demoSelectedMark">選択中</span>':""}
+        </button>`).join("")}
     </div>
   </div>`;
 }
@@ -6825,6 +6828,16 @@ function demoSetStake(v){
   const panel=document.getElementById("demoBetRoot");
   if(panel)panel.innerHTML=renderDemoBetInner();
 }
+function demoSetStakeFromInput(v){
+  let n=Math.floor(Number(v)||0);
+  if(n<1)n=1;
+  if(n>demoPoints)n=demoPoints;
+  demoStake=n;
+  demoBetList=demoBetList.map(x=>({...x,stake:n}));
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+
 function demoTotalStake(){
   return demoBetList.reduce((sum,x)=>sum+(Number(x.stake)||0),0);
 }
@@ -6894,13 +6907,25 @@ function renderDemoBetList(){
           <button onclick="demoRemoveBet('${x.key}')">×</button>
         </div>`).join("")}
       </div>`:`<div class="demoBetListEmpty">選択した買い目を追加するとここに表示されます。</div>`}
-    <div class="demoStakeRow">
-      <label>1点あたり</label>
+    <div class="demoStakeArea">
+      <div class="demoStakeTitle">
+        <label>1点あたりの投資pt</label>
+        <span>自由に入力できます</span>
+      </div>
       <div class="demoStakeButtons">
         ${[100,200,500,1000].map(v=>`<button class="${demoStake===v?"active":""}" onclick="demoSetStake(${v})">${v.toLocaleString()}pt</button>`).join("")}
       </div>
+      <div class="demoStakeInputWrap">
+        <input type="number" inputmode="numeric" min="1" max="${demoPoints}" step="1"
+          value="${demoStake}" onchange="demoSetStakeFromInput(this.value)"
+          aria-label="1点あたりの投資ポイント">
+        <span>pt / 1点</span>
+      </div>
     </div>
-    <button class="demoConfirmBtn" ${demoBetList.length?"":"disabled"} onclick="demoConfirmBet()">デモ投票を確定</button>
+    <div class="demoTotalConfirm">
+      <div><small>合計投資</small><strong>${demoFormatPt(total)}</strong></div>
+      <button class="demoConfirmBtn" ${demoBetList.length?"":"disabled"} onclick="demoConfirmBet()">デモ投票を確定</button>
+    </div>
   </div>`;
 }
 function renderDemoNormalBet(){
@@ -8674,6 +8699,234 @@ document.addEventListener("DOMContentLoaded",()=>{
   .demoLanePick{height:36px;font-size:12px;}
   .demoOddsGrid{gap:5px;padding:7px;}
   .demoOddsItem{min-height:64px;}
+}
+</style>
+
+
+
+<style id="v95-demo-bet-usability">
+/* 1号艇を背景から明確に分離 */
+.demoRacer.laneBg1{
+  background:#f7fbfe!important;
+  box-shadow:inset 0 0 0 2px #c4d9e7;
+}
+.demoRacer .demoLane.lane1{
+  background:#fff!important;
+  color:#111!important;
+  border:2px solid #9fb7c8!important;
+}
+
+/* 券種・方式ボタンを公式投票のように大きく明確に */
+.demoBetTypes button,
+.demoMethods button{
+  min-height:44px!important;
+  font-size:10px!important;
+  font-weight:950!important;
+}
+.demoBetTypes button.active,
+.demoMethods button.active{
+  background:#0a7dc0!important;
+  color:#fff!important;
+  border-color:#075f94!important;
+  box-shadow:0 4px 10px rgba(8,112,171,.18)!important;
+}
+
+/* 艇番選択：1号艇も見やすく、選択時は明確な反応 */
+.demoLanePick{
+  position:relative!important;
+  height:52px!important;
+  border:2px solid #c7d8e3!important;
+  border-radius:9px!important;
+  opacity:1!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.demoLanePick .demoLaneNumber{
+  display:block;
+  font-size:17px!important;
+  line-height:1!important;
+  font-weight:950!important;
+}
+.demoLanePick.lane1{
+  background:#fff!important;
+  color:#111!important;
+  border-color:#98b4c7!important;
+}
+.demoLanePick.selected{
+  border:4px solid #0086c9!important;
+  box-shadow:0 0 0 2px #d6f2ff,0 6px 13px rgba(0,134,201,.18)!important;
+  transform:translateY(-1px)!important;
+}
+.demoLanePick.selected::after{
+  content:"✓";
+  position:absolute;
+  top:2px;
+  right:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:#0086c9;
+  color:#fff;
+  font-size:10px;
+  font-weight:950;
+}
+.demoSelectedMark{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  padding:3px 0 2px;
+  background:rgba(0,134,201,.96);
+  color:#fff;
+  font-size:6.5px;
+  line-height:1;
+  font-weight:950;
+}
+
+/* 選択行ラベルも大きく */
+.demoPickLabel{
+  font-size:11px!important;
+}
+.demoPickButtons{
+  gap:6px!important;
+  padding:9px!important;
+}
+
+/* ベットリスト追加ボタン */
+.demoAddBtn{
+  min-height:48px!important;
+  font-size:11px!important;
+}
+
+/* 自由入力できるポイントUI */
+.demoStakeArea{
+  padding:10px;
+  border-top:1px solid #cbdde8;
+  background:#f7fbfd;
+}
+.demoStakeTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.demoStakeTitle label{
+  color:#245b79;
+  font-size:9px;
+  font-weight:950;
+}
+.demoStakeTitle span{
+  color:#748b9c;
+  font-size:7px;
+  font-weight:850;
+}
+.demoStakeButtons{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  margin-bottom:8px;
+}
+.demoStakeButtons button{
+  min-height:36px!important;
+  border:1px solid #b9d3e3!important;
+  border-radius:8px!important;
+  background:#fff!important;
+  color:#2a5d7a!important;
+  font-size:8.5px!important;
+  font-weight:950!important;
+}
+.demoStakeButtons button.active{
+  background:#0a7dc0!important;
+  color:#fff!important;
+  border-color:#0a7dc0!important;
+}
+.demoStakeInputWrap{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  overflow:hidden;
+  border:2px solid #0a7dc0;
+  border-radius:10px;
+  background:#fff;
+}
+.demoStakeInputWrap input{
+  width:100%;
+  min-width:0;
+  height:46px;
+  padding:0 12px;
+  border:0;
+  outline:0;
+  background:#fff;
+  color:#123c5a;
+  text-align:right;
+  font-family:inherit;
+  font-size:18px;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+}
+.demoStakeInputWrap span{
+  padding:0 11px;
+  color:#0a6fa9;
+  font-size:9px;
+  font-weight:950;
+}
+.demoTotalConfirm{
+  display:grid;
+  grid-template-columns:34% 66%;
+  align-items:stretch;
+  border-top:1px solid #cbdde8;
+  background:#fff;
+}
+.demoTotalConfirm>div{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:8px;
+  background:#edf6fb;
+  border-right:1px solid #c3d8e6;
+}
+.demoTotalConfirm small{
+  color:#698094;
+  font-size:7px;
+  font-weight:900;
+}
+.demoTotalConfirm strong{
+  margin-top:2px;
+  color:#0b5f94;
+  font-size:13px;
+  font-weight:950;
+}
+.demoTotalConfirm .demoConfirmBtn{
+  width:auto!important;
+  min-height:52px!important;
+  margin:8px!important;
+  font-size:11px!important;
+}
+
+/* オッズ投票も選択状態を強く */
+.demoOddsItem{
+  border-width:2px!important;
+}
+.demoOddsItem.selected{
+  border:3px solid #0086c9!important;
+  background:#e4f5fd!important;
+  box-shadow:0 0 0 2px #cfeeff inset!important;
+}
+.demoOddsItem.selected span{
+  color:#0079b6!important;
+  font-weight:950!important;
+}
+
+@media(max-width:430px){
+  .demoBetTypes button,
+  .demoMethods button{font-size:9.5px!important;}
+  .demoLanePick{height:50px!important;}
+  .demoLanePick .demoLaneNumber{font-size:16px!important;}
+  .demoStakeInputWrap input{font-size:17px;}
 }
 </style>
 
