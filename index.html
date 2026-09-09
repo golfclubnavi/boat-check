@@ -3438,10 +3438,52 @@ function jstNow(){
   const o=Object.fromEntries(parts.map(x=>[x.type,x.value]));return {date:`${o.year}${o.month}${o.day}`,time:`${o.hour}:${o.minute}`}
 }
 function raceIsPast(deadline, nowTime){return deadline && deadline<=nowTime}
+
+function normalizeCancelStatus(v){
+  const s=String(v||"").toLowerCase();
+  if(["postponed","suspended","cancel_postponed"].includes(s)) return "postponed";
+  if(["cancelled","canceled","abandoned","cancel"].includes(s)) return "cancelled";
+  if(["partial_cancelled","partial_canceled","partial"].includes(s)) return "partial_cancelled";
+  return "";
+}
+function raceCancelStatus(r){
+  if(!r)return "";
+  const direct=normalizeCancelStatus(r.status||r.raceStatus||r.state);
+  if(direct)return direct;
+  const text=`${r.statusLabel||""} ${r.note||""} ${r.message||""}`;
+  if(/中止順延|順延/.test(text))return "postponed";
+  if(/中止|不成立|発売中止/.test(text))return "cancelled";
+  return "";
+}
+function meetingCancelStatus(m){
+  if(!m)return "";
+  const direct=normalizeCancelStatus(m.status||m.meetingStatus||m.state);
+  if(direct)return direct;
+  const text=`${m.statusLabel||""} ${m.note||""} ${m.message||""} ${m.title||""}`;
+  if(/中止順延/.test(text))return "postponed";
+  if(/開催中止|全レース中止|中止打切|打ち切り/.test(text))return "cancelled";
+  const races=m.races||[];
+  if(races.some(r=>raceCancelStatus(r)))return "partial_cancelled";
+  return "";
+}
+function raceIsCancelled(r){
+  return !!raceCancelStatus(r);
+}
+function liveRaces(m){
+  return (m?.races||[]).filter(r=>!raceIsCancelled(r));
+}
+function cancellationLabel(status){
+  if(status==="postponed")return "中止順延";
+  if(status==="cancelled")return "開催中止";
+  if(status==="partial_cancelled")return "一部レース中止";
+  return "";
+}
+
 function getNextRace(m){
   const now=jstNow();
-  if(m.date!==now.date)return m.races?.[0]||null;
-  return (m.races||[]).find(r=>!raceIsPast(r.deadline,now.time))||null;
+  const available=liveRaces(m);
+  if(m.date!==now.date)return available[0]||null;
+  return available.find(r=>r.deadline && !raceIsPast(r.deadline,now.time))||null;
 }
 function formatDataDate(s){
   if(!s||s.length!==8)return "";
@@ -3469,12 +3511,18 @@ function countdownText(deadline){
   return `締切まで ${Math.floor(mins/60)}時間${mins%60?mins%60+"分":""}`;
 }
 function meetingState(m,next){
+  const cancel=meetingCancelStatus(m);
+  if(cancel==="postponed")return {cls:"postponed",label:"中止順延",card:"isPostponed"};
+  if(cancel==="cancelled")return {cls:"cancelled",label:"開催中止",card:"isCancelled"};
   const now=jstNow();
   if(m.date!==now.date)return {cls:"soon",label:"開始前",card:"isSoon"};
-  if(!next)return {cls:"closed",label:"本日終了",card:"isClosed"};
-  const first=(m.races||[])[0];
-  if(first && !raceIsPast(first.deadline,now.time) && next.raceNo===first.raceNo)return {cls:"soon",label:"開始前",card:"isSoon"};
-  return {cls:"live",label:"開催中",card:"isLive"};
+  if(!next){
+    if(cancel==="partial_cancelled")return {cls:"partial",label:"一部レース中止",card:"isPartialCancelled"};
+    return {cls:"closed",label:"本日終了",card:"isClosed"};
+  }
+  const first=liveRaces(m)[0];
+  if(first && first.deadline && !raceIsPast(first.deadline,now.time) && next.raceNo===first.raceNo)return {cls:"soon",label:"開始前",card:"isSoon"};
+  return {cls:"live",label:"開催中",card:cancel==="partial_cancelled"?"isPartialCancelled":"isLive"};
 }
 function meetingGrade(m){
   const direct=String(m.grade||"").toUpperCase();
@@ -3535,6 +3583,7 @@ function renderVenues(){
 
     const next=getNextRace(m);
     const st=meetingState(m,next);
+    const cancelStatus=meetingCancelStatus(m);
     const title=normTitle(m);
     const grade=meetingGrade(m);
     const tm=timeMark(m);
@@ -3551,8 +3600,24 @@ function renderVenues(){
       ? `<span class="kindText">一般</span>`
       : `<span class="gradeCenter ${grade.toLowerCase()}">${grade}</span>`;
 
+    if(cancelStatus==="postponed" || cancelStatus==="cancelled"){
+      return `<div class="card ${st.card} ${timeClass(m)} cancelledMeeting" data-code="${code}" onclick="openVenue('${code}')">
+        <div class="nameRow">
+          <span class="leftMark">${left}</span>
+          <div class="venueTitle">${name}</div>
+          <span class="rightMark">${right}</span>
+        </div>
+        <div class="meta">
+          ${gradeChip}
+          <span>${esc(m.day||"")}</span>
+        </div>
+        <div class="cancelMain">${cancelStatus==="postponed"?"中止順延":"開催中止"}</div>
+        <div class="cancelSub">${cancelStatus==="postponed"?"開催日程変更":"本日の開催中止"}</div>
+      </div>`;
+    }
+
     if(!next){
-      return `<div class="card ${st.card} ${timeClass(m)} todayEnded" data-code="${code}" onclick="openVenue('${code}')">
+      return `<div class="card ${st.card} ${timeClass(m)} todayEnded ${cancelStatus==="partial_cancelled"?"partialEnded":""}" data-code="${code}" onclick="openVenue('${code}')">
         <div class="nameRow">
           <span class="leftMark">${left}</span>
           <div class="venueTitle">${name}</div>
@@ -3586,6 +3651,7 @@ function renderVenues(){
         ${gradeChip}
         <span>${esc(m.day||"")}</span>
       </div>
+      ${cancelStatus==="partial_cancelled"?`<div class="partialCancelBadge">一部レース中止</div>`:""}
       <div class="nextRow">
         <div class="nextRace"><b>${next.raceNo}R</b></div>
         <div class="cutoff">締切予定<b class="${urgent?"urgentTime":""}">${esc(next.deadline)}</b></div>
@@ -3666,10 +3732,13 @@ function selectMeetDay(date){
 }
 
 function renderRaceJump(m){
-  const has=new Set((m.races||[]).map(r=>Number(r.raceNo)));
-  $("raceJump").innerHTML=Array.from({length:12},(_,i)=>i+1).map(n=>
-    `<button ${has.has(n)?"":'disabled style="opacity:.42"'} onclick="jumpRace(${n})">${n}R</button>`
-  ).join("");
+  const raceMap=new Map((m.races||[]).map(r=>[Number(r.raceNo),r]));
+  $("raceJump").innerHTML=Array.from({length:12},(_,i)=>i+1).map(n=>{
+    const r=raceMap.get(n);
+    if(!r)return `<button disabled style="opacity:.42">${n}R</button>`;
+    const cancelled=raceIsCancelled(r);
+    return `<button class="${cancelled?"cancelledRaceJump":""}" onclick="jumpRace(${n})">${n}R${cancelled?'<small>中止</small>':""}</button>`;
+  }).join("");
 }
 function jumpRace(no, behavior="smooth", block="start"){
   const el=document.getElementById(`race-card-${no}`);
@@ -3686,12 +3755,15 @@ function raceMinutesUntil(deadline){
   return h*60+m-(nh*60+nm);
 }
 function raceStatusInfo(r,m){
+  const cancel=raceCancelStatus(r);
+  if(cancel==="postponed")return {label:"中止順延",cls:"cancelled"};
+  if(cancel==="cancelled")return {label:"中止",cls:"cancelled"};
   const mins=raceMinutesUntil(r.deadline);
   const now=jstNow();
-  const past=m.date===now.date&&raceIsPast(r.deadline,now.time);
+  const past=!!r.deadline&&m.date===now.date&&raceIsPast(r.deadline,now.time);
   if(past)return {label:"締切済",cls:"closed"};
   if(mins!==null&&mins>=0&&mins<=10)return {label:`あと ${mins}分`,cls:"urgent"};
-  return {label:"受付予定",cls:"soon"};
+  return {label:r.deadline?"受付予定":"時刻未定",cls:"soon"};
 }
 function openVenue(code, push=true){
   const m=state.meetings.find(x=>x.venueCode===code);if(!m)return;
@@ -3717,7 +3789,8 @@ function openVenue(code, push=true){
   $("eventTitle").textContent=m.title||"";
 
   $("quickDay").textContent=view.day||"開催日";
-  $("quickNext").textContent=next?`${next.raceNo}R`:"本日終了";
+  const cancelStatus=meetingCancelStatus(view);
+  $("quickNext").textContent=cancelStatus==="postponed"?"中止順延":cancelStatus==="cancelled"?"開催中止":next?`${next.raceNo}R`:(cancelStatus==="partial_cancelled"?"一部中止":"本日終了");
   $("quickDeadline").textContent=next?(next.deadline||"-"):"-";
 
   renderMeetDayTabs(m,preferred);
@@ -3757,6 +3830,7 @@ function renderRaces(m){
   $("races").innerHTML=races.map(r=>{
     const info=raceStatusInfo(r,m);
     const urgent=info.cls==="urgent";
+    const cancelled=info.cls==="cancelled";
 
     const boats=(r.boats||[]).map(b=>{
       const period=b.period?`${esc(b.period)}期`:"--期";
@@ -3777,12 +3851,12 @@ function renderRaces(m){
       </div>`;
     }).join("");
 
-    return `<div class="raceCardPro" id="race-card-${Number(r.raceNo)}" onclick="openRace(${Number(r.raceNo)})">
+    return `<div class="raceCardPro ${cancelled?"raceCancelled":""}" id="race-card-${Number(r.raceNo)}" onclick="openRace(${Number(r.raceNo)})">
       <div class="raceTopPro">
         <div class="raceNoPro">${r.raceNo}<small>R</small></div>
-        <div class="raceTiming">
-          <small>締切予定</small>
-          <b class="${urgent?"urgent":""}">${esc(r.deadline||"-")}</b>
+        <div class="raceTiming ${cancelled?"cancelledTiming":""}">
+          <small>${cancelled?"レース状況":"締切予定"}</small>
+          <b class="${urgent?"urgent":""}">${cancelled?esc(info.label):esc(r.deadline||"-")}</b>
         </div>
         <div class="raceCountdownBox ${urgent?"urgent":""}">
           ${(()=>{
@@ -7400,5 +7474,45 @@ document.addEventListener("DOMContentLoaded",()=>{
   .oddsChip{width:21px;height:20px;font-size:8px;}
   .oddsBestGrid{gap:6px;padding:0 6px 6px;}
 }
+</style>
+
+
+
+<style id="v91-cancellation-support">
+.card.cancelledMeeting{
+  border-color:#ee6870!important;background:#fff!important;
+  box-shadow:0 7px 17px rgba(210,52,64,.10)!important;
+}
+.card.cancelledMeeting .cancelMain{
+  margin-top:4px;padding:7px 4px 4px;color:#e0222f;
+  font-size:13px;line-height:1;font-weight:950;text-align:center;white-space:nowrap;
+}
+.card.cancelledMeeting .cancelSub{
+  padding:3px 4px 7px;color:#8a6b6e;font-size:7px;line-height:1;
+  font-weight:850;text-align:center;
+}
+.partialCancelBadge{
+  align-self:center;margin:2px auto 0;padding:3px 6px;border-radius:999px;
+  background:#fff0f0;color:#d92d38;border:1px solid #f2b8bd;
+  font-size:6.7px;font-weight:950;line-height:1;
+}
+.card.partialEnded .endText{color:#d52d38!important;}
+.card.partialEnded .endText::before{content:"一部中止・";}
+#raceJump button.cancelledRaceJump{
+  position:relative;background:#fff1f1!important;color:#cf2934!important;
+  border-color:#efb9bd!important;
+}
+#raceJump button.cancelledRaceJump small{
+  display:block;margin-top:2px;font-size:5.5px;line-height:1;font-weight:950;
+}
+.raceCardPro.raceCancelled{
+  border-color:#e9a6ab!important;background:#fffafa!important;
+}
+.raceCardPro.raceCancelled .raceTopPro{
+  background:linear-gradient(90deg,#a6373f,#dc5059)!important;
+}
+.raceCardPro.raceCancelled .laneMini{opacity:.68;}
+.raceTiming.cancelledTiming b{color:#fff!important;font-size:14px!important;}
+.raceTiming.cancelledTiming small{color:#ffe9ea!important;}
 </style>
 
