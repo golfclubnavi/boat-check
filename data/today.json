@@ -1,6 +1,6 @@
 {
   "schemaVersion": "38.0",
-  "updatedAt": "2026-09-10T13:08:43+09:00",
+  "updatedAt": "2026-09-10T13:40:43+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -3246,11 +3246,11 @@
         },
         {
           "raceNo": 6,
-          "deadline": "13:34",
+          "deadline": "13:36",
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小川 知行",
+              "racerName": "発売終了 小川 知行",
               "class": "B1"
             },
             {
@@ -3306,7 +3306,7 @@
         },
         {
           "raceNo": 7,
-          "deadline": "14:01",
+          "deadline": "14:03",
           "boats": [
             {
               "lane": 1,
@@ -3366,7 +3366,7 @@
         },
         {
           "raceNo": 8,
-          "deadline": "14:29",
+          "deadline": "14:31",
           "boats": [
             {
               "lane": 1,
@@ -3426,7 +3426,7 @@
         },
         {
           "raceNo": 9,
-          "deadline": "14:57",
+          "deadline": "14:59",
           "boats": [
             {
               "lane": 1,
@@ -3486,7 +3486,7 @@
         },
         {
           "raceNo": 10,
-          "deadline": "15:27",
+          "deadline": "15:29",
           "boats": [
             {
               "lane": 1,
@@ -3546,7 +3546,7 @@
         },
         {
           "raceNo": 11,
-          "deadline": "15:58",
+          "deadline": "16:00",
           "boats": [
             {
               "lane": 1,
@@ -3606,7 +3606,7 @@
         },
         {
           "raceNo": 12,
-          "deadline": "16:30",
+          "deadline": "16:32",
           "boats": [
             {
               "lane": 1,
@@ -5740,7 +5740,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 樋口 由加里",
+              "racerName": "発売終了 樋口 由加里",
               "class": "B1"
             },
             {
@@ -8669,7 +8669,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 畑田 汰一",
+              "racerName": "発売終了 畑田 汰一",
               "class": "A1"
             },
             {
@@ -9902,7 +9902,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 佐藤 謙史朗",
+              "racerName": "発売終了 佐藤 謙史朗",
               "class": "B1"
             },
             {
@@ -12133,7 +12133,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小野 生奈",
+              "racerName": "発売終了 小野 生奈",
               "class": "A1"
             },
             {
@@ -14383,7 +14383,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 香月 大輝",
+              "racerName": "発売終了 香月 大輝",
               "class": "B1"
             },
             {
@@ -16494,7 +16494,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 松尾 拓",
+              "racerName": "発売終了 松尾 拓",
               "class": "A2"
             },
             {
@@ -19080,7 +19080,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中田 元泰",
+              "racerName": "発売終了 中田 元泰",
               "class": "A2"
             },
             {
