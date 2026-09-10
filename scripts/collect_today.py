@@ -324,9 +324,21 @@ def _series_st_value(v: str):
     return n if n is not None else s
 
 def _series_finish_value(v: str):
-    s=_clean_series_cell(v).translate(_ZEN_DIGITS)
-    if not s: return None
-    if s in {"1","2","3","4","5","6"}: return int(s)
+    s=_clean_series_cell(v).translate(_ZEN_DIGITS).strip()
+    if not s:
+        return None
+    if s in {"1","2","3","4","5","6"}:
+        return int(s)
+
+    u=s.upper().replace(" ","")
+    if u in {"転","転覆"} or "転覆" in u:
+        return "転"
+    if u in {"落","落水"} or "落水" in u:
+        return "落"
+    if u=="F" or "フライング" in u:
+        return "F"
+    if u=="L" or "出遅" in u:
+        return "L"
     return s
 
 def parse_current_meet_results(racer_row) -> list[dict]:
@@ -595,6 +607,18 @@ def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
 
         row = a.find_parent("tr")
         text = compact((row or a.parent or a).get_text(" ", strip=True))
+
+        lane_no = None
+        if row is not None:
+            direct_cells = row.find_all(["td","th"], recursive=False)
+            first_text = compact(direct_cells[0].get_text(" ", strip=True)) if direct_cells else ""
+            first_text = first_text.translate(_ZEN_DIGITS)
+            mlane = re.match(r"^([1-6])(?:\s|$)", first_text)
+            if not mlane:
+                mlane = re.match(r"^([1-6])(?:\s|$)", text.translate(_ZEN_DIGITS))
+            if mlane:
+                lane_no = int(mlane.group(1))
+
         mk = re.search(rf"{re.escape(toban)}\s*/\s*(A1|A2|B1|B2)", text)
         klass = mk.group(1) if mk else ""
 
@@ -613,6 +637,8 @@ def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
             "racerName": name,
             "class": klass,
         }
+        if lane_no is not None:
+            b["lane"] = lane_no
         meet_results = parse_current_meet_results(row)
         if meet_results:
             b["meetResults"] = meet_results
@@ -934,21 +960,49 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
 
     finishers=[]
     seen_lanes=set()
+
+    def _official_finish_rank(v):
+        s=compact(str(v or "")).translate(_ZEN_DIGITS).strip()
+        if s in {"1","2","3","4","5","6"}:
+            return int(s)
+        u=s.upper().replace(" ","")
+        if u in {"転","転覆"} or "転覆" in u:
+            return "転"
+        if u in {"落","落水"} or "落水" in u:
+            return "落"
+        if u=="F" or "フライング" in u:
+            return "F"
+        if u=="L" or "出遅" in u:
+            return "L"
+        return s or None
+
     for tr in soup.find_all("tr"):
-        row=compact(tr.get_text(" ",strip=True))
-        m=re.match(r"^([１２３４５６1-6])\s+([1-6])\s+(\d{4})\s+(.+?)(?:\s+(1'\d{2}\"\d))?$",row)
-        if not m:
+        cells=[compact(x.get_text(" ",strip=True)) for x in tr.find_all(["td","th"],recursive=False)]
+        if len(cells)<3:
             continue
-        rank=_rank_zen(m.group(1))
-        lane=int(m.group(2))
+
+        rank=_official_finish_rank(cells[0])
+        lane_raw=cells[1].translate(_ZEN_DIGITS).strip()
+        if rank is None or not re.fullmatch(r"[1-6]",lane_raw):
+            continue
+
+        lane=int(lane_raw)
         if lane in seen_lanes:
             continue
+
+        racer_text=cells[2]
+        mr=re.search(r"(\d{4})\s+(.+)",racer_text)
+        if not mr:
+            continue
+
+        time_val=cells[3] if len(cells)>=4 and re.fullmatch(r"1'\d{2}\"\d",cells[3] or "") else None
+
         finishers.append({
             "rank":rank,
             "lane":lane,
-            "racerId":m.group(3),
-            "racerName":compact(m.group(4)),
-            "time":m.group(5) or None,
+            "racerId":mr.group(1),
+            "racerName":compact(mr.group(2)),
+            "time":time_val,
         })
         seen_lanes.add(lane)
         if len(finishers)==6:
@@ -1222,17 +1276,40 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
     for m in meetings:
         for r in m.get("races",[]):
             meta, err = meta_results.get((m["venueCode"],int(r["raceNo"])),([],None))
-            if len(meta)==6:
-                old_by_lane={int(b.get("lane",0)):b for b in r.get("boats",[])}
-                merged=[]
-                for i,b in enumerate(meta,1):
-                    ob=old_by_lane.get(i,{})
-                    item=dict(ob)
-                    item.update({"lane":i, **b})
-                    merged.append(item)
-                r["boats"] = merged
+
+            if meta:
+                old_by_lane={int(b.get("lane",0)):dict(b) for b in r.get("boats",[]) if int(b.get("lane",0)) in range(1,7)}
+                # Always keep six lane slots so a single metadata miss never shifts 2-6 into the wrong lane.
+                merged={i:dict(old_by_lane.get(i,{"lane":i})) for i in range(1,7)}
+                used_lanes=set()
+
+                def _norm_name(v):
+                    return re.sub(r"[　\s]+","",compact(str(v or "")))
+
+                for pos,b in enumerate(meta,1):
+                    lane=int(b.get("lane") or 0)
+                    if lane not in range(1,7):
+                        target_name=_norm_name(b.get("racerName"))
+                        lane=next((
+                            ln for ln,ob in merged.items()
+                            if ln not in used_lanes and target_name and _norm_name(ob.get("racerName"))==target_name
+                        ),0)
+                    if lane not in range(1,7):
+                        lane=next((ln for ln in range(1,7) if ln not in used_lanes),0)
+                    if lane not in range(1,7):
+                        continue
+
+                    item=dict(merged.get(lane,{"lane":lane}))
+                    item.update({k:v for k,v in b.items() if v not in (None,"")})
+                    item["lane"]=lane
+                    merged[lane]=item
+                    used_lanes.add(lane)
+
+                r["boats"]=[merged[i] for i in range(1,7)]
+                r["metaCount"]=len(meta)
                 apply_equipment_ranks(r["boats"])
-            elif err:
+
+            if err:
                 r["metaError"] = err
 
     ref_results={}
