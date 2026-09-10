@@ -4835,7 +4835,7 @@ function renderRaces(m){
     const urgent=info.cls==="urgent";
     const cancelled=info.cls==="cancelled";
 
-    const boats=(r.boats||[]).map(b=>{
+    const boats=hydrateBoatsForDisplay(r.boats||[]).map(b=>{
       const period=b.period?`${esc(b.period)}期`:"--期";
       const age=b.age!==undefined&&b.age!==null?`${esc(b.age)}歳`:"--歳";
       const branch=b.branch||b.region||"--";
@@ -4964,8 +4964,9 @@ function openRace(no, push=true){
   const view=state.currentMeetingView||m;
   const selectedDate=state.currentDayDate||view.date||m.date||"";
   if(push)history.pushState({view:"detail",code:m.venueCode,date:selectedDate,raceNo:Number(no)},"",`#race-${m.venueCode}-${selectedDate}-${no}`);
-  const r=(view.races||[]).find(x=>Number(x.raceNo)===Number(no)) || (m.races||[]).find(x=>Number(x.raceNo)===Number(no));
-  if(!r)return;
+  const sourceRace=(view.races||[]).find(x=>Number(x.raceNo)===Number(no)) || (m.races||[]).find(x=>Number(x.raceNo)===Number(no));
+  if(!sourceRace)return;
+  const r=hydrateRaceForDisplay(sourceRace);
   state.currentRace=r;
   renderRaceContext();
   $("venue").classList.add("hidden");$("detail").classList.remove("hidden");
@@ -5673,7 +5674,66 @@ function courseCells(values, mode="desc", suffix="", digits=null, highlight=true
 }
 
 
+
+function uiRacerKey(v){
+  return String(v||"")
+    .replace(/^(?:投票|発売終了|発売中|投票受付中|受付終了)\s*/,"")
+    .replace(/[　\s]+/g,"")
+    .trim();
+}
+function uiMeetingRacerRegistry(){
+  const m=state.currentMeeting||state.currentMeetingView;
+  const byId=new Map();
+  const byName=new Map();
+  if(!m)return {byId,byName};
+
+  const races=[...(m.races||[])];
+  (m.meetDays||[]).forEach(d=>(d.races||[]).forEach(r=>races.push(r)));
+
+  const score=b=>[
+    b?.racerId,b?.registrationNo,b?.branch,b?.origin,b?.period,b?.age,
+    b?.flyingCount,b?.lateCount,b?.avgST,b?.stats,b?.meetResults,b?.meetStats
+  ].filter(v=>v!==undefined&&v!==null&&v!==""&&!(Array.isArray(v)&&!v.length)).length;
+
+  races.forEach(r=>(r.boats||[]).forEach(b=>{
+    const id=String(b.racerId||b.registrationNo||"");
+    const name=uiRacerKey(b.racerName);
+    const s=score(b);
+    if(id && (!byId.has(id)||s>byId.get(id).score))byId.set(id,{score:s,b});
+    if(name && (!byName.has(name)||s>byName.get(name).score))byName.set(name,{score:s,b});
+  }));
+  return {byId,byName};
+}
+function hydrateBoatsForDisplay(boats){
+  const reg=uiMeetingRacerRegistry();
+  const keys=[
+    "racerId","registrationNo","class","branch","origin","period","age",
+    "flyingCount","lateCount","avgST",
+    "nationalWinRate","national2Rate","national3Rate",
+    "localWinRate","local2Rate","local3Rate",
+    "stats","meetResults","meetStats"
+  ];
+  return (boats||[]).map(b=>{
+    const id=String(b.racerId||b.registrationNo||"");
+    const name=uiRacerKey(b.racerName);
+    const src=(id&&reg.byId.get(id)?.b)||reg.byName.get(name)?.b;
+    if(!src)return b;
+    const out={...b};
+    keys.forEach(k=>{
+      const v=out[k];
+      const empty=v===undefined||v===null||v===""||(Array.isArray(v)&&!v.length);
+      if(empty && src[k]!==undefined && src[k]!==null && src[k]!=="")out[k]=src[k];
+    });
+    return out;
+  });
+}
+function hydrateRaceForDisplay(race){
+  if(!race)return race;
+  return {...race,boats:hydrateBoatsForDisplay(race.boats||[])};
+}
+
 function proRacerStrip(boats, label="出走表"){
+  boats=hydrateBoatsForDisplay(boats);
   return `<div class="proRacerStrip">
     <div class="proRacerLabel">${esc(label)}</div>
     ${boats.map(b=>{
