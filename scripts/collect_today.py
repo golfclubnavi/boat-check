@@ -1,20 +1,29 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v38 collector
+BOAT CHECK v41 collector — official data phase 1
 
-FAST（通常・30分ごと）
-- BOAT RACE公式の当日開催場 + 各場raceindexだけを並列取得
-- 締切/R/開催日/タイトル/グレードを更新
-- 既存 today.json の選手詳細（登録番号・支部・期・年齢）を引き継ぐ
-- 過去日の出走データも既存JSONから引き継ぐ
-- racers.json の既存キャッシュを利用
-- racelist / racer profile は毎回取りに行かない
+FAST（30分ごと・既存 workflow のまま利用可能）
+- BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
+- 取得済みの選手・モーター・ボート・直前・結果データを保持
+- 締切前後のレースは直前情報を取得
+- 締切済みで未取得のレース結果・払戻を取得
 
-ENRICH（別ワークフロー・1日1回/手動）
-- 当日の全racelistを並列取得
-- 支部・年齢・登録番号を更新
-- racer profile は未取得の登録期だけ並列取得
-- 過去開催日のraceindexも並列取得
+ENRICH（1日1回 / 手動）
+- 当日の全Rの出走表を取得
+- F/L・平均ST・全国/当地勝率/2連率/3連率
+- モーター番号/2連率/3連率、ボート番号/2連率/3連率
+- 支部/出身/年齢/体重/登録番号、登録期キャッシュ
+- 6艇内のモーター順位・ボート順位を2連率から算出
+
+PHASE 1対象
+- F/L、平均ST、全国/当地成績
+- モーター/ボート基本値
+- 展示タイム、チルト、体重、部品交換
+- スタート展示ST（艇番が公式HTMLから判別できた場合のみ）
+- 天候/風速/波高/気温/水温
+- 着順、確定ST、決まり手、払戻
+
+未取得値は作らず null / -- 相当で保持します。
 """
 from __future__ import annotations
 
@@ -35,6 +44,8 @@ BASE = "https://www.boatrace.jp"
 INDEX_URL = BASE + "/owpc/pc/race/index"
 RACEINDEX_URL = BASE + "/owpc/pc/race/raceindex"
 RACELIST_URL = BASE + "/owpc/pc/race/racelist"
+BEFOREINFO_URL = BASE + "/owpc/pc/race/beforeinfo"
+RACERESULT_URL = BASE + "/owpc/pc/race/raceresult"
 PROFILE_URL = BASE + "/owpc/pc/data/racersearch/profile"
 BOATCAST_REPLAY_URL = "https://race.boatcast.jp/replay"
 
@@ -46,7 +57,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.38; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.41; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -228,70 +239,198 @@ def parse_meet_days(soup: BeautifulSoup, base_date: str) -> list[dict]:
                 seen.add(hd)
     return sorted(out, key=lambda x:x["date"])
 
+def _num(v, integer=False):
+    if v is None:
+        return None
+    s = str(v).strip().replace(",", "").replace("%", "").replace("％", "")
+    if not s or s in {"-", "--", "―", "－"}:
+        return None
+    try:
+        n = float(s)
+        return int(n) if integer else n
+    except Exception:
+        return None
+
+
+def _dense_ranks(values, reverse=True):
+    nums = [_num(v) for v in values]
+    valid = sorted({x for x in nums if x is not None}, reverse=reverse)
+    return [valid.index(x) + 1 if x is not None else None for x in nums]
+
+
+def apply_equipment_ranks(boats: list[dict]) -> None:
+    motor_rates = [
+        (b.get("motor") or {}).get("twoRate", b.get("motorTwoRate")) for b in boats
+    ]
+    boat_rates = [
+        (b.get("boat") or {}).get("twoRate", b.get("boatTwoRate")) for b in boats
+    ]
+    mr = _dense_ranks(motor_rates, reverse=True)
+    br = _dense_ranks(boat_rates, reverse=True)
+    for i, b in enumerate(boats):
+        if mr[i] is not None:
+            b.setdefault("motor", {})["rank"] = mr[i]
+            b["motorRank"] = mr[i]
+        if br[i] is not None:
+            b.setdefault("boat", {})["rank"] = br[i]
+            b["boatRank"] = br[i]
+
+
 def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
+    """Parse official racelist rows without inventing missing values."""
     found, used = [], set()
+
+    numeric = r"(?:-|--|―|－|\d+(?:\.\d+)?)"
+    detail_re = re.compile(
+        rf"([一-龥々ヶヵぁ-んァ-ヶー]+)\/([一-龥々ヶヵぁ-んァ-ヶー]+)\s+"
+        rf"(\d{{1,2}})歳\/(\d+(?:\.\d+)?)kg\s+"
+        rf"F(\d+)\s+L(\d+)\s+({numeric})\s+"
+        rf"({numeric})\s+({numeric})\s+({numeric})\s+"  # 全国 勝率/2/3
+        rf"({numeric})\s+({numeric})\s+({numeric})\s+"  # 当地 勝率/2/3
+        rf"({numeric})\s+({numeric})\s+({numeric})\s+"  # motor no/2/3
+        rf"({numeric})\s+({numeric})\s+({numeric})"      # boat no/2/3
+    )
+
     for a in soup.find_all("a", href=True):
-        href = a.get("href","")
+        href = a.get("href", "")
         mt = re.search(r"(?:[?&]|&amp;)toban=(\d{4})", href)
-        if not mt: continue
+        if not mt:
+            continue
         toban = mt.group(1)
-        if toban in used: continue
+        if toban in used:
+            continue
+
         row = a.find_parent("tr")
         text = compact((row or a.parent or a).get_text(" ", strip=True))
-
         mk = re.search(rf"{re.escape(toban)}\s*/\s*(A1|A2|B1|B2)", text)
         klass = mk.group(1) if mk else ""
 
         name = compact(a.get_text(" ", strip=True))
         if not name or name == toban or len(name) > 24:
-            mn = re.search(rf"{re.escape(toban)}\s*/\s*(?:A1|A2|B1|B2)\s+(.+?)\s+[^\s/]+/[^\s/]+\s+\d{{1,2}}歳/", text)
+            mn = re.search(
+                rf"{re.escape(toban)}\s*/\s*(?:A1|A2|B1|B2)\s+(.+?)\s+"
+                rf"[一-龥々ヶヵぁ-んァ-ヶー]+/[一-龥々ヶヵぁ-んァ-ヶー]+\s+\d{{1,2}}歳/",
+                text,
+            )
             name = compact(mn.group(1)) if mn else ""
 
-        branch, age = "", None
-        mb = re.search(r"([一-龥ぁ-んァ-ヶー]+)\/([一-龥ぁ-んァ-ヶー]+)\s+(\d{1,2})歳/", text)
-        if mb:
-            branch = mb.group(1)
-            age = int(mb.group(3))
+        b = {
+            "racerId": toban,
+            "registrationNo": toban,
+            "racerName": name,
+            "class": klass,
+        }
 
-        found.append({"racerId":toban,"racerName":name,"class":klass,"branch":branch,"age":age})
-        used.add(toban)
-        if len(found) == 6: break
+        md = detail_re.search(text)
+        if md:
+            (
+                branch, origin, age, weight, f_count, l_count, avg_st,
+                nat_win, nat_two, nat_three,
+                loc_win, loc_two, loc_three,
+                motor_no, motor_two, motor_three,
+                boat_no, boat_two, boat_three,
+            ) = md.groups()
 
-    if len(found) < 6:
-        text = compact(soup.get_text(" ", strip=True))
-        pat = re.compile(
-            r"(\d{4})\s*/\s*(A1|A2|B1|B2)\s+(.{2,24}?)\s+"
-            r"([一-龥ぁ-んァ-ヶー]+)\/([一-龥ぁ-んァ-ヶー]+)\s+(\d{1,2})歳/"
-        )
-        found = []
-        used = set()
-        for toban, klass, name, branch, _origin, age in pat.findall(text):
-            if toban in used: continue
-            found.append({
-                "racerId":toban,"racerName":compact(name),"class":klass,
-                "branch":branch,"age":int(age)
+            b.update({
+                "branch": branch,
+                "origin": origin,
+                "age": int(age),
+                "weight": _num(weight),
+                "flyingCount": int(f_count),
+                "lateCount": int(l_count),
+                "avgST": _num(avg_st),
+                "nationalWinRate": _num(nat_win),
+                "national2Rate": _num(nat_two),
+                "national3Rate": _num(nat_three),
+                "localWinRate": _num(loc_win),
+                "local2Rate": _num(loc_two),
+                "local3Rate": _num(loc_three),
+                "motorNo": _num(motor_no, integer=True),
+                "motorTwoRate": _num(motor_two),
+                "motorThreeRate": _num(motor_three),
+                "boatNo": _num(boat_no, integer=True),
+                "boatTwoRate": _num(boat_two),
+                "boatThreeRate": _num(boat_three),
             })
-            used.add(toban)
-            if len(found)==6: break
+            b["stats"] = {
+                "winRate": {"national": _num(nat_win), "local": _num(loc_win)},
+                "quinella": {"national": _num(nat_two), "local": _num(loc_two)},
+                "trifecta": {"national": _num(nat_three), "local": _num(loc_three)},
+                "st": {"overall": _num(avg_st)},
+                "flyingCount": int(f_count),
+                "lateCount": int(l_count),
+            }
+            b["motor"] = {
+                "motorNo": _num(motor_no, integer=True),
+                "twoRate": _num(motor_two),
+                "threeRate": _num(motor_three),
+            }
+            b["boat"] = {
+                "boatNo": _num(boat_no, integer=True),
+                "twoRate": _num(boat_two),
+                "threeRate": _num(boat_three),
+            }
+        else:
+            # Fallback: at least keep branch / origin / age / weight if the numeric table changed.
+            mb = re.search(
+                r"([一-龥々ヶヵぁ-んァ-ヶー]+)\/([一-龥々ヶヵぁ-んァ-ヶー]+)\s+"
+                r"(\d{1,2})歳\/(\d+(?:\.\d+)?)kg",
+                text,
+            )
+            if mb:
+                b.update({
+                    "branch": mb.group(1),
+                    "origin": mb.group(2),
+                    "age": int(mb.group(3)),
+                    "weight": _num(mb.group(4)),
+                })
+            mf = re.search(r"F(\d+)\s+L(\d+)\s+(\d+(?:\.\d+)?)", text)
+            if mf:
+                b["flyingCount"] = int(mf.group(1))
+                b["lateCount"] = int(mf.group(2))
+                b["avgST"] = _num(mf.group(3))
+
+        found.append(b)
+        used.add(toban)
+        if len(found) == 6:
+            break
+
+    apply_equipment_ranks(found)
     return found
 
 def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache: dict):
+    """Preserve enriched/live fields while refreshing raceindex timing/status."""
     old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
+    keep_race_keys = (
+        "title", "beforeData", "before", "weather", "weatherData", "conditions",
+        "result", "raceResult", "results", "payouts", "refunds", "odds",
+        "replay", "officialReplayPage", "resultUpdatedAt", "beforeUpdatedAt",
+    )
+
     for r in new_races:
         old = old_by_race.get(int(r.get("raceNo",0)), {})
-        old_boats = {int(b.get("lane",0)): b for b in old.get("boats",[])}
+        for key in keep_race_keys:
+            if key not in r and old.get(key) not in (None, "", [], {}):
+                r[key] = old[key]
 
+        old_boats = {int(b.get("lane",0)): b for b in old.get("boats",[])}
+        refreshed=[]
         for b in r.get("boats",[]):
             ob = old_boats.get(int(b.get("lane",0)), {})
-            # 名前が変わっていない場合のみ詳細情報を継承
-            same = not b.get("racerName") or not ob.get("racerName") or compact(b["racerName"]) == compact(ob["racerName"])
+            same = (
+                not b.get("racerName") or not ob.get("racerName") or
+                compact(b["racerName"]) == compact(ob["racerName"])
+            )
             if same:
-                for key in ("racerId","branch","age","period"):
-                    if ob.get(key) not in (None,""):
-                        b[key] = ob[key]
+                merged = dict(ob)
+                merged.update({k:v for k,v in b.items() if v not in (None, "")})
+                b = merged
             rid = b.get("racerId")
             if rid and racer_cache.get(str(rid),{}).get("period"):
                 b["period"] = racer_cache[str(rid)]["period"]
+            refreshed.append(b)
+        r["boats"] = refreshed
+        apply_equipment_ranks(r.get("boats", []))
 
 def old_meeting_map(old_payload: dict) -> dict:
     return {
@@ -356,6 +495,342 @@ def fetch_racelist_task(code: str, date: str, race_no: int):
     except Exception as e:
         return code, race_no, [], f"{type(e).__name__}: {e}"
 
+
+def _infer_lane_from_start_row(tr, fallback_course: int | None = None) -> int | None:
+    attrs=[]
+    for tag in tr.find_all(True):
+        for key,val in tag.attrs.items():
+            if isinstance(val,(list,tuple)):
+                val=" ".join(map(str,val))
+            attrs.append(f"{key}={val}")
+    blob=" ".join(attrs).lower()
+    patterns=[
+        r"(?:boat|teiban|lane|waku|frame)[_\-/]?(?:no)?[_\-]?([1-6])(?:\D|$)",
+        r"(?:is-|color-|boatcolor)([1-6])(?:\D|$)",
+    ]
+    for pat in patterns:
+        m=re.search(pat,blob)
+        if m:
+            return int(m.group(1))
+    return None
+
+
+def _weather_from_text(text: str) -> dict:
+    out={}
+    m=re.search(r"気温\s*(-?\d+(?:\.\d+)?)℃",text)
+    if m: out["airTemperature"]=_num(m.group(1))
+    m=re.search(r"水温\s*(-?\d+(?:\.\d+)?)℃",text)
+    if m: out["waterTemperature"]=_num(m.group(1))
+    m=re.search(r"風速\s*(\d+(?:\.\d+)?)m",text)
+    if m: out["windSpeed"]=_num(m.group(1))
+    m=re.search(r"波高\s*(\d+(?:\.\d+)?)cm",text)
+    if m: out["waveHeight"]=_num(m.group(1))
+    for w in ("晴", "曇り", "雨", "雪", "霧"):
+        if w in text:
+            out["weather"]=w
+            break
+    # Official page often renders wind direction as an image; only keep text when actually present.
+    m=re.search(r"風向\s*(北東|南東|南西|北西|北|南|東|西)",text)
+    if m: out["windDirection"]=m.group(1)
+    return out
+
+
+def parse_beforeinfo(soup: BeautifulSoup) -> dict:
+    text=compact(soup.get_text(" ",strip=True))
+    if "展示タイム" not in text and "展示 タイム" not in text and "スタート展示" not in text:
+        return {}
+
+    boats=[]
+    seen=set()
+    for tr in soup.find_all("tr"):
+        row=compact(tr.get_text(" ",strip=True))
+        # Main pre-race row: lane / racer / weight / exhibition / tilt ...
+        m=re.match(
+            r"^([1-6])\s+(.+?)\s+(\d+(?:\.\d+)?)kg\s+"
+            r"(\d+(?:\.\d+)?|--?|-|―)\s+(-?\d+(?:\.\d+)?|--?|-|―)(?:\s+|$)",
+            row,
+        )
+        if not m:
+            continue
+        lane=int(m.group(1))
+        if lane in seen:
+            continue
+        name=compact(m.group(2))
+        weight=_num(m.group(3))
+        exhibition=_num(m.group(4))
+        tilt=_num(m.group(5))
+        item={"lane":lane,"racerName":name,"weight":weight,"exhibitionTime":exhibition,"tilt":tilt}
+
+        parts=[]
+        for p in ("ピストン", "リング", "電気", "キャブ", "シリンダ", "シャフト", "ギヤ", "キャリボ"):
+            if p in row:
+                parts.append(p)
+        if "新" in row:
+            parts.append("プロペラ新")
+        if parts:
+            item["partsExchange"]=" / ".join(dict.fromkeys(parts))
+        boats.append(item)
+        seen.add(lane)
+        if len(boats)==6:
+            break
+
+    # Start exhibition. Map to lane only if the official HTML lets us infer the boat number.
+    start_rows=[]
+    start_area=False
+    for tr in soup.find_all("tr"):
+        row=compact(tr.get_text(" ",strip=True))
+        if "コース" in row and "ST" in row:
+            start_area=True
+            continue
+        if not start_area:
+            continue
+        if "水面気象情報" in row:
+            break
+        ms=re.match(r"^([1-6])\s+.*?((?:F|L)?\.\d{2})$",row)
+        if not ms:
+            continue
+        course=int(ms.group(1))
+        raw=ms.group(2)
+        lane=_infer_lane_from_start_row(tr,course)
+        st=_num(raw.lstrip("FL"))
+        entry={"course":course,"lane":lane,"st":st,"rawST":raw}
+        start_rows.append(entry)
+        if lane:
+            for b in boats:
+                if b.get("lane")==lane:
+                    b["course"]=course
+                    b["st"]=raw if raw.startswith(("F","L")) else st
+                    break
+
+    return {
+        "boats":boats,
+        "startExhibition":start_rows,
+        "weather":_weather_from_text(text),
+    }
+
+
+def _rank_zen(v: str) -> int | str | None:
+    table=str.maketrans("１２３４５６","123456")
+    s=str(v or "").translate(table).strip()
+    if s in {"1","2","3","4","5","6"}: return int(s)
+    if s: return s
+    return None
+
+
+def _payout_pairs(segment: str, combo_len: int) -> list[dict]:
+    if combo_len==3:
+        pat=r"([1-6]\s*[-=＝]\s*[1-6]\s*[-=＝]\s*[1-6])\s*[¥￥]?\s*([\d,]+)"
+    elif combo_len==2:
+        pat=r"([1-6]\s*[-=＝]\s*[1-6])\s*[¥￥]?\s*([\d,]+)"
+    else:
+        pat=r"(?:^|\s)([1-6])\s*[¥￥]?\s*([\d,]+)"
+    out=[]
+    for combo,amount in re.findall(pat,segment):
+        combo=re.sub(r"\s+","",combo).replace("＝","=")
+        out.append({"combination":combo,"payout":_num(amount,integer=True)})
+    return out
+
+
+def parse_raceresult(soup: BeautifulSoup) -> dict:
+    text=compact(soup.get_text(" ",strip=True))
+    if "着 枠 ボートレーサー" not in text and "払戻金" not in text:
+        return {}
+
+    finishers=[]
+    seen_lanes=set()
+    for tr in soup.find_all("tr"):
+        row=compact(tr.get_text(" ",strip=True))
+        m=re.match(r"^([１２３４５６1-6])\s+([1-6])\s+(\d{4})\s+(.+?)(?:\s+(1'\d{2}\"\d))?$",row)
+        if not m:
+            continue
+        rank=_rank_zen(m.group(1))
+        lane=int(m.group(2))
+        if lane in seen_lanes:
+            continue
+        finishers.append({
+            "rank":rank,
+            "lane":lane,
+            "racerId":m.group(3),
+            "racerName":compact(m.group(4)),
+            "time":m.group(5) or None,
+        })
+        seen_lanes.add(lane)
+        if len(finishers)==6:
+            break
+
+    # Final ST / winning move from the start information block.
+    start_block=text
+    if "スタート情報" in text:
+        start_block=text.split("スタート情報",1)[1]
+    if "勝式" in start_block:
+        start_block=start_block.split("勝式",1)[0]
+    st_map={}
+    for lane,raw,move in re.findall(
+        r"(?:^|\s)([1-6])\s+((?:F|L)?\.\d{2})(?:\s+(逃げ|差し|まくり差し|まくり|抜き|恵まれ))?",
+        start_block,
+    ):
+        st_map[int(lane)]={"st":raw,"move":move or ""}
+    for f in finishers:
+        st=st_map.get(int(f.get("lane") or 0))
+        if st:
+            f["st"]=st["st"]
+            if st["move"]:
+                f["kimarite"]=st["move"]
+
+    kimarite=""
+    mk=re.search(r"決まり手\s*(逃げ|差し|まくり差し|まくり|抜き|恵まれ)",text)
+    if mk:
+        kimarite=mk.group(1)
+    elif st_map:
+        kimarite=next((x["move"] for x in st_map.values() if x.get("move")),"")
+    if kimarite:
+        for f in finishers:
+            if f.get("rank")==1:
+                f["kimarite"]=kimarite
+                break
+
+    payouts={}
+    if "勝式" in text:
+        ptext=text.split("勝式",1)[1]
+        if "水面気象情報" in ptext:
+            ptext=ptext.split("水面気象情報",1)[0]
+        labels=[
+            ("3連単","trifecta",3),("3連複","trio",3),
+            ("2連単","exacta",2),("2連複","quinella",2),
+            ("拡連複","wide",2),("単勝","win",1),("複勝","place",1),
+        ]
+        positions=[]
+        for label,key,n in labels:
+            idx=ptext.find(label)
+            if idx>=0: positions.append((idx,label,key,n))
+        positions.sort()
+        for i,(idx,label,key,n) in enumerate(positions):
+            end=positions[i+1][0] if i+1<len(positions) else len(ptext)
+            seg=ptext[idx+len(label):end]
+            vals=_payout_pairs(seg,n)
+            if vals:
+                payouts[key]=vals
+
+    refund=None
+    mr=re.search(r"返還\s*([1-6](?:\s*[・,]\s*[1-6])*)",text)
+    if mr:
+        refund=[int(x) for x in re.findall(r"[1-6]",mr.group(1))]
+
+    note=""
+    mn=re.search(r"備考\s*(.+?)(?:ボートレースガイド|レース結果一覧|$)",text)
+    if mn:
+        candidate=compact(mn.group(1))
+        if candidate and candidate not in {"---","-"}:
+            note=candidate[:200]
+
+    if not finishers and not payouts and not kimarite:
+        return {}
+
+    result={
+        "finishers":finishers,
+        "payouts":payouts,
+        "weather":_weather_from_text(text),
+        "kimarite":kimarite or None,
+        "official":True,
+    }
+    if refund: result["refund"]=refund
+    if note: result["note"]=note
+    return result
+
+
+def fetch_beforeinfo_task(code: str, date: str, race_no: int):
+    try:
+        soup=get_soup(BEFOREINFO_URL,{"rno":race_no,"jcd":code,"hd":date},timeout=16)
+        return code,race_no,parse_beforeinfo(soup),None
+    except Exception as e:
+        return code,race_no,{},f"{type(e).__name__}: {e}"
+
+
+def fetch_result_task(code: str, date: str, race_no: int):
+    try:
+        soup=get_soup(RACERESULT_URL,{"rno":race_no,"jcd":code,"hd":date},timeout=16)
+        return code,race_no,parse_raceresult(soup),None
+    except Exception as e:
+        return code,race_no,{},f"{type(e).__name__}: {e}"
+
+
+def _minutes_from_now(deadline: str) -> int | None:
+    if not deadline or not re.fullmatch(r"\d{1,2}:\d{2}",str(deadline)):
+        return None
+    now=datetime.now(JST)
+    h,m=map(int,str(deadline).split(":"))
+    target=now.replace(hour=h,minute=m,second=0,microsecond=0)
+    return int((target-now).total_seconds()//60)
+
+
+def enrich_realtime(payload: dict, workers: int=8) -> None:
+    """Fetch dynamic official pages without hitting every endpoint every 30 minutes."""
+    before_tasks=[]
+    result_tasks=[]
+    for meeting in payload.get("meetings",[]):
+        code=meeting.get("venueCode")
+        date=meeting.get("date")
+        for race in meeting.get("races",[]):
+            rno=int(race.get("raceNo") or 0)
+            mins=_minutes_from_now(race.get("deadline",""))
+            if not rno or mins is None:
+                continue
+            # Two hours before until three hours after: beforeinfo is most useful here.
+            if -180 <= mins <= 120:
+                before_tasks.append((code,date,rno))
+            # Fetch every closed race that does not have an official result yet.
+            result=race.get("result") or {}
+            if mins < 0 and not result.get("official"):
+                result_tasks.append((code,date,rno))
+
+    if before_tasks:
+        print(f"[BOAT CHECK] LIVE beforeinfo tasks={len(before_tasks)}")
+        results={}
+        with ThreadPoolExecutor(max_workers=min(workers,8)) as ex:
+            futs=[ex.submit(fetch_beforeinfo_task,*x) for x in before_tasks]
+            for fut in as_completed(futs):
+                code,rno,data,err=fut.result()
+                results[(code,rno)]=(data,err)
+        for meeting in payload.get("meetings",[]):
+            for race in meeting.get("races",[]):
+                key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
+                data,err=results.get(key,({},None))
+                if data:
+                    race["beforeData"]=data.get("boats",[])
+                    race["startExhibition"]=data.get("startExhibition",[])
+                    if data.get("weather"):
+                        race["weather"]=data["weather"]
+                    race["beforeUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                    by_lane={int(x.get("lane") or 0):x for x in data.get("boats",[])}
+                    for b in race.get("boats",[]):
+                        d=by_lane.get(int(b.get("lane") or 0))
+                        if d:
+                            b["before"]=d
+                            if d.get("weight") is not None:
+                                b["weight"]=d["weight"]
+                elif err:
+                    race.setdefault("liveErrors",{})["beforeinfo"]=err
+
+    if result_tasks:
+        print(f"[BOAT CHECK] LIVE result tasks={len(result_tasks)}")
+        results={}
+        with ThreadPoolExecutor(max_workers=min(workers,8)) as ex:
+            futs=[ex.submit(fetch_result_task,*x) for x in result_tasks]
+            for fut in as_completed(futs):
+                code,rno,data,err=fut.result()
+                results[(code,rno)]=(data,err)
+        for meeting in payload.get("meetings",[]):
+            for race in meeting.get("races",[]):
+                key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
+                data,err=results.get(key,({},None))
+                if data:
+                    race["result"]=data
+                    if data.get("weather"):
+                        race["resultWeather"]=data["weather"]
+                    race["resultUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                elif err:
+                    race.setdefault("liveErrors",{})["result"]=err
+
 def fetch_past_day_task(code: str, hd: str):
     try:
         soup = get_soup(RACEINDEX_URL, {"hd":hd,"jcd":code})
@@ -398,7 +873,15 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
         for r in m.get("races",[]):
             meta, err = meta_results.get((m["venueCode"],int(r["raceNo"])),([],None))
             if len(meta)==6:
-                r["boats"] = [{"lane":i, **b} for i,b in enumerate(meta,1)]
+                old_by_lane={int(b.get("lane",0)):b for b in r.get("boats",[])}
+                merged=[]
+                for i,b in enumerate(meta,1):
+                    ob=old_by_lane.get(i,{})
+                    item=dict(ob)
+                    item.update({"lane":i, **b})
+                    merged.append(item)
+                r["boats"] = merged
+                apply_equipment_ranks(r["boats"])
             elif err:
                 r["metaError"] = err
 
@@ -488,17 +971,25 @@ def collect(date: str, out_path: Path, enrich: bool, workers: int) -> dict:
     meetings.sort(key=lambda m:int(m["venueCode"]))
 
     payload = {
-        "schemaVersion":"38.0",
+        "schemaVersion":"41.0",
         "updatedAt":datetime.now(JST).isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
         "mode":"enrich" if enrich else "fast",
+        "staticEnrichedDate": old_payload.get("staticEnrichedDate") if old_payload.get("dateJST")==date else None,
         "meetings":meetings,
         "errors":errors,
     }
 
     if enrich and meetings:
         enrich_payload(payload,out_path.parent/"racers.json",workers=workers)
+        payload["staticEnrichedDate"]=date
+        payload["staticEnrichedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+    elif old_payload.get("dateJST")==date and old_payload.get("staticEnrichedAt"):
+        payload["staticEnrichedAt"]=old_payload.get("staticEnrichedAt")
+
+    if meetings:
+        enrich_realtime(payload,workers=workers)
 
     return payload
 
@@ -506,7 +997,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--date",default=None,help="YYYYMMDD。省略時は日本時間の今日")
     p.add_argument("--out",default="data/today.json")
-    p.add_argument("--enrich",action="store_true",help="racelist/profile/過去日も取得")
+    p.add_argument("--enrich",action="store_true",help="全Rの出走表/F・L/平均ST/モーター・ボート基本値/登録期を取得")
     p.add_argument("--deep",action="store_true",help="旧互換: --enrich と同じ")
     p.add_argument("--workers",type=int,default=10)
     args=p.parse_args()
