@@ -7286,7 +7286,9 @@ function renderDemoCart(){
                   <span>pt</span>
                 </div>
               </div>
-              <button class="demoCartDelete" onclick="demoRemoveCartItem('${x.cartKey}')">×</button>
+              <button class="demoCartDelete" onclick="demoRemoveCartItem('${x.cartKey}')" aria-label="この買い目を削除">
+  <span class="demoDeleteText">削除</span>
+</button>
             </div>
           </div>
         `).join("") : `<div class="demoCartEmpty">ベットリストは空です。</div>`}
@@ -9635,5 +9637,92 @@ document.addEventListener("DOMContentLoaded",()=>{
 .demoCompleteClose{display:block;width:calc(100% - 20px);min-height:42px;margin:0 10px 10px;border:0;border-radius:9px;background:linear-gradient(135deg,#0872b5,#079fd1);color:#fff;font-family:inherit;font-size:9px;font-weight:950;}
 .demoToast{position:fixed;left:50%;bottom:92px;z-index:100000;transform:translate(-50%,20px);padding:10px 16px;border-radius:999px;background:rgba(5,64,100,.94);color:#fff;font-size:9px;font-weight:950;opacity:0;pointer-events:none;transition:.2s ease;box-shadow:0 8px 22px rgba(0,0,0,.18);}
 .demoToast.show{opacity:1;transform:translate(-50%,0);}
+</style>
+
+
+
+<style id="v100-delete-button">
+.demoCartBetRow{grid-template-columns:35% 15% 34% 16%!important;}
+.demoCartDelete{
+  width:44px!important;height:46px!important;margin:auto!important;padding:4px 2px!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  gap:2px!important;border:1.5px solid #e3a7ad!important;border-radius:9px!important;
+  background:#fff3f4!important;color:#c92e3a!important;line-height:1!important;box-shadow:none!important;
+}
+.demoCartDelete .demoTrashIcon{display:block;font-size:15px;line-height:1;}
+.demoCartDelete .demoDeleteText{display:block;font-size:6.5px;line-height:1;font-weight:950;}
+.demoCartDelete:active{transform:scale(.96);background:#ffe7e9!important;}
+.demoBetItem>button{background:#fff3f4!important;color:#c92e3a!important;border:1.5px solid #e3a7ad!important;}
+.demoBetItem>button::after{color:#c92e3a!important;}
+@media(max-width:430px){
+  .demoCartBetRow{grid-template-columns:34% 15% 34% 17%!important;}
+  .demoCartDelete{width:42px!important;height:44px!important;}
+}
+</style>
+
+
+
+<style id="v101-demo-delete-clear">
+/* ベットリストの削除操作を「×」ではなく明確な赤い削除ボタンに統一 */
+.demoCartBetRow{
+  grid-template-columns:33% 14% 34% 19%!important;
+}
+.demoCartDelete{
+  width:52px!important;
+  height:38px!important;
+  margin:auto!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:1.5px solid #df5f68!important;
+  border-radius:8px!important;
+  background:#fff1f2!important;
+  color:#c62532!important;
+  box-shadow:none!important;
+  font-family:inherit!important;
+  line-height:1!important;
+}
+.demoCartDelete .demoDeleteText{
+  display:block!important;
+  font-size:8.5px!important;
+  line-height:1!important;
+  font-weight:950!important;
+  letter-spacing:.02em!important;
+}
+.demoCartDelete:active{
+  background:#ffdfe2!important;
+  transform:scale(.96)!important;
+}
+
+/* 万一旧ベットリストが表示された場合も×だけに見えないよう修正 */
+.demoBetItem>button{
+  width:44px!important;
+  height:34px!important;
+  border-radius:8px!important;
+  border:1.5px solid #df5f68!important;
+  background:#fff1f2!important;
+  color:#c62532!important;
+  font-size:0!important;
+}
+.demoBetItem>button::after{
+  content:"削除"!important;
+  display:block!important;
+  color:#c62532!important;
+  font-size:8px!important;
+  line-height:1!important;
+  font-weight:950!important;
+  transform:none!important;
+}
+
+@media(max-width:430px){
+  .demoCartBetRow{
+    grid-template-columns:32% 14% 34% 20%!important;
+  }
+  .demoCartDelete{
+    width:48px!important;
+    height:36px!important;
+  }
+}
 </style>
 
