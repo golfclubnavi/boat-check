@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "41.0",
-  "updatedAt": "2026-09-10T18:08:17+09:00",
+  "schemaVersion": "42.0",
+  "updatedAt": "2026-09-10T18:34:21+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
-  "mode": "fast",
+  "mode": "live",
   "staticEnrichedDate": null,
   "meetings": [
     {
@@ -171,44 +171,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.16,
-              "rawST": ".16"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.18,
-              "rawST": ".18"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.25,
-              "rawST": ".25"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -216,7 +178,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -336,14 +297,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 23.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 2,
@@ -500,44 +455,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.16,
-              "rawST": ".16"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": "F.04"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": "F.11"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": "F.05"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -545,7 +462,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -665,14 +581,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 23.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 3,
@@ -831,44 +741,6 @@
               "tilt": 1.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": "F.03"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": "F.04"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -876,7 +748,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -996,14 +867,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 23.0,
-            "windSpeed": 2.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 4,
@@ -1160,44 +1025,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.24,
-              "rawST": ".24"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.32,
-              "rawST": ".32"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -1205,7 +1032,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -1325,14 +1151,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 23.0,
-            "windSpeed": 2.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 5,
@@ -1489,44 +1309,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": "F.05"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.15,
-              "rawST": ".15"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -1534,7 +1316,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -1654,14 +1435,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 23.0,
-            "windSpeed": 2.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 6,
@@ -1818,44 +1593,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.18,
-              "rawST": ".18"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.24,
-              "rawST": ".24"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -1863,7 +1600,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -1983,14 +1719,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 23.0,
-            "windSpeed": 2.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 7,
@@ -2149,44 +1879,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.25,
-              "rawST": ".25"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.25,
-              "rawST": ".25"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -2194,7 +1886,134 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
+          "result": {
+            "finishers": [
+              {
+                "rank": 1,
+                "lane": 1,
+                "racerId": "4040",
+                "racerName": "廣瀬 将亨",
+                "time": "1'49\"5",
+                "st": ".13",
+                "kimarite": "逃げ"
+              },
+              {
+                "rank": 2,
+                "lane": 3,
+                "racerId": "4033",
+                "racerName": "伊藤 将吉",
+                "time": "1'50\"6",
+                "st": ".16"
+              },
+              {
+                "rank": 3,
+                "lane": 4,
+                "racerId": "5122",
+                "racerName": "相馬 翔",
+                "time": "1'52\"5",
+                "st": ".11"
+              },
+              {
+                "rank": 4,
+                "lane": 6,
+                "racerId": "3475",
+                "racerName": "橋本 久和",
+                "time": "1'53\"3",
+                "st": ".10"
+              },
+              {
+                "rank": 5,
+                "lane": 2,
+                "racerId": "5181",
+                "racerName": "森 智哉",
+                "time": "1'54\"7",
+                "st": ".23"
+              },
+              {
+                "rank": 6,
+                "lane": 5,
+                "racerId": "5430",
+                "racerName": "鳥本 智史",
+                "time": "1'56\"7",
+                "st": ".05"
+              }
+            ],
+            "payouts": {
+              "trifecta": [
+                {
+                  "combination": "1-3-4",
+                  "payout": 570
+                }
+              ],
+              "trio": [
+                {
+                  "combination": "1=3=4",
+                  "payout": 320
+                }
+              ],
+              "exacta": [
+                {
+                  "combination": "1-3",
+                  "payout": 270
+                }
+              ],
+              "quinella": [
+                {
+                  "combination": "1=3",
+                  "payout": 150
+                }
+              ],
+              "wide": [
+                {
+                  "combination": "1=3",
+                  "payout": 100
+                },
+                {
+                  "combination": "1=4",
+                  "payout": 200
+                },
+                {
+                  "combination": "3=4",
+                  "payout": 190
+                }
+              ],
+              "win": [
+                {
+                  "combination": "1",
+                  "payout": 140
+                }
+              ],
+              "place": [
+                {
+                  "combination": "1",
+                  "payout": 120
+                },
+                {
+                  "combination": "3",
+                  "payout": 130
+                }
+              ]
+            },
+            "weather": {
+              "airTemperature": 20.0,
+              "waterTemperature": 23.0,
+              "windSpeed": 2.0,
+              "waveHeight": 1.0,
+              "weather": "曇り"
+            },
+            "kimarite": "逃げ",
+            "official": true,
+            "note": "ボートレースガイドはこちら"
+          },
+          "resultWeather": {
+            "airTemperature": 20.0,
+            "waterTemperature": 23.0,
+            "windSpeed": 2.0,
+            "waveHeight": 1.0,
+            "weather": "曇り"
+          },
+          "resultUpdatedAt": "2026-09-10T18:34:42+09:00"
         },
         {
           "raceNo": 8,
@@ -2202,8 +2021,16 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山崎 義明",
-              "class": "A2"
+              "racerName": "発売終了 山崎 義明",
+              "class": "A2",
+              "before": {
+                "lane": 1,
+                "racerName": "山崎 義明",
+                "weight": 52.0,
+                "exhibitionTime": 6.9,
+                "tilt": -0.5
+              },
+              "weight": 52.0
             },
             {
               "lane": 2,
@@ -2212,7 +2039,18 @@
               "racerId": "5107",
               "branch": "福岡",
               "age": 27,
-              "period": 125
+              "period": 125,
+              "before": {
+                "lane": 2,
+                "racerName": "松本 真広",
+                "weight": 51.5,
+                "exhibitionTime": 6.79,
+                "tilt": -0.5,
+                "partsExchange": "リング",
+                "course": 6,
+                "st": 0.01
+              },
+              "weight": 51.5
             },
             {
               "lane": 3,
@@ -2221,7 +2059,15 @@
               "racerId": "4562",
               "branch": "岡山",
               "age": 38,
-              "period": 105
+              "period": 105,
+              "before": {
+                "lane": 3,
+                "racerName": "阪本 勇介",
+                "weight": 54.8,
+                "exhibitionTime": 6.79,
+                "tilt": -0.5
+              },
+              "weight": 54.8
             },
             {
               "lane": 4,
@@ -2230,7 +2076,15 @@
               "racerId": "4943",
               "branch": "愛知",
               "age": 35,
-              "period": 119
+              "period": 119,
+              "before": {
+                "lane": 4,
+                "racerName": "八木 治樹",
+                "weight": 53.7,
+                "exhibitionTime": 6.68,
+                "tilt": -0.5
+              },
+              "weight": 53.7
             },
             {
               "lane": 5,
@@ -2239,7 +2093,15 @@
               "racerId": "4027",
               "branch": "佐賀",
               "age": 48,
-              "period": 85
+              "period": 85,
+              "before": {
+                "lane": 5,
+                "racerName": "松江 秀徳",
+                "weight": 53.3,
+                "exhibitionTime": 6.75,
+                "tilt": -0.5
+              },
+              "weight": 53.3
             },
             {
               "lane": 6,
@@ -2248,15 +2110,21 @@
               "racerId": "5344",
               "branch": "滋賀",
               "age": 23,
-              "period": 134
+              "period": 134,
+              "before": {
+                "lane": 6,
+                "racerName": "谷口 丞",
+                "weight": 52.0,
+                "exhibitionTime": 6.77,
+                "tilt": -0.5
+              },
+              "weight": 52.0
             }
           ],
           "replay": {
             "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=8"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=8",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -2264,7 +2132,92 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
+          "beforeUpdatedAt": "2026-09-10T18:34:32+09:00",
+          "beforeData": [
+            {
+              "lane": 1,
+              "racerName": "山崎 義明",
+              "weight": 52.0,
+              "exhibitionTime": 6.9,
+              "tilt": -0.5
+            },
+            {
+              "lane": 2,
+              "racerName": "松本 真広",
+              "weight": 51.5,
+              "exhibitionTime": 6.79,
+              "tilt": -0.5,
+              "partsExchange": "リング",
+              "course": 6,
+              "st": 0.01
+            },
+            {
+              "lane": 3,
+              "racerName": "阪本 勇介",
+              "weight": 54.8,
+              "exhibitionTime": 6.79,
+              "tilt": -0.5
+            },
+            {
+              "lane": 4,
+              "racerName": "八木 治樹",
+              "weight": 53.7,
+              "exhibitionTime": 6.68,
+              "tilt": -0.5
+            },
+            {
+              "lane": 5,
+              "racerName": "松江 秀徳",
+              "weight": 53.3,
+              "exhibitionTime": 6.75,
+              "tilt": -0.5
+            },
+            {
+              "lane": 6,
+              "racerName": "谷口 丞",
+              "weight": 52.0,
+              "exhibitionTime": 6.77,
+              "tilt": -0.5
+            }
+          ],
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.16,
+              "rawST": ".16"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.01,
+              "rawST": ".01"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.04,
+              "rawST": ".04"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.09,
+              "rawST": ".09"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.01,
+              "rawST": ".01"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.01,
+              "rawST": ".01"
+            }
+          ]
         },
         {
           "raceNo": 9,
@@ -2325,8 +2278,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=9"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=9",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -2334,7 +2285,9 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
+          "beforeUpdatedAt": "2026-09-10T18:34:32+09:00",
+          "beforeData": [],
+          "startExhibition": []
         },
         {
           "raceNo": 10,
@@ -2395,8 +2348,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=10"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=10",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -2465,8 +2416,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=11"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=11",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 23.0,
@@ -4923,13 +4872,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -5109,13 +5051,6 @@
             "kimarite": "差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 5.0,
-            "waveHeight": 5.0,
-            "weather": "雨"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -5297,13 +5232,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 4.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -5483,13 +5411,6 @@
             "kimarite": "まくり差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 5.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -5671,13 +5592,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 4.0,
-            "waveHeight": 5.0,
-            "weather": "雨"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -5857,13 +5771,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "雨"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -6045,13 +5952,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -6231,13 +6131,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 5.0,
-            "waveHeight": 5.0,
-            "weather": "雨"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -6419,13 +6312,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "雨"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -6585,44 +6471,6 @@
               "partsExchange": "リング"
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.0,
-              "rawST": ".00"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": "F.04"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 25.0,
@@ -6630,7 +6478,6 @@
             "waveHeight": 5.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -6750,14 +6597,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "雨"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 11,
@@ -6916,44 +6757,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.2,
-              "rawST": ".20"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.1,
-              "rawST": ".10"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.15,
-              "rawST": ".15"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.16,
-              "rawST": ".16"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.23,
-              "rawST": ".23"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.24,
-              "rawST": ".24"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 25.0,
@@ -6961,7 +6764,6 @@
             "waveHeight": 5.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -7081,14 +6883,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "雨"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 12,
@@ -7245,44 +7041,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            }
-          ],
           "weather": {
             "airTemperature": 20.0,
             "waterTemperature": 25.0,
@@ -7290,7 +7048,6 @@
             "waveHeight": 5.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -7410,14 +7167,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         }
       ],
       "meetDays": [
@@ -9373,13 +9124,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -9559,13 +9303,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 3.0,
-            "weather": "雨"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -9747,13 +9484,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -9933,13 +9663,6 @@
             "kimarite": "抜き",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -10121,13 +9844,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -10307,13 +10023,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -10495,13 +10204,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -10681,13 +10383,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -10869,13 +10564,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -11033,44 +10721,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.21,
-              "rawST": ".21"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.15,
-              "rawST": ".15"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.18,
-              "rawST": ".18"
-            }
-          ],
           "weather": {
             "airTemperature": 21.0,
             "waterTemperature": 25.0,
@@ -11078,7 +10728,6 @@
             "waveHeight": 3.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -11198,14 +10847,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 11,
@@ -11362,44 +11005,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.1,
-              "rawST": "F.10"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.44,
-              "rawST": ".44"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            }
-          ],
           "weather": {
             "airTemperature": 21.0,
             "waterTemperature": 25.0,
@@ -11407,7 +11012,6 @@
             "waveHeight": 3.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -11527,14 +11131,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 12,
@@ -11691,44 +11289,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            }
-          ],
           "weather": {
             "airTemperature": 21.0,
             "waterTemperature": 25.0,
@@ -11736,7 +11296,6 @@
             "waveHeight": 3.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -11856,14 +11415,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 3.0,
-            "weather": "雨"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         }
       ],
       "meetDays": [
@@ -14252,13 +13805,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 24.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -14438,13 +13984,6 @@
             "kimarite": "差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 20.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -14626,13 +14165,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -14812,13 +14344,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 24.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -15000,13 +14525,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -15186,13 +14704,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 24.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -15374,13 +14885,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -15560,13 +15064,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -15748,13 +15245,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 24.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -15912,44 +15402,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            }
-          ],
           "weather": {
             "airTemperature": 22.0,
             "waterTemperature": 24.0,
@@ -15957,7 +15409,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -16077,14 +15528,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 11,
@@ -16241,44 +15686,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.21,
-              "rawST": ".21"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": "F.05"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            }
-          ],
           "weather": {
             "airTemperature": 22.0,
             "waterTemperature": 25.0,
@@ -16286,7 +15693,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -16406,14 +15812,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 22.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 12,
@@ -16570,44 +15970,6 @@
               "tilt": 2.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            }
-          ],
           "weather": {
             "airTemperature": 22.0,
             "waterTemperature": 25.0,
@@ -16615,7 +15977,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -16714,14 +16075,8 @@
             ],
             "note": "【返還艇あり】"
           },
-          "resultWeather": {
-            "airTemperature": 21.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 0.0,
-            "waveHeight": 2.0,
-            "weather": "雨"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         }
       ],
       "meetDays": [
@@ -17360,13 +16715,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 27.8,
-            "waterTemperature": 24.5,
-            "windSpeed": 2.0,
-            "waveHeight": 0.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -17546,13 +16894,6 @@
             "kimarite": "まくり差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 27.6,
-            "waterTemperature": 24.6,
-            "windSpeed": 3.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -17734,13 +17075,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 27.8,
-            "waterTemperature": 24.6,
-            "windSpeed": 3.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -17920,13 +17254,6 @@
             "kimarite": "差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 28.0,
-            "waterTemperature": 24.6,
-            "windSpeed": 5.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -18108,13 +17435,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 28.3,
-            "waterTemperature": 24.7,
-            "windSpeed": 1.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -18294,13 +17614,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 28.3,
-            "waterTemperature": 24.7,
-            "windSpeed": 3.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -18482,13 +17795,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 28.6,
-            "waterTemperature": 24.8,
-            "windSpeed": 2.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -18668,13 +17974,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 28.1,
-            "waterTemperature": 24.8,
-            "windSpeed": 3.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -18856,13 +18155,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 27.6,
-            "waterTemperature": 24.8,
-            "windSpeed": 3.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -19020,44 +18312,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.15,
-              "rawST": ".15"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": "F.04"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            }
-          ],
           "weather": {
             "airTemperature": 27.6,
             "waterTemperature": 24.8,
@@ -19065,7 +18319,6 @@
             "waveHeight": 0.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -19185,14 +18438,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.2,
-            "waterTemperature": 24.8,
-            "windSpeed": 3.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 11,
@@ -19349,44 +18596,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.16,
-              "rawST": ".16"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": "F.06"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.18,
-              "rawST": ".18"
-            }
-          ],
           "weather": {
             "airTemperature": 26.2,
             "waterTemperature": 24.8,
@@ -19394,7 +18603,6 @@
             "waveHeight": 0.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -19514,14 +18722,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.1,
-            "waterTemperature": 24.8,
-            "windSpeed": 1.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 12,
@@ -19680,44 +18882,6 @@
               "partsExchange": "リング"
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.1,
-              "rawST": ".10"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            }
-          ],
           "weather": {
             "airTemperature": 26.1,
             "waterTemperature": 24.8,
@@ -19725,7 +18889,6 @@
             "waveHeight": 0.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -19845,14 +19008,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.5,
-            "waterTemperature": 24.7,
-            "windSpeed": 0.0,
-            "waveHeight": 0.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         }
       ],
       "meetDays": [
@@ -21369,13 +20526,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 23.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -21555,13 +20705,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "晴"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -21743,13 +20886,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -21929,13 +21065,6 @@
             "kimarite": "抜き",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "晴"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -22117,13 +21246,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -22303,13 +21425,6 @@
             "kimarite": "まくり差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -22491,13 +21606,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -22677,13 +21785,6 @@
             "kimarite": "まくり差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -22865,13 +21966,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -23051,13 +22145,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "雨"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -23239,13 +22326,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "雨"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -23425,13 +22505,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         }
@@ -25389,13 +24462,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 4.0,
-            "waveHeight": 3.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -25575,13 +24641,6 @@
             "kimarite": "まくり差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 4.0,
-            "waveHeight": 5.0,
-            "weather": "晴"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -25763,13 +24822,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 5.0,
-            "waveHeight": 5.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -25949,13 +25001,6 @@
             "kimarite": "まくり差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "晴"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -26137,13 +25182,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 4.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -26323,13 +25361,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 2.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -26511,13 +25542,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -26697,13 +25721,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 4.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -26885,13 +25902,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 4.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -27051,44 +26061,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.0,
-              "rawST": ".00"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.19,
-              "rawST": ".19"
-            }
-          ],
           "weather": {
             "airTemperature": 26.0,
             "waterTemperature": 27.0,
@@ -27096,7 +26068,6 @@
             "waveHeight": 5.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -27216,14 +26187,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 11,
@@ -27380,44 +26345,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.15,
-              "rawST": ".15"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            }
-          ],
           "weather": {
             "airTemperature": 26.0,
             "waterTemperature": 27.0,
@@ -27425,7 +26352,6 @@
             "waveHeight": 5.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -27545,14 +26471,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 2.0,
-            "waveHeight": 3.0,
-            "weather": "雨"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 12,
@@ -27709,44 +26629,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.15,
-              "rawST": ".15"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.27,
-              "rawST": ".27"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.1,
-              "rawST": ".10"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            }
-          ],
           "weather": {
             "airTemperature": 26.0,
             "waterTemperature": 27.0,
@@ -27754,7 +26636,6 @@
             "waveHeight": 3.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -27874,14 +26755,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 27.0,
-            "windSpeed": 3.0,
-            "waveHeight": 5.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         }
       ],
       "meetDays": [
@@ -29398,13 +28273,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 3.0,
-            "waveHeight": 4.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -29584,13 +28452,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 3.0,
-            "waveHeight": 4.0,
-            "weather": "晴"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -29772,13 +28633,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 4.0,
-            "waveHeight": 4.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -29958,13 +28812,6 @@
             "kimarite": "まくり差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "晴"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -30146,13 +28993,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -30332,13 +29172,6 @@
             "kimarite": "まくり差し",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "晴"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -30520,13 +29353,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -30706,13 +29532,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -30894,13 +29713,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "晴"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -31058,44 +29870,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.18,
-              "rawST": ".18"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.13,
-              "rawST": ".13"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            }
-          ],
           "weather": {
             "airTemperature": 26.0,
             "waterTemperature": 26.0,
@@ -31103,7 +29877,6 @@
             "waveHeight": 2.0,
             "weather": "晴"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -31223,14 +29996,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 11,
@@ -31387,44 +30154,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.29,
-              "rawST": ".29"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.33,
-              "rawST": ".33"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.24,
-              "rawST": ".24"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.17,
-              "rawST": ".17"
-            }
-          ],
           "weather": {
             "airTemperature": 26.0,
             "waterTemperature": 26.0,
@@ -31432,7 +30161,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -31552,14 +30280,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 1.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 12,
@@ -31716,44 +30438,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.15,
-              "rawST": ".15"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.18,
-              "rawST": ".18"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.13,
-              "rawST": ".13"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.13,
-              "rawST": ".13"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": "F.07"
-            }
-          ],
           "weather": {
             "airTemperature": 26.0,
             "waterTemperature": 26.0,
@@ -31761,7 +30445,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -31881,14 +30564,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 26.0,
-            "waterTemperature": 26.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         }
       ],
       "meetDays": [
@@ -32506,44 +31183,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.1,
-              "rawST": ".10"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": "F.04"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": "F.03"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -32551,7 +31190,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -32671,14 +31309,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 2,
@@ -32835,44 +31467,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -32880,7 +31474,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -32992,14 +31585,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 3,
@@ -33156,44 +31743,6 @@
               "tilt": 0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.2,
-              "rawST": ".20"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.16,
-              "rawST": ".16"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -33201,7 +31750,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -33321,14 +31869,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 4,
@@ -33485,44 +32027,6 @@
               "tilt": -0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": "F.03"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.27,
-              "rawST": ".27"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.16,
-              "rawST": ".16"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -33530,7 +32034,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -33650,14 +32153,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 5,
@@ -33814,44 +32311,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -33859,7 +32318,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -33979,14 +32437,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 6,
@@ -34143,44 +32595,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.18,
-              "rawST": ".18"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.15,
-              "rawST": ".15"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.25,
-              "rawST": ".25"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.18,
-              "rawST": ".18"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.27,
-              "rawST": ".27"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -34188,7 +32602,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -34308,14 +32721,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 7,
@@ -34474,44 +32881,6 @@
               "partsExchange": "リング"
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.19,
-              "rawST": ".19"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.3,
-              "rawST": ".30"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -34519,7 +32888,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -34639,14 +33007,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 8,
@@ -34654,7 +33016,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大須賀 友",
+              "racerName": "発売終了 大須賀 友",
               "class": "A1",
               "before": {
                 "lane": 1,
@@ -34803,6 +33165,14 @@
               "tilt": -0.5
             }
           ],
+          "weather": {
+            "airTemperature": 25.0,
+            "waterTemperature": 25.0,
+            "windSpeed": 2.0,
+            "waveHeight": 2.0,
+            "weather": "曇り"
+          },
+          "beforeUpdatedAt": "2026-09-10T18:34:32+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -34841,14 +33211,70 @@
               "rawST": ".01"
             }
           ],
-          "weather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
+          "result": {
+            "finishers": [],
+            "payouts": {
+              "trifecta": [
+                {
+                  "combination": "1-2-3",
+                  "payout": 360
+                }
+              ],
+              "trio": [
+                {
+                  "combination": "1=2=3",
+                  "payout": 180
+                }
+              ],
+              "exacta": [
+                {
+                  "combination": "1-2",
+                  "payout": 260
+                }
+              ],
+              "quinella": [
+                {
+                  "combination": "1=2",
+                  "payout": 230
+                }
+              ],
+              "wide": [
+                {
+                  "combination": "1=2",
+                  "payout": 120
+                },
+                {
+                  "combination": "1=3",
+                  "payout": 130
+                },
+                {
+                  "combination": "2=3",
+                  "payout": 180
+                }
+              ],
+              "win": [
+                {
+                  "combination": "1",
+                  "payout": 110
+                }
+              ],
+              "place": [
+                {
+                  "combination": "1",
+                  "payout": 100
+                },
+                {
+                  "combination": "2",
+                  "payout": 110
+                }
+              ]
+            },
+            "weather": {},
+            "kimarite": null,
+            "official": true,
+            "note": "ボートレースガイドはこちら"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
+          "resultUpdatedAt": "2026-09-10T18:34:42+09:00"
         },
         {
           "raceNo": 9,
@@ -34909,8 +33335,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=9"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=9",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -34918,7 +33342,9 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
+          "beforeUpdatedAt": "2026-09-10T18:34:32+09:00",
+          "beforeData": [],
+          "startExhibition": []
         },
         {
           "raceNo": 10,
@@ -34979,8 +33405,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=10"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=10",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -35049,8 +33473,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=11"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=11",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 25.0,
@@ -35751,13 +34173,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.4,
-            "waterTemperature": 24.9,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -35937,13 +34352,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.2,
-            "waterTemperature": 24.9,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -36125,13 +34533,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.2,
-            "waterTemperature": 24.9,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -36311,13 +34712,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 24.8,
-            "waterTemperature": 24.9,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -36499,13 +34893,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.2,
-            "waterTemperature": 24.9,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -36685,13 +35072,6 @@
             "kimarite": "まくり",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.4,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -36873,13 +35253,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.4,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -37059,13 +35432,6 @@
             "kimarite": "抜き",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 24.2,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -37247,13 +35613,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.3,
-            "waterTemperature": 25.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -37433,13 +35792,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 24.8,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
@@ -37621,13 +35973,6 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.4,
-            "waterTemperature": 25.1,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         },
         {
@@ -37807,13 +36152,6 @@
             "kimarite": "逃げ",
             "official": true,
             "note": "ボートレースガイドはこちら"
-          },
-          "resultWeather": {
-            "airTemperature": 25.3,
-            "waterTemperature": 25.2,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
           },
           "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
         }
@@ -38431,44 +36769,6 @@
               "tilt": 0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.17,
-              "rawST": ".17"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.19,
-              "rawST": ".19"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            }
-          ],
           "weather": {
             "airTemperature": 24.0,
             "waterTemperature": 28.0,
@@ -38476,7 +36776,6 @@
             "waveHeight": 1.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -38596,14 +36895,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 28.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 2,
@@ -38760,44 +37053,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.21,
-              "rawST": ".21"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 28.0,
@@ -38805,7 +37060,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -38925,14 +37179,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 28.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 3,
@@ -39089,44 +37337,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": "F.07"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": "F.02"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 28.0,
@@ -39134,7 +37344,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -39254,14 +37463,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 28.0,
-            "windSpeed": 0.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 4,
@@ -39418,44 +37621,6 @@
               "tilt": 0.5
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.3,
-              "rawST": ".30"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": "F.05"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": "F.05"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 28.0,
@@ -39463,7 +37628,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -39583,14 +37747,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 25.0,
-            "waterTemperature": 28.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 5,
@@ -39749,44 +37907,6 @@
               "partsExchange": "リング / シリンダ"
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": "F.05"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": "F.06"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": "F.03"
-            }
-          ],
           "weather": {
             "airTemperature": 25.0,
             "waterTemperature": 28.0,
@@ -39794,7 +37914,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -39914,14 +38033,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 28.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "雨"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 6,
@@ -40080,44 +38193,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.04,
-              "rawST": ".04"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": "F.11"
-            }
-          ],
           "weather": {
             "airTemperature": 24.0,
             "waterTemperature": 28.0,
@@ -40125,7 +38200,6 @@
             "waveHeight": 1.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
           "result": {
             "finishers": [
               {
@@ -40245,14 +38319,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 28.0,
-            "windSpeed": 1.0,
-            "waveHeight": 1.0,
-            "weather": "雨"
-          },
-          "resultUpdatedAt": "2026-09-10T18:11:36+09:00"
+          "resultUpdatedAt": "2026-09-10T18:11:36+09:00",
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
         },
         {
           "raceNo": 7,
@@ -40260,16 +38328,8 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 河合 佑樹",
-              "class": "A1",
-              "before": {
-                "lane": 1,
-                "racerName": "河合 佑樹",
-                "weight": 52.0,
-                "exhibitionTime": 6.92,
-                "tilt": 0.0
-              },
-              "weight": 52.0
+              "racerName": "発売終了 河合 佑樹",
+              "class": "A1"
             },
             {
               "lane": 2,
@@ -40411,44 +38471,6 @@
               "tilt": 0.0
             }
           ],
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.1,
-              "rawST": ".10"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            }
-          ],
           "weather": {
             "airTemperature": 24.0,
             "waterTemperature": 28.0,
@@ -40456,7 +38478,129 @@
             "waveHeight": 1.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
+          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00",
+          "result": {
+            "finishers": [
+              {
+                "rank": 1,
+                "lane": 1,
+                "racerId": "4494",
+                "racerName": "河合 佑樹",
+                "time": "1'49\"5",
+                "st": ".08",
+                "kimarite": "逃げ"
+              },
+              {
+                "rank": 2,
+                "lane": 2,
+                "racerId": "4238",
+                "racerName": "毒島 誠",
+                "time": "1'50\"3",
+                "st": ".06"
+              },
+              {
+                "rank": 3,
+                "lane": 6,
+                "racerId": "5051",
+                "racerName": "松本 純平",
+                "time": "1'52\"1",
+                "st": ".00"
+              },
+              {
+                "rank": 4,
+                "lane": 4,
+                "racerId": "5028",
+                "racerName": "原田 才一郎",
+                "time": "1'53\"6",
+                "st": ".00"
+              },
+              {
+                "rank": 5,
+                "lane": 3,
+                "racerId": "3783",
+                "racerName": "瓜生 正義",
+                "time": null,
+                "st": ".07"
+              }
+            ],
+            "payouts": {
+              "trifecta": [
+                {
+                  "combination": "1-2-6",
+                  "payout": 2970
+                }
+              ],
+              "trio": [
+                {
+                  "combination": "1=2=6",
+                  "payout": 1700
+                }
+              ],
+              "exacta": [
+                {
+                  "combination": "1-2",
+                  "payout": 220
+                }
+              ],
+              "quinella": [
+                {
+                  "combination": "1=2",
+                  "payout": 140
+                }
+              ],
+              "wide": [
+                {
+                  "combination": "1=2",
+                  "payout": 120
+                },
+                {
+                  "combination": "1=6",
+                  "payout": 560
+                },
+                {
+                  "combination": "2=6",
+                  "payout": 740
+                }
+              ],
+              "win": [
+                {
+                  "combination": "1",
+                  "payout": 130
+                }
+              ],
+              "place": [
+                {
+                  "combination": "1",
+                  "payout": 120
+                },
+                {
+                  "combination": "2",
+                  "payout": 110
+                }
+              ]
+            },
+            "weather": {
+              "airTemperature": 24.0,
+              "waterTemperature": 28.0,
+              "windSpeed": 1.0,
+              "waveHeight": 1.0,
+              "weather": "雨"
+            },
+            "kimarite": "逃げ",
+            "official": true,
+            "refund": [
+              5
+            ],
+            "note": "【返還艇あり】"
+          },
+          "resultWeather": {
+            "airTemperature": 24.0,
+            "waterTemperature": 28.0,
+            "windSpeed": 1.0,
+            "waveHeight": 1.0,
+            "weather": "雨"
+          },
+          "resultUpdatedAt": "2026-09-10T18:34:42+09:00"
         },
         {
           "raceNo": 8,
@@ -40465,7 +38609,15 @@
             {
               "lane": 1,
               "racerName": "投票 黒野 元基",
-              "class": "A1"
+              "class": "A1",
+              "before": {
+                "lane": 1,
+                "racerName": "黒野 元基",
+                "weight": 51.5,
+                "exhibitionTime": 6.91,
+                "tilt": -0.5
+              },
+              "weight": 51.5
             },
             {
               "lane": 2,
@@ -40474,7 +38626,17 @@
               "racerId": "3779",
               "branch": "長崎",
               "age": 50,
-              "period": 76
+              "period": 76,
+              "before": {
+                "lane": 2,
+                "racerName": "原田 幸哉",
+                "weight": 52.0,
+                "exhibitionTime": 6.95,
+                "tilt": 0.0,
+                "course": 6,
+                "st": "F.01"
+              },
+              "weight": 52.0
             },
             {
               "lane": 3,
@@ -40483,7 +38645,15 @@
               "racerId": "4688",
               "branch": "東京",
               "age": 33,
-              "period": 109
+              "period": 109,
+              "before": {
+                "lane": 3,
+                "racerName": "永井 彪也",
+                "weight": 52.0,
+                "exhibitionTime": 6.93,
+                "tilt": 0.0
+              },
+              "weight": 52.0
             },
             {
               "lane": 4,
@@ -40492,7 +38662,15 @@
               "racerId": "4544",
               "branch": "福岡",
               "age": 38,
-              "period": 104
+              "period": 104,
+              "before": {
+                "lane": 4,
+                "racerName": "松田 大志郎",
+                "weight": 52.0,
+                "exhibitionTime": 6.91,
+                "tilt": 0.0
+              },
+              "weight": 52.0
             },
             {
               "lane": 5,
@@ -40501,7 +38679,15 @@
               "racerId": "3952",
               "branch": "埼玉",
               "age": 50,
-              "period": 82
+              "period": 82,
+              "before": {
+                "lane": 5,
+                "racerName": "中澤 和志",
+                "weight": 52.0,
+                "exhibitionTime": 6.89,
+                "tilt": 0.5
+              },
+              "weight": 52.0
             },
             {
               "lane": 6,
@@ -40510,15 +38696,21 @@
               "racerId": "3590",
               "branch": "東京",
               "age": 52,
-              "period": 70
+              "period": 70,
+              "before": {
+                "lane": 6,
+                "racerName": "濱野谷 憲吾",
+                "weight": 54.3,
+                "exhibitionTime": 6.91,
+                "tilt": 0.5
+              },
+              "weight": 54.3
             }
           ],
           "replay": {
             "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260910&race=8"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260910&race=8",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 24.0,
             "waterTemperature": 28.0,
@@ -40526,7 +38718,91 @@
             "waveHeight": 1.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T18:09:19+09:00"
+          "beforeUpdatedAt": "2026-09-10T18:34:32+09:00",
+          "beforeData": [
+            {
+              "lane": 1,
+              "racerName": "黒野 元基",
+              "weight": 51.5,
+              "exhibitionTime": 6.91,
+              "tilt": -0.5
+            },
+            {
+              "lane": 2,
+              "racerName": "原田 幸哉",
+              "weight": 52.0,
+              "exhibitionTime": 6.95,
+              "tilt": 0.0,
+              "course": 6,
+              "st": "F.01"
+            },
+            {
+              "lane": 3,
+              "racerName": "永井 彪也",
+              "weight": 52.0,
+              "exhibitionTime": 6.93,
+              "tilt": 0.0
+            },
+            {
+              "lane": 4,
+              "racerName": "松田 大志郎",
+              "weight": 52.0,
+              "exhibitionTime": 6.91,
+              "tilt": 0.0
+            },
+            {
+              "lane": 5,
+              "racerName": "中澤 和志",
+              "weight": 52.0,
+              "exhibitionTime": 6.89,
+              "tilt": 0.5
+            },
+            {
+              "lane": 6,
+              "racerName": "濱野谷 憲吾",
+              "weight": 54.3,
+              "exhibitionTime": 6.91,
+              "tilt": 0.5
+            }
+          ],
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.19,
+              "rawST": ".19"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.01,
+              "rawST": ".01"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.0,
+              "rawST": ".00"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.04,
+              "rawST": "F.04"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.06,
+              "rawST": "F.06"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.01,
+              "rawST": "F.01"
+            }
+          ]
         },
         {
           "raceNo": 9,
@@ -40587,8 +38863,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260910&race=9"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260910&race=9",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 24.0,
             "waterTemperature": 28.0,
@@ -40657,8 +38931,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260910&race=10"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260910&race=10",
-          "beforeData": [],
-          "startExhibition": [],
           "weather": {
             "airTemperature": 24.0,
             "waterTemperature": 28.0,
