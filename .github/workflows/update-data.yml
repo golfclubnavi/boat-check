@@ -17,7 +17,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 35
 
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Refresh deadlines, exhibition, current-meet scores and results
+      - name: Refresh live data; auto-enrich after JST midnight
         run: python scripts/collect_today.py --live --out data/today.json --workers 8
 
       - name: Commit live data when changed

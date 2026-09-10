@@ -3,7 +3,11 @@ name: Enrich BOAT CHECK data
 on:
   workflow_dispatch:
   schedule:
+    # 00:20 JST = previous day 15:20 UTC
+    # Midnight live update normally enriches automatically; this is a fallback.
+    - cron: "20 15 * * *"
     # 07:30 JST = previous day 22:30 UTC
+    # Morning refresh catches official lineup/equipment changes.
     - cron: "30 22 * * *"
 
 concurrency:
@@ -35,7 +39,7 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Enrich racer, current-meet, historical results, motor and boat data
+      - name: Enrich racer, current-meet, motor and boat data
         run: python scripts/collect_today.py --enrich --out data/today.json --workers 10
 
       - name: Commit enriched data when changed
