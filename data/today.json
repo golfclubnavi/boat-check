@@ -1,6 +1,6 @@
 {
   "schemaVersion": "43.0",
-  "updatedAt": "2026-09-10T19:13:50+09:00",
+  "updatedAt": "2026-09-10T19:29:56+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "live",
@@ -9317,45 +9317,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T19:14:00+09:00",
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            }
-          ],
           "result": {
             "finishers": [],
             "payouts": {
@@ -9419,7 +9380,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultUpdatedAt": "2026-09-10T19:14:11+09:00"
+          "resultUpdatedAt": "2026-09-10T19:14:11+09:00",
+          "beforeUpdatedAt": "2026-09-10T19:14:00+09:00"
         },
         {
           "raceNo": 10,
@@ -9428,7 +9390,15 @@
             {
               "lane": 1,
               "racerName": "投票 湯川 浩司",
-              "class": "A1"
+              "class": "A1",
+              "before": {
+                "lane": 1,
+                "racerName": "湯川 浩司",
+                "weight": 52.0,
+                "exhibitionTime": 6.66,
+                "tilt": 0.0
+              },
+              "weight": 52.0
             },
             {
               "lane": 2,
@@ -9605,7 +9575,16 @@
                 "rank": 4
               },
               "motorRank": 1,
-              "boatRank": 4
+              "boatRank": 4,
+              "before": {
+                "lane": 2,
+                "racerName": "宇佐見 淳",
+                "weight": 52.0,
+                "exhibitionTime": 6.74,
+                "tilt": -0.5,
+                "course": 6,
+                "st": "F.01"
+              }
             },
             {
               "lane": 3,
@@ -9781,7 +9760,14 @@
                 "rank": 5
               },
               "motorRank": 3,
-              "boatRank": 5
+              "boatRank": 5,
+              "before": {
+                "lane": 3,
+                "racerName": "林 美憲",
+                "weight": 52.4,
+                "exhibitionTime": 6.7,
+                "tilt": -0.5
+              }
             },
             {
               "lane": 4,
@@ -9949,7 +9935,14 @@
                 "rank": 1
               },
               "motorRank": 2,
-              "boatRank": 1
+              "boatRank": 1,
+              "before": {
+                "lane": 4,
+                "racerName": "花本 夏樹",
+                "weight": 52.7,
+                "exhibitionTime": 6.64,
+                "tilt": -0.5
+              }
             },
             {
               "lane": 5,
@@ -10125,7 +10118,14 @@
                 "rank": 3
               },
               "motorRank": 5,
-              "boatRank": 3
+              "boatRank": 3,
+              "before": {
+                "lane": 5,
+                "racerName": "武富 智亮",
+                "weight": 53.6,
+                "exhibitionTime": 6.78,
+                "tilt": -0.5
+              }
             },
             {
               "lane": 6,
@@ -10302,7 +10302,14 @@
                 "rank": 2
               },
               "motorRank": 4,
-              "boatRank": 2
+              "boatRank": 2,
+              "before": {
+                "lane": 6,
+                "racerName": "山谷 央",
+                "weight": 52.0,
+                "exhibitionTime": 6.8,
+                "tilt": -0.5
+              }
             }
           ],
           "replay": {
@@ -10310,15 +10317,97 @@
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20260910&race=10",
           "weather": {
-            "airTemperature": 20.0,
+            "airTemperature": 19.0,
             "waterTemperature": 23.0,
             "windSpeed": 2.0,
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T19:14:00+09:00",
-          "beforeData": [],
-          "startExhibition": []
+          "beforeUpdatedAt": "2026-09-10T19:30:06+09:00",
+          "beforeData": [
+            {
+              "lane": 1,
+              "racerName": "湯川 浩司",
+              "weight": 52.0,
+              "exhibitionTime": 6.66,
+              "tilt": 0.0
+            },
+            {
+              "lane": 2,
+              "racerName": "宇佐見 淳",
+              "weight": 52.0,
+              "exhibitionTime": 6.74,
+              "tilt": -0.5,
+              "course": 6,
+              "st": "F.01"
+            },
+            {
+              "lane": 3,
+              "racerName": "林 美憲",
+              "weight": 52.4,
+              "exhibitionTime": 6.7,
+              "tilt": -0.5
+            },
+            {
+              "lane": 4,
+              "racerName": "花本 夏樹",
+              "weight": 52.7,
+              "exhibitionTime": 6.64,
+              "tilt": -0.5
+            },
+            {
+              "lane": 5,
+              "racerName": "武富 智亮",
+              "weight": 53.6,
+              "exhibitionTime": 6.78,
+              "tilt": -0.5
+            },
+            {
+              "lane": 6,
+              "racerName": "山谷 央",
+              "weight": 52.0,
+              "exhibitionTime": 6.8,
+              "tilt": -0.5
+            }
+          ],
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.02,
+              "rawST": ".02"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.11,
+              "rawST": ".11"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.11,
+              "rawST": ".11"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.14,
+              "rawST": ".14"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.09,
+              "rawST": ".09"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.01,
+              "rawST": "F.01"
+            }
+          ]
         },
         {
           "raceNo": 11,
@@ -14180,7 +14269,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "03",
@@ -26734,7 +26823,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "04",
@@ -40766,7 +40855,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "05",
@@ -48986,7 +49075,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "13",
@@ -60318,7 +60407,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "14",
@@ -72600,7 +72689,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "16",
@@ -83941,7 +84030,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "17",
@@ -92194,7 +92283,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "20",
@@ -98348,45 +98437,7 @@
             "note": "ボートレースガイドはこちら"
           },
           "resultUpdatedAt": "2026-09-10T19:03:34+09:00",
-          "beforeUpdatedAt": "2026-09-10T19:14:00+09:00",
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.12,
-              "rawST": ".12"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.17,
-              "rawST": ".17"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.07,
-              "rawST": ".07"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.06,
-              "rawST": ".06"
-            }
-          ]
+          "beforeUpdatedAt": "2026-09-10T19:14:00+09:00"
         },
         {
           "raceNo": 10,
@@ -98394,7 +98445,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 桐本 康臣",
+              "racerName": "発売終了 桐本 康臣",
               "class": "A2",
               "before": {
                 "lane": 1,
@@ -98926,14 +98977,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=10"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=10",
-          "weather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
-            "weather": "曇り"
-          },
-          "beforeUpdatedAt": "2026-09-10T19:14:00+09:00",
           "beforeData": [
             {
               "lane": 1,
@@ -98980,6 +99023,14 @@
               "tilt": 0.0
             }
           ],
+          "weather": {
+            "airTemperature": 24.0,
+            "waterTemperature": 25.0,
+            "windSpeed": 2.0,
+            "waveHeight": 2.0,
+            "weather": "曇り"
+          },
+          "beforeUpdatedAt": "2026-09-10T19:30:06+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -99509,7 +99560,9 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T19:03:25+09:00"
+          "beforeUpdatedAt": "2026-09-10T19:30:06+09:00",
+          "beforeData": [],
+          "startExhibition": []
         },
         {
           "raceNo": 12,
@@ -100447,7 +100500,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "21",
@@ -108327,7 +108380,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     },
     {
       "venueCode": "24",
@@ -108420,7 +108473,7 @@
                 "twoRate": 20.0,
                 "threeRate": 60.0,
                 "starts": 5,
-                "stRank": 21,
+                "stRank": 20,
                 "exhibitionRank": 8,
                 "pointRank": 21,
                 "pointRate": 5.5,
@@ -108560,7 +108613,7 @@
                 "threeRate": 20.0,
                 "starts": 5,
                 "stRank": 19,
-                "exhibitionRank": 37,
+                "exhibitionRank": 41,
                 "pointRank": 42,
                 "pointRate": 3.33,
                 "points": 20,
@@ -108568,7 +108621,8 @@
                 "seriesSummary": "61 5 6 66",
                 "avgCourse": 2.75,
                 "preInspectionTime": 6.94,
-                "preInspectionRank": 22
+                "preInspectionRank": 22,
+                "penaltyDetail": "途中帰郷"
               },
               "registrationNo": "3590",
               "origin": "東京",
@@ -108710,7 +108764,7 @@
                 "twoRate": 33.3,
                 "threeRate": 50.0,
                 "starts": 6,
-                "stRank": 30,
+                "stRank": 31,
                 "exhibitionRank": 21,
                 "pointRank": 12,
                 "pointRate": 6.17,
@@ -108850,8 +108904,8 @@
                 "threeRate": 40.0,
                 "starts": 5,
                 "stRank": 6,
-                "exhibitionRank": 33,
-                "pointRank": 29,
+                "exhibitionRank": 37,
+                "pointRank": 30,
                 "pointRate": 4.8,
                 "points": 24,
                 "penalty": 0,
@@ -108981,8 +109035,8 @@
                 "twoRate": 25.0,
                 "threeRate": 75.0,
                 "starts": 4,
-                "stRank": 25,
-                "exhibitionRank": 32,
+                "stRank": 24,
+                "exhibitionRank": 35,
                 "pointRank": 19,
                 "pointRate": 5.6,
                 "points": 28,
@@ -109316,7 +109370,7 @@
                 "starts": 5,
                 "stRank": 1,
                 "exhibitionRank": 9,
-                "pointRank": 31,
+                "pointRank": 32,
                 "pointRate": 4.6,
                 "points": 23,
                 "penalty": 0,
@@ -109453,9 +109507,9 @@
                 "twoRate": 60.0,
                 "threeRate": 60.0,
                 "starts": 5,
-                "stRank": 29,
+                "stRank": 30,
                 "exhibitionRank": 7,
-                "pointRank": 26,
+                "pointRank": 27,
                 "pointRate": 5.0,
                 "points": 25,
                 "penalty": 0,
@@ -109594,9 +109648,9 @@
                 "twoRate": 40.0,
                 "threeRate": 60.0,
                 "starts": 5,
-                "stRank": 14,
-                "exhibitionRank": 35,
-                "pointRank": 15,
+                "stRank": 15,
+                "exhibitionRank": 39,
+                "pointRank": 16,
                 "pointRate": 5.8,
                 "points": 29,
                 "penalty": 0,
@@ -109734,7 +109788,7 @@
                 "twoRate": 80.0,
                 "threeRate": 80.0,
                 "starts": 5,
-                "stRank": 22,
+                "stRank": 21,
                 "exhibitionRank": 2,
                 "pointRank": 4,
                 "pointRate": 7.0,
@@ -109885,8 +109939,8 @@
                 "twoRate": 33.3,
                 "threeRate": 50.0,
                 "starts": 6,
-                "stRank": 27,
-                "exhibitionRank": 29,
+                "stRank": 28,
+                "exhibitionRank": 32,
                 "pointRank": 4,
                 "pointRate": 7.0,
                 "points": 42,
@@ -110212,7 +110266,7 @@
                 "twoRate": 20.0,
                 "threeRate": 20.0,
                 "starts": 5,
-                "stRank": 34,
+                "stRank": 35,
                 "exhibitionRank": 12,
                 "pointRank": 38,
                 "pointRate": 3.67,
@@ -110361,7 +110415,7 @@
                 "threeRate": 66.7,
                 "starts": 6,
                 "stRank": 26,
-                "exhibitionRank": 17,
+                "exhibitionRank": 18,
                 "pointRank": 17,
                 "pointRate": 5.67,
                 "points": 34,
@@ -110500,7 +110554,7 @@
                 "twoRate": 20.0,
                 "threeRate": 40.0,
                 "starts": 5,
-                "stRank": 12,
+                "stRank": 13,
                 "exhibitionRank": 5,
                 "pointRank": 19,
                 "pointRate": 5.6,
@@ -110642,7 +110696,7 @@
                 "threeRate": 40.0,
                 "starts": 5,
                 "stRank": 8,
-                "exhibitionRank": 25,
+                "exhibitionRank": 24,
                 "pointRank": 38,
                 "pointRate": 3.67,
                 "points": 22,
@@ -111123,7 +111177,7 @@
                 "twoRate": 66.7,
                 "threeRate": 66.7,
                 "starts": 6,
-                "stRank": 13,
+                "stRank": 14,
                 "exhibitionRank": 13,
                 "pointRank": 11,
                 "pointRate": 6.2,
@@ -111263,9 +111317,9 @@
                 "twoRate": 0.0,
                 "threeRate": 0.0,
                 "starts": 5,
-                "stRank": 44,
+                "stRank": 45,
                 "exhibitionRank": 1,
-                "pointRank": 43,
+                "pointRank": 41,
                 "pointRate": 3.0,
                 "points": 15,
                 "penalty": 0,
@@ -111404,9 +111458,9 @@
                 "twoRate": 20.0,
                 "threeRate": 20.0,
                 "starts": 5,
-                "stRank": 33,
+                "stRank": 34,
                 "exhibitionRank": 6,
-                "pointRank": 43,
+                "pointRank": 41,
                 "pointRate": 3.0,
                 "points": 22,
                 "penalty": 7,
@@ -111493,6 +111547,14 @@
                 },
                 {
                   "day": 1,
+                  "raceNo": 9,
+                  "st": ".22",
+                  "finish": 3,
+                  "exhibitionTime": 6.93,
+                  "source": "official_result_live"
+                },
+                {
+                  "day": 1,
                   "slot": 1,
                   "raceNo": 10,
                   "source": "official_racelist"
@@ -111547,19 +111609,19 @@
                 }
               ],
               "meetStats": {
-                "avgST": 0.177,
-                "exhibitionTime": 6.9,
-                "winRate": 16.7,
-                "twoRate": 16.7,
+                "avgST": 0.183,
+                "exhibitionTime": 6.915,
+                "winRate": 14.3,
+                "twoRate": 14.3,
                 "threeRate": 100.0,
-                "starts": 6,
-                "stRank": 40,
-                "exhibitionRank": 23,
+                "starts": 7,
+                "stRank": 43,
+                "exhibitionRank": 27,
                 "pointRank": 1,
-                "pointRate": 7.6,
-                "points": 38,
+                "pointRate": 7.33,
+                "points": 44,
                 "penalty": 0,
-                "seriesSummary": "2 1 333",
+                "seriesSummary": "2 1 3333",
                 "avgCourse": 3.6,
                 "preInspectionTime": 6.88,
                 "preInspectionRank": 15
@@ -111685,9 +111747,9 @@
                 "twoRate": 25.0,
                 "threeRate": 75.0,
                 "starts": 4,
-                "stRank": 35,
+                "stRank": 36,
                 "exhibitionRank": 10,
-                "pointRank": 7,
+                "pointRank": 6,
                 "pointRate": 6.8,
                 "points": 34,
                 "penalty": 0,
@@ -112014,9 +112076,9 @@
                 "twoRate": 20.0,
                 "threeRate": 20.0,
                 "starts": 5,
-                "stRank": 39,
+                "stRank": 40,
                 "exhibitionRank": 3,
-                "pointRank": 28,
+                "pointRank": 29,
                 "pointRate": 4.83,
                 "points": 29,
                 "penalty": 0,
@@ -112149,8 +112211,8 @@
                 "threeRate": 80.0,
                 "starts": 5,
                 "stRank": 7,
-                "exhibitionRank": 36,
-                "pointRank": 2,
+                "exhibitionRank": 40,
+                "pointRank": 1,
                 "pointRate": 7.33,
                 "points": 44,
                 "penalty": 0,
@@ -112288,8 +112350,8 @@
                 "twoRate": 0.0,
                 "threeRate": 50.0,
                 "starts": 4,
-                "stRank": 15,
-                "exhibitionRank": 24,
+                "stRank": 16,
+                "exhibitionRank": 23,
                 "points": 16,
                 "penalty": 99,
                 "seriesSummary": "3Ｆ5 5 3",
@@ -112427,8 +112489,8 @@
                 "twoRate": 20.0,
                 "threeRate": 40.0,
                 "starts": 5,
-                "stRank": 32,
-                "exhibitionRank": 30,
+                "stRank": 33,
+                "exhibitionRank": 33,
                 "pointRank": 13,
                 "pointRate": 6.0,
                 "points": 30,
@@ -112556,7 +112618,7 @@
                 "threeRate": 50.0,
                 "starts": 4,
                 "stRank": 41,
-                "exhibitionRank": 34,
+                "exhibitionRank": 38,
                 "pointRank": 25,
                 "pointRate": 5.2,
                 "points": 26,
@@ -112898,7 +112960,7 @@
                 "twoRate": 33.3,
                 "threeRate": 50.0,
                 "starts": 6,
-                "stRank": 30,
+                "stRank": 31,
                 "exhibitionRank": 21,
                 "pointRank": 12,
                 "pointRate": 6.17,
@@ -113029,8 +113091,8 @@
                 "twoRate": 25.0,
                 "threeRate": 50.0,
                 "starts": 4,
-                "stRank": 31,
-                "exhibitionRank": 26,
+                "stRank": 32,
+                "exhibitionRank": 25,
                 "pointRank": 13,
                 "pointRate": 6.0,
                 "points": 30,
@@ -113178,7 +113240,7 @@
                 "twoRate": 100.0,
                 "threeRate": 100.0,
                 "starts": 6,
-                "stRank": 23,
+                "stRank": 22,
                 "exhibitionRank": 4,
                 "pointRank": 3,
                 "pointRate": 7.2,
@@ -113314,7 +113376,7 @@
                 "twoRate": 50.0,
                 "threeRate": 75.0,
                 "starts": 4,
-                "stRank": 36,
+                "stRank": 37,
                 "exhibitionRank": 14,
                 "points": 29,
                 "penalty": 114,
@@ -113447,7 +113509,7 @@
                 "starts": 4,
                 "stRank": 42,
                 "exhibitionRank": 15,
-                "pointRank": 31,
+                "pointRank": 32,
                 "pointRate": 4.6,
                 "points": 23,
                 "penalty": 0,
@@ -113788,8 +113850,8 @@
                 "twoRate": 33.3,
                 "threeRate": 50.0,
                 "starts": 6,
-                "stRank": 27,
-                "exhibitionRank": 29,
+                "stRank": 28,
+                "exhibitionRank": 32,
                 "pointRank": 4,
                 "pointRate": 7.0,
                 "points": 42,
@@ -113919,9 +113981,9 @@
                 "twoRate": 0.0,
                 "threeRate": 0.0,
                 "starts": 4,
-                "stRank": 10,
-                "exhibitionRank": 18,
-                "pointRank": 26,
+                "stRank": 11,
+                "exhibitionRank": 19,
+                "pointRank": 27,
                 "pointRate": 5.0,
                 "points": 25,
                 "penalty": 0,
@@ -114067,8 +114129,8 @@
                 "twoRate": 66.7,
                 "threeRate": 66.7,
                 "starts": 6,
-                "stRank": 11,
-                "exhibitionRank": 27,
+                "stRank": 12,
+                "exhibitionRank": 28,
                 "pointRank": 17,
                 "pointRate": 5.67,
                 "points": 34,
@@ -114157,7 +114219,7 @@
                 "winRate": 33.3,
                 "twoRate": 33.3,
                 "threeRate": 33.3,
-                "stRank": 24,
+                "stRank": 23,
                 "preInspectionTime": 6.92,
                 "preInspectionRank": 4
               },
@@ -114317,7 +114379,7 @@
                 "threeRate": 50.0,
                 "starts": 4,
                 "stRank": 4,
-                "exhibitionRank": 19,
+                "exhibitionRank": 20,
                 "pointRank": 37,
                 "pointRate": 4.2,
                 "points": 21,
@@ -114645,7 +114707,7 @@
                 "threeRate": 40.0,
                 "starts": 5,
                 "stRank": 8,
-                "exhibitionRank": 25,
+                "exhibitionRank": 24,
                 "pointRank": 38,
                 "pointRate": 3.67,
                 "points": 22,
@@ -114734,7 +114796,7 @@
                 "winRate": 0.0,
                 "twoRate": 0.0,
                 "threeRate": 25.0,
-                "stRank": 38,
+                "stRank": 39,
                 "preInspectionTime": 6.93,
                 "preInspectionRank": 12
               },
@@ -114904,7 +114966,7 @@
                 "twoRate": 80.0,
                 "threeRate": 80.0,
                 "starts": 5,
-                "stRank": 22,
+                "stRank": 21,
                 "exhibitionRank": 2,
                 "pointRank": 4,
                 "pointRate": 7.0,
@@ -114994,7 +115056,7 @@
                 "winRate": 25.0,
                 "twoRate": 50.0,
                 "threeRate": 50.0,
-                "stRank": 17,
+                "stRank": 18,
                 "preInspectionTime": 6.94,
                 "preInspectionRank": 33
               },
@@ -115171,7 +115233,7 @@
                 "threeRate": 20.0,
                 "starts": 5,
                 "stRank": 19,
-                "exhibitionRank": 37,
+                "exhibitionRank": 41,
                 "pointRank": 42,
                 "pointRate": 3.33,
                 "points": 20,
@@ -115179,7 +115241,8 @@
                 "seriesSummary": "61 5 6 66",
                 "avgCourse": 2.75,
                 "preInspectionTime": 6.94,
-                "preInspectionRank": 22
+                "preInspectionRank": 22,
+                "penaltyDetail": "途中帰郷"
               },
               "registrationNo": "3590",
               "origin": "東京",
@@ -115362,7 +115425,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 上野 真之介",
+              "racerName": "発売終了 上野 真之介",
               "class": "A1",
               "before": {
                 "lane": 1,
@@ -115382,20 +115445,22 @@
               "age": 45,
               "period": 86,
               "meetStats": {
-                "starts": 4,
-                "pointRank": 15,
-                "pointRate": 5.8,
-                "points": 29,
+                "starts": 5,
+                "pointRank": 21,
+                "pointRate": 5.5,
+                "points": 33,
                 "penalty": 0,
-                "seriesSummary": "3 1363",
-                "avgST": 0.072,
-                "avgCourse": 3.25,
-                "winRate": 25.0,
-                "twoRate": 25.0,
-                "threeRate": 75.0,
+                "seriesSummary": "3 13634",
+                "avgST": 0.076,
+                "avgCourse": 3.8,
+                "winRate": 20.0,
+                "twoRate": 20.0,
+                "threeRate": 60.0,
                 "stRank": 3,
                 "preInspectionTime": 6.96,
-                "preInspectionRank": 25
+                "preInspectionRank": 25,
+                "exhibitionTime": 6.88,
+                "exhibitionRank": 16
               },
               "before": {
                 "lane": 2,
@@ -115415,6 +115480,15 @@
                   "slot": 1,
                   "raceNo": 4,
                   "source": "official_racelist"
+                },
+                {
+                  "day": 1,
+                  "raceNo": 9,
+                  "course": 6,
+                  "st": ".09",
+                  "finish": 4,
+                  "exhibitionTime": 6.88,
+                  "source": "official_result_live"
                 },
                 {
                   "day": 1,
@@ -115511,20 +115585,22 @@
               "age": 38,
               "period": 103,
               "meetStats": {
-                "starts": 4,
-                "pointRank": 31,
-                "pointRate": 4.6,
-                "points": 23,
+                "starts": 5,
+                "pointRank": 26,
+                "pointRate": 5.17,
+                "points": 31,
                 "penalty": 0,
-                "seriesSummary": "46351",
-                "avgST": 0.198,
+                "seriesSummary": "46351 2",
+                "avgST": 0.184,
                 "avgCourse": 3.0,
-                "winRate": 25.0,
-                "twoRate": 25.0,
-                "threeRate": 50.0,
-                "stRank": 43,
+                "winRate": 20.0,
+                "twoRate": 40.0,
+                "threeRate": 60.0,
+                "stRank": 44,
                 "preInspectionTime": 6.88,
-                "preInspectionRank": 15
+                "preInspectionRank": 15,
+                "exhibitionTime": 6.92,
+                "exhibitionRank": 30
               },
               "before": {
                 "lane": 3,
@@ -115544,6 +115620,14 @@
                   "st": ".21",
                   "finish": 6,
                   "source": "official_racelist"
+                },
+                {
+                  "day": 1,
+                  "raceNo": 9,
+                  "st": ".13",
+                  "finish": 2,
+                  "exhibitionTime": 6.92,
+                  "source": "official_result_live"
                 },
                 {
                   "day": 1,
@@ -115641,6 +115725,14 @@
                 },
                 {
                   "day": 1,
+                  "raceNo": 9,
+                  "st": ".22",
+                  "finish": 3,
+                  "exhibitionTime": 6.93,
+                  "source": "official_result_live"
+                },
+                {
+                  "day": 1,
                   "slot": 1,
                   "raceNo": 10,
                   "source": "official_racelist"
@@ -115695,19 +115787,19 @@
                 }
               ],
               "meetStats": {
-                "avgST": 0.177,
-                "exhibitionTime": 6.9,
-                "winRate": 16.7,
-                "twoRate": 16.7,
+                "avgST": 0.183,
+                "exhibitionTime": 6.915,
+                "winRate": 14.3,
+                "twoRate": 14.3,
                 "threeRate": 100.0,
-                "starts": 6,
-                "stRank": 40,
-                "exhibitionRank": 23,
+                "starts": 7,
+                "stRank": 43,
+                "exhibitionRank": 27,
                 "pointRank": 1,
-                "pointRate": 7.6,
-                "points": 38,
+                "pointRate": 7.33,
+                "points": 44,
                 "penalty": 0,
-                "seriesSummary": "2 1 333",
+                "seriesSummary": "2 1 3333",
                 "avgCourse": 3.6,
                 "preInspectionTime": 6.88,
                 "preInspectionRank": 15
@@ -115799,6 +115891,14 @@
                 },
                 {
                   "day": 1,
+                  "raceNo": 9,
+                  "st": ".20",
+                  "finish": 6,
+                  "exhibitionTime": 6.94,
+                  "source": "official_result_live"
+                },
+                {
+                  "day": 1,
                   "slot": 2,
                   "course": 3,
                   "st": ".11",
@@ -115835,19 +115935,19 @@
                 }
               ],
               "meetStats": {
-                "avgST": 0.104,
-                "exhibitionTime": 6.89,
+                "avgST": 0.12,
+                "exhibitionTime": 6.915,
                 "winRate": 0.0,
                 "twoRate": 0.0,
                 "threeRate": 0.0,
-                "starts": 5,
-                "stRank": 20,
-                "exhibitionRank": 20,
+                "starts": 6,
+                "stRank": 27,
+                "exhibitionRank": 29,
                 "pointRank": 41,
-                "pointRate": 3.4,
-                "points": 17,
+                "pointRate": 3.0,
+                "points": 18,
                 "penalty": 0,
-                "seriesSummary": "346 4 5",
+                "seriesSummary": "346 4 56",
                 "avgCourse": 3.5,
                 "preInspectionTime": 6.91,
                 "preInspectionRank": 44
@@ -115921,20 +116021,22 @@
               "age": 31,
               "period": 117,
               "meetStats": {
-                "starts": 3,
-                "pointRank": 4,
-                "pointRate": 7.0,
-                "points": 28,
+                "starts": 4,
+                "pointRank": 13,
+                "pointRate": 6.0,
+                "points": 30,
                 "penalty": 0,
-                "seriesSummary": "2 2 51",
-                "avgST": 0.103,
+                "seriesSummary": "2 2 515",
+                "avgST": 0.117,
                 "avgCourse": 3.0,
-                "winRate": 33.3,
-                "twoRate": 66.7,
-                "threeRate": 66.7,
-                "stRank": 18,
+                "winRate": 25.0,
+                "twoRate": 50.0,
+                "threeRate": 50.0,
+                "stRank": 25,
                 "preInspectionTime": 6.89,
-                "preInspectionRank": 30
+                "preInspectionRank": 30,
+                "exhibitionTime": 6.94,
+                "exhibitionRank": 36
               },
               "before": {
                 "lane": 6,
@@ -115951,6 +116053,14 @@
                   "slot": 1,
                   "raceNo": 4,
                   "source": "official_racelist"
+                },
+                {
+                  "day": 1,
+                  "raceNo": 9,
+                  "st": ".16",
+                  "finish": 5,
+                  "exhibitionTime": 6.94,
+                  "source": "official_result_live"
                 },
                 {
                   "day": 1,
@@ -116094,7 +116204,7 @@
             "waveHeight": 1.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T19:14:00+09:00",
+          "beforeUpdatedAt": "2026-09-10T19:30:06+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -116132,7 +116242,134 @@
               "st": 0.08,
               "rawST": "F.08"
             }
-          ]
+          ],
+          "result": {
+            "finishers": [
+              {
+                "rank": 1,
+                "lane": 1,
+                "racerId": "4503",
+                "racerName": "上野 真之介",
+                "time": "1'50\"4",
+                "st": ".09",
+                "kimarite": "逃げ"
+              },
+              {
+                "rank": 2,
+                "lane": 3,
+                "racerId": "4524",
+                "racerName": "深谷 知博",
+                "time": "1'51\"1",
+                "st": ".13"
+              },
+              {
+                "rank": 3,
+                "lane": 4,
+                "racerId": "4371",
+                "racerName": "西山 貴浩",
+                "time": "1'52\"9",
+                "st": ".22"
+              },
+              {
+                "rank": 4,
+                "lane": 2,
+                "racerId": "4075",
+                "racerName": "中野 次郎",
+                "time": "1'54\"2",
+                "st": ".09"
+              },
+              {
+                "rank": 5,
+                "lane": 6,
+                "racerId": "4907",
+                "racerName": "小池 修平",
+                "time": null,
+                "st": ".16"
+              },
+              {
+                "rank": 6,
+                "lane": 5,
+                "racerId": "5026",
+                "racerName": "安河内 健",
+                "time": null,
+                "st": ".20"
+              }
+            ],
+            "payouts": {
+              "trifecta": [
+                {
+                  "combination": "1-3-4",
+                  "payout": 820
+                }
+              ],
+              "trio": [
+                {
+                  "combination": "1=3=4",
+                  "payout": 430
+                }
+              ],
+              "exacta": [
+                {
+                  "combination": "1-3",
+                  "payout": 360
+                }
+              ],
+              "quinella": [
+                {
+                  "combination": "1=3",
+                  "payout": 510
+                }
+              ],
+              "wide": [
+                {
+                  "combination": "1=3",
+                  "payout": 140
+                },
+                {
+                  "combination": "1=4",
+                  "payout": 130
+                },
+                {
+                  "combination": "3=4",
+                  "payout": 350
+                }
+              ],
+              "win": [
+                {
+                  "combination": "1",
+                  "payout": 120
+                }
+              ],
+              "place": [
+                {
+                  "combination": "1",
+                  "payout": 130
+                },
+                {
+                  "combination": "3",
+                  "payout": 320
+                }
+              ]
+            },
+            "weather": {
+              "airTemperature": 23.0,
+              "waterTemperature": 28.0,
+              "windSpeed": 0.0,
+              "waveHeight": 1.0,
+              "weather": "雨"
+            },
+            "kimarite": "逃げ",
+            "official": true,
+            "note": "ボートレースガイドはこちら"
+          },
+          "resultWeather": {
+            "airTemperature": 23.0,
+            "waterTemperature": 28.0,
+            "windSpeed": 0.0,
+            "waveHeight": 1.0,
+            "weather": "雨"
+          },
+          "resultUpdatedAt": "2026-09-10T19:30:16+09:00"
         },
         {
           "raceNo": 10,
@@ -116141,7 +116378,15 @@
             {
               "lane": 1,
               "racerName": "投票 山田 康二",
-              "class": "A1"
+              "class": "A1",
+              "before": {
+                "lane": 1,
+                "racerName": "山田 康二",
+                "weight": 53.9,
+                "exhibitionTime": 6.91,
+                "tilt": 0.0
+              },
+              "weight": 53.9
             },
             {
               "lane": 2,
@@ -116214,8 +116459,8 @@
                 "threeRate": 40.0,
                 "starts": 5,
                 "stRank": 6,
-                "exhibitionRank": 33,
-                "pointRank": 29,
+                "exhibitionRank": 37,
+                "pointRank": 30,
                 "pointRate": 4.8,
                 "points": 24,
                 "penalty": 0,
@@ -116274,7 +116519,17 @@
                 "rank": 4
               },
               "motorRank": 2,
-              "boatRank": 4
+              "boatRank": 4,
+              "before": {
+                "lane": 2,
+                "racerName": "河野 大",
+                "weight": 51.5,
+                "exhibitionTime": 6.94,
+                "tilt": 0.5,
+                "partsExchange": "リング",
+                "course": 6,
+                "st": 0.1
+              }
             },
             {
               "lane": 3,
@@ -116343,8 +116598,8 @@
                 "threeRate": 60.0,
                 "starts": 5,
                 "stRank": 9,
-                "exhibitionRank": 28,
-                "pointRank": 29,
+                "exhibitionRank": 31,
+                "pointRank": 30,
                 "pointRate": 4.8,
                 "points": 24,
                 "penalty": 0,
@@ -116403,7 +116658,14 @@
                 "rank": 3
               },
               "motorRank": 3,
-              "boatRank": 3
+              "boatRank": 3,
+              "before": {
+                "lane": 3,
+                "racerName": "若林 将",
+                "weight": 52.2,
+                "exhibitionTime": 6.94,
+                "tilt": 0.0
+              }
             },
             {
               "lane": 4,
@@ -116479,7 +116741,7 @@
                 "starts": 5,
                 "stRank": 1,
                 "exhibitionRank": 9,
-                "pointRank": 31,
+                "pointRank": 32,
                 "pointRate": 4.6,
                 "points": 23,
                 "penalty": 0,
@@ -116537,7 +116799,14 @@
                 "rank": 1
               },
               "motorRank": 5,
-              "boatRank": 1
+              "boatRank": 1,
+              "before": {
+                "lane": 4,
+                "racerName": "高憧 四季",
+                "weight": 44.5,
+                "exhibitionTime": 6.88,
+                "tilt": 0.0
+              }
             },
             {
               "lane": 5,
@@ -116620,7 +116889,7 @@
                 "twoRate": 66.7,
                 "threeRate": 66.7,
                 "starts": 6,
-                "stRank": 13,
+                "stRank": 14,
                 "exhibitionRank": 13,
                 "pointRank": 11,
                 "pointRate": 6.2,
@@ -116680,7 +116949,14 @@
                 "rank": 2
               },
               "motorRank": 4,
-              "boatRank": 2
+              "boatRank": 2,
+              "before": {
+                "lane": 5,
+                "racerName": "丸野 一樹",
+                "weight": 52.1,
+                "exhibitionTime": 6.97,
+                "tilt": -0.5
+              }
             },
             {
               "lane": 6,
@@ -116752,7 +117028,7 @@
                 "twoRate": 20.0,
                 "threeRate": 40.0,
                 "starts": 5,
-                "stRank": 12,
+                "stRank": 13,
                 "exhibitionRank": 5,
                 "pointRank": 19,
                 "pointRate": 5.6,
@@ -116813,7 +117089,14 @@
                 "rank": 5
               },
               "motorRank": 1,
-              "boatRank": 5
+              "boatRank": 5,
+              "before": {
+                "lane": 6,
+                "racerName": "飛田 江己",
+                "weight": 52.0,
+                "exhibitionTime": 6.86,
+                "tilt": 0.0
+              }
             }
           ],
           "replay": {
@@ -116823,13 +117106,96 @@
           "weather": {
             "airTemperature": 23.0,
             "waterTemperature": 28.0,
-            "windSpeed": 1.0,
+            "windSpeed": 0.0,
             "waveHeight": 1.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T19:14:00+09:00",
-          "beforeData": [],
-          "startExhibition": []
+          "beforeUpdatedAt": "2026-09-10T19:30:06+09:00",
+          "beforeData": [
+            {
+              "lane": 1,
+              "racerName": "山田 康二",
+              "weight": 53.9,
+              "exhibitionTime": 6.91,
+              "tilt": 0.0
+            },
+            {
+              "lane": 2,
+              "racerName": "河野 大",
+              "weight": 51.5,
+              "exhibitionTime": 6.94,
+              "tilt": 0.5,
+              "partsExchange": "リング",
+              "course": 6,
+              "st": 0.1
+            },
+            {
+              "lane": 3,
+              "racerName": "若林 将",
+              "weight": 52.2,
+              "exhibitionTime": 6.94,
+              "tilt": 0.0
+            },
+            {
+              "lane": 4,
+              "racerName": "高憧 四季",
+              "weight": 44.5,
+              "exhibitionTime": 6.88,
+              "tilt": 0.0
+            },
+            {
+              "lane": 5,
+              "racerName": "丸野 一樹",
+              "weight": 52.1,
+              "exhibitionTime": 6.97,
+              "tilt": -0.5
+            },
+            {
+              "lane": 6,
+              "racerName": "飛田 江己",
+              "weight": 52.0,
+              "exhibitionTime": 6.86,
+              "tilt": 0.0
+            }
+          ],
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.18,
+              "rawST": ".18"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.2,
+              "rawST": ".20"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.19,
+              "rawST": ".19"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.17,
+              "rawST": ".17"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.06,
+              "rawST": ".06"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.1,
+              "rawST": ".10"
+            }
+          ]
         },
         {
           "raceNo": 11,
@@ -116911,9 +117277,9 @@
                 "twoRate": 40.0,
                 "threeRate": 60.0,
                 "starts": 5,
-                "stRank": 14,
-                "exhibitionRank": 35,
-                "pointRank": 15,
+                "stRank": 15,
+                "exhibitionRank": 39,
+                "pointRank": 16,
                 "pointRate": 5.8,
                 "points": 29,
                 "penalty": 0,
@@ -117177,8 +117543,8 @@
                 "twoRate": 20.0,
                 "threeRate": 40.0,
                 "starts": 5,
-                "stRank": 32,
-                "exhibitionRank": 30,
+                "stRank": 33,
+                "exhibitionRank": 33,
                 "pointRank": 13,
                 "pointRate": 6.0,
                 "points": 30,
@@ -117260,7 +117626,7 @@
                 "winRate": 0.0,
                 "twoRate": 33.3,
                 "threeRate": 100.0,
-                "stRank": 37,
+                "stRank": 38,
                 "preInspectionTime": 6.8,
                 "preInspectionRank": 52
               },
@@ -117426,9 +117792,9 @@
                 "twoRate": 20.0,
                 "threeRate": 20.0,
                 "starts": 5,
-                "stRank": 33,
+                "stRank": 34,
                 "exhibitionRank": 6,
-                "pointRank": 43,
+                "pointRank": 41,
                 "pointRate": 3.0,
                 "points": 22,
                 "penalty": 7,
@@ -117583,9 +117949,9 @@
                 "twoRate": 40.0,
                 "threeRate": 40.0,
                 "starts": 5,
-                "stRank": 16,
-                "exhibitionRank": 16,
-                "pointRank": 31,
+                "stRank": 17,
+                "exhibitionRank": 17,
+                "pointRank": 32,
                 "pointRate": 4.6,
                 "points": 23,
                 "penalty": 0,
@@ -117716,9 +118082,9 @@
                 "twoRate": 40.0,
                 "threeRate": 40.0,
                 "starts": 5,
-                "stRank": 28,
-                "exhibitionRank": 31,
-                "pointRank": 31,
+                "stRank": 29,
+                "exhibitionRank": 34,
+                "pointRank": 32,
                 "pointRate": 4.6,
                 "points": 23,
                 "penalty": 0,
@@ -117849,9 +118215,9 @@
                 "twoRate": 60.0,
                 "threeRate": 60.0,
                 "starts": 5,
-                "stRank": 29,
+                "stRank": 30,
                 "exhibitionRank": 7,
-                "pointRank": 26,
+                "pointRank": 27,
                 "pointRate": 5.0,
                 "points": 25,
                 "penalty": 0,
@@ -117982,8 +118348,8 @@
                 "twoRate": 0.0,
                 "threeRate": 50.0,
                 "starts": 4,
-                "stRank": 15,
-                "exhibitionRank": 24,
+                "stRank": 16,
+                "exhibitionRank": 23,
                 "points": 16,
                 "penalty": 99,
                 "seriesSummary": "3Ｆ5 5 3",
@@ -118115,9 +118481,9 @@
                 "twoRate": 0.0,
                 "threeRate": 0.0,
                 "starts": 5,
-                "stRank": 44,
+                "stRank": 45,
                 "exhibitionRank": 1,
-                "pointRank": 43,
+                "pointRank": 41,
                 "pointRate": 3.0,
                 "points": 15,
                 "penalty": 0,
@@ -119512,7 +119878,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:14:30+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:30:34+09:00"
     }
   ],
   "errors": [],
