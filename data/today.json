@@ -1,6 +1,6 @@
 {
   "schemaVersion": "38.0",
-  "updatedAt": "2026-09-10T10:08:15+09:00",
+  "updatedAt": "2026-09-10T10:39:00+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -9542,7 +9542,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 加木 郁",
+              "racerName": "発売終了 加木 郁",
               "class": "B1"
             },
             {
@@ -11833,7 +11833,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 喜多須 杏奈",
+              "racerName": "発売終了 喜多須 杏奈",
               "class": "B1"
             },
             {
@@ -18720,7 +18720,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 浜本 裕己",
+              "racerName": "発売終了 浜本 裕己",
               "class": "A2"
             },
             {
