@@ -1,6 +1,6 @@
 {
   "schemaVersion": "38.0",
-  "updatedAt": "2026-09-10T15:11:31+09:00",
+  "updatedAt": "2026-09-10T15:43:20+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -21,7 +21,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 品川 賢次",
+              "racerName": "発売終了 品川 賢次",
               "class": "B2"
             },
             {
@@ -81,7 +81,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山谷 央",
+              "racerName": "発売終了 山谷 央",
               "class": "B1"
             },
             {
@@ -3490,7 +3490,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 川上 剛",
+              "racerName": "発売終了 川上 剛",
               "class": "A1"
             },
             {
@@ -5980,7 +5980,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 川尻 泰輔",
+              "racerName": "発売終了 川尻 泰輔",
               "class": "A2"
             },
             {
@@ -8909,7 +8909,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 北村 征嗣",
+              "racerName": "発売終了 北村 征嗣",
               "class": "A1"
             },
             {
@@ -10142,7 +10142,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 石井 伸長",
+              "racerName": "発売終了 石井 伸長",
               "class": "B1"
             },
             {
@@ -14623,7 +14623,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大廣 咲季",
+              "racerName": "発売終了 大廣 咲季",
               "class": "B1"
             },
             {
@@ -16674,7 +16674,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 木場 雄二郎",
+              "racerName": "発売終了 木場 雄二郎",
               "class": "B1"
             },
             {
@@ -17307,7 +17307,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 柴田 大輔",
+              "racerName": "発売終了 柴田 大輔",
               "class": "B1"
             },
             {
@@ -19653,7 +19653,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 原田 才一郎",
+              "racerName": "発売終了 原田 才一郎",
               "class": "A1"
             },
             {
