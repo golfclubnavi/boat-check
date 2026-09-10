@@ -7,7 +7,9 @@ on:
 
 concurrency:
   group: boat-check-data-update
-  cancel-in-progress: true
+  # Enrich実行中に5分更新が来てもEnrichを中断しない。
+  # 同じグループで待機させ、完了後に最新の更新へ進む。
+  cancel-in-progress: false
 
 permissions:
   contents: write
