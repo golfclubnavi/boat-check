@@ -3461,6 +3461,7 @@ let homeActiveTab="venues";
 let homeMyPageTab="bets";
 let homeBetHistoryTab="recent";
 let homeHistoryOpenGroups=new Set();
+let motorInnerTab="motor";
 let homeFavoriteQuery="";
 
 
@@ -6229,6 +6230,114 @@ function motorPath(obj, keys){
   return null;
 }
 
+
+function boatObjectForBoat(boat, race){
+  const direct=[
+    boat?.boat, boat?.boatData, boat?.boatStats,
+    boat?.equipment?.boat, boat?.stats?.boat, boat?.hull
+  ];
+  for(const x of direct){
+    if(x && typeof x==="object" && !Array.isArray(x)) return x;
+  }
+
+  const root=race?.boatData || race?.boatsData || race?.boatStats || race?.hulls || null;
+  if(!root) return {};
+
+  if(Array.isArray(root)){
+    return root.find(x=>
+      Number(x?.lane||x?.boatNo||x?.frame)===Number(boat?.lane) ||
+      String(x?.racerId||x?.registrationNo||"")===String(boat?.racerId||boat?.registrationNo||"")
+    ) || {};
+  }
+
+  if(typeof root==="object"){
+    const lane=Number(boat?.lane)||1;
+    const candidates=[
+      root[lane],root[String(lane)],root[`lane${lane}`],root[`boat${lane}`],
+      root.byLane?.[lane],root.byLane?.[String(lane)]
+    ];
+    for(const x of candidates){
+      if(x && typeof x==="object") return x;
+    }
+  }
+  return {};
+}
+
+function boatMetric(boatInfo, boat, metric){
+  const aliases={
+    no:[
+      "boatNo","boatNumber","number","no","id",
+      "hullNo","hullNumber","boat.no","boat.number"
+    ],
+    rank:[
+      "rank","boatRank","ranking","hullRank","boat.rank"
+    ],
+    win:[
+      "winRate","rate","boatWinRate","hullWinRate","boat.winRate"
+    ],
+    first:[
+      "firstRate","win1Rate","firstPlaceRate","oneRate","boat.firstRate"
+    ],
+    three:[
+      "threeRate","trifectaRate","threePlaceRate","boat.threeRate"
+    ],
+    two:[
+      "twoRate","quinellaRate","twoPlaceRate","boat.twoRate"
+    ]
+  };
+
+  let v=motorPath(boatInfo,aliases[metric]||[metric]);
+  if(v!==null) return v;
+
+  const boatAliases={
+    no:["boatNo","boatNumber","hullNo","hullNumber","equipment.boatNo","equipment.hullNo"],
+    rank:["boatRank","hullRank","boat.rank"],
+    win:["boatWinRate","hullWinRate","boat.winRate"],
+    first:["boatFirstRate","hullFirstRate","boat.firstRate"],
+    three:["boatThreeRate","boat3Rate","hullThreeRate","boat.threeRate"],
+    two:["boatTwoRate","boat2Rate","hullTwoRate","boat.twoRate"]
+  };
+  return firstStat(boat,boatAliases[metric]||[]);
+}
+
+function boatBasicTable(boats,boatInfos){
+  const defs=[
+    {label:"ボート番号",key:"no",fmt:v=>motorFmt(v),rank:null},
+    {label:"ボート順位",key:"rank",fmt:v=>motorRankText(v),rank:"asc"},
+    {label:"勝率",key:"win",fmt:v=>motorFmt(v,"",2),rank:"desc"},
+    {label:"1着率",key:"first",fmt:v=>motorFmt(v,"%",1),rank:"desc"},
+    {label:"3連対率",key:"three",fmt:v=>motorFmt(v,"%",1),rank:"desc"},
+    {label:"2連対率",key:"two",fmt:v=>motorFmt(v,"%",1),rank:"desc"}
+  ];
+
+  return `<div class="motorBasicTable boatBasicTable">
+    <div class="motorBasicHead">
+      <div>項目</div>
+      ${boats.map((b,i)=>{
+        const no=boatMetric(boatInfos[i],b,"no");
+        return `<div class="motorHeadLane laneHead${b.lane}">
+          <b>${b.lane}号艇</b>
+          <span>${no!==null&&no!==undefined&&no!==""?`${esc(no)}号艇`:"--号艇"}</span>
+        </div>`;
+      }).join("")}
+    </div>
+    ${defs.map(d=>{
+      const vals=boats.map((b,i)=>boatMetric(boatInfos[i],b,d.key));
+      const classes=d.rank?motorRankClasses(vals,d.rank,false):vals.map(()=>"");
+      return `<div class="motorBasicRow">
+        <div class="motorBasicLabel">${d.label}</div>
+        ${vals.map((v,i)=>`<div class="motorBasicCell ${classes[i]}">${d.fmt(v)}</div>`).join("")}
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function setMotorInnerTab(tab){
+  motorInnerTab=tab==="boat"?"boat":"motor";
+  const panel=$("quickDataPanel");
+  if(panel)panel.innerHTML=renderMotorInfo();
+}
+
 function motorObjectForBoat(boat, race){
   const direct=[
     boat?.motor, boat?.motorData, boat?.motorStats,
@@ -6565,31 +6674,53 @@ function renderMotorInfo(){
   }
 
   const motors=boats.map(b=>motorObjectForBoat(b,r));
+  const boatInfos=boats.map(b=>boatObjectForBoat(b,r));
 
   return `<div class="motorInfoPage">
     <div class="motorPageTitle">
       <div>
-        <h3>モーター情報</h3>
-        <p>6艇のモーター性能と直近の走りを比較</p>
+        <h3>モーター・ボート情報</h3>
+        <p>6艇の機力とボート成績を比較</p>
       </div>
       <span>未取得は --</span>
     </div>
 
+    <div class="motorInnerTabs">
+      <button class="${motorInnerTab==="motor"?"active":""}" onclick="setMotorInnerTab('motor')">
+        <span class="motorTabIcon">⚙</span>
+        <span>モーター情報</span>
+      </button>
+      <button class="${motorInnerTab==="boat"?"active":""}" onclick="setMotorInnerTab('boat')">
+        <span class="motorTabIcon">▰</span>
+        <span>ボート情報</span>
+      </button>
+    </div>
+
     ${motorRacerHeader(boats)}
 
-    <div class="motorConnectedFrame">
-      <div class="motorSectionBar">
-        <b>⚙ モーター基本データ</b>
-        <span>モーターの力を6艇比較</span>
-      </div>
-      ${motorBasicTable(boats,motors)}
+    ${motorInnerTab==="motor"?`
+      <div class="motorConnectedFrame">
+        <div class="motorSectionBar">
+          <b>⚙ モーター基本データ</b>
+          <span>モーターの力を6艇比較</span>
+        </div>
+        ${motorBasicTable(boats,motors)}
 
-      <div class="motorSectionBar motorHistoryBar">
-        <b>▥ モーター過去20走成績</b>
-        <span>進入・展示・級・着</span>
+        <div class="motorSectionBar motorHistoryBar">
+          <b>▥ モーター過去20走成績</b>
+          <span>進入・展示・級・着</span>
+        </div>
+        ${motorHistoryTable(boats,motors)}
       </div>
-      ${motorHistoryTable(boats,motors)}
-    </div>
+    `:`
+      <div class="motorConnectedFrame boatConnectedFrame">
+        <div class="motorSectionBar boatSectionBar">
+          <b>▰ ボート基本データ</b>
+          <span>ボート成績を6艇比較</span>
+        </div>
+        ${boatBasicTable(boats,boatInfos)}
+      </div>
+    `}
 
     <div class="motorLegend">
       <span><i class="first"></i>1位（ベスト値）</span>
@@ -6598,7 +6729,6 @@ function renderMotorInfo(){
     </div>
   </div>`;
 }
-
 
 function beforeValue(obj, keys){
   for(const key of keys){
@@ -8405,6 +8535,7 @@ function showRaceData(type, btn){
   }
   if(type==="motor"){
     try{
+      motorInnerTab="motor";
       panel.innerHTML=renderMotorInfo();
     }catch(err){
       console.error("motor info render error",err);
@@ -12108,6 +12239,74 @@ document.addEventListener("DOMContentLoaded",()=>{
   }
   .homeTabLabel{
     font-size:8px!important;
+  }
+}
+</style>
+
+
+
+<style id="v107-motor-boat-tabs">
+.motorInnerTabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin:10px 0;
+}
+.motorInnerTabs button{
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border:2px solid #aacbdc;
+  border-radius:10px;
+  background:#fff;
+  color:#2a5b78;
+  font-family:inherit;
+  font-size:9.5px;
+  font-weight:950;
+}
+.motorInnerTabs button.active{
+  border-color:#087fbe;
+  background:linear-gradient(135deg,#0870b1,#079aca);
+  color:#fff;
+  box-shadow:0 5px 12px rgba(7,118,180,.14);
+}
+.motorTabIcon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  line-height:1;
+}
+.boatConnectedFrame{
+  margin-top:10px;
+}
+.boatSectionBar{
+  background:linear-gradient(90deg,#075783,#088bb8,#0b9bc3)!important;
+}
+.boatBasicTable .motorBasicHead>div:first-child{
+  background:#eaf5fb!important;
+}
+.boatBasicTable .motorBasicLabel{
+  background:#eef7fb!important;
+}
+.boatBasicTable .motorBasicCell,
+.boatBasicTable .motorBasicLabel{
+  min-height:56px!important;
+}
+.boatBasicTable .motorBasicCell{
+  font-size:9px!important;
+  font-weight:950!important;
+}
+@media(max-width:430px){
+  .motorInnerTabs button{
+    min-height:45px;
+    font-size:9px;
+  }
+  .boatBasicTable .motorBasicCell,
+  .boatBasicTable .motorBasicLabel{
+    min-height:53px!important;
   }
 }
 </style>
