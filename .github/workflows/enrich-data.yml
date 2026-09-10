@@ -16,7 +16,7 @@ permissions:
 jobs:
   enrich:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
 
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Enrich racer, current-meet, motor and boat data
+      - name: Enrich racer, current-meet, historical results, motor and boat data
         run: python scripts/collect_today.py --enrich --out data/today.json --workers 10
 
       - name: Commit enriched data when changed
