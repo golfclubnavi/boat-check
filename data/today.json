@@ -1,6 +1,6 @@
 {
   "schemaVersion": "38.0",
-  "updatedAt": "2026-09-10T14:39:27+09:00",
+  "updatedAt": "2026-09-10T15:11:31+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -3430,7 +3430,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中北 将史",
+              "racerName": "発売終了 中北 将史",
               "class": "B1"
             },
             {
@@ -3486,7 +3486,7 @@
         },
         {
           "raceNo": 10,
-          "deadline": "15:24",
+          "deadline": "15:22",
           "boats": [
             {
               "lane": 1,
@@ -3546,7 +3546,7 @@
         },
         {
           "raceNo": 11,
-          "deadline": "15:55",
+          "deadline": "15:53",
           "boats": [
             {
               "lane": 1,
@@ -3606,7 +3606,7 @@
         },
         {
           "raceNo": 12,
-          "deadline": "16:27",
+          "deadline": "16:25",
           "boats": [
             {
               "lane": 1,
@@ -5920,7 +5920,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 永井 聖美",
+              "racerName": "発売終了 永井 聖美",
               "class": "B1"
             },
             {
@@ -8849,7 +8849,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 柳橋 宏紀",
+              "racerName": "発売終了 柳橋 宏紀",
               "class": "A2"
             },
             {
@@ -10022,7 +10022,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小野寺 智洋",
+              "racerName": "発売終了 小野寺 智洋",
               "class": "A2"
             },
             {
@@ -10082,7 +10082,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山田 哲也",
+              "racerName": "発売終了 山田 哲也",
               "class": "A1"
             },
             {
@@ -14563,7 +14563,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 森永 淳",
+              "racerName": "発売終了 森永 淳",
               "class": "A1"
             },
             {
