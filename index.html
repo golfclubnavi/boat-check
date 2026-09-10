@@ -3304,32 +3304,48 @@ body{letter-spacing:0 !important}
     <div class="data-state" id="dataState"><strong>公式データ</strong>更新確認中</div>
   </div>
 
-  <div class="homeTabs">
-    <div class="homeTab active"><span class="ico">🚩</span>開催一覧</div>
-    <div class="homeTab"><span class="ico">⏱️</span>締切順</div>
-    <div class="homeTab"><span class="ico">⭐</span>お気に入り</div>
-    <div class="homeTab"><span class="ico">▶️</span>レース映像</div>
+  <div class="homeTabs" id="homeTabs">
+    <div class="homeTab active" data-home-tab="venues" onclick="setHomeTab('venues')"><span class="ico">🚩</span>開催一覧</div>
+    <div class="homeTab" data-home-tab="deadline" onclick="setHomeTab('deadline')"><span class="ico">⏱️</span>締切順</div>
+    <div class="homeTab" data-home-tab="favorites" onclick="setHomeTab('favorites')"><span class="ico">★</span>お気に入り</div>
+    <div class="homeTab" data-home-tab="mypage" onclick="setHomeTab('mypage')"><span class="ico">👤</span>マイページ</div>
   </div>
-<div id="loadError" class="errorbox hidden"></div>
-  <div class="grid" id="venues"></div>
 
-  <div class="judge-guide">
-    <div class="judge-title">見送り度・判定の見方</div>
-    <div class="judge-main">
-      <div class="jc">
-        <div class="jh">見送り度</div>
-        <div class="jp">数値が高いほど<br>見送るべきレースです</div>
-        <div class="scale"></div><div class="scale-label"><b>0%</b><b>100%</b></div>
+  <div id="loadError" class="errorbox hidden"></div>
+
+  <div id="homeVenuesPanel" class="homePanel">
+    <div class="grid" id="venues"></div>
+
+    <button class="homePtBalance" onclick="setHomeTab('mypage')">
+      <div>
+        <small>デモ投票 所持pt</small>
+        <strong id="homePtBalanceValue">10,000pt</strong>
       </div>
-      <div class="jc">
-        <div class="status check"><div class="status-head">✓ CHECK <small>0〜40%</small></div><p>買い目検討OKのレース</p></div>
-        <div class="status caution"><div class="status-head">▲ CAUTION <small>41〜70%</small></div><p>慎重に判断したいレース</p></div>
-      </div>
-      <div class="jc">
-        <div class="status skip"><div class="status-head">× SKIP <small>71〜100%</small></div><p>見送ることを推奨するレース</p></div>
+      <span>マイページ ›</span>
+    </button>
+
+    <div class="judge-guide">
+      <div class="judge-title">見送り度・判定の見方</div>
+      <div class="judge-main">
+        <div class="jc">
+          <div class="jh">見送り度</div>
+          <div class="jp">数値が高いほど<br>見送るべきレースです</div>
+          <div class="scale"></div><div class="scale-label"><b>0%</b><b>100%</b></div>
+        </div>
+        <div class="jc">
+          <div class="status check"><div class="status-head">✓ CHECK <small>0〜40%</small></div><p>買い目検討OKのレース</p></div>
+          <div class="status caution"><div class="status-head">▲ CAUTION <small>41〜70%</small></div><p>慎重に判断したいレース</p></div>
+        </div>
+        <div class="jc">
+          <div class="status skip"><div class="status-head">× SKIP <small>71〜100%</small></div><p>見送ることを推奨するレース</p></div>
+        </div>
       </div>
     </div>
   </div>
+
+  <div id="homeDeadlinePanel" class="homePanel hidden"></div>
+  <div id="homeFavoritesPanel" class="homePanel hidden"></div>
+  <div id="homeMyPagePanel" class="homePanel hidden"></div>
 </section>
 
 <section id="venue" class="hidden">
@@ -3429,6 +3445,11 @@ const VENUES=[
 ];
 const $=id=>document.getElementById(id);
 let state={meetings:[],updatedAt:null,dateJST:null,currentMeeting:null,currentMeetingView:null,currentRace:null,currentDayDate:null};
+let homeActiveTab="venues";
+let homeMyPageTab="bets";
+let homeBetHistoryTab="recent";
+let homeFavoriteQuery="";
+
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function gradeClass(g){return g==="SG"?"sg":g==="G1"?"g1":g==="G2"?"g2":g==="G3"?"g3":g==="女子"?"women":"general"}
@@ -3563,6 +3584,551 @@ function eventMarks(m){
   if(["G3","G2","G1","SG"].includes(grade))marks.push(`<span class="gradeMark ${grade.toLowerCase()}">${grade}</span>`);
   return marks.join("");
 }
+
+function homeFormatPt(v){
+  return `${Number(v||0).toLocaleString("ja-JP")}pt`;
+}
+function homeFormatDateTime(iso){
+  if(!iso)return "--";
+  try{
+    return new Intl.DateTimeFormat("ja-JP",{
+      timeZone:"Asia/Tokyo",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"
+    }).format(new Date(iso));
+  }catch(e){return "--";}
+}
+function homeLoadJson(key,fallback){
+  try{
+    const v=JSON.parse(localStorage.getItem(key)||"null");
+    return v===null?fallback:v;
+  }catch(e){return fallback;}
+}
+function homeSaveJson(key,value){
+  localStorage.setItem(key,JSON.stringify(value));
+}
+function homeFavorites(){
+  const list=homeLoadJson("boatCheckFavoriteRacers",[]);
+  return Array.isArray(list)?list:[];
+}
+function homeSetFavorites(list){
+  homeSaveJson("boatCheckFavoriteRacers",list);
+}
+function homeNormalizeRacerName(v){
+  return cleanRacerName(v||"").replace(/\s+/g,"");
+}
+function homeAllRacers(){
+  const map=new Map();
+  (state.meetings||[]).forEach(m=>{
+    (m.races||[]).forEach(r=>{
+      (r.boats||[]).forEach(b=>{
+        const id=String(b.racerId||b.registrationNo||"").trim();
+        if(!id)return;
+        const name=cleanRacerName(b.racerName||"");
+        if(!map.has(id)){
+          map.set(id,{
+            racerId:id,
+            racerName:name||"--",
+            class:b.class||"--",
+            branch:b.branch||b.region||"--",
+            period:b.period||null
+          });
+        }
+      });
+    });
+  });
+  return [...map.values()].sort((a,b)=>a.racerId.localeCompare(b.racerId));
+}
+function homeIsFavorite(racerId){
+  const id=String(racerId||"");
+  return homeFavorites().some(x=>String(x.racerId)===id);
+}
+function homeToggleFavorite(racerId){
+  const id=String(racerId||"");
+  const racers=homeAllRacers();
+  const racer=racers.find(x=>String(x.racerId)===id) || homeFavorites().find(x=>String(x.racerId)===id);
+  if(!racer)return;
+
+  let list=homeFavorites();
+  if(list.some(x=>String(x.racerId)===id)){
+    list=list.filter(x=>String(x.racerId)!==id);
+    demoToast("お気に入りから解除しました");
+  }else{
+    list=[...list,{...racer,addedAt:new Date().toISOString()}];
+    demoToast("お気に入りに登録しました");
+  }
+  homeSetFavorites(list);
+  renderHomeFavorites();
+  if(homeActiveTab==="mypage"&&homeMyPageTab==="favorites")renderHomeMyPage();
+}
+function homeFavoriteRuns(){
+  const favIds=new Set(homeFavorites().map(x=>String(x.racerId)));
+  const rows=[];
+  (state.meetings||[]).forEach(m=>{
+    (m.races||[]).forEach(r=>{
+      (r.boats||[]).forEach(b=>{
+        const id=String(b.racerId||b.registrationNo||"");
+        if(!favIds.has(id))return;
+        const mins=minutesUntil(r.deadline);
+        rows.push({
+          venueCode:m.venueCode,
+          venueName:m.venueName||VENUES.find(v=>v[0]===m.venueCode)?.[1]||"--",
+          day:m.day||"",
+          grade:meetingGrade(m),
+          raceNo:Number(r.raceNo)||0,
+          deadline:r.deadline||"--:--",
+          mins,
+          lane:Number(b.lane)||0,
+          racerId:id,
+          racerName:cleanRacerName(b.racerName||""),
+          class:b.class||"--",
+          cancelled:raceIsCancelled(r)
+        });
+      });
+    });
+  });
+  return rows.sort((a,b)=>{
+    const am=(a.mins===null?9999:a.mins), bm=(b.mins===null?9999:b.mins);
+    return am-bm || a.venueCode.localeCompare(b.venueCode) || a.raceNo-b.raceNo;
+  });
+}
+function homeOpenRace(code,raceNo){
+  openVenue(code);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    jumpRace(Number(raceNo),"instant","center");
+  }));
+}
+function homeOpenRaceDetail(code,raceNo){
+  openVenue(code);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    openRace(Number(raceNo));
+  }));
+}
+function renderHomePointBalance(){
+  const el=$("homePtBalanceValue");
+  if(el && typeof demoPoints!=="undefined")el.textContent=homeFormatPt(demoPoints);
+}
+function setHomeTab(tab){
+  homeActiveTab=tab||"venues";
+  document.querySelectorAll("#homeTabs .homeTab").forEach(el=>{
+    el.classList.toggle("active",el.dataset.homeTab===homeActiveTab);
+  });
+
+  ["homeVenuesPanel","homeDeadlinePanel","homeFavoritesPanel","homeMyPagePanel"].forEach(id=>$(id)?.classList.add("hidden"));
+  if(homeActiveTab==="venues")$("homeVenuesPanel")?.classList.remove("hidden");
+  if(homeActiveTab==="deadline"){
+    $("homeDeadlinePanel")?.classList.remove("hidden");
+    renderHomeDeadline();
+  }
+  if(homeActiveTab==="favorites"){
+    $("homeFavoritesPanel")?.classList.remove("hidden");
+    renderHomeFavorites();
+  }
+  if(homeActiveTab==="mypage"){
+    $("homeMyPagePanel")?.classList.remove("hidden");
+    renderHomeMyPage();
+  }
+  renderHomePointBalance();
+  scrollTo({top:0,behavior:"instant"});
+}
+function renderHomeDeadline(){
+  const panel=$("homeDeadlinePanel");
+  if(!panel)return;
+  const now=jstNow();
+
+  const items=(state.meetings||[]).map(m=>{
+    if(m.date!==now.date)return null;
+    const cancel=meetingCancelStatus(m);
+    if(cancel==="cancelled"||cancel==="postponed")return null;
+    const race=getNextRace(m);
+    if(!race)return null;
+    const mins=minutesUntil(race.deadline);
+    if(mins===null||mins<0)return null;
+    return {
+      venueCode:m.venueCode,
+      venueName:m.venueName||VENUES.find(v=>v[0]===m.venueCode)?.[1]||"--",
+      day:m.day||"",
+      grade:meetingGrade(m),
+      raceNo:Number(race.raceNo)||0,
+      deadline:race.deadline||"--:--",
+      mins,
+      timeMark:timeMark(m),
+      partial:cancel==="partial_cancelled"
+    };
+  }).filter(Boolean).sort((a,b)=>a.mins-b.mins).slice(0,10);
+
+  panel.innerHTML=`<div class="homeListPage">
+    <div class="homePanelTitle">
+      <div><h3>締切順</h3><p>直近の締切が近い開催場を10場表示</p></div>
+      <span>BOAT RACE公式</span>
+    </div>
+    ${items.length?`<div class="deadlineList">
+      ${items.map((x,i)=>{
+        const urgent=x.mins<=10;
+        return `<button class="deadlineRow ${urgent?"urgent":""}" onclick="homeOpenRace('${x.venueCode}',${x.raceNo})">
+          <div class="deadlineRank">${i+1}</div>
+          <div class="deadlineVenue">
+            <strong>${esc(x.venueName)}</strong>
+            <small>${esc(x.grade)} ${esc(x.day)}${x.partial?" ・ 一部中止":""}</small>
+          </div>
+          <div class="deadlineRace"><b>${x.raceNo}R</b><small>締切予定</small></div>
+          <div class="deadlineTime">
+            <strong>${esc(x.deadline)}</strong>
+            <span>${x.mins===0?"締切まもなく":`あと${x.mins}分`}</span>
+          </div>
+          <div class="deadlineArrow">›</div>
+        </button>`;
+      }).join("")}
+    </div>`:`<div class="homeEmptyState"><b>締切前の開催場はありません</b><span>開催データが更新されると自動で表示します。</span></div>`}
+  </div>`;
+}
+function updateHomeFavoriteSearch(q){
+  homeFavoriteQuery=String(q||"");
+  const root=$("favoriteSearchResults");
+  if(!root)return;
+  const query=homeFavoriteQuery.trim().toLowerCase().replace(/\s+/g,"");
+  if(!query){
+    root.innerHTML=`<div class="favoriteSearchHint">選手名または4桁の登録番号を入力してください。</div>`;
+    return;
+  }
+  const matches=homeAllRacers().filter(r=>{
+    const name=homeNormalizeRacerName(r.racerName).toLowerCase();
+    const id=String(r.racerId||"");
+    return name.includes(query)||id.includes(query);
+  }).slice(0,20);
+
+  root.innerHTML=matches.length?matches.map(r=>{
+    const fav=homeIsFavorite(r.racerId);
+    return `<div class="favoriteSearchRow">
+      <button class="favoriteStar ${fav?"active":""}" onclick="homeToggleFavorite('${esc(r.racerId)}')" aria-label="お気に入り">${fav?"★":"☆"}</button>
+      <div class="favoritePlayer">
+        <strong>${esc(r.racerName||"--")}</strong>
+        <span>${esc(r.racerId)} / ${esc(r.class||"--")} / ${esc(r.branch||"--")}${r.period?` / ${esc(r.period)}期`:""}</span>
+      </div>
+    </div>`;
+  }).join(""):`<div class="favoriteSearchHint">本日の出走データから該当選手が見つかりません。</div>`;
+}
+function renderHomeFavorites(){
+  const panel=$("homeFavoritesPanel");
+  if(!panel)return;
+  const favs=homeFavorites();
+  const runs=homeFavoriteRuns();
+
+  panel.innerHTML=`<div class="homeListPage">
+    <div class="homePanelTitle">
+      <div><h3>お気に入り</h3><p>登録選手の本日の出走をまとめて確認</p></div>
+      <span>${favs.length}人登録</span>
+    </div>
+
+    <div class="favoriteSearchBox">
+      <label>選手を検索してお気に入り登録</label>
+      <div class="favoriteSearchInput">
+        <span>⌕</span>
+        <input id="favoriteSearchInput" type="search" autocomplete="off" placeholder="選手名・登録番号で検索"
+          value="${esc(homeFavoriteQuery)}" oninput="updateHomeFavoriteSearch(this.value)">
+      </div>
+      <div id="favoriteSearchResults"></div>
+    </div>
+
+    <div class="favoriteSectionHead">
+      <b>お気に入り選手の本日レース</b>
+      <span>${runs.length}件</span>
+    </div>
+
+    ${!favs.length?`<div class="homeEmptyState">
+      <b>お気に入り選手がまだ登録されていません</b>
+      <span>上の検索欄から選手を探して☆をタップしてください。</span>
+    </div>`:runs.length?`<div class="favoriteRuns">
+      ${runs.map(x=>`<button class="favoriteRun ${x.cancelled?"cancelled":""}" onclick="homeOpenRaceDetail('${x.venueCode}',${x.raceNo})">
+        <div class="favoriteRunLane lane${x.lane}">${x.lane}</div>
+        <div class="favoriteRunPlayer">
+          <strong>${esc(x.racerName)}</strong>
+          <span>${esc(x.racerId)} / ${esc(x.class)}</span>
+        </div>
+        <div class="favoriteRunRace">
+          <b>${esc(x.venueName)} ${x.raceNo}R</b>
+          <span>${x.cancelled?"中止":`締切 ${esc(x.deadline)}`}</span>
+        </div>
+        <div class="deadlineArrow">›</div>
+      </button>`).join("")}
+    </div>`:`<div class="homeEmptyState">
+      <b>お気に入り選手の本日の出走はありません</b>
+      <span>出走がある日に自動でここへ表示されます。</span>
+    </div>`}
+  </div>`;
+
+  updateHomeFavoriteSearch(homeFavoriteQuery);
+}
+function homeBetHistory(){
+  const h=homeLoadJson("boatCheckDemoHistory",[]);
+  return Array.isArray(h)?h:[];
+}
+function homePtHistory(){
+  const h=homeLoadJson("boatCheckPtHistory",[]);
+  return Array.isArray(h)?h:[];
+}
+function homeAddPoints(v){
+  let amount=Math.floor(Number(v)||0);
+  if(amount<=0){
+    alert("追加するptを入力してください。");
+    return;
+  }
+  demoPoints+=amount;
+  demoSavePoints();
+
+  const hist=homePtHistory();
+  hist.unshift({
+    at:new Date().toISOString(),
+    amount,
+    balance:demoPoints,
+    type:"add"
+  });
+  homeSaveJson("boatCheckPtHistory",hist.slice(0,200));
+  renderHomePointBalance();
+  renderHomeMyPage();
+  demoToast(`${amount.toLocaleString("ja-JP")}pt追加しました`);
+}
+function homeAddCustomPoints(){
+  const input=$("myPointCustomInput");
+  if(!input)return;
+  homeAddPoints(input.value);
+}
+function setHomeMyPageTab(tab){
+  homeMyPageTab=tab;
+  renderHomeMyPage();
+}
+function setHomeBetHistoryTab(tab){
+  homeBetHistoryTab=tab;
+  renderHomeMyPage();
+}
+function homeFlattenHistory(limit=999){
+  const out=[];
+  homeBetHistory().forEach((h,hi)=>{
+    const bets=Array.isArray(h.bets)?h.bets:[];
+    bets.forEach((b,bi)=>{
+      out.push({
+        at:h.at,
+        receiptNo:h.receiptNo||String(hi+1).padStart(4,"0"),
+        venueName:b.venueName||h.venue||"--",
+        raceNo:b.raceNo||h.raceNo||"--",
+        type:b.type||"",
+        combo:Array.isArray(b.combo)?b.combo:[],
+        stake:Number(b.stake)||0,
+        odds:b.odds,
+        hit:b.hit===true||b.isHit===true||b.result==="hit",
+        payout:Number(b.payout||0)
+      });
+    });
+  });
+  return out.slice(0,limit);
+}
+function homeHistoryRows(mode){
+  let rows=homeFlattenHistory();
+  if(mode==="recent")rows=rows.slice(0,5);
+  if(mode==="hit")rows=rows.filter(x=>x.hit||x.payout>0);
+
+  if(!rows.length){
+    return `<div class="myEmpty">${
+      mode==="hit"?"的中結果はまだありません。結果データ連携後に自動表示します。":
+      "デモ投票履歴はまだありません。"
+    }</div>`;
+  }
+  return `<div class="myHistoryList">${rows.map(x=>`
+    <div class="myHistoryRow">
+      <div>
+        <strong>${esc(x.venueName)} ${esc(x.raceNo)}R</strong>
+        <small>${homeFormatDateTime(x.at)} / ${demoBetLabel(x.type)}</small>
+      </div>
+      <div class="myHistoryCombo">${x.combo.length?oddsComboHtml(x.combo):"--"}</div>
+      <div class="myHistoryMoney">
+        <strong>${homeFormatPt(x.stake)}</strong>
+        ${x.hit||x.payout>0?`<small class="hit">払戻 ${homeFormatPt(x.payout)}</small>`:""}
+      </div>
+    </div>`).join("")}</div>`;
+}
+function homeRenderBetInquiry(){
+  const totalRows=homeFlattenHistory();
+  const totalStake=totalRows.reduce((s,x)=>s+x.stake,0);
+  const totalPayout=totalRows.reduce((s,x)=>s+x.payout,0);
+  const hits=totalRows.filter(x=>x.hit||x.payout>0).length;
+
+  return `<div class="myPageSection">
+    <div class="myStatGrid">
+      <div><small>投票数</small><strong>${totalRows.length}点</strong></div>
+      <div><small>総投資</small><strong>${homeFormatPt(totalStake)}</strong></div>
+      <div><small>総払戻</small><strong>${homeFormatPt(totalPayout)}</strong></div>
+      <div><small>的中</small><strong>${hits}点</strong></div>
+    </div>
+
+    <button class="myCartOpen" onclick="demoOpenCart()">
+      <span>現在のベットリスト</span>
+      <strong>${typeof demoCart!=="undefined"?demoCart.length:0}点 ›</strong>
+    </button>
+
+    <div class="myHistoryTabs">
+      <button class="${homeBetHistoryTab==="recent"?"active":""}" onclick="setHomeBetHistoryTab('recent')">直近の投票履歴</button>
+      <button class="${homeBetHistoryTab==="all"?"active":""}" onclick="setHomeBetHistoryTab('all')">投票履歴</button>
+      <button class="${homeBetHistoryTab==="hit"?"active":""}" onclick="setHomeBetHistoryTab('hit')">的中結果一覧</button>
+    </div>
+    ${homeHistoryRows(homeBetHistoryTab)}
+  </div>`;
+}
+function homeRenderPoints(){
+  const hist=homePtHistory();
+  return `<div class="myPageSection">
+    <div class="myPointHero">
+      <small>現在の所持pt</small>
+      <strong>${homeFormatPt(demoPoints)}</strong>
+      <span>デモ投票専用の仮想ポイント</span>
+    </div>
+
+    <div class="myPointAdd">
+      <h4>ptを追加</h4>
+      <div class="myPointQuick">
+        ${[1000,5000,10000,30000].map(v=>`<button onclick="homeAddPoints(${v})">+${v.toLocaleString("ja-JP")}pt</button>`).join("")}
+      </div>
+      <div class="myPointCustom">
+        <input id="myPointCustomInput" type="number" inputmode="numeric" min="1" step="1" placeholder="自由に入力">
+        <span>pt</span>
+        <button onclick="homeAddCustomPoints()">追加</button>
+      </div>
+    </div>
+
+    <div class="favoriteSectionHead"><b>pt追加履歴</b><span>${hist.length}件</span></div>
+    ${hist.length?`<div class="ptHistory">
+      ${hist.slice(0,30).map(x=>`<div class="ptHistoryRow">
+        <div><strong>+${Number(x.amount||0).toLocaleString("ja-JP")}pt</strong><small>${homeFormatDateTime(x.at)}</small></div>
+        <span>残高 ${homeFormatPt(x.balance)}</span>
+      </div>`).join("")}
+    </div>`:`<div class="myEmpty">pt追加履歴はまだありません。</div>`}
+  </div>`;
+}
+function homeRenderFavoriteManage(){
+  const favs=homeFavorites();
+  return `<div class="myPageSection">
+    <div class="favoriteSectionHead"><b>お気に入り選手</b><span>${favs.length}人</span></div>
+    ${favs.length?`<div class="myFavoriteManage">
+      ${favs.map(r=>`<div class="myFavoriteRow">
+        <button class="favoriteStar active" onclick="homeToggleFavorite('${esc(r.racerId)}')">★</button>
+        <div><strong>${esc(r.racerName||"--")}</strong><span>${esc(r.racerId)} / ${esc(r.class||"--")} / ${esc(r.branch||"--")}</span></div>
+        <button class="myRemoveFavorite" onclick="homeToggleFavorite('${esc(r.racerId)}')">解除</button>
+      </div>`).join("")}
+    </div>`:`<div class="myEmpty">お気に入り選手はまだ登録されていません。</div>`}
+  </div>`;
+}
+function homeBackupData(){
+  const payload={
+    version:1,
+    exportedAt:new Date().toISOString(),
+    demoPoints,
+    favorites:homeFavorites(),
+    demoCart:typeof demoCart!=="undefined"?demoCart:[],
+    demoHistory:homeBetHistory(),
+    ptHistory:homePtHistory()
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`boat-check-backup-${jstNow().date}.json`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function homeRestoreData(input){
+  const file=input?.files?.[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const d=JSON.parse(String(reader.result||"{}"));
+      if(typeof d.demoPoints==="number"){
+        demoPoints=d.demoPoints;
+        demoSavePoints();
+      }
+      if(Array.isArray(d.favorites))homeSetFavorites(d.favorites);
+      if(Array.isArray(d.demoCart)){
+        demoCart=d.demoCart;
+        demoPersistCart();
+      }
+      if(Array.isArray(d.demoHistory))homeSaveJson("boatCheckDemoHistory",d.demoHistory);
+      if(Array.isArray(d.ptHistory))homeSaveJson("boatCheckPtHistory",d.ptHistory);
+      renderHomeMyPage();
+      renderHomePointBalance();
+      demoToast("バックアップを復元しました");
+    }catch(e){
+      alert("バックアップファイルを読み込めませんでした。");
+    }finally{
+      input.value="";
+    }
+  };
+  reader.readAsText(file);
+}
+function homeClearUserData(){
+  if(!confirm("お気に入り・投票履歴・ベットリスト・pt履歴を初期化しますか？"))return;
+  localStorage.removeItem("boatCheckFavoriteRacers");
+  localStorage.removeItem("boatCheckDemoCart");
+  localStorage.removeItem("boatCheckDemoHistory");
+  localStorage.removeItem("boatCheckPtHistory");
+  localStorage.removeItem("boatCheckDemoPoints");
+  demoPoints=10000;
+  demoCart=[];
+  demoPersistCart();
+  demoSavePoints();
+  renderHomeMyPage();
+  renderHomePointBalance();
+  demoToast("データを初期化しました");
+}
+function homeRenderDataManage(){
+  return `<div class="myPageSection">
+    <div class="myInfoCard">
+      <strong>ゲスト利用中</strong>
+      <span>現在のデータはこの端末のブラウザに保存されています。</span>
+    </div>
+    <div class="myDataActions">
+      <button onclick="homeBackupData()"><b>バックアップ</b><span>データをJSONファイルに保存</span></button>
+      <label><b>復元</b><span>バックアップファイルから復元</span>
+        <input type="file" accept=".json,application/json" onchange="homeRestoreData(this)">
+      </label>
+      <button class="danger" onclick="homeClearUserData()"><b>データ初期化</b><span>端末内のデモデータを削除</span></button>
+    </div>
+    <div class="myLoginNote">
+      <b>ログイン機能は現在未実装</b>
+      <span>サイト完成後にApple・Google・メール認証を追加すると、複数端末同期や機種変更時の復元がしやすくなります。</span>
+    </div>
+  </div>`;
+}
+function renderHomeMyPage(){
+  const panel=$("homeMyPagePanel");
+  if(!panel)return;
+
+  const body=homeMyPageTab==="bets"?homeRenderBetInquiry():
+    homeMyPageTab==="points"?homeRenderPoints():
+    homeMyPageTab==="favorites"?homeRenderFavoriteManage():
+    homeRenderDataManage();
+
+  panel.innerHTML=`<div class="homeListPage">
+    <div class="homePanelTitle">
+      <div><h3>マイページ</h3><p>デモ投票・pt・お気に入りを管理</p></div>
+      <span class="guestBadge">ゲスト</span>
+    </div>
+    <div class="myBalanceBar">
+      <span>所持pt</span>
+      <strong>${homeFormatPt(demoPoints)}</strong>
+    </div>
+    <div class="myPageTabs">
+      <button class="${homeMyPageTab==="bets"?"active":""}" onclick="setHomeMyPageTab('bets')">投票照会</button>
+      <button class="${homeMyPageTab==="points"?"active":""}" onclick="setHomeMyPageTab('points')">pt追加</button>
+      <button class="${homeMyPageTab==="favorites"?"active":""}" onclick="setHomeMyPageTab('favorites')">お気に入り管理</button>
+      <button class="${homeMyPageTab==="data"?"active":""}" onclick="setHomeMyPageTab('data')">データ管理</button>
+    </div>
+    ${body}
+  </div>`;
+}
+function refreshHomeActivePanel(){
+  renderHomePointBalance();
+  if(homeActiveTab==="deadline")renderHomeDeadline();
+  if(homeActiveTab==="favorites")renderHomeFavorites();
+  if(homeActiveTab==="mypage")renderHomeMyPage();
+}
+
 function renderVenues(){
   const map=new Map(state.meetings.map(m=>[m.venueCode,m]));
   const now=jstNow();
@@ -6672,6 +7238,7 @@ function renderReplayInfo(){
 
 function demoSavePoints(){
   localStorage.setItem("boatCheckDemoPoints",String(Math.max(0,Math.floor(demoPoints))));
+  renderHomePointBalance();
 }
 function demoFormatPt(v){
   return `${Number(v||0).toLocaleString("ja-JP")}pt`;
@@ -7534,7 +8101,12 @@ function showVenue(){
   scrollTo({top:0,behavior:"instant"});
 }
 
-function showHome(){$("venue").classList.add("hidden");$("detail").classList.add("hidden");$("home").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
+function showHome(){
+  $("venue").classList.add("hidden");
+  $("detail").classList.add("hidden");
+  $("home").classList.remove("hidden");
+  setHomeTab("venues");
+}
 function backToVenue(){$("detail").classList.add("hidden");$("venue").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
 
 async function loadData(){
@@ -7548,6 +8120,7 @@ async function loadData(){
     $("todayLabel").textContent=formatDataDate(d.dateJST);
     $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
     renderVenues();
+    refreshHomeActivePanel();
   }catch(e){
     $("todayLabel").textContent=formatDataDate(jstNow().date);
     $("dataState").innerHTML="<strong>データ取得エラー</strong>再読み込みしてください";
@@ -7572,6 +8145,7 @@ loadData();
 setInterval(()=>{
   if(!state.meetings.length)return;
   renderVenues();
+  refreshHomeActivePanel();
   if(!$("venue").classList.contains("hidden") && state.currentMeetingView){
     renderRaces(state.currentMeetingView);
   }
@@ -9852,6 +10426,377 @@ document.addEventListener("DOMContentLoaded",()=>{
   .demoFL b{
     font-size:6.3px!important;
   }
+}
+</style>
+
+
+
+<style id="v103-home-dashboard">
+/* home tabs */
+.homeTab{
+  cursor:pointer;
+  user-select:none;
+}
+.homeTab:active{background:#f5f9fc;}
+.homePanel{min-height:120px;}
+
+/* pt balance between 24 venues and skip guide */
+.homePtBalance{
+  width:100%;
+  margin:12px 0 0;
+  min-height:66px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 14px;
+  border:1.5px solid #8fc2de;
+  border-radius:12px;
+  background:linear-gradient(135deg,#f8fdff,#eaf7fd);
+  box-shadow:0 5px 14px rgba(8,72,112,.06);
+  font-family:inherit;
+  text-align:left;
+}
+.homePtBalance div{display:flex;flex-direction:column;gap:3px;}
+.homePtBalance small{color:#6b8496;font-size:7.5px;font-weight:900;}
+.homePtBalance strong{color:#086da7;font-size:20px;font-weight:950;letter-spacing:-.02em;}
+.homePtBalance>span{color:#0a6fa9;font-size:8px;font-weight:950;}
+
+/* common panel */
+.homeListPage{
+  border:1px solid #d1e0ea;
+  border-radius:13px;
+  background:#fff;
+  box-shadow:0 5px 14px rgba(8,32,59,.06);
+  overflow:hidden;
+}
+.homePanelTitle{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  padding:13px 14px 11px;
+  border-bottom:1px solid #d7e3eb;
+  background:linear-gradient(180deg,#fff,#f8fbfd);
+}
+.homePanelTitle h3{margin:0;color:#102f4e;font-size:19px;font-weight:950;}
+.homePanelTitle p{margin:3px 0 0;color:#768b9b;font-size:7.5px;font-weight:850;}
+.homePanelTitle>span{
+  color:#54768d;
+  font-size:7px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.homeEmptyState{
+  padding:34px 18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  text-align:center;
+  color:#72899a;
+}
+.homeEmptyState b{color:#46667d;font-size:10px;font-weight:950;}
+.homeEmptyState span{font-size:7.5px;line-height:1.45;font-weight:800;}
+
+/* 締切順 */
+.deadlineList{padding:8px;background:#f6fafc;}
+.deadlineRow{
+  width:100%;
+  min-height:67px;
+  display:grid;
+  grid-template-columns:30px 1fr 55px 70px 13px;
+  align-items:center;
+  gap:6px;
+  margin-bottom:7px;
+  padding:8px 8px;
+  border:1.5px solid #a7c9dc;
+  border-radius:10px;
+  background:#fff;
+  font-family:inherit;
+  text-align:left;
+  box-shadow:0 3px 8px rgba(11,65,99,.04);
+}
+.deadlineRow:last-child{margin-bottom:0;}
+.deadlineRow.urgent{
+  border-color:#ef9aa0;
+  background:linear-gradient(90deg,#fff,#fff7f7);
+}
+.deadlineRank{
+  width:25px;height:25px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+  background:#e9f4fa;
+  color:#0a6fa9;
+  font-size:9px;font-weight:950;
+}
+.deadlineVenue{min-width:0;display:flex;flex-direction:column;gap:3px;}
+.deadlineVenue strong{color:#173b59;font-size:12px;font-weight:950;}
+.deadlineVenue small{color:#73899a;font-size:6.6px;font-weight:850;}
+.deadlineRace{text-align:center;}
+.deadlineRace b{display:block;color:#173b59;font-size:13px;font-weight:950;}
+.deadlineRace small{display:block;margin-top:2px;color:#7b8f9d;font-size:5.8px;font-weight:850;}
+.deadlineTime{text-align:right;}
+.deadlineTime strong{display:block;color:#173b59;font-size:12px;font-weight:950;}
+.deadlineTime span{display:block;margin-top:3px;color:#708697;font-size:6.5px;font-weight:900;}
+.deadlineRow.urgent .deadlineTime strong,
+.deadlineRow.urgent .deadlineTime span{color:#d92e3b;}
+.deadlineArrow{color:#7ca0b7;font-size:18px;font-weight:800;text-align:center;}
+
+/* favorites */
+.favoriteSearchBox{
+  margin:10px;
+  padding:10px;
+  border:1px solid #b9d5e5;
+  border-radius:11px;
+  background:#f7fbfd;
+}
+.favoriteSearchBox>label{
+  display:block;
+  margin-bottom:7px;
+  color:#245b79;
+  font-size:8.5px;
+  font-weight:950;
+}
+.favoriteSearchInput{
+  display:grid;
+  grid-template-columns:30px 1fr;
+  align-items:center;
+  overflow:hidden;
+  border:1.5px solid #8fbed8;
+  border-radius:9px;
+  background:#fff;
+}
+.favoriteSearchInput span{text-align:center;color:#7a96a8;font-size:16px;}
+.favoriteSearchInput input{
+  width:100%;height:42px;border:0;outline:0;padding:0 10px 0 0;
+  background:#fff;color:#173b59;font-family:inherit;font-size:10px;font-weight:850;
+}
+.favoriteSearchHint{
+  padding:12px 5px 4px;
+  color:#7d909e;
+  text-align:center;
+  font-size:7px;
+  font-weight:800;
+}
+.favoriteSearchRow{
+  display:grid;
+  grid-template-columns:40px 1fr;
+  align-items:center;
+  margin-top:7px;
+  padding:7px;
+  border:1px solid #d0e0ea;
+  border-radius:8px;
+  background:#fff;
+}
+.favoriteStar{
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  padding:0;border:1px solid #c7d8e3;border-radius:8px;background:#fff;
+  color:#9aaab5;font-size:20px;line-height:1;
+}
+.favoriteStar.active{background:#fff9d9;border-color:#e9bd32;color:#f0b400;}
+.favoritePlayer{min-width:0;display:flex;flex-direction:column;gap:3px;}
+.favoritePlayer strong{color:#173b59;font-size:10px;font-weight:950;}
+.favoritePlayer span{color:#73899a;font-size:6.5px;font-weight:850;}
+
+.favoriteSectionHead{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px 7px;
+}
+.favoriteSectionHead b{color:#245b79;font-size:9px;font-weight:950;}
+.favoriteSectionHead span{color:#7c909e;font-size:7px;font-weight:850;}
+.favoriteRuns{padding:0 9px 9px;}
+.favoriteRun{
+  width:100%;
+  min-height:58px;
+  display:grid;
+  grid-template-columns:36px 1fr 92px 14px;
+  align-items:center;
+  gap:6px;
+  margin-bottom:6px;
+  padding:7px;
+  border:1px solid #b9d3e3;
+  border-radius:9px;
+  background:#fff;
+  font-family:inherit;
+  text-align:left;
+}
+.favoriteRun.cancelled{opacity:.6;}
+.favoriteRunLane{
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  border-radius:7px;font-size:13px;font-weight:950;
+}
+.favoriteRunPlayer{min-width:0;display:flex;flex-direction:column;gap:3px;}
+.favoriteRunPlayer strong{color:#173b59;font-size:9.5px;font-weight:950;}
+.favoriteRunPlayer span{color:#74899a;font-size:6.3px;font-weight:850;}
+.favoriteRunRace{text-align:right;}
+.favoriteRunRace b{display:block;color:#164565;font-size:8.5px;font-weight:950;}
+.favoriteRunRace span{display:block;margin-top:3px;color:#73899a;font-size:6.2px;font-weight:850;}
+
+/* my page */
+.guestBadge{
+  padding:4px 7px;
+  border-radius:999px;
+  background:#edf3f6;
+  color:#5c7587!important;
+}
+.myBalanceBar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 13px;
+  background:linear-gradient(90deg,#075181,#0a9dcc);
+  color:#fff;
+}
+.myBalanceBar span{font-size:8px;font-weight:900;}
+.myBalanceBar strong{font-size:17px;font-weight:950;}
+.myPageTabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-bottom:1px solid #cfdee7;
+}
+.myPageTabs button{
+  min-height:44px;padding:5px 2px;border:0;border-right:1px solid #e0e8ee;
+  background:#fff;color:#526e82;font-family:inherit;font-size:7px;font-weight:900;
+}
+.myPageTabs button:last-child{border-right:0;}
+.myPageTabs button.active{
+  color:#0874b3;
+  background:#eef8fd;
+  box-shadow:inset 0 -3px 0 #0a87c6;
+}
+.myPageSection{padding:9px;background:#f8fbfd;}
+.myStatGrid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  overflow:hidden;
+  border:1px solid #bdd4e2;border-radius:10px;background:#fff;
+}
+.myStatGrid>div{
+  min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-right:1px solid #d6e3eb;
+}
+.myStatGrid>div:last-child{border-right:0;}
+.myStatGrid small{color:#73899a;font-size:6.2px;font-weight:850;}
+.myStatGrid strong{margin-top:4px;color:#0a5f94;font-size:10px;font-weight:950;}
+.myCartOpen{
+  width:100%;min-height:43px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;
+  padding:8px 11px;border:1px solid #a9cade;border-radius:9px;background:#fff;
+  color:#245b79;font-family:inherit;font-size:8.5px;font-weight:950;
+}
+.myHistoryTabs{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:8px 0;
+}
+.myHistoryTabs button{
+  min-height:38px;border:1px solid #b6d0df;border-radius:8px;background:#fff;
+  color:#42677e;font-family:inherit;font-size:7px;font-weight:900;
+}
+.myHistoryTabs button.active{border-color:#0a7ec0;background:#eaf6fc;color:#0870ab;}
+.myHistoryList{
+  overflow:hidden;border:1px solid #c2d7e4;border-radius:9px;background:#fff;
+}
+.myHistoryRow{
+  display:grid;grid-template-columns:1fr 95px 78px;align-items:center;gap:5px;
+  min-height:58px;padding:7px;border-bottom:1px solid #d4e2ea;
+}
+.myHistoryRow:last-child{border-bottom:0;}
+.myHistoryRow>div:first-child{display:flex;flex-direction:column;gap:3px;}
+.myHistoryRow>div:first-child strong{color:#173b59;font-size:8.5px;font-weight:950;}
+.myHistoryRow>div:first-child small{color:#7a8f9e;font-size:6px;font-weight:850;}
+.myHistoryCombo{display:flex;align-items:center;justify-content:center;}
+.myHistoryMoney{text-align:right;}
+.myHistoryMoney strong{display:block;color:#173b59;font-size:8.5px;font-weight:950;}
+.myHistoryMoney small.hit{display:block;margin-top:3px;color:#138050;font-size:6px;font-weight:900;}
+.myEmpty{
+  padding:24px 12px;text-align:center;border:1px solid #d3e1ea;border-radius:9px;
+  background:#fff;color:#7a8f9e;font-size:7px;font-weight:850;
+}
+
+.myPointHero{
+  padding:16px;text-align:center;border-radius:11px;
+  background:linear-gradient(135deg,#075181,#0798c9);color:#fff;
+}
+.myPointHero small{display:block;font-size:7px;font-weight:850;opacity:.9;}
+.myPointHero strong{display:block;margin:4px 0;font-size:25px;font-weight:950;}
+.myPointHero span{font-size:6.5px;font-weight:800;opacity:.85;}
+.myPointAdd{
+  margin-top:8px;padding:10px;border:1px solid #bdd5e3;border-radius:10px;background:#fff;
+}
+.myPointAdd h4{margin:0 0 8px;color:#245b79;font-size:9px;font-weight:950;}
+.myPointQuick{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.myPointQuick button{
+  min-height:37px;border:1px solid #b6d2e1;border-radius:8px;background:#f8fcfe;
+  color:#0a6ea8;font-family:inherit;font-size:7px;font-weight:950;
+}
+.myPointCustom{
+  display:grid;grid-template-columns:1fr auto 62px;align-items:center;overflow:hidden;
+  margin-top:7px;border:1.5px solid #0a82c2;border-radius:8px;
+}
+.myPointCustom input{
+  width:100%;height:40px;border:0;outline:0;padding:0 8px;background:#fff;
+  color:#173b59;text-align:right;font-family:inherit;font-size:13px;font-weight:950;
+}
+.myPointCustom span{padding:0 5px;color:#0a6ea8;font-size:8px;font-weight:950;}
+.myPointCustom button{
+  align-self:stretch;border:0;background:#0a82c2;color:#fff;font-family:inherit;font-size:8px;font-weight:950;
+}
+.ptHistory{
+  overflow:hidden;border:1px solid #c5d9e5;border-radius:9px;background:#fff;
+}
+.ptHistoryRow{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  min-height:50px;padding:8px 10px;border-bottom:1px solid #d9e5ec;
+}
+.ptHistoryRow:last-child{border-bottom:0;}
+.ptHistoryRow>div{display:flex;flex-direction:column;gap:3px;}
+.ptHistoryRow strong{color:#118054;font-size:9px;font-weight:950;}
+.ptHistoryRow small{color:#7a8f9e;font-size:6px;font-weight:850;}
+.ptHistoryRow>span{color:#42677e;font-size:7px;font-weight:900;}
+
+.myFavoriteManage{
+  overflow:hidden;border:1px solid #c5d9e5;border-radius:9px;background:#fff;
+}
+.myFavoriteRow{
+  display:grid;grid-template-columns:38px 1fr 48px;align-items:center;gap:7px;
+  min-height:57px;padding:7px;border-bottom:1px solid #d9e5ec;
+}
+.myFavoriteRow:last-child{border-bottom:0;}
+.myFavoriteRow>div{display:flex;flex-direction:column;gap:3px;}
+.myFavoriteRow strong{color:#173b59;font-size:9px;font-weight:950;}
+.myFavoriteRow span{color:#778d9d;font-size:6.2px;font-weight:850;}
+.myRemoveFavorite{
+  min-height:30px;border:1px solid #e1aab0;border-radius:7px;background:#fff2f3;
+  color:#c92d39;font-family:inherit;font-size:7px;font-weight:950;
+}
+
+.myInfoCard{
+  display:flex;flex-direction:column;gap:5px;padding:11px;border:1px solid #bcd5e4;
+  border-radius:10px;background:#fff;
+}
+.myInfoCard strong{color:#173b59;font-size:10px;font-weight:950;}
+.myInfoCard span{color:#72899a;font-size:7px;line-height:1.45;font-weight:850;}
+.myDataActions{display:grid;gap:7px;margin-top:8px;}
+.myDataActions button,.myDataActions label{
+  min-height:52px;display:flex;flex-direction:column;justify-content:center;gap:3px;
+  padding:8px 10px;border:1px solid #b9d3e2;border-radius:9px;background:#fff;
+  color:#245b79;font-family:inherit;text-align:left;
+}
+.myDataActions b{font-size:8.5px;font-weight:950;}
+.myDataActions span{color:#7a8f9e;font-size:6.5px;font-weight:850;}
+.myDataActions label{cursor:pointer;}
+.myDataActions input{display:none;}
+.myDataActions .danger{border-color:#e0aab0;background:#fff4f5;color:#bd2834;}
+.myLoginNote{
+  margin-top:8px;padding:10px;border-radius:9px;background:#eef4f8;
+  display:flex;flex-direction:column;gap:4px;
+}
+.myLoginNote b{color:#42677e;font-size:8px;font-weight:950;}
+.myLoginNote span{color:#718899;font-size:6.5px;line-height:1.45;font-weight:800;}
+
+@media(max-width:430px){
+  .deadlineRow{grid-template-columns:28px 1fr 50px 66px 11px;gap:5px;}
+  .deadlineVenue strong{font-size:11px;}
+  .deadlineTime strong{font-size:11px;}
+  .favoriteRun{grid-template-columns:34px 1fr 86px 12px;}
+  .myPageTabs button{font-size:6.6px;}
+  .myHistoryRow{grid-template-columns:1fr 86px 72px;}
 }
 </style>
 
