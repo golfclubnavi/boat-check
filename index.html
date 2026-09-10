@@ -3448,6 +3448,7 @@ let state={meetings:[],updatedAt:null,dateJST:null,currentMeeting:null,currentMe
 let homeActiveTab="venues";
 let homeMyPageTab="bets";
 let homeBetHistoryTab="recent";
+let homeHistoryOpenGroups=new Set();
 let homeFavoriteQuery="";
 
 
@@ -3752,15 +3753,15 @@ function renderHomeDeadline(){
         raceNo:Number(r.raceNo)||0,
         deadline:r.deadline||"--:--",
         mins,
-        partial:cancel==="partial_cancelled"
+        partial:cancel==="partial_cancelled",
+        title:m.title||m.eventTitle||"",
+        timeType:timeMark(m)
       });
     });
   });
 
   allUpcoming.sort((a,b)=>a.mins-b.mins || a.venueCode.localeCompare(b.venueCode) || a.raceNo-b.raceNo);
 
-  // 公式のようにまず「各場の直近」を並べる。
-  // 当日開催場が10場未満なら、次レースを追加して合計10件まで補完する。
   const picked=[];
   const seenVenue=new Set();
   allUpcoming.forEach(x=>{
@@ -3770,6 +3771,7 @@ function renderHomeDeadline(){
       seenVenue.add(x.venueCode);
     }
   });
+
   if(picked.length<10){
     const used=new Set(picked.map(x=>`${x.venueCode}:${x.raceNo}`));
     allUpcoming.forEach(x=>{
@@ -3783,26 +3785,52 @@ function renderHomeDeadline(){
     picked.sort((a,b)=>a.mins-b.mins || a.venueCode.localeCompare(b.venueCode) || a.raceNo-b.raceNo);
   }
 
-  panel.innerHTML=`<div class="homeListPage">
-    <div class="homePanelTitle">
-      <div><h3>締切順</h3><p>直近の締切が近いレースを10件表示</p></div>
-      <span>BOAT RACE公式</span>
+  panel.innerHTML=`<div class="homeListPage deadlinePremiumPage">
+    <div class="deadlineHero">
+      <div>
+        <span class="deadlineEyebrow">CLOSE ORDER</span>
+        <h3>締切順</h3>
+        <p>締切が近いレースをリアルタイム順で表示</p>
+      </div>
+      <div class="deadlineHeroBadge">
+        <strong>${picked.length}</strong>
+        <span>RACES</span>
+      </div>
     </div>
-    ${picked.length?`<div class="deadlineList">
+
+    ${picked.length?`<div class="deadlinePremiumList">
       ${picked.map((x,i)=>{
         const urgent=x.mins<=10;
-        return `<button class="deadlineRow ${urgent?"urgent":""}" onclick="homeOpenRace('${x.venueCode}',${x.raceNo})">
-          <div class="deadlineRank">${i+1}</div>
-          <div class="deadlineVenue">
-            <strong>${esc(x.venueName)}</strong>
-            <small>${esc(x.grade)} ${esc(x.day)}${x.partial?" ・ 一部中止":""}</small>
+        const soon=x.mins<=20;
+        const stateClass=urgent?"urgent":soon?"soon":"normal";
+        const remain=x.mins===0?"まもなく":`あと${x.mins}分`;
+        const gradeClass=String(x.grade||"").toLowerCase().replace(/\s+/g,"");
+        return `<button class="deadlinePremiumRow ${stateClass}" onclick="homeOpenRace('${x.venueCode}',${x.raceNo})">
+          <div class="deadlineTopLine">
+            <div class="deadlineOrderNo">${String(i+1).padStart(2,"0")}</div>
+            <div class="deadlineVenueBlock">
+              <div class="deadlineVenueNameLine">
+                <strong>${esc(x.venueName)}</strong>
+                <span class="deadlineGrade grade-${gradeClass}">${esc(x.grade)}</span>
+                ${x.partial?`<span class="deadlinePartial">一部中止</span>`:""}
+              </div>
+              <small>${esc(x.day)}${x.title?` ・ ${esc(x.title)}`:""}</small>
+            </div>
+            <div class="deadlineRaceBlock">
+              <strong>${x.raceNo}<small>R</small></strong>
+              <span>締切予定</span>
+            </div>
           </div>
-          <div class="deadlineRace"><b>${x.raceNo}R</b><small>締切予定</small></div>
-          <div class="deadlineTime">
-            <strong>${esc(x.deadline)}</strong>
-            <span>${x.mins===0?"締切まもなく":`あと${x.mins}分`}</span>
+
+          <div class="deadlineBottomLine">
+            <div class="deadlineStatusDot"></div>
+            <div class="deadlineRemain">${remain}</div>
+            <div class="deadlineProgressTrack">
+              <span style="width:${Math.max(8,Math.min(100,100-(x.mins*1.4)))}%"></span>
+            </div>
+            <div class="deadlineClock">${esc(x.deadline)}</div>
+            <div class="deadlineChevron">›</div>
           </div>
-          <div class="deadlineArrow">›</div>
         </button>`;
       }).join("")}
     </div>`:`<div class="homeEmptyState"><b>締切前のレースはありません</b><span>開催データが更新されると自動で表示します。</span></div>`}
@@ -3948,10 +3976,22 @@ function homeFlattenHistory(limit=999){
   });
   return out.slice(0,limit);
 }
+function homeHistoryGroupKey(x){
+  return `${x.venueName||"--"}:${x.raceNo||"--"}:${(x.at||"").slice(0,10)}`;
+}
+function homeToggleHistoryGroup(key){
+  if(homeHistoryOpenGroups.has(key))homeHistoryOpenGroups.delete(key);
+  else homeHistoryOpenGroups.add(key);
+  renderHomeMyPage();
+}
 function homeHistoryRows(mode){
   let rows=homeFlattenHistory();
-  if(mode==="recent")rows=rows.slice(0,5);
-  if(mode==="hit")rows=rows.filter(x=>x.hit||x.payout>0);
+
+  if(mode==="recent"){
+    // 直近はレース単位で最大5グループ
+  }else if(mode==="hit"){
+    rows=rows.filter(x=>x.hit||x.payout>0);
+  }
 
   if(!rows.length){
     return `<div class="myEmpty">${
@@ -3959,18 +3999,64 @@ function homeHistoryRows(mode){
       "デモ投票履歴はまだありません。"
     }</div>`;
   }
-  return `<div class="myHistoryList">${rows.map(x=>`
-    <div class="myHistoryRow">
-      <div>
-        <strong>${esc(x.venueName)} ${esc(x.raceNo)}R</strong>
-        <small>${homeFormatDateTime(x.at)} / ${demoBetLabel(x.type)}</small>
-      </div>
-      <div class="myHistoryCombo">${x.combo.length?oddsComboHtml(x.combo):"--"}</div>
-      <div class="myHistoryMoney">
-        <strong>${homeFormatPt(x.stake)}</strong>
-        ${x.hit||x.payout>0?`<small class="hit">払戻 ${homeFormatPt(x.payout)}</small>`:""}
-      </div>
-    </div>`).join("")}</div>`;
+
+  const groupsMap=new Map();
+  rows.forEach(x=>{
+    const key=homeHistoryGroupKey(x);
+    if(!groupsMap.has(key)){
+      groupsMap.set(key,{
+        key,
+        venueName:x.venueName,
+        raceNo:x.raceNo,
+        at:x.at,
+        receiptNo:x.receiptNo,
+        bets:[]
+      });
+    }
+    groupsMap.get(key).bets.push(x);
+  });
+
+  let groups=[...groupsMap.values()].sort((a,b)=>new Date(b.at)-new Date(a.at));
+  if(mode==="recent")groups=groups.slice(0,5);
+
+  return `<div class="myHistoryGroups">
+    ${groups.map((g,idx)=>{
+      const isOpen=homeHistoryOpenGroups.has(g.key);
+      const totalStake=g.bets.reduce((s,x)=>s+x.stake,0);
+      const totalPayout=g.bets.reduce((s,x)=>s+x.payout,0);
+      const hitCount=g.bets.filter(x=>x.hit||x.payout>0).length;
+      return `<div class="myHistoryGroup ${isOpen?"open":""}">
+        <button class="myHistoryGroupHead" onclick="homeToggleHistoryGroup('${g.key.replace(/'/g,"\\'")}')">
+          <div class="myHistoryGroupVenue">
+            <strong>${esc(g.venueName)} ${esc(g.raceNo)}R</strong>
+            <span>${homeFormatDateTime(g.at)}${g.receiptNo?` / 受付 ${esc(g.receiptNo)}`:""}</span>
+          </div>
+          <div class="myHistoryGroupSummary">
+            <b>${g.bets.length}点</b>
+            <span>${homeFormatPt(totalStake)}</span>
+          </div>
+          ${hitCount?`<div class="myHistoryHitBadge">的中 ${hitCount}</div>`:""}
+          <div class="myHistoryAccordionIcon">${isOpen?"−":"＋"}</div>
+        </button>
+
+        ${isOpen?`<div class="myHistoryGroupBody">
+          <div class="myHistoryGroupTotals">
+            <span>投資 <b>${homeFormatPt(totalStake)}</b></span>
+            <span>払戻 <b>${homeFormatPt(totalPayout)}</b></span>
+            <span>収支 <b class="${totalPayout-totalStake>=0?"plus":"minus"}">${totalPayout-totalStake>=0?"+":""}${homeFormatPt(totalPayout-totalStake)}</b></span>
+          </div>
+          ${g.bets.map(x=>`<div class="myHistoryBetRow">
+            <div class="myHistoryBetType">${demoBetLabel(x.type)}</div>
+            <div class="myHistoryBetCombo">${x.combo.length?oddsComboHtml(x.combo):"--"}</div>
+            <div class="myHistoryBetAmount">
+              <strong>${homeFormatPt(x.stake)}</strong>
+              ${x.hit||x.payout>0?`<small>払戻 ${homeFormatPt(x.payout)}</small>`:""}
+            </div>
+          </div>`).join("")}
+        </div>`:""}
+      </div>`;
+    }).join("")}
+  </div>`;
 }
 function homeRenderBetInquiry(){
   const totalRows=homeFlattenHistory();
@@ -11456,6 +11542,397 @@ document.addEventListener("DOMContentLoaded",()=>{
   #homeMyPagePanel .homePanelTitle h3{font-size:20px!important;}
   #homeMyPagePanel .myPageTabs button{font-size:7.5px!important;}
   .dailyMissionRow{grid-template-columns:36px 1fr 70px;}
+}
+</style>
+
+
+
+<style id="v105-deadline-history">
+
+/* ===== 締切順：プロっぽいカードデザイン ===== */
+.deadlinePremiumPage{
+  border:2px solid #8db8d2!important;
+  background:#f4f8fb!important;
+}
+.deadlineHero{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 16px 14px;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(38,167,219,.16), transparent 30%),
+    linear-gradient(135deg,#ffffff 0%,#f4f9fc 55%,#eaf5fb 100%);
+  border-bottom:2px solid #a9c7da;
+}
+.deadlineEyebrow{
+  display:block;
+  margin-bottom:3px;
+  color:#0b83c2;
+  font-size:6.5px;
+  letter-spacing:.14em;
+  font-weight:950;
+}
+.deadlineHero h3{
+  margin:0;
+  color:#123a58;
+  font-size:24px;
+  line-height:1;
+  font-weight:950;
+}
+.deadlineHero p{
+  margin:6px 0 0;
+  color:#6f8798;
+  font-size:8.5px;
+  font-weight:850;
+}
+.deadlineHeroBadge{
+  width:58px;
+  height:58px;
+  flex:0 0 58px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:1.5px solid #98c4dc;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 6px 14px rgba(11,88,133,.08);
+}
+.deadlineHeroBadge strong{
+  color:#0a78b5;
+  font-size:20px;
+  line-height:1;
+  font-weight:950;
+}
+.deadlineHeroBadge span{
+  margin-top:4px;
+  color:#6f8798;
+  font-size:5.5px;
+  letter-spacing:.08em;
+  font-weight:950;
+}
+.deadlinePremiumList{
+  padding:10px;
+}
+.deadlinePremiumRow{
+  width:100%;
+  display:block;
+  margin-bottom:9px;
+  padding:0;
+  overflow:hidden;
+  border:2px solid #9fc7de;
+  border-radius:13px;
+  background:#fff;
+  box-shadow:0 4px 10px rgba(20,68,98,.05);
+  font-family:inherit;
+  text-align:left;
+}
+.deadlinePremiumRow:last-child{margin-bottom:0;}
+.deadlinePremiumRow.urgent{
+  border-color:#ee949d;
+  box-shadow:0 4px 12px rgba(225,52,67,.08);
+}
+.deadlinePremiumRow.soon{
+  border-color:#e6c27d;
+}
+.deadlineTopLine{
+  display:grid;
+  grid-template-columns:38px 1fr 60px;
+  align-items:center;
+  gap:9px;
+  padding:11px 11px 9px;
+}
+.deadlineOrderNo{
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:#eef7fc;
+  color:#0a78b5;
+  font-size:10px;
+  font-weight:950;
+}
+.deadlinePremiumRow.urgent .deadlineOrderNo{
+  background:#fff0f2;
+  color:#d82f3d;
+}
+.deadlineVenueBlock{
+  min-width:0;
+}
+.deadlineVenueNameLine{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.deadlineVenueNameLine strong{
+  color:#143b59;
+  font-size:14px;
+  font-weight:950;
+}
+.deadlineGrade{
+  padding:3px 6px;
+  border-radius:999px;
+  background:#eef3f6;
+  color:#557082;
+  font-size:6px;
+  font-weight:950;
+}
+.deadlineGrade.grade-g1{background:#fff0e4;color:#d86600;}
+.deadlineGrade.grade-g2{background:#eff9db;color:#668d13;}
+.deadlineGrade.grade-g3{background:#e9f2ff;color:#2b69b6;}
+.deadlineGrade.grade-sg{background:#ffe6e9;color:#c92332;}
+.deadlinePartial{
+  padding:3px 6px;
+  border-radius:999px;
+  background:#fff0f1;
+  color:#c92e3b;
+  font-size:5.8px;
+  font-weight:950;
+}
+.deadlineVenueBlock>small{
+  display:block;
+  max-width:100%;
+  margin-top:4px;
+  overflow:hidden;
+  color:#758c9c;
+  font-size:6.7px;
+  line-height:1.2;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-weight:850;
+}
+.deadlineRaceBlock{
+  text-align:right;
+}
+.deadlineRaceBlock strong{
+  display:block;
+  color:#123a58;
+  font-size:20px;
+  line-height:1;
+  font-weight:950;
+}
+.deadlineRaceBlock strong small{
+  margin-left:1px;
+  font-size:8px;
+}
+.deadlineRaceBlock span{
+  display:block;
+  margin-top:4px;
+  color:#78909f;
+  font-size:6px;
+  font-weight:850;
+}
+.deadlineBottomLine{
+  display:grid;
+  grid-template-columns:8px 64px 1fr 54px 14px;
+  align-items:center;
+  gap:7px;
+  min-height:36px;
+  padding:7px 10px;
+  border-top:1px solid #d5e3eb;
+  background:#f7fbfd;
+}
+.deadlineStatusDot{
+  width:7px;height:7px;
+  border-radius:50%;
+  background:#47a7d4;
+}
+.deadlinePremiumRow.soon .deadlineStatusDot{background:#e0a739;}
+.deadlinePremiumRow.urgent .deadlineStatusDot{background:#df3f4a;}
+.deadlineRemain{
+  color:#42677d;
+  font-size:7.5px;
+  font-weight:950;
+}
+.deadlinePremiumRow.soon .deadlineRemain{color:#b87b12;}
+.deadlinePremiumRow.urgent .deadlineRemain{color:#d82f3d;}
+.deadlineProgressTrack{
+  height:5px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#dfeaf0;
+}
+.deadlineProgressTrack span{
+  display:block;
+  height:100%;
+  border-radius:999px;
+  background:#43a8d4;
+}
+.deadlinePremiumRow.soon .deadlineProgressTrack span{background:#e1ad42;}
+.deadlinePremiumRow.urgent .deadlineProgressTrack span{background:#df4651;}
+.deadlineClock{
+  color:#173e5b;
+  text-align:right;
+  font-size:11px;
+  font-weight:950;
+}
+.deadlinePremiumRow.urgent .deadlineClock{color:#d92e3b;}
+.deadlineChevron{
+  color:#78a2b9;
+  text-align:right;
+  font-size:19px;
+  font-weight:850;
+}
+
+/* ===== 投票履歴：場・Rごとのアコーディオン ===== */
+.myHistoryGroups{
+  display:grid;
+  gap:8px;
+}
+.myHistoryGroup{
+  overflow:hidden;
+  border:2px solid #b1cede;
+  border-radius:11px;
+  background:#fff;
+}
+.myHistoryGroup.open{
+  border-color:#78b3d3;
+  box-shadow:0 4px 10px rgba(8,93,143,.06);
+}
+.myHistoryGroupHead{
+  width:100%;
+  min-height:64px;
+  display:grid;
+  grid-template-columns:1fr 72px auto 28px;
+  align-items:center;
+  gap:7px;
+  padding:9px 10px;
+  border:0;
+  background:#fff;
+  font-family:inherit;
+  text-align:left;
+}
+.myHistoryGroup.open .myHistoryGroupHead{
+  background:#f1f9fd;
+  border-bottom:1.5px solid #b8d2e1;
+}
+.myHistoryGroupVenue{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.myHistoryGroupVenue strong{
+  color:#153d5b;
+  font-size:11px;
+  font-weight:950;
+}
+.myHistoryGroupVenue span{
+  color:#758b9a;
+  font-size:6.5px;
+  font-weight:850;
+}
+.myHistoryGroupSummary{
+  text-align:right;
+}
+.myHistoryGroupSummary b{
+  display:block;
+  color:#0a6fa9;
+  font-size:10px;
+  font-weight:950;
+}
+.myHistoryGroupSummary span{
+  display:block;
+  margin-top:3px;
+  color:#58778d;
+  font-size:7px;
+  font-weight:900;
+}
+.myHistoryHitBadge{
+  padding:4px 6px;
+  border-radius:999px;
+  background:#e8f7ee;
+  color:#16824f;
+  font-size:6px;
+  font-weight:950;
+  white-space:nowrap;
+}
+.myHistoryAccordionIcon{
+  width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+  background:#edf5f9;
+  color:#0a6fa9;
+  font-size:15px;
+  font-weight:900;
+}
+.myHistoryGroupBody{
+  background:#fbfdfe;
+}
+.myHistoryGroupTotals{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border-bottom:1px solid #cfdee7;
+  background:#f3f8fb;
+}
+.myHistoryGroupTotals span{
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  border-right:1px solid #d3e0e8;
+  color:#72899a;
+  font-size:6px;
+  font-weight:850;
+}
+.myHistoryGroupTotals span:last-child{border-right:0;}
+.myHistoryGroupTotals b{
+  color:#214c68;
+  font-size:7.5px;
+  font-weight:950;
+}
+.myHistoryGroupTotals b.plus{color:#16824f;}
+.myHistoryGroupTotals b.minus{color:#c83340;}
+.myHistoryBetRow{
+  display:grid;
+  grid-template-columns:64px 1fr 78px;
+  align-items:center;
+  gap:6px;
+  min-height:50px;
+  padding:7px 9px;
+  border-bottom:1px solid #d8e4eb;
+}
+.myHistoryBetRow:last-child{border-bottom:0;}
+.myHistoryBetType{
+  color:#607d90;
+  font-size:7px;
+  font-weight:950;
+}
+.myHistoryBetCombo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.myHistoryBetAmount{
+  text-align:right;
+}
+.myHistoryBetAmount strong{
+  display:block;
+  color:#173d59;
+  font-size:8.5px;
+  font-weight:950;
+}
+.myHistoryBetAmount small{
+  display:block;
+  margin-top:3px;
+  color:#16824f;
+  font-size:6px;
+  font-weight:900;
+}
+
+@media(max-width:430px){
+  .deadlineHero h3{font-size:23px;}
+  .deadlineTopLine{grid-template-columns:36px 1fr 56px;gap:7px;padding:10px 9px 8px;}
+  .deadlineVenueNameLine strong{font-size:13px;}
+  .deadlineBottomLine{grid-template-columns:7px 60px 1fr 50px 12px;gap:5px;padding:7px 8px;}
+  .deadlineClock{font-size:10.5px;}
+  .myHistoryGroupHead{grid-template-columns:1fr 66px auto 27px;gap:5px;padding:8px;}
+  .myHistoryGroupVenue strong{font-size:10.5px;}
 }
 </style>
 
