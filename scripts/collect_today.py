@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v46 collector — racer detail restore + historical preservation
+BOAT CHECK v47 collector — Enrich profile failure fix
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
@@ -64,7 +64,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.46; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.47; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -1290,6 +1290,52 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
 
 
 
+
+def fetch_profile_period(toban: str):
+    """
+    BOAT RACE公式レーサープロフィールから登録期を取得。
+    ネットワークエラーやHTML変更があってもEnrich全体を落とさない。
+    """
+    rid=str(toban or "").strip()
+    info={"period":None}
+    if not re.fullmatch(r"\d{4}", rid):
+        return rid, info
+
+    try:
+        soup=get_soup(PROFILE_URL, {"toban":rid}, timeout=18)
+        text=compact(soup.get_text(" ", strip=True)).translate(_ZEN_DIGITS)
+
+        m=re.search(r"登録期\s*(\d{1,3})期", text)
+        if m:
+            info["period"]=int(m.group(1))
+
+        # 取得できる範囲でキャッシュしておく。
+        m=re.search(r"支部\s*([一-龥々ヶヵぁ-んァ-ヶー]+)", text)
+        if m:
+            info["branch"]=m.group(1)
+
+        m=re.search(r"出身地\s*([一-龥々ヶヵぁ-んァ-ヶー]+)", text)
+        if m:
+            info["origin"]=m.group(1)
+
+        m=re.search(r"体重\s*(\d+(?:\.\d+)?)kg", text)
+        if m:
+            info["weight"]=_num(m.group(1))
+
+        m=re.search(r"級別\s*(A1|A2|B1|B2)級?", text)
+        if m:
+            info["class"]=m.group(1)
+
+        info["profileCheckedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+        return rid, info
+
+    except Exception as e:
+        # 個別選手のプロフィール取得失敗で全体をFailureにしない。
+        info["profileError"]=f"{type(e).__name__}: {e}"
+        info["profileCheckedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+        return rid, info
+
+
 def fetch_point_rank_task(code: str, date: str):
     try:
         soup=get_soup(POINT_RANK_URL,{"jcd":code,"hd":date},timeout=18)
@@ -1681,14 +1727,26 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
         with ThreadPoolExecutor(max_workers=min(workers,10)) as ex:
             futs = [ex.submit(fetch_profile_period,rid) for rid in missing]
             for fut in as_completed(futs):
-                rid, info = fut.result()
-                racer_cache[rid] = info
+                rid, info=fut.result()
+                old_info=racer_cache.get(rid,{}) or {}
+                merged_info=dict(old_info)
+                merged_info.update({k:v for k,v in info.items() if v not in (None,"")})
+                racer_cache[rid]=merged_info
 
     for b in all_profile_boats:
-        rid = str(b.get("racerId",""))
-        p = racer_cache.get(rid,{}).get("period")
-        if p:
-            b["period"] = p
+        rid=str(b.get("racerId",""))
+        info=racer_cache.get(rid,{}) or {}
+
+        if info.get("period"):
+            b["period"]=info["period"]
+        if not b.get("branch") and info.get("branch"):
+            b["branch"]=info["branch"]
+        if not b.get("origin") and info.get("origin"):
+            b["origin"]=info["origin"]
+        if b.get("weight") in (None,"") and info.get("weight") is not None:
+            b["weight"]=info["weight"]
+        if not b.get("class") and info.get("class"):
+            b["class"]=info["class"]
 
     cache_path.parent.mkdir(parents=True,exist_ok=True)
     cache_path.write_text(json.dumps(racer_cache,ensure_ascii=False,indent=2),encoding="utf-8")
@@ -1737,7 +1795,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"46.0",
+        "schemaVersion":"47.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
