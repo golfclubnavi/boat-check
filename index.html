@@ -5150,6 +5150,34 @@ function meetFinish(v){
   }
   return esc(s);
 }
+function meetFinishLabel(v){
+  if(v===undefined || v===null || v==="") return "--";
+  const raw=String(v).trim();
+  const compacted=raw.replace(/\s+/g,"").toUpperCase();
+
+  const n=Number(compacted);
+  if(Number.isFinite(n) && n>=1 && n<=6) return `${n}着`;
+
+  if(compacted==="転" || compacted.includes("転覆")) return "(転)";
+  if(compacted==="落" || compacted.includes("落水")) return "(落)";
+  if(compacted==="F" || compacted.includes("フライング")) return "(F)";
+  if(compacted==="L" || compacted.includes("出遅")) return "(L)";
+
+  return esc(raw);
+}
+function meetFinishClass(v){
+  const n=Number(v);
+  if(n===1)return "first";
+  if(n===2)return "second";
+
+  const s=String(v??"").replace(/\s+/g,"").toUpperCase();
+  if(s==="転" || s.includes("転覆"))return "special accident";
+  if(s==="落" || s.includes("落水"))return "special accident";
+  if(s==="F" || s.includes("フライング"))return "special falseStart";
+  if(s==="L" || s.includes("出遅"))return "special late";
+  return "";
+}
+
 function meetLaneChip(v){
   const n=Number(v);
   if(!Number.isFinite(n)||n<1||n>6) return "--";
@@ -5273,18 +5301,24 @@ function openMeetHistoryResult(day,raceNo){
   $("detail").classList.remove("hidden");
   const btn=document.querySelector('#raceDataTabs [data-panel="result"]');
   showRaceData("result",btn);
-  scrollTo({top:0,behavior:"instant"});
+
+  // 結果タブを開いた直後、ユーザーが見たい「結果」見出し位置へ自動移動。
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const target=document.querySelector("#quickDataPanel .resultInfoPage");
+    const sticky=document.querySelector("header");
+    if(!target)return;
+    const offset=(sticky?.getBoundingClientRect().height||82)+8;
+    const y=window.scrollY+target.getBoundingClientRect().top-offset;
+    window.scrollTo({top:Math.max(0,y),behavior:"auto"});
+  }));
 }
 
 function meetRaceCell(item){
   if(!item){
     return `<div class="meetPerfCell isEmpty">
-      <div class="meetPerfCourse">
-        <span class="meetPerfCourseLabel">コース</span>
-        <span class="meetCourseBadge empty">--</span>
-      </div>
+      <div class="meetPerfCourse">${meetCourseBadge(null)}</div>
       <div class="meetPerfST"><span>ST</span><b>--</b></div>
-      <div class="meetPerfFinish"><span>着</span><b>--</b></div>
+      <div class="meetPerfFinish"><b>--</b></div>
     </div>`;
   }
 
@@ -5301,12 +5335,10 @@ function meetRaceCell(item){
     finish!==null&&finish!==undefined&&finish!=="";
 
   const cellClass=finishNo===1?" finish1":finishNo===2?" finish2":"";
+  const finishClass=meetFinishClass(finish);
 
   return `<div class="meetPerfCell${cellClass}">
-    <div class="meetPerfCourse">
-      <span class="meetPerfCourseLabel">コース</span>
-      ${meetCourseBadge(course)}
-    </div>
+    <div class="meetPerfCourse">${meetCourseBadge(course)}</div>
 
     <div class="meetPerfST">
       <span>ST</span>
@@ -5314,17 +5346,15 @@ function meetRaceCell(item){
     </div>
 
     ${canOpen?`
-      <button class="meetPerfFinish isLink ${finishNo===1?"first":""} ${finishNo===2?"second":""}"
+      <button class="meetPerfFinish isLink ${finishClass}"
         onclick="openMeetHistoryResult(${day},${raceNo})"
-        title="${raceNo}Rの結果を見る">
-        <small>${raceNo}R</small>
-        <b>${esc(finish)}着</b>
+        title="レース結果を見る">
+        <b>${meetFinishLabel(finish)}</b>
         <i>›</i>
       </button>
     `:`
-      <div class="meetPerfFinish">
-        <span>着</span>
-        <b>${finish!==null&&finish!==undefined&&finish!==""?`${esc(finish)}着`:"--"}</b>
+      <div class="meetPerfFinish ${finishClass}">
+        <b>${meetFinishLabel(finish)}</b>
       </div>
     `}
   </div>`;
@@ -5439,7 +5469,7 @@ function renderMeetResultsInner(){
 
     <div class="meetConnectedFrame">
       <div class="meetFullSection first">
-        <div class="meetFullBar meetResultsBar"><span>節間成績</span><small>コース → ST → 着順　　着順タップで結果</small></div>
+        <div class="meetFullBar meetResultsBar"><span>節間成績</span><small>上から 進入 → ST → 着順　　着順タップで結果</small></div>
         <div class="meetRunsTable">
           <table class="meetRunsGrid">
             <colgroup>
@@ -12990,6 +13020,87 @@ button.meetPerfFinish.isLink.second b{color:#866300!important;}
   .meetDayCell b{font-size:9px!important;}
   .meetDayCell span{font-size:6px!important;}
   .meetRunNo{font-size:7px!important;}
+}
+</style>
+
+
+
+<style id="v114-meet-special-fix">
+/* 節間成績：セルは「進入番号 → ST → 着順」のみ */
+.meetRunsGrid td > .meetPerfCell{
+  grid-template-rows:28px 20px 30px!important;
+}
+.meetPerfCourse{
+  height:28px!important;
+  padding:4px 1px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-bottom:1px solid rgba(139,181,205,.38)!important;
+}
+.meetPerfCourseLabel{display:none!important;}
+.meetPerfCourse .meetCourseBadge{
+  width:27px!important;
+  height:20px!important;
+  min-width:27px!important;
+  min-height:20px!important;
+  margin:0!important;
+  border-radius:5px!important;
+  font-size:8.5px!important;
+}
+.meetPerfST{
+  height:20px!important;
+}
+.meetPerfFinish{
+  height:30px!important;
+}
+button.meetPerfFinish.isLink{
+  grid-template-columns:1fr 9px!important;
+  padding:0 4px!important;
+}
+button.meetPerfFinish.isLink small{display:none!important;}
+.meetPerfFinish b,
+button.meetPerfFinish.isLink b{
+  font-size:8.5px!important;
+  line-height:1!important;
+  font-weight:950!important;
+}
+button.meetPerfFinish.isLink i{
+  font-size:12px!important;
+}
+
+/* 特殊結果：落水/転覆/F/L */
+.meetPerfFinish.special b{color:#c73340!important;}
+.meetPerfFinish.falseStart b{color:#d62333!important;}
+.meetPerfFinish.late b{color:#c27b00!important;}
+button.meetPerfFinish.isLink.special{
+  border-top:1px solid #efb6bb!important;
+  background:#fff1f2!important;
+}
+button.meetPerfFinish.isLink.late{
+  border-top:1px solid #ead18b!important;
+  background:#fff9e6!important;
+}
+
+/* 結果へ自動スクロールするとタイトルがsticky headerの下に収まる */
+.resultInfoPage{
+  scroll-margin-top:90px!important;
+}
+
+@media(max-width:430px){
+  .meetRunsGrid td > .meetPerfCell{
+    grid-template-rows:27px 19px 28px!important;
+  }
+  .meetPerfCourse{height:27px!important;}
+  .meetPerfST{height:19px!important;}
+  .meetPerfFinish{height:28px!important;}
+  .meetPerfCourse .meetCourseBadge{
+    width:24px!important;
+    height:18px!important;
+    min-width:24px!important;
+    min-height:18px!important;
+    font-size:8px!important;
+  }
 }
 </style>
 
