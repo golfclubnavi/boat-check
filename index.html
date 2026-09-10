@@ -5404,16 +5404,7 @@ function renderMeetResultsInner(){
     return "";
   };
 
-  const racerHeader=`<div class="meetRacerHeader">
-    <div class="meetHeaderLabel">艇番</div>
-    ${boats.map(b=>`<div class="meetHeaderBoat laneBg${b.lane}">
-      <span class="meetBoatNo lane${b.lane}">${b.lane}</span>
-      <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
-      <small>${esc(b.racerId||b.registrationNo||"----")}</small>
-      <small>${esc(b.class||"--")} / ${b.period?esc(b.period)+"期":"--期"}</small>
-      <small>${esc(normalizeBranchLabel(b.branch||b.region))}</small>
-    </div>`).join("")}
-  </div>`;
+  const racerHeader=proRacerStrip(boats,"出走表");
 
   const dayRows=Array.from({length:totalDays},(_,di)=>{
     const day=di+1;
@@ -5465,9 +5456,8 @@ function renderMeetResultsInner(){
       <span>未取得は --</span>
     </div>
 
-    ${racerHeader}
-
-    <div class="meetConnectedFrame">
+    <div class="meetConnectedFrame meetProConnected">
+      ${racerHeader}
       <div class="meetFullSection first">
         <div class="meetFullBar meetResultsBar"><span>節間成績</span><small>上から 進入 → ST → 着順　　着順タップで結果</small></div>
         <div class="meetRunsTable">
@@ -5682,23 +5672,29 @@ function courseCells(values, mode="desc", suffix="", digits=null, highlight=true
   }).join("");
 }
 
-function coursePlayerHeader(boats){
-  return `<div class="coursePlayerTable courseUnifiedBlock">
-    <div class="courseLabel head">選手<br>情報</div>
+
+function proRacerStrip(boats, label="出走表"){
+  return `<div class="proRacerStrip">
+    <div class="proRacerLabel">${esc(label)}</div>
     ${boats.map(b=>{
       const lane=Number(b.lane)||1;
-      const assigned=assignedCourseForLane(lane);
-      return `<div class="courseBoat c${lane}">
-        <div class="coursePosLabel">${assigned}コース</div>
-        <b>${lane}</b>
+      const racerId=b.racerId||b.registrationNo||"----";
+      const klass=b.class||"--";
+      const period=b.period?`${esc(b.period)}期`:"--期";
+      const branch=normalizeBranchLabel(b.branch||b.region);
+      return `<div class="proRacerCard proLaneBg${lane}">
+        <span class="proLaneChip lane${lane}">${lane}</span>
         <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
-        <span>${esc(b.racerId||b.registrationNo||"----")}</span>
-        <span>${esc(b.class||"--")}</span>
-        <span>${b.period?esc(b.period)+"期":"--期"}</span>
-        <span>${esc(normalizeBranchLabel(b.branch||b.region))}</span>
+        <span class="proRacerId">${esc(racerId)}</span>
+        <span class="proRacerMeta">${esc(klass)} / ${period}</span>
+        <span class="proRacerBranch">${esc(branch)}</span>
       </div>`;
     }).join("")}
   </div>`;
+}
+
+function coursePlayerHeader(boats){
+  return proRacerStrip(boats,"出走表");
 }
 
 function courseBar(title, periodText){
@@ -6235,37 +6231,9 @@ function renderRacerInfo(){
     return `<div class="qdh"><b>選手情報</b><span>公式データ取得待ち</span></div><p>出走選手データを取得中です。</p>`;
   }
 
-  const laneHead=boats.map(b=>`<th class="riLane riLane${b.lane}">${b.lane}</th>`).join("");
-  const racerHeadLabel=`<th class="riMain riProfileLabels"><div class="riProfileGrid">
-    <div class="riLabelName">選手名</div>
-    <div>登録番号</div>
-    <div>級</div>
-    <div>支部</div>
-    <div>出身地</div>
-    <div>期</div>
-    <div>年齢</div>
-    <div>体重</div>
-  </div></th>`;
-  const racerHead=boats.map(b=>{
-    const weight=firstStat(b,["weight","bodyWeight","stats.weight","stats.bodyWeight"]);
-    const branchLabel=normalizeBranchLabel(b.branch||b.region);
-    const originLabel=normalizeOriginLabel(b.origin||b.birthplace||b.prefecture||b.hometown);
-    return `<td class="riRacer riTint${b.lane}"><div class="riRacerCard">
-      <div class="riName">${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</div>
-      <div>${esc(b.racerId||b.registrationNo||"----")}</div>
-      <div>${esc(b.class||"--")}</div>
-      <div>${esc(branchLabel)}</div>
-      <div>${esc(originLabel)}</div>
-      <div>${b.period?esc(b.period)+"期":"--期"}</div>
-      <div>${b.age!=null?esc(b.age)+"歳":"--歳"}</div>
-      <div>${fmtWeight(weight)}</div>
-    </div></td>`;
-  }).join("");
-
   const metricRow=(label, group, period, suffix="", rankMode="desc", digits=null)=>{
     const values=boats.map(b=>racerMetric(b,group,period));
-    return `
-    <tr>
+    return `<tr>
       <th class="riSub">${label}</th>
       ${rowCells(values,suffix,rankMode,[],digits)}
     </tr>`;
@@ -6273,10 +6241,19 @@ function renderRacerInfo(){
 
   const simpleRow=(label, getter, suffix="", rankMode=null, digits=null)=>{
     const values=boats.map(b=>getter(b));
-    return `
-    <tr>
+    return `<tr>
       <th class="riMain">${label}</th>
       ${rowCells(values,suffix,rankMode,[],digits)}
+    </tr>`;
+  };
+
+  const profileRow=(label,getter)=>{
+    return `<tr>
+      <th class="riMain">${label}</th>
+      ${boats.map(b=>{
+        const v=getter(b);
+        return `<td>${v===undefined||v===null||v===""?"--":esc(v)}</td>`;
+      }).join("")}
     </tr>`;
   };
 
@@ -6304,49 +6281,58 @@ function renderRacerInfo(){
       <span>未取得項目は -- 表示</span>
     </div>
 
-    <div class="racerTableWrap">
-      <table class="racerCompareTable">
-        <thead>
-          <tr><th class="riCorner">枠</th>${laneHead}</tr>
-          <tr>${racerHeadLabel}${racerHead}</tr>
-        </thead>
-        <tbody>
-          <tr class="riGroup"><th colspan="7">勝率</th></tr>
-          ${metricRow("全国","winRate","national","","desc",2)}
-          ${metricRow("当地","winRate","local","","desc",2)}
-          ${metricRow("直近1ヶ月","winRate","m1","","desc",2)}
-          ${metricRow("直近3ヶ月","winRate","m3","","desc",2)}
+    <div class="racerUnifiedSheet">
+      ${proRacerStrip(boats,"出走表")}
 
-          <tr class="riGroup"><th colspan="7">2連対率</th></tr>
-          ${metricRow("全国","quinella","national","%","desc",2)}
-          ${metricRow("当地","quinella","local","%","desc",2)}
-          ${metricRow("直近1ヶ月","quinella","m1","%","desc",2)}
-          ${metricRow("直近3ヶ月","quinella","m3","%","desc",2)}
+      <div class="racerTableWrap racerProData">
+        <table class="racerCompareTable racerCompareDataOnly">
+          <tbody>
+            <tr class="riGroup"><th colspan="7">基本情報</th></tr>
+            ${profileRow("登録番号",b=>b.racerId||b.registrationNo||"----")}
+            ${profileRow("級",b=>b.class||"--")}
+            ${profileRow("支部",b=>normalizeBranchLabel(b.branch||b.region))}
+            ${profileRow("出身地",b=>normalizeOriginLabel(b.origin||b.birthplace||b.prefecture||b.hometown))}
+            ${profileRow("期",b=>b.period?`${b.period}期`:"--期")}
+            ${profileRow("年齢",b=>b.age!=null?`${b.age}歳`:"--歳")}
+            ${profileRow("体重",b=>fmtWeight(firstStat(b,["weight","bodyWeight","stats.weight","stats.bodyWeight"])))}
 
-          <tr class="riGroup"><th colspan="7">3連対率</th></tr>
-          ${metricRow("全国","trifecta","national","%","desc",2)}
-          ${metricRow("当地","trifecta","local","%","desc",2)}
-          ${metricRow("直近1ヶ月","trifecta","m1","%","desc",2)}
-          ${metricRow("直近3ヶ月","trifecta","m3","%","desc",2)}
+            <tr class="riGroup"><th colspan="7">勝率</th></tr>
+            ${metricRow("全国","winRate","national","","desc",2)}
+            ${metricRow("当地","winRate","local","","desc",2)}
+            ${metricRow("直近1ヶ月","winRate","m1","","desc",2)}
+            ${metricRow("直近3ヶ月","winRate","m3","","desc",2)}
 
-          <tr class="riGroup"><th colspan="7">平均スタート</th></tr>
-          ${metricRow("今節","st","meet","","asc",2)}
-          ${metricRow("直近1ヶ月","st","m1","","asc",2)}
-          ${metricRow("直近3ヶ月","st","m3","","asc",2)}
+            <tr class="riGroup"><th colspan="7">2連対率</th></tr>
+            ${metricRow("全国","quinella","national","%","desc",2)}
+            ${metricRow("当地","quinella","local","%","desc",2)}
+            ${metricRow("直近1ヶ月","quinella","m1","%","desc",2)}
+            ${metricRow("直近3ヶ月","quinella","m3","%","desc",2)}
 
-          <tr class="riGroup"><th colspan="7">決まり手数</th></tr>
-          ${finishingRows}
+            <tr class="riGroup"><th colspan="7">3連対率</th></tr>
+            ${metricRow("全国","trifecta","national","%","desc",2)}
+            ${metricRow("当地","trifecta","local","%","desc",2)}
+            ${metricRow("直近1ヶ月","trifecta","m1","%","desc",2)}
+            ${metricRow("直近3ヶ月","trifecta","m3","%","desc",2)}
 
-          <tr class="riGroup"><th colspan="7">フライング</th></tr>
-          ${simpleRow("Fした日",flyingDate)}
-          ${simpleRow("F休み開始日",flyingBreak)}
-          ${simpleRow("未消化数",flyingRemain,"","asc",0)}
+            <tr class="riGroup"><th colspan="7">平均スタート</th></tr>
+            ${metricRow("今節","st","meet","","asc",2)}
+            ${metricRow("直近1ヶ月","st","m1","","asc",2)}
+            ${metricRow("直近3ヶ月","st","m3","","asc",2)}
 
-          <tr class="riGroup"><th colspan="7">その他</th></tr>
-          ${simpleRow("事故率",accident,"%","asc",2)}
-          ${simpleRow("優勝数",wins,"","desc",0)}
-        </tbody>
-      </table>
+            <tr class="riGroup"><th colspan="7">決まり手数</th></tr>
+            ${finishingRows}
+
+            <tr class="riGroup"><th colspan="7">フライング</th></tr>
+            ${simpleRow("Fした日",flyingDate)}
+            ${simpleRow("F休み開始日",flyingBreak)}
+            ${simpleRow("未消化数",flyingRemain,"","asc",0)}
+
+            <tr class="riGroup"><th colspan="7">その他</th></tr>
+            ${simpleRow("事故率",accident,"%","asc",2)}
+            ${simpleRow("優勝数",wins,"","desc",0)}
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="racerInfoNote">※ 実データ連携前の項目は「--」で表示します。取得できた項目から順次自動反映されます。</div>
@@ -6696,18 +6682,7 @@ function motorRankClasses(values, mode="desc", leg=false){
 }
 
 function motorRacerHeader(boats){
-  return `<div class="motorRacerHeader">
-    ${boats.map(b=>{
-      const lane=Number(b.lane)||1;
-      return `<div class="motorRacer laneBg${lane}">
-        <span class="motorLane lane${lane}">${lane}</span>
-        <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
-        <small>${esc(b.racerId||b.registrationNo||"----")}</small>
-        <small>${esc(b.class||"--")}</small>
-        <small>${esc(normalizeBranchLabel(b.branch||b.region))}</small>
-      </div>`;
-    }).join("")}
-  </div>`;
+  return proRacerStrip(boats,"出走表");
 }
 
 function motorBasicTable(boats, motors){
@@ -6832,10 +6807,9 @@ function renderMotorInfo(){
       </button>
     </div>
 
-    ${motorRacerHeader(boats)}
-
     ${motorInnerTab==="motor"?`
-      <div class="motorConnectedFrame">
+      <div class="motorConnectedFrame motorProConnected">
+        ${motorRacerHeader(boats)}
         <div class="motorSectionBar">
           <b>⚙ モーター基本データ</b>
           <span>モーターの力を6艇比較</span>
@@ -6849,7 +6823,8 @@ function renderMotorInfo(){
         ${motorHistoryTable(boats,motors)}
       </div>
     `:`
-      <div class="motorConnectedFrame boatConnectedFrame">
+      <div class="motorConnectedFrame boatConnectedFrame motorProConnected">
+        ${motorRacerHeader(boats)}
         <div class="motorSectionBar boatSectionBar">
           <b>▰ ボート基本データ</b>
           <span>ボート成績を6艇比較</span>
@@ -6941,18 +6916,7 @@ function beforeMetric(d, boat, key){
 }
 
 function beforeRacerHeader(boats){
-  return `<div class="beforeRacerHeader">
-    ${boats.map(b=>{
-      const lane=Number(b.lane)||1;
-      return `<div class="beforeRacer laneBg${lane}">
-        <span class="beforeLane lane${lane}">${lane}</span>
-        <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
-        <small>${esc(b.racerId||b.registrationNo||"----")}</small>
-        <small>${esc(b.class||"--")}</small>
-        <small>${b.period?esc(b.period)+"期":"--期"}</small>
-      </div>`;
-    }).join("")}
-  </div>`;
+  return proRacerStrip(boats,"出走表");
 }
 
 function beforeFmt(v, digits=null, suffix=""){
@@ -7160,8 +7124,8 @@ function renderBeforeInner(){
   const data=boats.map(b=>beforeDataForBoat(b,r));
 
   if(beforeSubTab==="start"){
-    return `${beforeRacerHeader(boats)}
-      <div class="beforeSectionBlock">
+    return `<div class="beforeSectionBlock beforeProConnected">
+        ${beforeRacerHeader(boats)}
         <div class="beforeSubSectionTitle">スタート展示</div>
         ${renderStartSlit(boats,data)}
       </div>
@@ -7169,8 +7133,8 @@ function renderBeforeInner(){
   }
 
   if(beforeSubTab==="original"){
-    return `${beforeRacerHeader(boats)}
-      <div class="beforeSectionBlock">
+    return `<div class="beforeSectionBlock beforeProConnected">
+        ${beforeRacerHeader(boats)}
         <div class="beforeSubSectionTitle">オリジナル展示データ
           <span class="beforeHighlightLegend"><i></i>1位 <i></i>2位</span>
         </div>
@@ -7178,8 +7142,8 @@ function renderBeforeInner(){
       </div>`;
   }
 
-  return `${beforeRacerHeader(boats)}
-    <div class="beforeSectionBlock">
+  return `<div class="beforeSectionBlock beforeProConnected">
+      ${beforeRacerHeader(boats)}
       <div class="beforeSubSectionTitle">直前情報</div>
       ${beforeTable(boats,data)}
     </div>`;
@@ -13100,6 +13064,308 @@ button.meetPerfFinish.isLink.late{
     min-width:24px!important;
     min-height:18px!important;
     font-size:8px!important;
+  }
+}
+</style>
+
+
+
+<style id="v116-unified-racer-tables">
+/* ==========================================================
+   BOAT CHECK 共通出走表
+   選手情報 / コース別 / 節間 / モーター / 直前 を完全統一
+   ========================================================== */
+.proRacerStrip{
+  width:100%;
+  display:grid;
+  grid-template-columns:14% repeat(6,1fr);
+  overflow:hidden;
+  margin:0!important;
+  border:0!important;
+  border-bottom:2px solid #8fbcd6!important;
+  border-radius:0!important;
+  background:#fff;
+}
+.proRacerLabel,
+.proRacerCard{
+  box-sizing:border-box;
+  min-width:0;
+  border-right:1.5px solid #b5d0e1;
+}
+.proRacerCard:last-child{border-right:0;}
+
+.proRacerLabel{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 2px;
+  background:#e7f3fa;
+  color:#14557c;
+  text-align:center;
+  font-size:9px;
+  line-height:1.15;
+  font-weight:950;
+  writing-mode:horizontal-tb;
+}
+
+.proRacerCard{
+  min-height:112px;
+  padding:8px 2px 7px;
+  text-align:center;
+}
+.proRacerCard.proLaneBg1{background:#fff;}
+.proRacerCard.proLaneBg2{background:#eef0f2;}
+.proRacerCard.proLaneBg3{background:#fff0f2;}
+.proRacerCard.proLaneBg4{background:#eef4ff;}
+.proRacerCard.proLaneBg5{background:#fff9dc;}
+.proRacerCard.proLaneBg6{background:#eef9f2;}
+
+.proLaneChip{
+  width:30px;
+  height:30px;
+  margin:0 auto 6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  border:1.5px solid rgba(18,61,90,.12);
+  font-size:13px;
+  line-height:1;
+  font-weight:950;
+}
+.proLaneChip.lane1{background:#fff;color:#111;border-color:#b9cfdb;}
+.proLaneChip.lane2{background:#22282e;color:#fff;}
+.proLaneChip.lane3{background:#ef3340;color:#fff;}
+.proLaneChip.lane4{background:#315fd5;color:#fff;}
+.proLaneChip.lane5{background:#f2d800;color:#111;}
+.proLaneChip.lane6{background:#13964a;color:#fff;}
+
+.proRacerCard strong{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:31px;
+  margin:0;
+  color:#123751!important;
+  font-size:10.4px!important;
+  line-height:1.08!important;
+  font-weight:950!important;
+  letter-spacing:-.02em;
+}
+.proRacerCard .proRacerId,
+.proRacerCard .proRacerMeta,
+.proRacerCard .proRacerBranch{
+  display:block;
+  margin-top:3px;
+  overflow:hidden;
+  color:#5f788a!important;
+  font-size:6.8px!important;
+  line-height:1.12!important;
+  font-weight:850!important;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.proRacerCard .proRacerId{
+  margin-top:5px;
+  color:#4d6a7e!important;
+  font-size:7px!important;
+  font-weight:900!important;
+}
+
+/* コース別：上の「1コース / 2コース...」は完全廃止 */
+.coursePosLabel{display:none!important;}
+.courseBoat{padding-top:0!important;}
+
+/* コース別は既存の連結カードをそのまま共通ヘッダー化 */
+.courseUnifiedSheet{
+  border:2px solid #88b8d3!important;
+  border-radius:14px!important;
+  box-shadow:0 8px 22px rgba(12,65,100,.07)!important;
+}
+.courseUnifiedSheet>.proRacerStrip{
+  border-bottom:2px solid #88b8d3!important;
+}
+.courseUnifiedSheet .courseDataBlock:first-of-type .courseStatBar{
+  border-top:0!important;
+}
+
+/* ================== 選手情報 ================== */
+.racerUnifiedSheet{
+  overflow:hidden;
+  border:2px solid #88b8d3;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(12,65,100,.07);
+}
+.racerUnifiedSheet>.proRacerStrip{
+  border-bottom:0!important;
+}
+.racerProData{
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.racerCompareDataOnly{
+  border-collapse:collapse!important;
+  border-spacing:0!important;
+  border:0!important;
+  border-radius:0!important;
+}
+.racerCompareDataOnly tbody tr:first-child th{
+  border-top:0!important;
+}
+.racerCompareDataOnly td,
+.racerCompareDataOnly th{
+  border-color:#b3cfdf!important;
+}
+.racerCompareDataOnly .riGroup th{
+  padding:9px 10px!important;
+  background:linear-gradient(90deg,#074c7a,#087fb8,#0a99c9)!important;
+  color:#fff!important;
+  text-align:left!important;
+  font-size:11px!important;
+  font-weight:950!important;
+}
+.racerCompareDataOnly .riMain,
+.racerCompareDataOnly .riSub{
+  background:#eaf5fb!important;
+  color:#245b79!important;
+  font-size:7.5px!important;
+  font-weight:950!important;
+}
+.racerCompareDataOnly td{
+  min-height:40px!important;
+  padding:8px 2px!important;
+  color:#173e5a!important;
+  font-size:8px!important;
+  line-height:1.1!important;
+  font-weight:900!important;
+}
+
+/* ================== 節間成績 ================== */
+.meetProConnected{
+  margin-top:0!important;
+  overflow:hidden!important;
+  border:2px solid #88b8d3!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 8px 22px rgba(12,65,100,.07)!important;
+}
+.meetProConnected>.proRacerStrip{
+  border-bottom:0!important;
+}
+.meetProConnected>.meetFullSection.first{
+  margin-top:0!important;
+}
+.meetProConnected>.meetFullSection.first .meetFullBar{
+  border-radius:0!important;
+}
+.meetProConnected .meetRunsTable{
+  border-left:0!important;
+  border-right:0!important;
+  border-radius:0!important;
+}
+.meetProConnected>.meetFullSection,
+.meetProConnected>.meetSimpleSection{
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+/* ================== モーター / ボート ================== */
+.motorProConnected{
+  margin-top:0!important;
+  overflow:hidden!important;
+  border:2px solid #88b8d3!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 8px 22px rgba(12,65,100,.07)!important;
+}
+.motorProConnected>.proRacerStrip{
+  border-bottom:0!important;
+}
+.motorProConnected>.motorSectionBar{
+  border-radius:0!important;
+}
+.motorProConnected .motorBasicTable,
+.motorProConnected .motorHistoryWrap{
+  border-left:0!important;
+  border-right:0!important;
+}
+
+/* ================== 直前情報 ================== */
+.beforeProConnected{
+  margin-top:0!important;
+  overflow:hidden!important;
+  border:2px solid #88b8d3!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 8px 22px rgba(12,65,100,.07)!important;
+}
+.beforeProConnected>.proRacerStrip{
+  border-bottom:0!important;
+}
+.beforeProConnected>.beforeSubSectionTitle{
+  border-radius:0!important;
+}
+.beforeProConnected .beforeCompareHead,
+.beforeProConnected .beforeOriginalHead,
+.beforeProConnected .startSlitPanel{
+  border-left:0!important;
+  border-right:0!important;
+}
+
+/* 旧個別ヘッダーは万一残っても非表示 */
+.meetRacerHeader,
+.motorRacerHeader,
+.beforeRacerHeader{
+  display:none!important;
+}
+
+/* タイトル〜カード間の間隔を統一 */
+.racerInfoTop,
+.meetPageTitle,
+.motorPageTitle,
+.beforePageTitle{
+  margin-bottom:10px!important;
+}
+
+/* iPhone向け */
+@media(max-width:430px){
+  .proRacerStrip{
+    grid-template-columns:13.5% repeat(6,1fr);
+  }
+  .proRacerLabel{
+    font-size:8px;
+  }
+  .proRacerCard{
+    min-height:106px;
+    padding:7px 1px 6px;
+  }
+  .proLaneChip{
+    width:27px;
+    height:27px;
+    margin-bottom:5px;
+    font-size:12px;
+  }
+  .proRacerCard strong{
+    min-height:29px;
+    font-size:9.4px!important;
+  }
+  .proRacerCard .proRacerId{
+    font-size:6.5px!important;
+  }
+  .proRacerCard .proRacerMeta,
+  .proRacerCard .proRacerBranch{
+    font-size:6.1px!important;
+  }
+  .racerCompareDataOnly .riMain,
+  .racerCompareDataOnly .riSub{
+    font-size:7px!important;
+  }
+  .racerCompareDataOnly td{
+    padding:7px 1px!important;
+    font-size:7.4px!important;
   }
 }
 </style>
