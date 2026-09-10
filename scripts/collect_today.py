@@ -2,11 +2,11 @@
 """
 BOAT CHECK v41 collector — official data phase 1
 
-FAST（30分ごと・既存 workflow のまま利用可能）
+LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
 - 取得済みの選手・モーター・ボート・直前・結果データを保持
-- 締切前後のレースは直前情報を取得
-- 締切済みで未取得のレース結果・払戻を取得
+- 締切35分前〜20分後のレースは直前情報を5分間隔で更新
+- 締切後120分以内で未取得のレース結果・払戻を5分間隔で確認
 
 ENRICH（1日1回 / 手動）
 - 当日の全Rの出走表を取得
@@ -57,7 +57,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.41; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.42; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -763,10 +763,21 @@ def _minutes_from_now(deadline: str) -> int | None:
     return int((target-now).total_seconds()//60)
 
 
-def enrich_realtime(payload: dict, workers: int=8) -> None:
-    """Fetch dynamic official pages without hitting every endpoint every 30 minutes."""
+def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
+    """
+    Dynamic official data refresh.
+
+    LIVE mode (5-minute workflow):
+      - beforeinfo: 35 minutes before cutoff through 20 minutes after
+      - result/refund: closed races up to 120 minutes after cutoff, until official result exists
+
+    FAST/ENRICH mode:
+      - wider recovery window for beforeinfo
+      - any closed race without an official result is retried
+    """
     before_tasks=[]
     result_tasks=[]
+
     for meeting in payload.get("meetings",[]):
         code=meeting.get("venueCode")
         date=meeting.get("date")
@@ -775,13 +786,24 @@ def enrich_realtime(payload: dict, workers: int=8) -> None:
             mins=_minutes_from_now(race.get("deadline",""))
             if not rno or mins is None:
                 continue
-            # Two hours before until three hours after: beforeinfo is most useful here.
-            if -180 <= mins <= 120:
-                before_tasks.append((code,date,rno))
-            # Fetch every closed race that does not have an official result yet.
-            result=race.get("result") or {}
-            if mins < 0 and not result.get("official"):
-                result_tasks.append((code,date,rno))
+
+            if live:
+                # Exhibition/start-exhibition can change close to cutoff.
+                if -20 <= mins <= 35:
+                    before_tasks.append((code,date,rno))
+
+                # Results are normally available soon after the race.
+                result=race.get("result") or {}
+                if -120 <= mins < 0 and not result.get("official"):
+                    result_tasks.append((code,date,rno))
+            else:
+                # Wider recovery window for manual / enrichment runs.
+                if -180 <= mins <= 120:
+                    before_tasks.append((code,date,rno))
+
+                result=race.get("result") or {}
+                if mins < 0 and not result.get("official"):
+                    result_tasks.append((code,date,rno))
 
     if before_tasks:
         print(f"[BOAT CHECK] LIVE beforeinfo tasks={len(before_tasks)}")
@@ -830,25 +852,6 @@ def enrich_realtime(payload: dict, workers: int=8) -> None:
                     race["resultUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
                 elif err:
                     race.setdefault("liveErrors",{})["result"]=err
-
-def fetch_past_day_task(code: str, hd: str):
-    try:
-        soup = get_soup(RACEINDEX_URL, {"hd":hd,"jcd":code})
-        return code, hd, parse_races(soup), None
-    except Exception as e:
-        return code, hd, [], f"{type(e).__name__}: {e}"
-
-def fetch_profile_period(toban: str):
-    try:
-        soup = get_soup(PROFILE_URL, {"toban":toban}, timeout=14)
-        text = compact(soup.get_text(" ", strip=True))
-        mp = re.search(r"登録期\s*(\d+)期", text)
-        return toban, {
-            "period":int(mp.group(1)) if mp else None,
-            "updatedAt":datetime.now(JST).isoformat(timespec="seconds")
-        }
-    except Exception as e:
-        return toban, {"period":None,"error":f"{type(e).__name__}: {e}"}
 
 def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
     meetings = payload.get("meetings",[])
@@ -939,13 +942,13 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
     cache_path.parent.mkdir(parents=True,exist_ok=True)
     cache_path.write_text(json.dumps(racer_cache,ensure_ascii=False,indent=2),encoding="utf-8")
 
-def collect(date: str, out_path: Path, enrich: bool, workers: int) -> dict:
+def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -> dict:
     old_payload = load_json(out_path, {})
     racer_cache = load_json(out_path.parent/"racers.json", {})
     old_map = old_meeting_map(old_payload)
 
     venues = active_venues(date)
-    print(f"[BOAT CHECK] date={date} active={len(venues)} mode={'ENRICH' if enrich else 'FAST'}")
+    print(f"[BOAT CHECK] date={date} active={len(venues)} mode={'ENRICH' if enrich else ('LIVE' if live else 'FAST')}")
 
     meetings, errors = [], []
 
@@ -971,11 +974,11 @@ def collect(date: str, out_path: Path, enrich: bool, workers: int) -> dict:
     meetings.sort(key=lambda m:int(m["venueCode"]))
 
     payload = {
-        "schemaVersion":"41.0",
+        "schemaVersion":"42.0",
         "updatedAt":datetime.now(JST).isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
-        "mode":"enrich" if enrich else "fast",
+        "mode":"enrich" if enrich else ("live" if live else "fast"),
         "staticEnrichedDate": old_payload.get("staticEnrichedDate") if old_payload.get("dateJST")==date else None,
         "meetings":meetings,
         "errors":errors,
@@ -989,7 +992,7 @@ def collect(date: str, out_path: Path, enrich: bool, workers: int) -> dict:
         payload["staticEnrichedAt"]=old_payload.get("staticEnrichedAt")
 
     if meetings:
-        enrich_realtime(payload,workers=workers)
+        enrich_realtime(payload,workers=workers,live=live)
 
     return payload
 
@@ -999,14 +1002,16 @@ def main():
     p.add_argument("--out",default="data/today.json")
     p.add_argument("--enrich",action="store_true",help="全Rの出走表/F・L/平均ST/モーター・ボート基本値/登録期を取得")
     p.add_argument("--deep",action="store_true",help="旧互換: --enrich と同じ")
+    p.add_argument("--live",action="store_true",help="5分更新用: 直前展示と直近の結果・払戻を優先取得")
     p.add_argument("--workers",type=int,default=10)
     args=p.parse_args()
 
     date=args.date or datetime.now(JST).strftime("%Y%m%d")
     out_path=Path(args.out)
     enrich=bool(args.enrich or args.deep)
+    live=bool(args.live and not enrich)
 
-    payload=collect(date,out_path,enrich,args.workers)
+    payload=collect(date,out_path,enrich,live,args.workers)
     out_path.parent.mkdir(parents=True,exist_ok=True)
     out_path.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding="utf-8")
     print(f"[BOAT CHECK] collected {len(payload['meetings'])} meetings -> {out_path}")
