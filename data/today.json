@@ -1,6 +1,6 @@
 {
   "schemaVersion": "43.0",
-  "updatedAt": "2026-09-10T20:37:32+09:00",
+  "updatedAt": "2026-09-10T20:48:59+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "live",
@@ -149,7 +149,7 @@
                 "threeRate": 33.3,
                 "starts": 9,
                 "stRank": 15,
-                "exhibitionRank": 26,
+                "exhibitionRank": 29,
                 "preInspectionTime": 6.61,
                 "preInspectionRank": 32
               },
@@ -324,8 +324,8 @@
                 "twoRate": 0.0,
                 "threeRate": 11.1,
                 "starts": 9,
-                "stRank": 42,
-                "exhibitionRank": 16,
+                "stRank": 43,
+                "exhibitionRank": 18,
                 "preInspectionTime": 6.72,
                 "preInspectionRank": 45
               },
@@ -491,7 +491,7 @@
                 "threeRate": 37.5,
                 "starts": 8,
                 "stRank": 8,
-                "exhibitionRank": 4,
+                "exhibitionRank": 5,
                 "avgCourse": 3.43,
                 "preInspectionTime": 6.7,
                 "preInspectionRank": 15
@@ -667,7 +667,7 @@
                 "threeRate": 11.1,
                 "starts": 9,
                 "stRank": 3,
-                "exhibitionRank": 5,
+                "exhibitionRank": 6,
                 "avgCourse": 3.71,
                 "preInspectionTime": 6.68,
                 "preInspectionRank": 21
@@ -838,7 +838,7 @@
                 "threeRate": 0.0,
                 "starts": 9,
                 "stRank": 11,
-                "exhibitionRank": 6,
+                "exhibitionRank": 7,
                 "avgCourse": 6.0,
                 "preInspectionTime": 6.7,
                 "preInspectionRank": 37
@@ -1202,7 +1202,7 @@
                 "threeRate": 44.4,
                 "starts": 9,
                 "stRank": 19,
-                "exhibitionRank": 14,
+                "exhibitionRank": 16,
                 "preInspectionTime": 6.67,
                 "preInspectionRank": 16
               },
@@ -1388,7 +1388,7 @@
                 "threeRate": 45.5,
                 "starts": 11,
                 "stRank": 21,
-                "exhibitionRank": 37,
+                "exhibitionRank": 43,
                 "avgCourse": 3.67,
                 "preInspectionTime": 6.74,
                 "preInspectionRank": 13
@@ -1555,7 +1555,7 @@
                 "twoRate": 37.5,
                 "threeRate": 50.0,
                 "starts": 8,
-                "stRank": 40,
+                "stRank": 41,
                 "exhibitionRank": 1,
                 "avgCourse": 4.14,
                 "preInspectionTime": 6.69,
@@ -1725,8 +1725,8 @@
                 "twoRate": 12.5,
                 "threeRate": 25.0,
                 "starts": 8,
-                "stRank": 41,
-                "exhibitionRank": 17,
+                "stRank": 42,
+                "exhibitionRank": 19,
                 "preInspectionTime": 6.64,
                 "preInspectionRank": 23
               },
@@ -1878,8 +1878,8 @@
                 "twoRate": 0.0,
                 "threeRate": 0.0,
                 "starts": 7,
-                "stRank": 24,
-                "exhibitionRank": 34,
+                "stRank": 23,
+                "exhibitionRank": 39,
                 "avgCourse": 3.17,
                 "preInspectionTime": 6.77,
                 "preInspectionRank": 25
@@ -2247,7 +2247,7 @@
                 "threeRate": 44.4,
                 "starts": 9,
                 "stRank": 16,
-                "exhibitionRank": 9,
+                "exhibitionRank": 11,
                 "preInspectionTime": 6.72,
                 "preInspectionRank": 20
               },
@@ -2420,8 +2420,8 @@
                 "twoRate": 30.0,
                 "threeRate": 50.0,
                 "starts": 10,
-                "stRank": 25,
-                "exhibitionRank": 32,
+                "stRank": 24,
+                "exhibitionRank": 36,
                 "avgCourse": 2.56,
                 "preInspectionTime": 6.67,
                 "preInspectionRank": 17
@@ -2588,7 +2588,7 @@
                 "threeRate": 42.9,
                 "starts": 7,
                 "stRank": 34,
-                "exhibitionRank": 35,
+                "exhibitionRank": 40,
                 "avgCourse": 3.43,
                 "preInspectionTime": 6.71,
                 "preInspectionRank": 18
@@ -2779,8 +2779,8 @@
                 "twoRate": 33.3,
                 "threeRate": 41.7,
                 "starts": 12,
-                "stRank": 39,
-                "exhibitionRank": 24,
+                "stRank": 40,
+                "exhibitionRank": 26,
                 "avgCourse": 3.36,
                 "preInspectionTime": 6.71,
                 "preInspectionRank": 9
@@ -2941,8 +2941,8 @@
                 "twoRate": 12.5,
                 "threeRate": 25.0,
                 "starts": 8,
-                "stRank": 43,
-                "exhibitionRank": 8,
+                "stRank": 44,
+                "exhibitionRank": 9,
                 "avgCourse": 4.43,
                 "preInspectionTime": 6.69,
                 "preInspectionRank": 7
@@ -3315,7 +3315,7 @@
                 "threeRate": 20.0,
                 "starts": 10,
                 "stRank": 29,
-                "exhibitionRank": 18,
+                "exhibitionRank": 20,
                 "preInspectionTime": 6.69,
                 "preInspectionRank": 31
               },
@@ -3469,7 +3469,7 @@
                 "threeRate": 57.1,
                 "starts": 7,
                 "stRank": 2,
-                "exhibitionRank": 29,
+                "exhibitionRank": 33,
                 "avgCourse": 3.57,
                 "preInspectionTime": 6.75,
                 "preInspectionRank": 42
@@ -3648,7 +3648,7 @@
                 "threeRate": 40.0,
                 "starts": 10,
                 "stRank": 28,
-                "exhibitionRank": 38,
+                "exhibitionRank": 44,
                 "avgCourse": 3.67,
                 "preInspectionTime": 6.78,
                 "preInspectionRank": 33
@@ -3823,7 +3823,7 @@
                 "threeRate": 55.6,
                 "starts": 9,
                 "stRank": 9,
-                "exhibitionRank": 23,
+                "exhibitionRank": 25,
                 "avgCourse": 4.29,
                 "preInspectionTime": 6.63,
                 "preInspectionRank": 11
@@ -4014,7 +4014,7 @@
                 "threeRate": 66.7,
                 "starts": 12,
                 "stRank": 30,
-                "exhibitionRank": 19,
+                "exhibitionRank": 21,
                 "avgCourse": 3.5,
                 "preInspectionTime": 6.62,
                 "preInspectionRank": 43
@@ -4360,7 +4360,7 @@
                 "threeRate": 62.5,
                 "starts": 8,
                 "stRank": 18,
-                "exhibitionRank": 21,
+                "exhibitionRank": 23,
                 "preInspectionTime": 6.7,
                 "preInspectionRank": 3
               },
@@ -4550,7 +4550,7 @@
                 "threeRate": 41.7,
                 "starts": 12,
                 "stRank": 10,
-                "exhibitionRank": 11,
+                "exhibitionRank": 13,
                 "avgCourse": 3.8,
                 "preInspectionTime": 6.77,
                 "preInspectionRank": 41
@@ -4726,7 +4726,7 @@
                 "threeRate": 11.1,
                 "starts": 9,
                 "stRank": 3,
-                "exhibitionRank": 5,
+                "exhibitionRank": 6,
                 "avgCourse": 3.71,
                 "preInspectionTime": 6.68,
                 "preInspectionRank": 21
@@ -4893,7 +4893,7 @@
                 "twoRate": 25.0,
                 "threeRate": 37.5,
                 "starts": 8,
-                "stRank": 14,
+                "stRank": 13,
                 "exhibitionRank": 2,
                 "avgCourse": 3.71,
                 "preInspectionTime": 6.63,
@@ -5077,7 +5077,7 @@
                 "threeRate": 63.6,
                 "starts": 11,
                 "stRank": 5,
-                "exhibitionRank": 7,
+                "exhibitionRank": 8,
                 "avgCourse": 3.4,
                 "preInspectionTime": 6.76,
                 "preInspectionRank": 39
@@ -5437,8 +5437,8 @@
                 "twoRate": 12.5,
                 "threeRate": 25.0,
                 "starts": 8,
-                "stRank": 41,
-                "exhibitionRank": 17,
+                "stRank": 42,
+                "exhibitionRank": 19,
                 "preInspectionTime": 6.64,
                 "preInspectionRank": 23
               },
@@ -5604,8 +5604,8 @@
                 "twoRate": 25.0,
                 "threeRate": 25.0,
                 "starts": 8,
-                "stRank": 38,
-                "exhibitionRank": 36,
+                "stRank": 39,
+                "exhibitionRank": 42,
                 "avgCourse": 4.0,
                 "preInspectionTime": 6.69,
                 "preInspectionRank": 26
@@ -5768,7 +5768,7 @@
                 "threeRate": 71.4,
                 "starts": 7,
                 "stRank": 31,
-                "exhibitionRank": 33,
+                "exhibitionRank": 38,
                 "avgCourse": 3.29,
                 "preInspectionTime": 6.75,
                 "preInspectionRank": 2
@@ -5923,7 +5923,7 @@
                 "threeRate": 42.9,
                 "starts": 7,
                 "stRank": 37,
-                "exhibitionRank": 22,
+                "exhibitionRank": 24,
                 "avgCourse": 3.29,
                 "preInspectionTime": 6.7,
                 "preInspectionRank": 19
@@ -6101,7 +6101,7 @@
                 "threeRate": 33.3,
                 "starts": 9,
                 "stRank": 15,
-                "exhibitionRank": 26,
+                "exhibitionRank": 29,
                 "preInspectionTime": 6.61,
                 "preInspectionRank": 32
               },
@@ -6467,8 +6467,8 @@
                 "twoRate": 0.0,
                 "threeRate": 11.1,
                 "starts": 9,
-                "stRank": 42,
-                "exhibitionRank": 16,
+                "stRank": 43,
+                "exhibitionRank": 18,
                 "preInspectionTime": 6.72,
                 "preInspectionRank": 45
               },
@@ -6655,7 +6655,7 @@
                 "threeRate": 72.7,
                 "starts": 11,
                 "stRank": 12,
-                "exhibitionRank": 12,
+                "exhibitionRank": 14,
                 "avgCourse": 3.67,
                 "preInspectionTime": 6.67,
                 "preInspectionRank": 9
@@ -6818,7 +6818,7 @@
                 "threeRate": 62.5,
                 "starts": 8,
                 "stRank": 26,
-                "exhibitionRank": 15,
+                "exhibitionRank": 17,
                 "avgCourse": 3.57,
                 "preInspectionTime": 6.65,
                 "preInspectionRank": 34
@@ -6989,7 +6989,7 @@
                 "threeRate": 0.0,
                 "starts": 9,
                 "stRank": 11,
-                "exhibitionRank": 6,
+                "exhibitionRank": 7,
                 "avgCourse": 6.0,
                 "preInspectionTime": 6.7,
                 "preInspectionRank": 37
@@ -7162,7 +7162,7 @@
                 "threeRate": 44.4,
                 "starts": 9,
                 "stRank": 19,
-                "exhibitionRank": 14,
+                "exhibitionRank": 16,
                 "preInspectionTime": 6.67,
                 "preInspectionRank": 16
               },
@@ -7519,7 +7519,7 @@
                 "threeRate": 42.9,
                 "starts": 7,
                 "stRank": 36,
-                "exhibitionRank": 27,
+                "exhibitionRank": 30,
                 "preInspectionTime": 6.69,
                 "preInspectionRank": 38
               },
@@ -7693,7 +7693,7 @@
                 "threeRate": 55.6,
                 "starts": 9,
                 "stRank": 9,
-                "exhibitionRank": 23,
+                "exhibitionRank": 25,
                 "avgCourse": 4.29,
                 "preInspectionTime": 6.63,
                 "preInspectionRank": 11
@@ -7870,7 +7870,7 @@
                 "threeRate": 44.4,
                 "starts": 9,
                 "stRank": 16,
-                "exhibitionRank": 9,
+                "exhibitionRank": 11,
                 "preInspectionTime": 6.72,
                 "preInspectionRank": 20
               },
@@ -8032,7 +8032,7 @@
                 "threeRate": 62.5,
                 "starts": 8,
                 "stRank": 27,
-                "exhibitionRank": 20,
+                "exhibitionRank": 22,
                 "avgCourse": 3.43,
                 "preInspectionTime": 6.6,
                 "preInspectionRank": 36
@@ -8186,7 +8186,7 @@
                 "threeRate": 66.7,
                 "starts": 6,
                 "stRank": 1,
-                "exhibitionRank": 25,
+                "exhibitionRank": 27,
                 "avgCourse": 4.0,
                 "preInspectionTime": 6.6,
                 "preInspectionRank": 4
@@ -8553,7 +8553,7 @@
                 "twoRate": 37.5,
                 "threeRate": 50.0,
                 "starts": 8,
-                "stRank": 40,
+                "stRank": 41,
                 "exhibitionRank": 1,
                 "avgCourse": 4.14,
                 "preInspectionTime": 6.69,
@@ -8721,7 +8721,7 @@
                 "threeRate": 42.9,
                 "starts": 7,
                 "stRank": 34,
-                "exhibitionRank": 35,
+                "exhibitionRank": 40,
                 "avgCourse": 3.43,
                 "preInspectionTime": 6.71,
                 "preInspectionRank": 18
@@ -8888,7 +8888,7 @@
                 "twoRate": 25.0,
                 "threeRate": 37.5,
                 "starts": 8,
-                "stRank": 14,
+                "stRank": 13,
                 "exhibitionRank": 2,
                 "avgCourse": 3.71,
                 "preInspectionTime": 6.63,
@@ -9056,7 +9056,7 @@
                 "threeRate": 37.5,
                 "starts": 8,
                 "stRank": 8,
-                "exhibitionRank": 4,
+                "exhibitionRank": 5,
                 "avgCourse": 3.43,
                 "preInspectionTime": 6.7,
                 "preInspectionRank": 15
@@ -9237,7 +9237,7 @@
                 "threeRate": 20.0,
                 "starts": 10,
                 "stRank": 29,
-                "exhibitionRank": 18,
+                "exhibitionRank": 20,
                 "preInspectionTime": 6.69,
                 "preInspectionRank": 31
               },
@@ -9738,7 +9738,7 @@
                 "threeRate": 54.5,
                 "starts": 11,
                 "stRank": 32,
-                "exhibitionRank": 30,
+                "exhibitionRank": 34,
                 "avgCourse": 3.0,
                 "preInspectionTime": 6.7,
                 "preInspectionRank": 23
@@ -9912,8 +9912,8 @@
                 "twoRate": 30.0,
                 "threeRate": 50.0,
                 "starts": 10,
-                "stRank": 25,
-                "exhibitionRank": 32,
+                "stRank": 24,
+                "exhibitionRank": 36,
                 "avgCourse": 2.56,
                 "preInspectionTime": 6.67,
                 "preInspectionRank": 17
@@ -10096,7 +10096,7 @@
                 "threeRate": 54.5,
                 "starts": 11,
                 "stRank": 17,
-                "exhibitionRank": 31,
+                "exhibitionRank": 35,
                 "avgCourse": 3.6,
                 "preInspectionTime": 6.68,
                 "preInspectionRank": 44
@@ -10280,7 +10280,7 @@
                 "threeRate": 44.4,
                 "starts": 9,
                 "stRank": 20,
-                "exhibitionRank": 10,
+                "exhibitionRank": 12,
                 "avgCourse": 3.8,
                 "preInspectionTime": 6.62,
                 "preInspectionRank": 29
@@ -10612,8 +10612,8 @@
                 "twoRate": 33.3,
                 "threeRate": 41.7,
                 "starts": 12,
-                "stRank": 39,
-                "exhibitionRank": 24,
+                "stRank": 40,
+                "exhibitionRank": 26,
                 "avgCourse": 3.36,
                 "preInspectionTime": 6.71,
                 "preInspectionRank": 9
@@ -10806,7 +10806,7 @@
                 "threeRate": 58.3,
                 "starts": 12,
                 "stRank": 6,
-                "exhibitionRank": 13,
+                "exhibitionRank": 15,
                 "avgCourse": 3.4,
                 "preInspectionTime": 6.65,
                 "preInspectionRank": 28
@@ -10997,7 +10997,7 @@
                 "threeRate": 41.7,
                 "starts": 12,
                 "stRank": 10,
-                "exhibitionRank": 11,
+                "exhibitionRank": 13,
                 "avgCourse": 3.8,
                 "preInspectionTime": 6.77,
                 "preInspectionRank": 41
@@ -11184,7 +11184,7 @@
                 "threeRate": 63.6,
                 "starts": 11,
                 "stRank": 35,
-                "exhibitionRank": 28,
+                "exhibitionRank": 31,
                 "avgCourse": 3.22,
                 "preInspectionTime": 6.76,
                 "preInspectionRank": 40
@@ -11372,7 +11372,7 @@
                 "threeRate": 72.7,
                 "starts": 11,
                 "stRank": 12,
-                "exhibitionRank": 12,
+                "exhibitionRank": 14,
                 "avgCourse": 3.67,
                 "preInspectionTime": 6.67,
                 "preInspectionRank": 9
@@ -11622,7 +11622,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山本 寛久",
+              "racerName": "発売終了 山本 寛久",
               "class": "A2",
               "before": {
                 "lane": 1,
@@ -11642,15 +11642,17 @@
               "age": 48,
               "period": 85,
               "meetStats": {
-                "starts": 8,
-                "avgST": 0.16,
-                "avgCourse": 3.25,
-                "winRate": 25.0,
-                "twoRate": 50.0,
-                "threeRate": 75.0,
-                "stRank": 22,
+                "starts": 9,
+                "avgST": 0.167,
+                "avgCourse": 3.56,
+                "winRate": 22.2,
+                "twoRate": 44.4,
+                "threeRate": 66.7,
+                "stRank": 25,
                 "preInspectionTime": 6.8,
-                "preInspectionRank": 34
+                "preInspectionRank": 34,
+                "exhibitionTime": 6.65,
+                "exhibitionRank": 4
               },
               "registrationNo": "4028",
               "meetResults": [
@@ -11671,6 +11673,15 @@
                   "st": ".14",
                   "finish": 4,
                   "source": "official_racelist"
+                },
+                {
+                  "day": 1,
+                  "raceNo": 12,
+                  "course": 6,
+                  "st": ".22",
+                  "finish": 5,
+                  "exhibitionTime": 6.65,
+                  "source": "official_result_live"
                 },
                 {
                   "day": 2,
@@ -11800,15 +11811,17 @@
               "age": 48,
               "period": 85,
               "meetStats": {
-                "starts": 8,
-                "avgST": 0.165,
+                "starts": 9,
+                "avgST": 0.162,
                 "avgCourse": 2.75,
-                "winRate": 12.5,
-                "twoRate": 87.5,
-                "threeRate": 87.5,
-                "stRank": 23,
+                "winRate": 22.2,
+                "twoRate": 88.9,
+                "threeRate": 88.9,
+                "stRank": 22,
                 "preInspectionTime": 6.61,
-                "preInspectionRank": 29
+                "preInspectionRank": 29,
+                "exhibitionTime": 6.77,
+                "exhibitionRank": 28
               },
               "registrationNo": "4025",
               "meetResults": [
@@ -11826,6 +11839,14 @@
                   "st": ".17",
                   "finish": 2,
                   "source": "official_racelist"
+                },
+                {
+                  "day": 1,
+                  "raceNo": 12,
+                  "st": ".14",
+                  "finish": 1,
+                  "exhibitionTime": 6.77,
+                  "source": "official_result_live"
                 },
                 {
                   "day": 2,
@@ -11957,15 +11978,17 @@
               "age": 41,
               "period": 96,
               "meetStats": {
-                "starts": 7,
-                "avgST": 0.129,
+                "starts": 8,
+                "avgST": 0.128,
                 "avgCourse": 3.14,
-                "winRate": 42.9,
-                "twoRate": 71.4,
-                "threeRate": 85.7,
+                "winRate": 37.5,
+                "twoRate": 75.0,
+                "threeRate": 87.5,
                 "stRank": 7,
                 "preInspectionTime": 6.71,
-                "preInspectionRank": 14
+                "preInspectionRank": 14,
+                "exhibitionTime": 6.85,
+                "exhibitionRank": 41
               },
               "registrationNo": "4342",
               "meetResults": [
@@ -11986,6 +12009,14 @@
                   "st": ".09",
                   "finish": 2,
                   "source": "official_racelist"
+                },
+                {
+                  "day": 1,
+                  "raceNo": 12,
+                  "st": ".12",
+                  "finish": 2,
+                  "exhibitionTime": 6.85,
+                  "source": "official_result_live"
                 },
                 {
                   "day": 2,
@@ -12109,15 +12140,17 @@
               "age": 50,
               "period": 82,
               "meetStats": {
-                "starts": 8,
-                "avgST": 0.181,
+                "starts": 9,
+                "avgST": 0.18,
                 "avgCourse": 1.5,
-                "winRate": 50.0,
-                "twoRate": 87.5,
-                "threeRate": 100.0,
+                "winRate": 44.4,
+                "twoRate": 77.8,
+                "threeRate": 88.9,
                 "stRank": 33,
                 "preInspectionTime": 6.61,
-                "preInspectionRank": 27
+                "preInspectionRank": 27,
+                "exhibitionTime": 6.79,
+                "exhibitionRank": 32
               },
               "registrationNo": "3946",
               "meetResults": [
@@ -12129,6 +12162,14 @@
                   "st": ".11",
                   "finish": 1,
                   "source": "official_racelist"
+                },
+                {
+                  "day": 1,
+                  "raceNo": 12,
+                  "st": ".17",
+                  "finish": 6,
+                  "exhibitionTime": 6.79,
+                  "source": "official_result_live"
                 },
                 {
                   "day": 1,
@@ -12266,14 +12307,16 @@
               "period": 84,
               "meetStats": {
                 "starts": 8,
-                "avgST": 0.134,
+                "avgST": 0.136,
                 "avgCourse": 3.25,
-                "winRate": 50.0,
-                "twoRate": 75.0,
+                "winRate": 37.5,
+                "twoRate": 62.5,
                 "threeRate": 75.0,
-                "stRank": 13,
+                "stRank": 14,
                 "preInspectionTime": 6.73,
-                "preInspectionRank": 8
+                "preInspectionRank": 8,
+                "exhibitionTime": 6.81,
+                "exhibitionRank": 37
               },
               "registrationNo": "4019",
               "meetResults": [
@@ -12288,9 +12331,10 @@
                   "slot": 2,
                   "raceNo": 12,
                   "course": 4,
-                  "st": ".11",
-                  "finish": 1,
-                  "source": "official_racelist"
+                  "st": ".13",
+                  "finish": 3,
+                  "source": "official_result_live",
+                  "exhibitionTime": 6.81
                 },
                 {
                   "day": 2,
@@ -12471,7 +12515,7 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T20:37:43+09:00",
+          "beforeUpdatedAt": "2026-09-10T20:49:08+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -12509,7 +12553,134 @@
               "st": 0.04,
               "rawST": ".04"
             }
-          ]
+          ],
+          "result": {
+            "finishers": [
+              {
+                "rank": 1,
+                "lane": 3,
+                "racerId": "4025",
+                "racerName": "山本 隆幸",
+                "time": "1'48\"7",
+                "st": ".14",
+                "kimarite": "まくり"
+              },
+              {
+                "rank": 2,
+                "lane": 4,
+                "racerId": "4342",
+                "racerName": "谷野 錬志",
+                "time": "1'50\"2",
+                "st": ".12"
+              },
+              {
+                "rank": 3,
+                "lane": 6,
+                "racerId": "4019",
+                "racerName": "笠原 亮",
+                "time": "1'51\"8",
+                "st": ".13"
+              },
+              {
+                "rank": 4,
+                "lane": 1,
+                "racerId": "3874",
+                "racerName": "山本 寛久",
+                "time": "1'52\"6",
+                "st": ".19"
+              },
+              {
+                "rank": 5,
+                "lane": 2,
+                "racerId": "4028",
+                "racerName": "田村 隆信",
+                "time": "1'53\"7",
+                "st": ".22"
+              },
+              {
+                "rank": 6,
+                "lane": 5,
+                "racerId": "3946",
+                "racerName": "赤岩 善生",
+                "time": "1'53\"9",
+                "st": ".17"
+              }
+            ],
+            "payouts": {
+              "trifecta": [
+                {
+                  "combination": "3-4-6",
+                  "payout": 12280
+                }
+              ],
+              "trio": [
+                {
+                  "combination": "3=4=6",
+                  "payout": 2990
+                }
+              ],
+              "exacta": [
+                {
+                  "combination": "3-4",
+                  "payout": 5470
+                }
+              ],
+              "quinella": [
+                {
+                  "combination": "3=4",
+                  "payout": 2110
+                }
+              ],
+              "wide": [
+                {
+                  "combination": "3=4",
+                  "payout": 530
+                },
+                {
+                  "combination": "3=6",
+                  "payout": 720
+                },
+                {
+                  "combination": "4=6",
+                  "payout": 600
+                }
+              ],
+              "win": [
+                {
+                  "combination": "3",
+                  "payout": 1110
+                }
+              ],
+              "place": [
+                {
+                  "combination": "3",
+                  "payout": 450
+                },
+                {
+                  "combination": "4",
+                  "payout": 410
+                }
+              ]
+            },
+            "weather": {
+              "airTemperature": 18.0,
+              "waterTemperature": 23.0,
+              "windSpeed": 2.0,
+              "waveHeight": 1.0,
+              "weather": "曇り"
+            },
+            "kimarite": "まくり",
+            "official": true,
+            "note": "ボートレースガイドはこちら"
+          },
+          "resultWeather": {
+            "airTemperature": 18.0,
+            "waterTemperature": 23.0,
+            "windSpeed": 2.0,
+            "waveHeight": 1.0,
+            "weather": "曇り"
+          },
+          "resultUpdatedAt": "2026-09-10T20:49:18+09:00"
         }
       ],
       "meetDays": [
@@ -14709,7 +14880,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "03",
@@ -27263,7 +27434,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "04",
@@ -41295,7 +41466,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "05",
@@ -49515,7 +49686,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "13",
@@ -60847,7 +61018,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "14",
@@ -73129,7 +73300,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "16",
@@ -84470,7 +84641,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "17",
@@ -92723,7 +92894,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "20",
@@ -100916,45 +101087,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T20:37:43+09:00",
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.08,
-              "rawST": ".08"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": ".01"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.05,
-              "rawST": ".05"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": ".03"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.03,
-              "rawST": "F.03"
-            }
-          ],
           "result": {
             "finishers": [],
             "payouts": {
@@ -101018,7 +101150,46 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultUpdatedAt": "2026-09-10T20:37:53+09:00"
+          "resultUpdatedAt": "2026-09-10T20:37:53+09:00",
+          "beforeUpdatedAt": "2026-09-10T20:49:08+09:00",
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.09,
+              "rawST": ".09"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.08,
+              "rawST": ".08"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.01,
+              "rawST": ".01"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.05,
+              "rawST": ".05"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.03,
+              "rawST": ".03"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.03,
+              "rawST": "F.03"
+            }
+          ]
         }
       ],
       "meetDays": [
@@ -101460,9 +101631,15 @@
               ]
             }
           ]
+        },
+        {
+          "date": "20260911",
+          "label": "３日目",
+          "day": "３日目",
+          "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "21",
@@ -109342,7 +109519,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     },
     {
       "venueCode": "24",
@@ -111230,7 +111407,7 @@
                 "starts": 5,
                 "stRank": 35,
                 "exhibitionRank": 12,
-                "pointRank": 38,
+                "pointRank": 37,
                 "pointRate": 3.67,
                 "points": 22,
                 "penalty": 0,
@@ -111659,7 +111836,7 @@
                 "starts": 5,
                 "stRank": 8,
                 "exhibitionRank": 24,
-                "pointRank": 38,
+                "pointRank": 37,
                 "pointRate": 3.67,
                 "points": 22,
                 "penalty": 0,
@@ -111806,7 +111983,8 @@
                 "seriesSummary": "651 2 66",
                 "avgCourse": 3.25,
                 "preInspectionTime": 6.91,
-                "preInspectionRank": 45
+                "preInspectionRank": 45,
+                "penaltyDetail": "途中帰郷"
               },
               "registrationNo": "3909",
               "origin": "静岡",
@@ -112281,7 +112459,7 @@
                 "starts": 5,
                 "stRank": 45,
                 "exhibitionRank": 1,
-                "pointRank": 42,
+                "pointRank": 41,
                 "pointRate": 3.0,
                 "points": 15,
                 "penalty": 0,
@@ -112422,7 +112600,7 @@
                 "starts": 5,
                 "stRank": 34,
                 "exhibitionRank": 6,
-                "pointRank": 41,
+                "pointRank": 40,
                 "pointRate": 3.5,
                 "points": 28,
                 "penalty": 7,
@@ -115670,7 +115848,7 @@
                 "starts": 5,
                 "stRank": 8,
                 "exhibitionRank": 24,
-                "pointRank": 38,
+                "pointRank": 37,
                 "pointRate": 3.67,
                 "points": 22,
                 "penalty": 0,
@@ -116008,7 +116186,7 @@
               "weight": 52.0,
               "meetStats": {
                 "starts": 4,
-                "pointRank": 38,
+                "pointRank": 37,
                 "pointRate": 3.67,
                 "points": 32,
                 "penalty": 10,
@@ -116905,7 +117083,7 @@
                 "starts": 6,
                 "stRank": 27,
                 "exhibitionRank": 29,
-                "pointRank": 42,
+                "pointRank": 41,
                 "pointRate": 3.0,
                 "points": 18,
                 "penalty": 0,
@@ -118379,7 +118557,8 @@
                 "seriesSummary": "651 2 66",
                 "avgCourse": 3.25,
                 "preInspectionTime": 6.91,
-                "preInspectionRank": 45
+                "preInspectionRank": 45,
+                "penaltyDetail": "途中帰郷"
               },
               "registrationNo": "3909",
               "origin": "静岡",
@@ -118775,7 +118954,7 @@
                 "starts": 5,
                 "stRank": 34,
                 "exhibitionRank": 6,
-                "pointRank": 41,
+                "pointRank": 40,
                 "pointRate": 3.5,
                 "points": 28,
                 "penalty": 7,
@@ -118973,7 +119152,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 上田 龍星",
+              "racerName": "発売終了 上田 龍星",
               "class": "A1",
               "before": {
                 "lane": 1,
@@ -119619,7 +119798,7 @@
                 "starts": 5,
                 "stRank": 45,
                 "exhibitionRank": 1,
-                "pointRank": 42,
+                "pointRank": 41,
                 "pointRate": 3.0,
                 "points": 15,
                 "penalty": 0,
@@ -119692,14 +119871,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260910&race=12"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=24&ymd=20260910&race=12",
-          "weather": {
-            "airTemperature": 23.0,
-            "waterTemperature": 28.0,
-            "windSpeed": 0.0,
-            "waveHeight": 1.0,
-            "weather": "雨"
-          },
-          "beforeUpdatedAt": "2026-09-10T20:37:43+09:00",
           "beforeData": [
             {
               "lane": 1,
@@ -119746,6 +119917,14 @@
               "tilt": 3.0
             }
           ],
+          "weather": {
+            "airTemperature": 23.0,
+            "waterTemperature": 28.0,
+            "windSpeed": 0.0,
+            "waveHeight": 1.0,
+            "weather": "雨"
+          },
+          "beforeUpdatedAt": "2026-09-10T20:49:08+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -121105,7 +121284,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T20:38:12+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T20:49:35+09:00"
     }
   ],
   "errors": [],
