@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "45.0",
-  "updatedAt": "2026-09-11T08:01:41+09:00",
+  "schemaVersion": "46.0",
+  "updatedAt": "2026-09-11T08:28:10+09:00",
   "dateJST": "20260911",
   "source": "BOAT RACE official public pages",
   "mode": "live",
@@ -22,7 +22,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中村 裕将",
+              "racerName": "中村 裕将",
               "class": "B1"
             },
             {
@@ -62,7 +62,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 竹腰 正樹",
+              "racerName": "竹腰 正樹",
               "class": "B1"
             },
             {
@@ -102,7 +102,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 金子 貴志",
+              "racerName": "金子 貴志",
               "class": "B1"
             },
             {
@@ -142,7 +142,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 板倉 敦史",
+              "racerName": "板倉 敦史",
               "class": "B1"
             },
             {
@@ -182,7 +182,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山一 鉄也",
+              "racerName": "山一 鉄也",
               "class": "A2"
             },
             {
@@ -222,7 +222,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 富澤 祐作",
+              "racerName": "富澤 祐作",
               "class": "B1"
             },
             {
@@ -262,7 +262,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 藤原 啓史朗",
+              "racerName": "藤原 啓史朗",
               "class": "A1"
             },
             {
@@ -302,7 +302,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 羽野 諒",
+              "racerName": "羽野 諒",
               "class": "B1"
             },
             {
@@ -342,7 +342,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 是澤 孝宏",
+              "racerName": "是澤 孝宏",
               "class": "A2"
             },
             {
@@ -382,7 +382,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大野 芳顕",
+              "racerName": "大野 芳顕",
               "class": "A2"
             },
             {
@@ -422,7 +422,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 青木 蓮",
+              "racerName": "青木 蓮",
               "class": "A2"
             },
             {
@@ -462,7 +462,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小坂 尚哉",
+              "racerName": "小坂 尚哉",
               "class": "A1"
             },
             {
@@ -509,7 +509,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 中村 裕将",
+                  "racerName": "中村 裕将",
                   "class": "B1"
                 },
                 {
@@ -549,7 +549,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 竹腰 正樹",
+                  "racerName": "竹腰 正樹",
                   "class": "B1"
                 },
                 {
@@ -589,7 +589,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 金子 貴志",
+                  "racerName": "金子 貴志",
                   "class": "B1"
                 },
                 {
@@ -629,7 +629,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 板倉 敦史",
+                  "racerName": "板倉 敦史",
                   "class": "B1"
                 },
                 {
@@ -669,7 +669,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 山一 鉄也",
+                  "racerName": "山一 鉄也",
                   "class": "A2"
                 },
                 {
@@ -709,7 +709,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 富澤 祐作",
+                  "racerName": "富澤 祐作",
                   "class": "B1"
                 },
                 {
@@ -749,7 +749,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 藤原 啓史朗",
+                  "racerName": "藤原 啓史朗",
                   "class": "A1"
                 },
                 {
@@ -789,7 +789,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 羽野 諒",
+                  "racerName": "羽野 諒",
                   "class": "B1"
                 },
                 {
@@ -829,7 +829,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 是澤 孝宏",
+                  "racerName": "是澤 孝宏",
                   "class": "A2"
                 },
                 {
@@ -869,7 +869,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 大野 芳顕",
+                  "racerName": "大野 芳顕",
                   "class": "A2"
                 },
                 {
@@ -909,7 +909,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 青木 蓮",
+                  "racerName": "青木 蓮",
                   "class": "A2"
                 },
                 {
@@ -949,7 +949,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 小坂 尚哉",
+                  "racerName": "小坂 尚哉",
                   "class": "A1"
                 },
                 {
@@ -1004,7 +1004,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "03",
@@ -1022,7 +1022,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 多羅尾 達之",
+              "racerName": "多羅尾 達之",
               "class": "B1"
             },
             {
@@ -1062,7 +1062,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 平野 和明",
+              "racerName": "平野 和明",
               "class": "A2"
             },
             {
@@ -1102,7 +1102,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 鈴木 結平太",
+              "racerName": "鈴木 結平太",
               "class": "B2"
             },
             {
@@ -1142,7 +1142,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 岡谷 健吾",
+              "racerName": "岡谷 健吾",
               "class": "B1"
             },
             {
@@ -1182,7 +1182,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 澤崎 雄哉",
+              "racerName": "澤崎 雄哉",
               "class": "B1"
             },
             {
@@ -1222,7 +1222,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小川 知行",
+              "racerName": "小川 知行",
               "class": "B1"
             },
             {
@@ -1262,7 +1262,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 浅井 翼",
+              "racerName": "浅井 翼",
               "class": "B2"
             },
             {
@@ -1302,7 +1302,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 阿波 勝哉",
+              "racerName": "阿波 勝哉",
               "class": "B1"
             },
             {
@@ -1342,7 +1342,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 渡辺 豊",
+              "racerName": "渡辺 豊",
               "class": "B1"
             },
             {
@@ -1382,7 +1382,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 加藤 政彦",
+              "racerName": "加藤 政彦",
               "class": "B1"
             },
             {
@@ -1422,7 +1422,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 秦 英悟",
+              "racerName": "秦 英悟",
               "class": "A1"
             },
             {
@@ -1462,7 +1462,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 三角 哲男",
+              "racerName": "三角 哲男",
               "class": "A1"
             },
             {
@@ -24588,7 +24588,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 多羅尾 達之",
+                  "racerName": "多羅尾 達之",
                   "class": "B1"
                 },
                 {
@@ -24628,7 +24628,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 平野 和明",
+                  "racerName": "平野 和明",
                   "class": "A2"
                 },
                 {
@@ -24668,7 +24668,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 鈴木 結平太",
+                  "racerName": "鈴木 結平太",
                   "class": "B2"
                 },
                 {
@@ -24708,7 +24708,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 岡谷 健吾",
+                  "racerName": "岡谷 健吾",
                   "class": "B1"
                 },
                 {
@@ -24748,7 +24748,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 澤崎 雄哉",
+                  "racerName": "澤崎 雄哉",
                   "class": "B1"
                 },
                 {
@@ -24788,7 +24788,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 小川 知行",
+                  "racerName": "小川 知行",
                   "class": "B1"
                 },
                 {
@@ -24828,7 +24828,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 浅井 翼",
+                  "racerName": "浅井 翼",
                   "class": "B2"
                 },
                 {
@@ -24868,7 +24868,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 阿波 勝哉",
+                  "racerName": "阿波 勝哉",
                   "class": "B1"
                 },
                 {
@@ -24908,7 +24908,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 渡辺 豊",
+                  "racerName": "渡辺 豊",
                   "class": "B1"
                 },
                 {
@@ -24948,7 +24948,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 加藤 政彦",
+                  "racerName": "加藤 政彦",
                   "class": "B1"
                 },
                 {
@@ -24988,7 +24988,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 秦 英悟",
+                  "racerName": "秦 英悟",
                   "class": "A1"
                 },
                 {
@@ -25028,7 +25028,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 三角 哲男",
+                  "racerName": "三角 哲男",
                   "class": "A1"
                 },
                 {
@@ -25065,7 +25065,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "05",
@@ -25083,7 +25083,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 一柳 和孝",
+              "racerName": "一柳 和孝",
               "class": "B1"
             },
             {
@@ -25123,7 +25123,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大澤 大夢",
+              "racerName": "大澤 大夢",
               "class": "B1"
             },
             {
@@ -25163,7 +25163,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 鋤柄 貴俊",
+              "racerName": "鋤柄 貴俊",
               "class": "B1"
             },
             {
@@ -25203,7 +25203,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 芹澤 克彦",
+              "racerName": "芹澤 克彦",
               "class": "B1"
             },
             {
@@ -25243,7 +25243,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 冨田 秀幸",
+              "racerName": "冨田 秀幸",
               "class": "B1"
             },
             {
@@ -25283,7 +25283,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大場 敏",
+              "racerName": "大場 敏",
               "class": "A2"
             },
             {
@@ -25323,7 +25323,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 安達 裕樹",
+              "racerName": "安達 裕樹",
               "class": "A2"
             },
             {
@@ -25363,7 +25363,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 寺本 昇平",
+              "racerName": "寺本 昇平",
               "class": "B1"
             },
             {
@@ -25403,7 +25403,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 吉川 昭男",
+              "racerName": "吉川 昭男",
               "class": "A2"
             },
             {
@@ -25443,7 +25443,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 伊藤 誠二",
+              "racerName": "伊藤 誠二",
               "class": "A1"
             },
             {
@@ -25483,7 +25483,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 上村 純一",
+              "racerName": "上村 純一",
               "class": "A1"
             },
             {
@@ -25523,7 +25523,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 佐藤 大介",
+              "racerName": "佐藤 大介",
               "class": "A1"
             },
             {
@@ -36897,7 +36897,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 一柳 和孝",
+                  "racerName": "一柳 和孝",
                   "class": "B1"
                 },
                 {
@@ -36937,7 +36937,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 大澤 大夢",
+                  "racerName": "大澤 大夢",
                   "class": "B1"
                 },
                 {
@@ -36977,7 +36977,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 鋤柄 貴俊",
+                  "racerName": "鋤柄 貴俊",
                   "class": "B1"
                 },
                 {
@@ -37017,7 +37017,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 芹澤 克彦",
+                  "racerName": "芹澤 克彦",
                   "class": "B1"
                 },
                 {
@@ -37057,7 +37057,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 冨田 秀幸",
+                  "racerName": "冨田 秀幸",
                   "class": "B1"
                 },
                 {
@@ -37097,7 +37097,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 大場 敏",
+                  "racerName": "大場 敏",
                   "class": "A2"
                 },
                 {
@@ -37137,7 +37137,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 安達 裕樹",
+                  "racerName": "安達 裕樹",
                   "class": "A2"
                 },
                 {
@@ -37177,7 +37177,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 寺本 昇平",
+                  "racerName": "寺本 昇平",
                   "class": "B1"
                 },
                 {
@@ -37217,7 +37217,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 吉川 昭男",
+                  "racerName": "吉川 昭男",
                   "class": "A2"
                 },
                 {
@@ -37257,7 +37257,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 伊藤 誠二",
+                  "racerName": "伊藤 誠二",
                   "class": "A1"
                 },
                 {
@@ -37297,7 +37297,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 上村 純一",
+                  "racerName": "上村 純一",
                   "class": "A1"
                 },
                 {
@@ -37337,7 +37337,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 佐藤 大介",
+                  "racerName": "佐藤 大介",
                   "class": "A1"
                 },
                 {
@@ -37386,7 +37386,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "06",
@@ -37404,7 +37404,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 幸田 智裕",
+              "racerName": "幸田 智裕",
               "class": "B1"
             },
             {
@@ -37444,7 +37444,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 石塚 裕介",
+              "racerName": "石塚 裕介",
               "class": "B1"
             },
             {
@@ -37484,7 +37484,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 松田 竜馬",
+              "racerName": "松田 竜馬",
               "class": "B1"
             },
             {
@@ -37524,7 +37524,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 石田 章央",
+              "racerName": "石田 章央",
               "class": "A1"
             },
             {
@@ -37564,7 +37564,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 星野 太郎",
+              "racerName": "星野 太郎",
               "class": "B1"
             },
             {
@@ -37604,7 +37604,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 武田 正紀",
+              "racerName": "武田 正紀",
               "class": "B1"
             },
             {
@@ -37644,7 +37644,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 西舘 健",
+              "racerName": "西舘 健",
               "class": "A2"
             },
             {
@@ -37684,7 +37684,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 田路 朋史",
+              "racerName": "田路 朋史",
               "class": "A2"
             },
             {
@@ -37724,7 +37724,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山田 雄太",
+              "racerName": "山田 雄太",
               "class": "A2"
             },
             {
@@ -37764,7 +37764,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 東本 勝利",
+              "racerName": "東本 勝利",
               "class": "A2"
             },
             {
@@ -37804,7 +37804,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 篠田 優也",
+              "racerName": "篠田 優也",
               "class": "A1"
             },
             {
@@ -37844,7 +37844,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 守田 俊介",
+              "racerName": "守田 俊介",
               "class": "A1"
             },
             {
@@ -37891,7 +37891,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 幸田 智裕",
+                  "racerName": "幸田 智裕",
                   "class": "B1"
                 },
                 {
@@ -37931,7 +37931,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 石塚 裕介",
+                  "racerName": "石塚 裕介",
                   "class": "B1"
                 },
                 {
@@ -37971,7 +37971,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 松田 竜馬",
+                  "racerName": "松田 竜馬",
                   "class": "B1"
                 },
                 {
@@ -38011,7 +38011,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 石田 章央",
+                  "racerName": "石田 章央",
                   "class": "A1"
                 },
                 {
@@ -38051,7 +38051,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 星野 太郎",
+                  "racerName": "星野 太郎",
                   "class": "B1"
                 },
                 {
@@ -38091,7 +38091,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 武田 正紀",
+                  "racerName": "武田 正紀",
                   "class": "B1"
                 },
                 {
@@ -38131,7 +38131,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 西舘 健",
+                  "racerName": "西舘 健",
                   "class": "A2"
                 },
                 {
@@ -38171,7 +38171,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 田路 朋史",
+                  "racerName": "田路 朋史",
                   "class": "A2"
                 },
                 {
@@ -38211,7 +38211,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 山田 雄太",
+                  "racerName": "山田 雄太",
                   "class": "A2"
                 },
                 {
@@ -38251,7 +38251,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 東本 勝利",
+                  "racerName": "東本 勝利",
                   "class": "A2"
                 },
                 {
@@ -38291,7 +38291,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 篠田 優也",
+                  "racerName": "篠田 優也",
                   "class": "A1"
                 },
                 {
@@ -38331,7 +38331,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 守田 俊介",
+                  "racerName": "守田 俊介",
                   "class": "A1"
                 },
                 {
@@ -38392,7 +38392,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "12",
@@ -38410,7 +38410,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 吉永 浩則",
+              "racerName": "吉永 浩則",
               "class": "B1"
             },
             {
@@ -38450,7 +38450,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 菊地 敬介",
+              "racerName": "菊地 敬介",
               "class": "B1"
             },
             {
@@ -38490,7 +38490,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 西川 真人",
+              "racerName": "西川 真人",
               "class": "B1"
             },
             {
@@ -38530,7 +38530,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 島田 一生",
+              "racerName": "島田 一生",
               "class": "B1"
             },
             {
@@ -38570,7 +38570,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 今井 貴士",
+              "racerName": "今井 貴士",
               "class": "A2"
             },
             {
@@ -38610,7 +38610,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中越 博紀",
+              "racerName": "中越 博紀",
               "class": "B1"
             },
             {
@@ -38650,7 +38650,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 黒田 誠司",
+              "racerName": "黒田 誠司",
               "class": "B1"
             },
             {
@@ -38690,7 +38690,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 市川 美宏",
+              "racerName": "市川 美宏",
               "class": "B1"
             },
             {
@@ -38730,7 +38730,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小林 泰",
+              "racerName": "小林 泰",
               "class": "A2"
             },
             {
@@ -38770,7 +38770,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 高田 明",
+              "racerName": "高田 明",
               "class": "A1"
             },
             {
@@ -38810,7 +38810,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 和田 拓也",
+              "racerName": "和田 拓也",
               "class": "A1"
             },
             {
@@ -38850,7 +38850,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 井上 忠政",
+              "racerName": "井上 忠政",
               "class": "A1"
             },
             {
@@ -38897,7 +38897,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 吉永 浩則",
+                  "racerName": "吉永 浩則",
                   "class": "B1"
                 },
                 {
@@ -38937,7 +38937,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 菊地 敬介",
+                  "racerName": "菊地 敬介",
                   "class": "B1"
                 },
                 {
@@ -38977,7 +38977,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 西川 真人",
+                  "racerName": "西川 真人",
                   "class": "B1"
                 },
                 {
@@ -39017,7 +39017,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 島田 一生",
+                  "racerName": "島田 一生",
                   "class": "B1"
                 },
                 {
@@ -39057,7 +39057,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 今井 貴士",
+                  "racerName": "今井 貴士",
                   "class": "A2"
                 },
                 {
@@ -39097,7 +39097,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 中越 博紀",
+                  "racerName": "中越 博紀",
                   "class": "B1"
                 },
                 {
@@ -39137,7 +39137,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 黒田 誠司",
+                  "racerName": "黒田 誠司",
                   "class": "B1"
                 },
                 {
@@ -39177,7 +39177,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 市川 美宏",
+                  "racerName": "市川 美宏",
                   "class": "B1"
                 },
                 {
@@ -39217,7 +39217,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 小林 泰",
+                  "racerName": "小林 泰",
                   "class": "A2"
                 },
                 {
@@ -39257,7 +39257,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 高田 明",
+                  "racerName": "高田 明",
                   "class": "A1"
                 },
                 {
@@ -39297,7 +39297,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 和田 拓也",
+                  "racerName": "和田 拓也",
                   "class": "A1"
                 },
                 {
@@ -39337,7 +39337,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 井上 忠政",
+                  "racerName": "井上 忠政",
                   "class": "A1"
                 },
                 {
@@ -39404,7 +39404,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "13",
@@ -39422,7 +39422,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 富永 夏哉人",
+              "racerName": "富永 夏哉人",
               "class": "B1"
             },
             {
@@ -39462,7 +39462,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 樋口 喜彦",
+              "racerName": "樋口 喜彦",
               "class": "B2"
             },
             {
@@ -39502,7 +39502,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 齊藤 優",
+              "racerName": "齊藤 優",
               "class": "B1"
             },
             {
@@ -39542,7 +39542,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山川 雄大",
+              "racerName": "山川 雄大",
               "class": "B1"
             },
             {
@@ -39582,7 +39582,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 丸岡 正典",
+              "racerName": "丸岡 正典",
               "class": "A2"
             },
             {
@@ -39622,7 +39622,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 出畑 孝典",
+              "racerName": "出畑 孝典",
               "class": "A2"
             },
             {
@@ -39662,7 +39662,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 荒井 翔伍",
+              "racerName": "荒井 翔伍",
               "class": "A2"
             },
             {
@@ -39702,7 +39702,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 室田 泰史",
+              "racerName": "室田 泰史",
               "class": "A2"
             },
             {
@@ -39742,7 +39742,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 森定 晃史",
+              "racerName": "森定 晃史",
               "class": "A2"
             },
             {
@@ -39782,7 +39782,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 富永 修一",
+              "racerName": "富永 修一",
               "class": "A2"
             },
             {
@@ -39822,7 +39822,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 河村 了",
+              "racerName": "河村 了",
               "class": "A1"
             },
             {
@@ -39862,7 +39862,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 古結 宏",
+              "racerName": "古結 宏",
               "class": "A1"
             },
             {
@@ -59311,7 +59311,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 富永 夏哉人",
+                  "racerName": "富永 夏哉人",
                   "class": "B1"
                 },
                 {
@@ -59351,7 +59351,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 樋口 喜彦",
+                  "racerName": "樋口 喜彦",
                   "class": "B2"
                 },
                 {
@@ -59391,7 +59391,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 齊藤 優",
+                  "racerName": "齊藤 優",
                   "class": "B1"
                 },
                 {
@@ -59431,7 +59431,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 山川 雄大",
+                  "racerName": "山川 雄大",
                   "class": "B1"
                 },
                 {
@@ -59471,7 +59471,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 丸岡 正典",
+                  "racerName": "丸岡 正典",
                   "class": "A2"
                 },
                 {
@@ -59511,7 +59511,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 出畑 孝典",
+                  "racerName": "出畑 孝典",
                   "class": "A2"
                 },
                 {
@@ -59551,7 +59551,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 荒井 翔伍",
+                  "racerName": "荒井 翔伍",
                   "class": "A2"
                 },
                 {
@@ -59591,7 +59591,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 室田 泰史",
+                  "racerName": "室田 泰史",
                   "class": "A2"
                 },
                 {
@@ -59631,7 +59631,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 森定 晃史",
+                  "racerName": "森定 晃史",
                   "class": "A2"
                 },
                 {
@@ -59671,7 +59671,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 富永 修一",
+                  "racerName": "富永 修一",
                   "class": "A2"
                 },
                 {
@@ -59711,7 +59711,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 河村 了",
+                  "racerName": "河村 了",
                   "class": "A1"
                 },
                 {
@@ -59751,7 +59751,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 古結 宏",
+                  "racerName": "古結 宏",
                   "class": "A1"
                 },
                 {
@@ -59788,7 +59788,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "14",
@@ -59806,7 +59806,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 原田 佑実",
+              "racerName": "原田 佑実",
               "class": "A2"
             },
             {
@@ -59838,7 +59838,54 @@
           "replay": {
             "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260911&race=1"
           },
-          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260911&race=1"
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260911&race=1",
+          "beforeData": [],
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.02,
+              "rawST": ".02"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.37,
+              "rawST": ".37"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.12,
+              "rawST": ".12"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.08,
+              "rawST": "F.08"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.11,
+              "rawST": "F.11"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.14,
+              "rawST": "F.14"
+            }
+          ],
+          "weather": {
+            "airTemperature": 23.0,
+            "waterTemperature": 26.0,
+            "windSpeed": 2.0,
+            "waveHeight": 2.0,
+            "weather": "曇り"
+          },
+          "beforeUpdatedAt": "2026-09-11T08:28:18+09:00"
         },
         {
           "raceNo": 2,
@@ -59846,7 +59893,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 赤井 睦",
+              "racerName": "赤井 睦",
               "class": "B1"
             },
             {
@@ -59886,7 +59933,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 藤原 早菜",
+              "racerName": "藤原 早菜",
               "class": "A2"
             },
             {
@@ -59926,7 +59973,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 藤原 菜希",
+              "racerName": "藤原 菜希",
               "class": "A2"
             },
             {
@@ -59966,7 +60013,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 魚谷 香織",
+              "racerName": "魚谷 香織",
               "class": "A2"
             },
             {
@@ -60006,7 +60053,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 奥村 明日香",
+              "racerName": "奥村 明日香",
               "class": "B1"
             },
             {
@@ -60046,7 +60093,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 北村 寧々",
+              "racerName": "北村 寧々",
               "class": "A2"
             },
             {
@@ -60086,7 +60133,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 西岡 成美",
+              "racerName": "西岡 成美",
               "class": "B2"
             },
             {
@@ -60126,7 +60173,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山崎 小葉音",
+              "racerName": "山崎 小葉音",
               "class": "B1"
             },
             {
@@ -60166,7 +60213,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 出口 舞有子",
+              "racerName": "出口 舞有子",
               "class": "B1"
             },
             {
@@ -60206,7 +60253,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 安井 瑞紀",
+              "racerName": "安井 瑞紀",
               "class": "A2"
             },
             {
@@ -60246,7 +60293,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大山 千広",
+              "racerName": "大山 千広",
               "class": "A2"
             },
             {
@@ -83409,7 +83456,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 原田 佑実",
+                  "racerName": "原田 佑実",
                   "class": "A2"
                 },
                 {
@@ -83441,7 +83488,54 @@
               "replay": {
                 "officialPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260911&race=1"
               },
-              "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260911&race=1"
+              "officialReplayPage": "https://race.boatcast.jp/replay?jo=14&ymd=20260911&race=1",
+              "beforeData": [],
+              "startExhibition": [
+                {
+                  "course": 1,
+                  "lane": 2,
+                  "st": 0.02,
+                  "rawST": ".02"
+                },
+                {
+                  "course": 2,
+                  "lane": 2,
+                  "st": 0.37,
+                  "rawST": ".37"
+                },
+                {
+                  "course": 3,
+                  "lane": 2,
+                  "st": 0.12,
+                  "rawST": ".12"
+                },
+                {
+                  "course": 4,
+                  "lane": 2,
+                  "st": 0.08,
+                  "rawST": "F.08"
+                },
+                {
+                  "course": 5,
+                  "lane": 2,
+                  "st": 0.11,
+                  "rawST": "F.11"
+                },
+                {
+                  "course": 6,
+                  "lane": 2,
+                  "st": 0.14,
+                  "rawST": "F.14"
+                }
+              ],
+              "weather": {
+                "airTemperature": 23.0,
+                "waterTemperature": 26.0,
+                "windSpeed": 2.0,
+                "waveHeight": 2.0,
+                "weather": "曇り"
+              },
+              "beforeUpdatedAt": "2026-09-11T08:28:18+09:00"
             },
             {
               "raceNo": 2,
@@ -83449,7 +83543,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 赤井 睦",
+                  "racerName": "赤井 睦",
                   "class": "B1"
                 },
                 {
@@ -83489,7 +83583,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 藤原 早菜",
+                  "racerName": "藤原 早菜",
                   "class": "A2"
                 },
                 {
@@ -83529,7 +83623,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 藤原 菜希",
+                  "racerName": "藤原 菜希",
                   "class": "A2"
                 },
                 {
@@ -83569,7 +83663,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 魚谷 香織",
+                  "racerName": "魚谷 香織",
                   "class": "A2"
                 },
                 {
@@ -83609,7 +83703,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 奥村 明日香",
+                  "racerName": "奥村 明日香",
                   "class": "B1"
                 },
                 {
@@ -83649,7 +83743,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 北村 寧々",
+                  "racerName": "北村 寧々",
                   "class": "A2"
                 },
                 {
@@ -83689,7 +83783,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 西岡 成美",
+                  "racerName": "西岡 成美",
                   "class": "B2"
                 },
                 {
@@ -83729,7 +83823,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 山崎 小葉音",
+                  "racerName": "山崎 小葉音",
                   "class": "B1"
                 },
                 {
@@ -83769,7 +83863,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 出口 舞有子",
+                  "racerName": "出口 舞有子",
                   "class": "B1"
                 },
                 {
@@ -83809,7 +83903,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 安井 瑞紀",
+                  "racerName": "安井 瑞紀",
                   "class": "A2"
                 },
                 {
@@ -83849,7 +83943,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 大山 千広",
+                  "racerName": "大山 千広",
                   "class": "A2"
                 },
                 {
@@ -83886,7 +83980,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "16",
@@ -83904,7 +83998,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 松尾 充",
+              "racerName": "松尾 充",
               "class": "A2"
             },
             {
@@ -83944,7 +84038,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 木山 誠一",
+              "racerName": "木山 誠一",
               "class": "B1"
             },
             {
@@ -83984,7 +84078,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 滝川 真由子",
+              "racerName": "滝川 真由子",
               "class": "B1"
             },
             {
@@ -84024,7 +84118,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小池 哲也",
+              "racerName": "小池 哲也",
               "class": "A2"
             },
             {
@@ -84064,7 +84158,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 渋谷 明憲",
+              "racerName": "渋谷 明憲",
               "class": "A1"
             },
             {
@@ -84104,7 +84198,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 永井 源",
+              "racerName": "永井 源",
               "class": "A2"
             },
             {
@@ -84144,7 +84238,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 青木 幸太郎",
+              "racerName": "青木 幸太郎",
               "class": "A2"
             },
             {
@@ -84184,7 +84278,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 渡邊 伸太郎",
+              "racerName": "渡邊 伸太郎",
               "class": "B1"
             },
             {
@@ -84224,7 +84318,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 平田 さやか",
+              "racerName": "平田 さやか",
               "class": "A2"
             },
             {
@@ -84264,7 +84358,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 松山 将吾",
+              "racerName": "松山 将吾",
               "class": "A1"
             },
             {
@@ -84304,7 +84398,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 篠崎 元志",
+              "racerName": "篠崎 元志",
               "class": "A1"
             },
             {
@@ -84344,7 +84438,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 末永 由楽",
+              "racerName": "末永 由楽",
               "class": "A2"
             },
             {
@@ -103805,7 +103899,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 松尾 充",
+                  "racerName": "松尾 充",
                   "class": "A2"
                 },
                 {
@@ -103845,7 +103939,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 木山 誠一",
+                  "racerName": "木山 誠一",
                   "class": "B1"
                 },
                 {
@@ -103885,7 +103979,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 滝川 真由子",
+                  "racerName": "滝川 真由子",
                   "class": "B1"
                 },
                 {
@@ -103925,7 +104019,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 小池 哲也",
+                  "racerName": "小池 哲也",
                   "class": "A2"
                 },
                 {
@@ -103965,7 +104059,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 渋谷 明憲",
+                  "racerName": "渋谷 明憲",
                   "class": "A1"
                 },
                 {
@@ -104005,7 +104099,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 永井 源",
+                  "racerName": "永井 源",
                   "class": "A2"
                 },
                 {
@@ -104045,7 +104139,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 青木 幸太郎",
+                  "racerName": "青木 幸太郎",
                   "class": "A2"
                 },
                 {
@@ -104085,7 +104179,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 渡邊 伸太郎",
+                  "racerName": "渡邊 伸太郎",
                   "class": "B1"
                 },
                 {
@@ -104125,7 +104219,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 平田 さやか",
+                  "racerName": "平田 さやか",
                   "class": "A2"
                 },
                 {
@@ -104165,7 +104259,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 松山 将吾",
+                  "racerName": "松山 将吾",
                   "class": "A1"
                 },
                 {
@@ -104205,7 +104299,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 篠崎 元志",
+                  "racerName": "篠崎 元志",
                   "class": "A1"
                 },
                 {
@@ -104245,7 +104339,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 末永 由楽",
+                  "racerName": "末永 由楽",
                   "class": "A2"
                 },
                 {
@@ -104288,7 +104382,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "17",
@@ -104306,7 +104400,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中田 友也",
+              "racerName": "中田 友也",
               "class": "A2"
             },
             {
@@ -104346,7 +104440,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 後藤 浩",
+              "racerName": "後藤 浩",
               "class": "B1"
             },
             {
@@ -104386,7 +104480,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 鈴木 裕隆",
+              "racerName": "鈴木 裕隆",
               "class": "B1"
             },
             {
@@ -104426,7 +104520,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中山 雄太",
+              "racerName": "中山 雄太",
               "class": "B2"
             },
             {
@@ -104466,7 +104560,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 清水 攻二",
+              "racerName": "清水 攻二",
               "class": "A2"
             },
             {
@@ -104506,7 +104600,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 堂原 洋史",
+              "racerName": "堂原 洋史",
               "class": "B1"
             },
             {
@@ -104546,7 +104640,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大串 重幸",
+              "racerName": "大串 重幸",
               "class": "A2"
             },
             {
@@ -104586,7 +104680,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 佐竹 友樹",
+              "racerName": "佐竹 友樹",
               "class": "B1"
             },
             {
@@ -104626,7 +104720,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小坂 宗司",
+              "racerName": "小坂 宗司",
               "class": "A2"
             },
             {
@@ -104666,7 +104760,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 小黒 竜吾",
+              "racerName": "小黒 竜吾",
               "class": "B1"
             },
             {
@@ -104706,7 +104800,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 西野 翔太",
+              "racerName": "西野 翔太",
               "class": "A1"
             },
             {
@@ -104746,7 +104840,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 森野 正弘",
+              "racerName": "森野 正弘",
               "class": "A1"
             },
             {
@@ -116194,7 +116288,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 中田 友也",
+                  "racerName": "中田 友也",
                   "class": "A2"
                 },
                 {
@@ -116234,7 +116328,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 後藤 浩",
+                  "racerName": "後藤 浩",
                   "class": "B1"
                 },
                 {
@@ -116274,7 +116368,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 鈴木 裕隆",
+                  "racerName": "鈴木 裕隆",
                   "class": "B1"
                 },
                 {
@@ -116314,7 +116408,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 中山 雄太",
+                  "racerName": "中山 雄太",
                   "class": "B2"
                 },
                 {
@@ -116354,7 +116448,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 清水 攻二",
+                  "racerName": "清水 攻二",
                   "class": "A2"
                 },
                 {
@@ -116394,7 +116488,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 堂原 洋史",
+                  "racerName": "堂原 洋史",
                   "class": "B1"
                 },
                 {
@@ -116434,7 +116528,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 大串 重幸",
+                  "racerName": "大串 重幸",
                   "class": "A2"
                 },
                 {
@@ -116474,7 +116568,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 佐竹 友樹",
+                  "racerName": "佐竹 友樹",
                   "class": "B1"
                 },
                 {
@@ -116514,7 +116608,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 小坂 宗司",
+                  "racerName": "小坂 宗司",
                   "class": "A2"
                 },
                 {
@@ -116554,7 +116648,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 小黒 竜吾",
+                  "racerName": "小黒 竜吾",
                   "class": "B1"
                 },
                 {
@@ -116594,7 +116688,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 西野 翔太",
+                  "racerName": "西野 翔太",
                   "class": "A1"
                 },
                 {
@@ -116634,7 +116728,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 森野 正弘",
+                  "racerName": "森野 正弘",
                   "class": "A1"
                 },
                 {
@@ -116683,7 +116777,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "20",
@@ -116701,7 +116795,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 西原 明生",
+              "racerName": "西原 明生",
               "class": "B1"
             },
             {
@@ -116741,7 +116835,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 稲生 夏季",
+              "racerName": "稲生 夏季",
               "class": "B1"
             },
             {
@@ -116781,7 +116875,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 寺島 美里",
+              "racerName": "寺島 美里",
               "class": "B1"
             },
             {
@@ -116821,7 +116915,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 渡辺 千草",
+              "racerName": "渡辺 千草",
               "class": "B1"
             },
             {
@@ -116861,7 +116955,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 井内 将太郎",
+              "racerName": "井内 将太郎",
               "class": "A1"
             },
             {
@@ -116901,7 +116995,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 濱崎 直矢",
+              "racerName": "濱崎 直矢",
               "class": "A2"
             },
             {
@@ -116941,7 +117035,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 嶋 義信",
+              "racerName": "嶋 義信",
               "class": "A1"
             },
             {
@@ -116981,7 +117075,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大瀧 明日香",
+              "racerName": "大瀧 明日香",
               "class": "A2"
             },
             {
@@ -117021,7 +117115,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 岡崎 恭裕",
+              "racerName": "岡崎 恭裕",
               "class": "A2"
             },
             {
@@ -117061,7 +117155,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 片岡 恵里",
+              "racerName": "片岡 恵里",
               "class": "A2"
             },
             {
@@ -117101,7 +117195,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大須賀 友",
+              "racerName": "大須賀 友",
               "class": "A1"
             },
             {
@@ -117141,7 +117235,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 上平 真二",
+              "racerName": "上平 真二",
               "class": "A1"
             },
             {
@@ -128903,7 +128997,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 西原 明生",
+                  "racerName": "西原 明生",
                   "class": "B1"
                 },
                 {
@@ -128943,7 +129037,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 稲生 夏季",
+                  "racerName": "稲生 夏季",
                   "class": "B1"
                 },
                 {
@@ -128983,7 +129077,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 寺島 美里",
+                  "racerName": "寺島 美里",
                   "class": "B1"
                 },
                 {
@@ -129023,7 +129117,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 渡辺 千草",
+                  "racerName": "渡辺 千草",
                   "class": "B1"
                 },
                 {
@@ -129063,7 +129157,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 井内 将太郎",
+                  "racerName": "井内 将太郎",
                   "class": "A1"
                 },
                 {
@@ -129103,7 +129197,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 濱崎 直矢",
+                  "racerName": "濱崎 直矢",
                   "class": "A2"
                 },
                 {
@@ -129143,7 +129237,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 嶋 義信",
+                  "racerName": "嶋 義信",
                   "class": "A1"
                 },
                 {
@@ -129183,7 +129277,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 大瀧 明日香",
+                  "racerName": "大瀧 明日香",
                   "class": "A2"
                 },
                 {
@@ -129223,7 +129317,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 岡崎 恭裕",
+                  "racerName": "岡崎 恭裕",
                   "class": "A2"
                 },
                 {
@@ -129263,7 +129357,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 片岡 恵里",
+                  "racerName": "片岡 恵里",
                   "class": "A2"
                 },
                 {
@@ -129303,7 +129397,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 大須賀 友",
+                  "racerName": "大須賀 友",
                   "class": "A1"
                 },
                 {
@@ -129343,7 +129437,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 上平 真二",
+                  "racerName": "上平 真二",
                   "class": "A1"
                 },
                 {
@@ -129404,7 +129498,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "21",
@@ -129424,6 +129518,107 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=1"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=1",
+          "weather": {
+            "airTemperature": 22.1,
+            "waterTemperature": 24.7,
+            "windSpeed": 1.0,
+            "waveHeight": 1.0,
+            "weather": "曇り"
+          },
+          "beforeUpdatedAt": "2026-09-11T08:28:18+09:00",
+          "beforeData": [
+            {
+              "lane": 1,
+              "racerName": "浜本 裕己",
+              "weight": 51.0,
+              "exhibitionTime": 6.7,
+              "tilt": 0.0
+            },
+            {
+              "lane": 2,
+              "racerName": "川上 清人",
+              "weight": 63.9,
+              "exhibitionTime": 6.84,
+              "tilt": 0.0,
+              "course": 4,
+              "st": "F.03"
+            },
+            {
+              "lane": 3,
+              "racerName": "前原 哉",
+              "weight": 45.0,
+              "exhibitionTime": 6.83,
+              "tilt": 0.0
+            },
+            {
+              "lane": 4,
+              "racerName": "中村 楓",
+              "weight": 52.3,
+              "exhibitionTime": 6.74,
+              "tilt": 0.0
+            },
+            {
+              "lane": 5,
+              "racerName": "池 千夏",
+              "weight": 50.0,
+              "exhibitionTime": 6.78,
+              "tilt": -0.5
+            },
+            {
+              "lane": 6,
+              "racerName": "谷川 祐一",
+              "weight": 52.0,
+              "exhibitionTime": 6.79,
+              "tilt": 0.0
+            }
+          ],
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.1,
+              "rawST": ".10"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.15,
+              "rawST": ".15"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.11,
+              "rawST": ".11"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.05,
+              "rawST": ".05"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.07,
+              "rawST": ".07"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.03,
+              "rawST": "F.03"
+            }
+          ]
+        },
+        {
+          "raceNo": 2,
+          "deadline": "08:58",
+          "boats": [],
+          "replay": {
+            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=2"
+          },
+          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=2",
           "beforeData": [],
           "startExhibition": [],
           "weather": {
@@ -129433,16 +129628,7 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-11T08:01:51+09:00"
-        },
-        {
-          "raceNo": 2,
-          "deadline": "08:58",
-          "boats": [],
-          "replay": {
-            "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=2"
-          },
-          "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=2"
+          "beforeUpdatedAt": "2026-09-11T08:28:18+09:00"
         },
         {
           "raceNo": 3,
@@ -129549,6 +129735,107 @@
                 "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=1"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=1",
+              "weather": {
+                "airTemperature": 22.1,
+                "waterTemperature": 24.7,
+                "windSpeed": 1.0,
+                "waveHeight": 1.0,
+                "weather": "曇り"
+              },
+              "beforeUpdatedAt": "2026-09-11T08:28:18+09:00",
+              "beforeData": [
+                {
+                  "lane": 1,
+                  "racerName": "浜本 裕己",
+                  "weight": 51.0,
+                  "exhibitionTime": 6.7,
+                  "tilt": 0.0
+                },
+                {
+                  "lane": 2,
+                  "racerName": "川上 清人",
+                  "weight": 63.9,
+                  "exhibitionTime": 6.84,
+                  "tilt": 0.0,
+                  "course": 4,
+                  "st": "F.03"
+                },
+                {
+                  "lane": 3,
+                  "racerName": "前原 哉",
+                  "weight": 45.0,
+                  "exhibitionTime": 6.83,
+                  "tilt": 0.0
+                },
+                {
+                  "lane": 4,
+                  "racerName": "中村 楓",
+                  "weight": 52.3,
+                  "exhibitionTime": 6.74,
+                  "tilt": 0.0
+                },
+                {
+                  "lane": 5,
+                  "racerName": "池 千夏",
+                  "weight": 50.0,
+                  "exhibitionTime": 6.78,
+                  "tilt": -0.5
+                },
+                {
+                  "lane": 6,
+                  "racerName": "谷川 祐一",
+                  "weight": 52.0,
+                  "exhibitionTime": 6.79,
+                  "tilt": 0.0
+                }
+              ],
+              "startExhibition": [
+                {
+                  "course": 1,
+                  "lane": 2,
+                  "st": 0.1,
+                  "rawST": ".10"
+                },
+                {
+                  "course": 2,
+                  "lane": 2,
+                  "st": 0.15,
+                  "rawST": ".15"
+                },
+                {
+                  "course": 3,
+                  "lane": 2,
+                  "st": 0.11,
+                  "rawST": ".11"
+                },
+                {
+                  "course": 5,
+                  "lane": 2,
+                  "st": 0.05,
+                  "rawST": ".05"
+                },
+                {
+                  "course": 6,
+                  "lane": 2,
+                  "st": 0.07,
+                  "rawST": ".07"
+                },
+                {
+                  "course": 4,
+                  "lane": 2,
+                  "st": 0.03,
+                  "rawST": "F.03"
+                }
+              ]
+            },
+            {
+              "raceNo": 2,
+              "deadline": "08:58",
+              "boats": [],
+              "replay": {
+                "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=2"
+              },
+              "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=2",
               "beforeData": [],
               "startExhibition": [],
               "weather": {
@@ -129558,16 +129845,7 @@
                 "waveHeight": 1.0,
                 "weather": "曇り"
               },
-              "beforeUpdatedAt": "2026-09-11T08:01:51+09:00"
-            },
-            {
-              "raceNo": 2,
-              "deadline": "08:58",
-              "boats": [],
-              "replay": {
-                "officialPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=2"
-              },
-              "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20260911&race=2"
+              "beforeUpdatedAt": "2026-09-11T08:28:18+09:00"
             },
             {
               "raceNo": 3,
@@ -129662,7 +129940,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     },
     {
       "venueCode": "24",
@@ -129680,7 +129958,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 北野 輝季",
+              "racerName": "北野 輝季",
               "class": "A1"
             },
             {
@@ -129720,7 +129998,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 宮田 龍馬",
+              "racerName": "宮田 龍馬",
               "class": "A1"
             },
             {
@@ -129760,7 +130038,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中野 次郎",
+              "racerName": "中野 次郎",
               "class": "A1"
             },
             {
@@ -129800,7 +130078,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 村上 遼",
+              "racerName": "村上 遼",
               "class": "A1"
             },
             {
@@ -129840,7 +130118,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 下條 雄太郎",
+              "racerName": "下條 雄太郎",
               "class": "A1"
             },
             {
@@ -129880,7 +130158,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 西岡 顕心",
+              "racerName": "西岡 顕心",
               "class": "A1"
             },
             {
@@ -129920,7 +130198,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 高憧 四季",
+              "racerName": "高憧 四季",
               "class": "A1"
             },
             {
@@ -129960,7 +130238,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 原田 幸哉",
+              "racerName": "原田 幸哉",
               "class": "A1"
             },
             {
@@ -130000,7 +130278,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 西山 貴浩",
+              "racerName": "西山 貴浩",
               "class": "A1"
             },
             {
@@ -130040,7 +130318,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 久田 敏之",
+              "racerName": "久田 敏之",
               "class": "A1"
             },
             {
@@ -130080,7 +130358,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 馬場 貴也",
+              "racerName": "馬場 貴也",
               "class": "A1"
             },
             {
@@ -130120,7 +130398,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 瓜生 正義",
+              "racerName": "瓜生 正義",
               "class": "A1"
             },
             {
@@ -149701,7 +149979,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 北野 輝季",
+                  "racerName": "北野 輝季",
                   "class": "A1"
                 },
                 {
@@ -149741,7 +150019,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 宮田 龍馬",
+                  "racerName": "宮田 龍馬",
                   "class": "A1"
                 },
                 {
@@ -149781,7 +150059,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 中野 次郎",
+                  "racerName": "中野 次郎",
                   "class": "A1"
                 },
                 {
@@ -149821,7 +150099,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 村上 遼",
+                  "racerName": "村上 遼",
                   "class": "A1"
                 },
                 {
@@ -149861,7 +150139,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 下條 雄太郎",
+                  "racerName": "下條 雄太郎",
                   "class": "A1"
                 },
                 {
@@ -149901,7 +150179,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 西岡 顕心",
+                  "racerName": "西岡 顕心",
                   "class": "A1"
                 },
                 {
@@ -149941,7 +150219,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 高憧 四季",
+                  "racerName": "高憧 四季",
                   "class": "A1"
                 },
                 {
@@ -149981,7 +150259,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 原田 幸哉",
+                  "racerName": "原田 幸哉",
                   "class": "A1"
                 },
                 {
@@ -150021,7 +150299,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 西山 貴浩",
+                  "racerName": "西山 貴浩",
                   "class": "A1"
                 },
                 {
@@ -150061,7 +150339,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 久田 敏之",
+                  "racerName": "久田 敏之",
                   "class": "A1"
                 },
                 {
@@ -150101,7 +150379,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 馬場 貴也",
+                  "racerName": "馬場 貴也",
                   "class": "A1"
                 },
                 {
@@ -150141,7 +150419,7 @@
               "boats": [
                 {
                   "lane": 1,
-                  "racerName": "投票 瓜生 正義",
+                  "racerName": "瓜生 正義",
                   "class": "A1"
                 },
                 {
@@ -150184,7 +150462,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:02:10+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:28:38+09:00"
     }
   ],
   "errors": []
