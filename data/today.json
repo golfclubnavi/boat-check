@@ -1,6 +1,6 @@
 {
   "schemaVersion": "38.0",
-  "updatedAt": "2026-09-10T12:08:33+09:00",
+  "updatedAt": "2026-09-10T12:40:54+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -3130,7 +3130,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山口 裕二",
+              "racerName": "発売終了 山口 裕二",
               "class": "A1"
             },
             {
@@ -5620,7 +5620,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 土屋 実沙希",
+              "racerName": "発売終了 土屋 実沙希",
               "class": "B1"
             },
             {
@@ -8549,7 +8549,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 乙津 康志",
+              "racerName": "発売終了 乙津 康志",
               "class": "B1"
             },
             {
@@ -9782,7 +9782,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 河村 了",
+              "racerName": "発売終了 河村 了",
               "class": "A1"
             },
             {
@@ -12073,7 +12073,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 浜田 亜理沙",
+              "racerName": "発売終了 浜田 亜理沙",
               "class": "B1"
             },
             {
@@ -14263,7 +14263,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 上瀧 絢也",
+              "racerName": "発売終了 上瀧 絢也",
               "class": "B1"
             },
             {
@@ -16314,7 +16314,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 大庭 元明",
+              "racerName": "発売終了 大庭 元明",
               "class": "B1"
             },
             {
@@ -18960,7 +18960,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 金子 萌",
+              "racerName": "発売終了 金子 萌",
               "class": "A2"
             },
             {
