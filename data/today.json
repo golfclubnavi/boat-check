@@ -1,6 +1,6 @@
 {
   "schemaVersion": "38.0",
-  "updatedAt": "2026-09-10T16:09:57+09:00",
+  "updatedAt": "2026-09-10T16:40:08+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -141,7 +141,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 河野 真也",
+              "racerName": "発売終了 河野 真也",
               "class": "A2"
             },
             {
@@ -3610,7 +3610,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 三角 哲男",
+              "racerName": "発売終了 三角 哲男",
               "class": "A1"
             },
             {
@@ -6100,7 +6100,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 長田 頼宗",
+              "racerName": "発売終了 長田 頼宗",
               "class": "A1"
             },
             {
@@ -8969,7 +8969,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 一瀬 明",
+              "racerName": "発売終了 一瀬 明",
               "class": "A1"
             },
             {
@@ -10202,7 +10202,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 古結 宏",
+              "racerName": "発売終了 古結 宏",
               "class": "A1"
             },
             {
@@ -16794,7 +16794,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 丸尾 義孝",
+              "racerName": "発売終了 丸尾 義孝",
               "class": "A1"
             },
             {
@@ -17487,7 +17487,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 夏山 亮平",
+              "racerName": "発売終了 夏山 亮平",
               "class": "B1"
             },
             {
@@ -19773,7 +19773,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 中村 泰平",
+              "racerName": "発売終了 中村 泰平",
               "class": "A1"
             },
             {
