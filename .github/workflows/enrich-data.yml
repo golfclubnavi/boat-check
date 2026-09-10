@@ -35,7 +35,7 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Enrich racer motor boat data
+      - name: Enrich racer, current-meet, motor and boat data
         run: python scripts/collect_today.py --enrich --out data/today.json --workers 10
 
       - name: Commit enriched data when changed
@@ -47,6 +47,6 @@ jobs:
             echo "No enriched data changes."
             exit 0
           fi
-          git commit -m "Enrich BOAT CHECK official data"
+          git commit -m "Enrich BOAT CHECK current-meet data"
           git pull --rebase origin main
           git push origin HEAD:main

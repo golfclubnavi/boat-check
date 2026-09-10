@@ -34,7 +34,7 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Refresh deadlines, exhibition data and results
+      - name: Refresh deadlines, exhibition, current-meet scores and results
         run: python scripts/collect_today.py --live --out data/today.json --workers 8
 
       - name: Commit live data when changed
