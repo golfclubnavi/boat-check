@@ -1,6 +1,6 @@
 {
   "schemaVersion": "44.0",
-  "updatedAt": "2026-09-11T01:47:26+09:00",
+  "updatedAt": "2026-09-11T01:57:32+09:00",
   "dateJST": "20260911",
   "source": "BOAT RACE official public pages",
   "mode": "live",
@@ -1004,7 +1004,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "03",
@@ -25065,7 +25065,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "05",
@@ -37386,7 +37386,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "06",
@@ -38392,7 +38392,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "12",
@@ -39404,7 +39404,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "13",
@@ -59788,7 +59788,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "14",
@@ -83886,7 +83886,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "16",
@@ -104288,7 +104288,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "17",
@@ -116683,7 +116683,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "20",
@@ -129404,7 +129404,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "21",
@@ -141395,7 +141395,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     },
     {
       "venueCode": "24",
@@ -161917,7 +161917,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T01:47:46+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T01:57:51+09:00"
     }
   ],
   "errors": []
