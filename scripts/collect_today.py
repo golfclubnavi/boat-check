@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v43 collector — current-meet results
+BOAT CHECK v44 collector — current-meet results + historical result links
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
@@ -64,7 +64,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.43; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.44; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -209,6 +209,14 @@ def day_label_from_text(text: str) -> str:
     m = re.search(r"(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)", text)
     return m.group(1) if m else ""
 
+def current_day_label_from_text(text: str, date: str) -> str:
+    if not date or len(str(date)) != 8:
+        return day_label_from_text(text)
+    mm=int(str(date)[4:6]); dd=int(str(date)[6:8])
+    pattern=rf"{mm}月{dd}日\s*(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)"
+    m=re.search(pattern,text)
+    return m.group(1) if m else day_label_from_text(text)
+
 def infer_tab_date(href: str) -> str | None:
     try:
         q = parse_qs(urlparse(href.replace("&amp;","&")).query)
@@ -230,20 +238,22 @@ def parse_meet_days(soup: BeautifulSoup, base_date: str) -> list[dict]:
             label = day_label_from_text(text)
             out.append({"date":hd,"label":label,"day":label})
             seen.add(hd)
-    if not out:
-        text = compact(soup.get_text(" ", strip=True))
-        base_year, base_month = int(base_date[:4]), int(base_date[4:6])
-        for mm, dd, label in re.findall(
-            r"(\d{1,2})月(\d{1,2})日\s*(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)", text
-        ):
-            month = int(mm)
-            year = base_year
-            if base_month == 12 and month == 1: year += 1
-            if base_month == 1 and month == 12: year -= 1
-            hd = f"{year:04d}{month:02d}{int(dd):02d}"
-            if hd not in seen:
-                out.append({"date":hd,"label":label,"day":label})
-                seen.add(hd)
+    # The currently selected official day is plain text rather than an <a>, so
+    # always scan the page text too. This prevents the current date from
+    # disappearing from the date tabs.
+    text = compact(soup.get_text(" ", strip=True))
+    base_year, base_month = int(base_date[:4]), int(base_date[4:6])
+    for mm, dd, label in re.findall(
+        r"(\d{1,2})月(\d{1,2})日\s*(初日|[１２３４５６７８９一二三四五六七八九0-9]+日目|最終日)", text
+    ):
+        month = int(mm)
+        year = base_year
+        if base_month == 12 and month == 1: year += 1
+        if base_month == 1 and month == 12: year -= 1
+        hd = f"{year:04d}{month:02d}{int(dd):02d}"
+        if hd not in seen:
+            out.append({"date":hd,"label":label,"day":label})
+            seen.add(hd)
     return sorted(out, key=lambda x:x["date"])
 
 def _num(v, integer=False):
@@ -341,7 +351,8 @@ def parse_current_meet_results(racer_row) -> list[dict]:
         rv=(rc[i] if i<len(rc) else "").translate(_ZEN_DIGITS)
         cv=(cc[i] if i<len(cc) else "").translate(_ZEN_DIGITS)
         race_no=int(rv) if re.fullmatch(r"\d{1,2}",rv or "") else None
-        course=int(cv) if re.fullmatch(r"[1-6]",cv or "") else None
+        mc=re.search(r"(?<!\d)([1-6])(?!\d)",cv or "")
+        course=int(mc.group(1)) if mc else None
         st=_series_st_value(sc[i] if i<len(sc) else "")
         finish=_series_finish_value(fc[i] if i<len(fc) else "")
         if race_no is None and course is None and st is None and finish is None: continue
@@ -448,7 +459,45 @@ def _current_day_result_entries(meeting:dict):
             if not rid: continue
             lane=int(f.get("lane") or 0)
             before=before_by_lane.get(lane,{})
-            out.setdefault(rid,[]).append({"day":day_no,"raceNo":int(race.get("raceNo") or 0),"course":before.get("course"),"st":f.get("st"),"finish":f.get("rank"),"exhibitionTime":before.get("exhibitionTime"),"source":"official_result_live"})
+            out.setdefault(rid,[]).append({"day":day_no,"raceNo":int(race.get("raceNo") or 0),"course":f.get("course") or before.get("course"),"st":f.get("st"),"finish":f.get("rank"),"exhibitionTime":before.get("exhibitionTime"),"source":"official_result_live"})
+    return out
+
+def _meet_day_result_entries(meeting:dict):
+    out={}
+    days=meeting.get("meetDays",[]) or []
+    date_to_day={str(d.get("date") or ""):i+1 for i,d in enumerate(days)}
+
+    # include the current day even when meetDays was not enriched yet
+    sources=[]
+    for d in days:
+        sources.append((date_to_day.get(str(d.get("date") or ""),1),d.get("races",[]) or []))
+    current_date=str(meeting.get("date") or "")
+    current_day=date_to_day.get(current_date) or _day_no_from_label(meeting.get("day")) or 1
+    sources.append((current_day,meeting.get("races",[]) or []))
+
+    seen=set()
+    for day_no,races in sources:
+        for race in races:
+            rno=int(race.get("raceNo") or 0)
+            result=race.get("result") or {}
+            if result.get("official") is not True:
+                continue
+            for f in result.get("finishers",[]) or []:
+                rid=str(f.get("racerId") or "")
+                if not rid:
+                    continue
+                key=(rid,day_no,rno)
+                if key in seen:
+                    continue
+                seen.add(key)
+                out.setdefault(rid,[]).append({
+                    "day":day_no,
+                    "raceNo":rno,
+                    "course":f.get("course"),
+                    "st":f.get("st"),
+                    "finish":f.get("rank"),
+                    "source":"official_result",
+                })
     return out
 
 def apply_meeting_series_data(meeting:dict,point_map=None,pre_map=None,info_map=None):
@@ -462,6 +511,9 @@ def apply_meeting_series_data(meeting:dict,point_map=None,pre_map=None,info_map=
             cur["name"]=b.get("racerName") or cur.get("name")
             cur["meetResults"]=_merge_meet_result_lists(cur.get("meetResults",[]),b.get("meetResults",[]))
     for rid,items in _current_day_result_entries(meeting).items():
+        cur=canonical.setdefault(rid,{"meetResults":[]})
+        cur["meetResults"]=_merge_meet_result_lists(cur.get("meetResults",[]),items)
+    for rid,items in _meet_day_result_entries(meeting).items():
         cur=canonical.setdefault(rid,{"meetResults":[]})
         cur["meetResults"]=_merge_meet_result_lists(cur.get("meetResults",[]),items)
 
@@ -697,7 +749,7 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
     if not races and meeting_status == "open":
         return None
 
-    day = day_label_from_text(text)
+    day = current_day_label_from_text(text,date)
     meet_days = parse_meet_days(soup,date)
 
     old_meeting = old_meeting or {}
@@ -909,15 +961,19 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
     if "勝式" in start_block:
         start_block=start_block.split("勝式",1)[0]
     st_map={}
-    for lane,raw,move in re.findall(
+    start_entries=[]
+    for idx,(lane,raw,move) in enumerate(re.findall(
         r"(?:^|\s)([1-6])\s+((?:F|L)?\.\d{2})(?:\s+(逃げ|差し|まくり差し|まくり|抜き|恵まれ))?",
         start_block,
-    ):
-        st_map[int(lane)]={"st":raw,"move":move or ""}
+    ),1):
+        entry={"st":raw,"move":move or "","course":idx}
+        st_map[int(lane)]=entry
+        start_entries.append({"lane":int(lane),"course":idx,"st":raw,"move":move or ""})
     for f in finishers:
         st=st_map.get(int(f.get("lane") or 0))
         if st:
             f["st"]=st["st"]
+            f["course"]=st["course"]
             if st["move"]:
                 f["kimarite"]=st["move"]
 
@@ -975,6 +1031,7 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
         "payouts":payouts,
         "weather":_weather_from_text(text),
         "kimarite":kimarite or None,
+        "startEntries":start_entries,
         "official":True,
     }
     if refund: result["refund"]=refund
@@ -1221,6 +1278,47 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
                     races,_ = past_results[key]
                     d["races"] = races
 
+    # 過去開催日の結果を取得。節間成績の「進入コース」補完と、
+    # 節間成績から過去レース結果へ遷移するために保存する。
+    past_result_tasks=[]
+    for m in meetings:
+        for d in m.get("meetDays",[]):
+            if d.get("date") and d["date"] < m.get("date",""):
+                for r in d.get("races",[]):
+                    rno=int(r.get("raceNo") or 0)
+                    if rno:
+                        past_result_tasks.append((m["venueCode"],d["date"],rno))
+
+    if past_result_tasks:
+        print(f"[BOAT CHECK] ENRICH past-result tasks={len(past_result_tasks)}")
+        exact_result_map={}
+        with ThreadPoolExecutor(max_workers=min(max(workers,12),16)) as ex:
+            futs={ex.submit(fetch_result_task,*t):t for t in past_result_tasks}
+            for fut in as_completed(futs):
+                code,hd,rno=futs[fut]
+                try:
+                    _,_,data,err=fut.result()
+                except Exception as e:
+                    data,err={},f"{type(e).__name__}: {e}"
+                exact_result_map[(code,hd,rno)]=(data,err)
+
+        for m in meetings:
+            for d in m.get("meetDays",[]):
+                for r in d.get("races",[]):
+                    key=(m["venueCode"],d.get("date"),int(r.get("raceNo") or 0))
+                    data,err=exact_result_map.get(key,({},None))
+                    if data:
+                        r["result"]=data
+                        r["resultUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                    elif err:
+                        r.setdefault("errors",{})["result"]=err
+
+        # Historical results contain actual start-order course values. Re-merge them
+        # into the current six racers so missing course cells are filled.
+        for m in meetings:
+            ref=ref_results.get(m["venueCode"],{})
+            apply_meeting_series_data(m,ref.get("point",{}),ref.get("pre",{}),ref.get("info",{}))
+
     # 現在日の出走表をmeetDaysにも反映
     for m in meetings:
         for d in m.get("meetDays",[]):
@@ -1285,7 +1383,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     meetings.sort(key=lambda m:int(m["venueCode"]))
 
     payload = {
-        "schemaVersion":"43.0",
+        "schemaVersion":"44.0",
         "updatedAt":datetime.now(JST).isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
