@@ -4000,6 +4000,16 @@ let demoSelections={first:[],second:[],third:[]};
 let demoBetList=[];
 let demoDraftList=[];
 let demoBetModalOpen=false;
+let demoCartOpen=false;
+let demoCompleteData=null;
+function demoLoadCart(){
+  try{
+    const v=JSON.parse(localStorage.getItem("boatCheckDemoCart")||"[]");
+    return Array.isArray(v)?v:[];
+  }catch(e){ return []; }
+}
+let demoCart=demoLoadCart();
+
 let demoStake=100;
 let demoPoints=Number(localStorage.getItem("boatCheckDemoPoints")||10000);
 
@@ -6840,6 +6850,126 @@ function demoAddSelections(){
   if(panel)panel.innerHTML=renderDemoBetInner();
 }
 
+
+function demoPersistCart(){
+  localStorage.setItem("boatCheckDemoCart",JSON.stringify(demoCart));
+}
+function demoToast(message){
+  let el=document.getElementById("demoToast");
+  if(!el){
+    el=document.createElement("div");
+    el.id="demoToast";
+    el.className="demoToast";
+    document.body.appendChild(el);
+  }
+  el.textContent=message;
+  el.classList.add("show");
+  clearTimeout(window.__demoToastTimer);
+  window.__demoToastTimer=setTimeout(()=>el.classList.remove("show"),1800);
+}
+function demoCurrentMeetingMeta(){
+  const m=state.currentMeetingView||state.currentMeeting||{};
+  return {
+    venueCode:state.currentVenue||"",
+    venueName:m.name||m.venueName||demoVenueLabel(),
+    date:m.date||"",
+    meetingTitle:m.title||m.eventTitle||""
+  };
+}
+function demoDraftToCartItems(){
+  const r=state.currentRace||{};
+  const meta=demoCurrentMeetingMeta();
+  return demoDraftList.map(x=>({
+    ...x,
+    venueCode:meta.venueCode,
+    venueName:meta.venueName,
+    date:meta.date,
+    meetingTitle:meta.meetingTitle,
+    raceNo:r.raceNo||"",
+    deadline:r.deadline||"",
+    cartKey:`${meta.venueCode}:${meta.date}:${r.raceNo||""}:${x.type}:${x.combo.join("-")}`
+  }));
+}
+function demoMergeDraftToCart(){
+  const items=demoDraftToCartItems();
+  items.forEach(item=>{
+    const idx=demoCart.findIndex(x=>x.cartKey===item.cartKey);
+    if(idx>=0) demoCart[idx]={...demoCart[idx],...item};
+    else demoCart.push(item);
+  });
+  demoPersistCart();
+}
+function demoSetCartStake(cartKey,v){
+  let n=Math.floor(Number(v)||0);
+  if(n<1)n=1;
+  if(n>demoPoints)n=demoPoints;
+  demoCart=demoCart.map(x=>x.cartKey===cartKey?({...x,stake:n}):x);
+  demoPersistCart();
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoRemoveCartItem(cartKey){
+  demoCart=demoCart.filter(x=>x.cartKey!==cartKey);
+  demoPersistCart();
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoCartTotal(){
+  return demoCart.reduce((sum,x)=>sum+(Number(x.stake)||0),0);
+}
+function demoOpenCart(){
+  demoCartOpen=true;
+  demoBetModalOpen=false;
+  demoCompleteData=null;
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoCloseCart(){
+  demoCartOpen=false;
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoSubmitCart(){
+  if(!demoCart.length)return;
+  const total=demoCartTotal();
+  if(total>demoPoints){
+    alert("所持ptが不足しています。");
+    return;
+  }
+  demoPoints-=total;
+  demoSavePoints();
+
+  let history=[];
+  try{ history=JSON.parse(localStorage.getItem("boatCheckDemoHistory")||"[]"); }catch(e){}
+  const receiptNo=String((history.length+1)%10000).padStart(4,"0");
+  const submitted=demoCart.map(x=>({...x}));
+  history.unshift({
+    at:new Date().toISOString(),
+    receiptNo,
+    total,
+    bets:submitted
+  });
+  localStorage.setItem("boatCheckDemoHistory",JSON.stringify(history.slice(0,100)));
+
+  demoCompleteData={
+    receiptNo,
+    total,
+    count:submitted.length,
+    bets:submitted
+  };
+  demoCart=[];
+  demoPersistCart();
+  demoCartOpen=false;
+
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+function demoCloseComplete(){
+  demoCompleteData=null;
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+}
+
 function demoCloseDraftModal(){
   demoBetModalOpen=false;
   demoDraftList=[];
@@ -6866,21 +6996,22 @@ function demoMergeDraft(){
   });
 }
 function demoDraftContinue(){
-  demoMergeDraft();
-  demoBetModalOpen=false;
-  demoDraftList=[];
-  demoResetSelection();
-  const panel=document.getElementById("demoBetRoot");
-  if(panel)panel.innerHTML=renderDemoBetInner(`<div class="demoSuccess">ベットリストに追加しました。</div>`);
-}
-function demoDraftVote(){
-  demoMergeDraft();
+  demoMergeDraftToCart();
   demoBetModalOpen=false;
   demoDraftList=[];
   demoResetSelection();
   const panel=document.getElementById("demoBetRoot");
   if(panel)panel.innerHTML=renderDemoBetInner();
-  demoConfirmBet();
+  demoToast("ベットリストに追加されました");
+}
+function demoDraftVote(){
+  demoMergeDraftToCart();
+  demoBetModalOpen=false;
+  demoDraftList=[];
+  demoResetSelection();
+  demoCartOpen=true;
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
 }
 function demoRemoveBet(key){
   demoBetList=demoBetList.filter(x=>x.key!==key);
@@ -7117,6 +7248,93 @@ function renderDemoDraftModal(){
   </div>`;
 }
 
+
+function renderDemoCart(){
+  if(!demoCartOpen)return "";
+  const total=demoCartTotal();
+  return `<div class="demoModalBackdrop">
+    <div class="demoCartModal" role="dialog" aria-modal="true" aria-label="ベットリスト">
+      <div class="demoCartHead">
+        <div><b>ベットリスト</b><span>${demoCart.length}点</span></div>
+        <button onclick="demoCloseCart()">×</button>
+      </div>
+      <div class="demoCartBody">
+        ${demoCart.length ? demoCart.map((x,i)=>`
+          <div class="demoCartRaceItem">
+            <div class="demoCartMeta">
+              <div>
+                <strong>${esc(x.venueName||"--")} ${x.raceNo||"--"}R</strong>
+                <span>${esc(x.date||"")} ${x.deadline?`締切 ${esc(x.deadline)}`:""}</span>
+              </div>
+              <small>${demoBetLabel(x.type)}</small>
+            </div>
+            <div class="demoCartBetRow">
+              <div class="demoCartCombo">
+                <small>買い目</small>
+                <strong>${oddsComboHtml(x.combo)}</strong>
+              </div>
+              <div class="demoCartOdds">
+                <small>オッズ</small>
+                <b>${x.odds!==null&&x.odds!==undefined?oddsFmt(x.odds):"--"}</b>
+              </div>
+              <div class="demoCartStake">
+                <small>投資pt</small>
+                <div class="demoCartStakeInput">
+                  <input type="number" inputmode="numeric" min="1" max="${demoPoints}" step="1"
+                    value="${Number(x.stake)||demoStake}"
+                    onchange="demoSetCartStake('${x.cartKey}',this.value)">
+                  <span>pt</span>
+                </div>
+              </div>
+              <button class="demoCartDelete" onclick="demoRemoveCartItem('${x.cartKey}')">×</button>
+            </div>
+          </div>
+        `).join("") : `<div class="demoCartEmpty">ベットリストは空です。</div>`}
+      </div>
+      <div class="demoCartSummary">
+        <div><small>合計ベット数</small><strong>${demoCart.length}点</strong></div>
+        <div><small>合計投資</small><strong>${demoFormatPt(total)}</strong></div>
+        <div><small>投票後残高</small><strong>${demoFormatPt(Math.max(0,demoPoints-total))}</strong></div>
+      </div>
+      <div class="demoCartActions">
+        <button class="back" onclick="demoCloseCart()">入力に戻る</button>
+        <button class="submit" ${demoCart.length?"":"disabled"} onclick="demoSubmitCart()">まとめて投票する</button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderDemoComplete(){
+  if(!demoCompleteData)return "";
+  const d=demoCompleteData;
+  return `<div class="demoModalBackdrop">
+    <div class="demoCompleteModal" role="dialog" aria-modal="true" aria-label="投票完了">
+      <div class="demoCompleteHead">
+        <span>✓</span>
+        <div><b>投票完了</b><small>ご投票ありがとうございました。</small></div>
+      </div>
+      <div class="demoCompleteMessage">以下の通り、デモ投票が完了しました。</div>
+      <div class="demoCompleteList">
+        ${d.bets.map((x,i)=>`
+          <div class="demoCompleteRow">
+            <div class="demoCompleteNo">${i+1}</div>
+            <div class="demoCompleteMain">
+              <small>${esc(x.venueName||"--")} ${x.raceNo||"--"}R / ${demoBetLabel(x.type)}</small>
+              <strong>${oddsComboHtml(x.combo)}</strong>
+            </div>
+            <div class="demoCompleteAmount">${demoFormatPt(x.stake)}</div>
+            <div class="demoCompleteStatus">○ 成立</div>
+          </div>`).join("")}
+      </div>
+      <div class="demoCompleteSummary">
+        <div class="demoReceipt"><small>受付番号</small><strong>${esc(d.receiptNo)}</strong></div>
+        <div><small>合計ベット数</small><strong>${d.count}点</strong></div>
+        <div><small>合計投資</small><strong>${demoFormatPt(d.total)}</strong></div>
+      </div>
+      <button class="demoCompleteClose" onclick="demoCloseComplete()">閉じる</button>
+    </div>
+  </div>`;
+}
+
 function renderDemoBetInner(message=""){
   const r=state.currentRace||{};
   return `<div class="demoBetPage">
@@ -7139,6 +7357,11 @@ function renderDemoBetInner(message=""){
       <button class="${demoMainTab==="odds"?"active":""}" onclick="setDemoMainTab('odds')">オッズ投票</button>
     </div>
 
+    <button class="demoCartShortcut" onclick="demoOpenCart()">
+      <span>ベットリスト</span>
+      <b>${demoCart.length}点</b>
+    </button>
+
     ${demoRacerHeader()}
 
     <div class="demoBody">
@@ -7151,6 +7374,8 @@ function renderDemoBetInner(message=""){
     </div>
 
     ${renderDemoDraftModal()}
+    ${renderDemoCart()}
+    ${renderDemoComplete()}
   </div>`;
 }
 
@@ -9344,5 +9569,71 @@ document.addEventListener("DOMContentLoaded",()=>{
   .demoDraftHead b{font-size:13px;}
   .demoDraftActions button{font-size:8px;}
 }
+</style>
+
+
+
+<style id="v99-demo-cart-flow">
+.demoCartShortcut{width:100%;min-height:40px;margin:0 0 9px;padding:7px 11px;display:flex;align-items:center;justify-content:space-between;border:1.5px solid #9fc7e0;border-radius:10px;background:#f5fbff;color:#155b84;font-family:inherit;font-size:9px;font-weight:950;}
+.demoCartShortcut b{min-width:42px;padding:4px 7px;border-radius:999px;background:#0a7dc0;color:#fff;font-size:8px;}
+.demoCartModal{width:min(96vw,500px);max-height:88vh;overflow:hidden;display:flex;flex-direction:column;border-radius:15px;background:#fff;border:1px solid #9fc4da;box-shadow:0 22px 55px rgba(0,0,0,.28);}
+.demoCartHead{display:grid;grid-template-columns:1fr 34px;align-items:center;min-height:50px;padding:0 8px 0 14px;border-bottom:2px solid #0a8bc8;background:#fff;}
+.demoCartHead>div{display:flex;align-items:center;gap:8px;}
+.demoCartHead b{color:#0a6fa9;font-size:14px;font-weight:950;}
+.demoCartHead span{padding:3px 6px;border-radius:999px;background:#e8f5fd;color:#0a6fa9;font-size:7px;font-weight:950;}
+.demoCartHead>button{width:30px;height:30px;display:flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:50%;background:#edf3f6;color:#6d8190;font-size:20px;font-weight:900;}
+.demoCartBody{overflow:auto;padding:9px;background:#f7fbfd;}
+.demoCartRaceItem{overflow:hidden;margin-bottom:8px;border:1px solid #aac9dc;border-radius:10px;background:#fff;}
+.demoCartMeta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;background:#e8f5fd;border-bottom:1px solid #c2d9e7;}
+.demoCartMeta>div{display:flex;flex-direction:column;gap:2px;}
+.demoCartMeta strong{color:#155b84;font-size:9px;font-weight:950;}
+.demoCartMeta span{color:#72899a;font-size:6.5px;font-weight:850;}
+.demoCartMeta small{padding:3px 6px;border-radius:999px;background:#0a7dc0;color:#fff;font-size:6.5px;font-weight:950;}
+.demoCartBetRow{display:grid;grid-template-columns:37% 16% 35% 12%;align-items:center;min-height:63px;}
+.demoCartBetRow>div{min-width:0;padding:6px 4px;text-align:center;}
+.demoCartBetRow small{display:block;color:#70889a;font-size:6.2px;font-weight:850;}
+.demoCartCombo strong{display:flex;align-items:center;justify-content:center;margin-top:5px;}
+.demoCartOdds b{display:block;margin-top:4px;color:#153b59;font-size:9px;font-weight:950;}
+.demoCartStakeInput{display:grid;grid-template-columns:1fr auto;align-items:center;overflow:hidden;margin-top:4px;border:1.5px solid #0a7dc0;border-radius:7px;}
+.demoCartStakeInput input{width:100%;min-width:0;height:34px;padding:0 5px;border:0;outline:0;background:#fff;color:#123b59;text-align:right;font-family:inherit;font-size:11px;font-weight:950;}
+.demoCartStakeInput span{padding:0 5px 0 1px;color:#0a6fa9;font-size:7px;font-weight:950;}
+.demoCartDelete{width:30px;height:30px;margin:auto;display:flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:50%;background:#edf2f5;color:#6d8190;font-size:18px;line-height:1;font-weight:900;}
+.demoCartEmpty{padding:28px;text-align:center;color:#8598a6;font-size:8px;font-weight:850;}
+.demoCartSummary{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #c6dce8;border-bottom:1px solid #c6dce8;background:#fff;}
+.demoCartSummary>div{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-right:1px solid #c6dce8;}
+.demoCartSummary>div:last-child{border-right:0;}
+.demoCartSummary small{color:#71889a;font-size:6.5px;font-weight:850;}
+.demoCartSummary strong{color:#0b5f94;font-size:11px;font-weight:950;}
+.demoCartActions{display:grid;grid-template-columns:34% 66%;gap:8px;padding:9px;background:#f7fbfd;}
+.demoCartActions button{min-height:46px;border-radius:9px;font-family:inherit;font-size:9px;font-weight:950;}
+.demoCartActions .back{border:1.5px solid #9fc7e0;background:#fff;color:#245b79;}
+.demoCartActions .submit{border:0;background:linear-gradient(135deg,#f28b23,#ef651f);color:#fff;}
+.demoCompleteModal{width:min(94vw,460px);max-height:86vh;overflow:auto;border-radius:15px;background:#fff;border:1px solid #9fc4da;box-shadow:0 22px 55px rgba(0,0,0,.28);}
+.demoCompleteHead{display:flex;align-items:center;justify-content:center;gap:10px;padding:15px 12px 11px;border-bottom:1px solid #c9dde9;background:#fff;}
+.demoCompleteHead>span{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#e8f6ff;color:#0a7dc0;font-size:18px;font-weight:950;}
+.demoCompleteHead>div{display:flex;flex-direction:column;}
+.demoCompleteHead b{color:#0a5f94;font-size:15px;font-weight:950;}
+.demoCompleteHead small{margin-top:2px;color:#6d8495;font-size:7px;font-weight:850;}
+.demoCompleteMessage{padding:10px 12px;text-align:center;color:#486b82;font-size:8px;font-weight:850;}
+.demoCompleteList{margin:0 10px;border:1px solid #c4d9e6;border-radius:9px;overflow:hidden;}
+.demoCompleteRow{display:grid;grid-template-columns:8% 45% 24% 23%;align-items:center;min-height:54px;border-bottom:1px solid #cbdde8;}
+.demoCompleteRow:last-child{border-bottom:0;}
+.demoCompleteRow>*{min-width:0;padding:5px 3px;text-align:center;}
+.demoCompleteNo{font-size:8px;font-weight:950;}
+.demoCompleteMain small{display:block;color:#6d8596;font-size:6.3px;font-weight:850;}
+.demoCompleteMain strong{display:flex;align-items:center;justify-content:center;margin-top:4px;}
+.demoCompleteAmount{color:#173b59;font-size:9px;font-weight:950;}
+.demoCompleteStatus{color:#0a76b6;font-size:8px;font-weight:950;}
+.demoCompleteSummary{display:grid;grid-template-columns:1fr 1fr 1fr;margin:10px;border:1px solid #c6dce8;border-radius:9px;overflow:hidden;}
+.demoCompleteSummary>div{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-right:1px solid #c6dce8;background:#f7fbfd;}
+.demoCompleteSummary>div:last-child{border-right:0;}
+.demoCompleteSummary small{color:#71889a;font-size:6.3px;font-weight:850;}
+.demoCompleteSummary strong{color:#0b5f94;font-size:11px;font-weight:950;}
+.demoReceipt{background:#0b68a8!important;}
+.demoReceipt small,.demoReceipt strong{color:#fff!important;}
+.demoReceipt strong{font-size:18px!important;letter-spacing:.04em;}
+.demoCompleteClose{display:block;width:calc(100% - 20px);min-height:42px;margin:0 10px 10px;border:0;border-radius:9px;background:linear-gradient(135deg,#0872b5,#079fd1);color:#fff;font-family:inherit;font-size:9px;font-weight:950;}
+.demoToast{position:fixed;left:50%;bottom:92px;z-index:100000;transform:translate(-50%,20px);padding:10px 16px;border-radius:999px;background:rgba(5,64,100,.94);color:#fff;font-size:9px;font-weight:950;opacity:0;pointer-events:none;transition:.2s ease;box-shadow:0 8px 22px rgba(0,0,0,.18);}
+.demoToast.show{opacity:1;transform:translate(-50%,0);}
 </style>
 
