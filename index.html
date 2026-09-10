@@ -3462,6 +3462,7 @@ let homeMyPageTab="bets";
 let homeBetHistoryTab="recent";
 let homeHistoryOpenGroups=new Set();
 let motorInnerTab="motor";
+let currentQuickDataType="";
 let homeFavoriteQuery="";
 
 
@@ -8509,6 +8510,7 @@ function renderDemoBetInner(message=""){
 }
 
 function showRaceData(type, btn){
+  currentQuickDataType=type||"";
   const panel=$("quickDataPanel");
   const r=state.currentRace||{};
   const labels={racer:"選手情報",course:"コース別情報",meet:"節間成績",motor:"モーター情報",before:"直前情報",odds:"オッズ",result:"結果",replay:"リプレイ",demo:"デモ投票"};
@@ -8638,6 +8640,164 @@ function showHome(){
 }
 function backToVenue(){$("detail").classList.add("hidden");$("venue").classList.remove("hidden");scrollTo({top:0,behavior:"instant"})}
 
+
+function demoResultCombo(v){
+  if(Array.isArray(v))return v.map(Number).filter(n=>n>=1&&n<=6);
+  return String(v??"").match(/[1-6]/g)?.map(Number)||[];
+}
+function demoNormalizeResultCombo(type,combo){
+  const c=demoResultCombo(combo);
+  if(["trio","quinella","wide"].includes(type))return [...c].sort((a,b)=>a-b).join("-");
+  return c.join("-");
+}
+function demoOfficialPayoutForBet(race,bet){
+  const result=race?.result||race?.raceResult||{};
+  if(result?.official!==true)return null;
+
+  const list=result?.payouts?.[bet.type];
+  if(!Array.isArray(list)||!list.length)return null;
+
+  const target=demoNormalizeResultCombo(bet.type,bet.combo);
+  const found=list.find(x=>demoNormalizeResultCombo(bet.type,x?.combination??x?.combo??x?.number)===target);
+
+  if(found){
+    const amount=Number(found.payout??found.amount??found.value);
+    if(Number.isFinite(amount))return {hit:true,officialPayout:amount};
+  }
+  return {hit:false,officialPayout:0};
+}
+function demoSettleHistoryFromOfficialResults(){
+  let history=[];
+  try{history=JSON.parse(localStorage.getItem("boatCheckDemoHistory")||"[]");}catch(e){return;}
+  if(!Array.isArray(history)||!history.length)return;
+
+  const raceMap=new Map();
+  (state.meetings||[]).forEach(m=>{
+    (m.races||[]).forEach(r=>{
+      raceMap.set(`${m.venueCode}:${m.date}:${Number(r.raceNo)||0}`,r);
+    });
+  });
+
+  let changed=false;
+  let newPayout=0;
+  let settledCount=0;
+
+  history.forEach(h=>{
+    (h.bets||[]).forEach(b=>{
+      if(b.settled===true)return;
+      const key=`${b.venueCode||""}:${b.date||""}:${Number(b.raceNo)||0}`;
+      const race=raceMap.get(key);
+      if(!race)return;
+
+      const settlement=demoOfficialPayoutForBet(race,b);
+      if(!settlement)return;
+
+      const stake=Math.max(0,Number(b.stake)||0);
+      const payout=settlement.hit
+        ? Math.max(0,Math.round((stake/100)*settlement.officialPayout))
+        : 0;
+
+      b.settled=true;
+      b.hit=settlement.hit;
+      b.payout=payout;
+      b.officialPayout=settlement.officialPayout;
+      b.settledAt=new Date().toISOString();
+
+      changed=true;
+      settledCount+=1;
+      newPayout+=payout;
+    });
+
+    if(Array.isArray(h.bets)){
+      h.settled=h.bets.length>0 && h.bets.every(b=>b.settled===true);
+      h.payout=h.bets.reduce((s,b)=>s+(Number(b.payout)||0),0);
+    }
+  });
+
+  if(!changed)return;
+
+  localStorage.setItem("boatCheckDemoHistory",JSON.stringify(history.slice(0,100)));
+
+  if(newPayout>0){
+    demoPoints+=newPayout;
+    demoSavePoints();
+    const ptHist=homePtHistory();
+    ptHist.unshift({
+      at:new Date().toISOString(),
+      amount:newPayout,
+      balance:demoPoints,
+      type:"payout",
+      label:"デモ投票 払戻"
+    });
+    homeSaveJson("boatCheckPtHistory",ptHist.slice(0,200));
+  }
+
+  refreshHomeActivePanel();
+  if(settledCount){
+    demoToast(newPayout>0
+      ? `投票結果を反映しました +${newPayout.toLocaleString("ja-JP")}pt`
+      : "投票結果を反映しました");
+  }
+}
+function refreshCurrentQuickDataPanel(){
+  const panel=$("quickDataPanel");
+  if(!panel || !currentQuickDataType)return;
+
+  try{
+    if(currentQuickDataType==="before")panel.innerHTML=renderBeforeInfo();
+    if(currentQuickDataType==="result")panel.innerHTML=renderResultInfo();
+    if(currentQuickDataType==="replay")panel.innerHTML=renderReplayInfo();
+  }catch(err){
+    console.warn("quick data live refresh skipped",err);
+  }
+}
+async function refreshOfficialData(){
+  if(document.hidden)return;
+
+  const currentVenueCode=state.currentMeeting?.venueCode||state.currentMeetingView?.venueCode||null;
+  const currentDayDate=state.currentMeetingView?.date||state.currentDayDate||null;
+  const currentRaceNo=Number(state.currentRace?.raceNo)||null;
+
+  try{
+    const res=await fetch(`${DATA_URL}?v=${Date.now()}`,{cache:"no-store"});
+    if(!res.ok)return;
+    const d=await res.json();
+    if(!Array.isArray(d.meetings))return;
+
+    state.meetings=d.meetings;
+    state.updatedAt=d.updatedAt;
+    state.dateJST=d.dateJST;
+    $("todayLabel").textContent=formatDataDate(d.dateJST);
+    $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
+
+    if(currentVenueCode){
+      const m=state.meetings.find(x=>x.venueCode===currentVenueCode);
+      if(m){
+        state.currentMeeting=m;
+        state.currentDayDate=currentDayDate||m.date;
+        state.currentMeetingView=currentDayView(m,state.currentDayDate);
+        if(currentRaceNo){
+          state.currentRace=(state.currentMeetingView?.races||[]).find(r=>Number(r.raceNo)===currentRaceNo)||state.currentRace;
+        }
+      }
+    }
+
+    demoSettleHistoryFromOfficialResults();
+    renderVenues();
+    refreshHomeActivePanel();
+
+    if(!$("venue").classList.contains("hidden") && state.currentMeetingView){
+      renderRaces(state.currentMeetingView);
+    }
+    if(!$("detail").classList.contains("hidden") && state.currentRace){
+      renderRaceContext();
+      refreshCurrentQuickDataPanel();
+    }
+  }catch(e){
+    console.warn("background official data refresh failed",e);
+  }
+}
+
 async function loadData(){
   renderLoading();
   try{
@@ -8649,6 +8809,7 @@ async function loadData(){
     $("todayLabel").textContent=formatDataDate(d.dateJST);
     $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
     renderVenues();
+    demoSettleHistoryFromOfficialResults();
     refreshHomeActivePanel();
   }catch(e){
     $("todayLabel").textContent=formatDataDate(jstNow().date);
@@ -8671,6 +8832,7 @@ window.addEventListener("popstate",(e)=>{
 });
 
 loadData();
+setInterval(refreshOfficialData,60000);
 setInterval(()=>{
   if(!state.meetings.length)return;
   renderVenues();
