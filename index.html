@@ -6739,6 +6739,25 @@ function demoSelectAll(group){
 function demoSelectionChip(lane){
   return oddsLaneChip(lane);
 }
+
+function demoRacerFL(boat){
+  const f=firstStat(boat,[
+    "flyingCount","fCount","F","f",
+    "stats.flyingCount","stats.fCount",
+    "accident.flyingCount","accident.fCount",
+    "racerStats.flyingCount","racerStats.fCount"
+  ]);
+  const l=firstStat(boat,[
+    "lateCount","lCount","L","l",
+    "stats.lateCount","stats.lCount",
+    "accident.lateCount","accident.lCount",
+    "racerStats.lateCount","racerStats.lCount"
+  ]);
+  const fv=(f===undefined||f===null||f==="") ? "--" : esc(f);
+  const lv=(l===undefined||l===null||l==="") ? "--" : esc(l);
+  return `<span class="demoFL"><b>F${fv}</b><i>|</i><b>L${lv}</b></span>`;
+}
+
 function demoRacerHeader(){
   const boats=(state.currentRace?.boats||[]).slice(0,6);
   return `<div class="demoRacerStrip">
@@ -6747,6 +6766,7 @@ function demoRacerHeader(){
       <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
       <small>${esc(b.racerId||b.registrationNo||"----")}</small>
       <small>${esc(b.class||"--")} / ${b.period?esc(b.period)+"期":"--期"}</small>
+      ${demoRacerFL(b)}
     </div>`).join("")}
   </div>`;
 }
@@ -6914,6 +6934,15 @@ function demoRemoveCartItem(cartKey){
   const panel=document.getElementById("demoBetRoot");
   if(panel)panel.innerHTML=renderDemoBetInner();
 }
+function demoClearCart(){
+  if(!demoCart.length)return;
+  demoCart=[];
+  demoPersistCart();
+  const panel=document.getElementById("demoBetRoot");
+  if(panel)panel.innerHTML=renderDemoBetInner();
+  demoToast("ベットリストをすべて削除しました");
+}
+
 function demoCartTotal(){
   return demoCart.reduce((sum,x)=>sum+(Number(x.stake)||0),0);
 }
@@ -7256,7 +7285,10 @@ function renderDemoCart(){
     <div class="demoCartModal" role="dialog" aria-modal="true" aria-label="ベットリスト">
       <div class="demoCartHead">
         <div><b>ベットリスト</b><span>${demoCart.length}点</span></div>
-        <button onclick="demoCloseCart()">×</button>
+        <div class="demoCartHeadActions">
+          <button class="demoClearAllBtn" ${demoCart.length?"":"disabled"} onclick="demoClearCart()">全削除</button>
+          <button class="demoCartCloseBtn" onclick="demoCloseCart()">×</button>
+        </div>
       </div>
       <div class="demoCartBody">
         ${demoCart.length ? demoCart.map((x,i)=>`
@@ -9722,6 +9754,103 @@ document.addEventListener("DOMContentLoaded",()=>{
   .demoCartDelete{
     width:48px!important;
     height:36px!important;
+  }
+}
+</style>
+
+
+
+<style id="v102-demo-cart-fl">
+/* デモ投票の出走表：選手名をより大きく */
+.demoRacer{
+  min-height:121px!important;
+}
+.demoRacer strong{
+  min-height:38px!important;
+  font-size:11px!important;
+  line-height:1.08!important;
+}
+.demoRacer small{
+  font-size:6.6px!important;
+}
+
+/* 出走表最下段に F | L */
+.demoFL{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  margin-top:5px!important;
+  padding-top:4px!important;
+  border-top:1px solid rgba(72,108,132,.18)!important;
+  color:#536f82!important;
+  font-size:6.7px!important;
+  line-height:1!important;
+  font-weight:950!important;
+}
+.demoFL b{
+  font-size:6.7px!important;
+  line-height:1!important;
+  font-weight:950!important;
+}
+.demoFL i{
+  color:#9aabb7!important;
+  font-style:normal!important;
+  font-weight:800!important;
+}
+
+/* ベットリスト上部：全削除と閉じるを分離 */
+.demoCartHead{
+  grid-template-columns:1fr auto!important;
+}
+.demoCartHeadActions{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+}
+.demoClearAllBtn{
+  width:auto!important;
+  min-width:54px!important;
+  height:30px!important;
+  padding:0 8px!important;
+  border:1.5px solid #df5f68!important;
+  border-radius:7px!important;
+  background:#fff1f2!important;
+  color:#c62532!important;
+  font-family:inherit!important;
+  font-size:7.5px!important;
+  line-height:1!important;
+  font-weight:950!important;
+}
+.demoClearAllBtn:disabled{
+  opacity:.4!important;
+}
+.demoCartCloseBtn{
+  width:30px!important;
+  height:30px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:#edf3f6!important;
+  color:#6d8190!important;
+  font-size:20px!important;
+  line-height:1!important;
+  font-weight:900!important;
+}
+
+@media(max-width:430px){
+  .demoRacer{
+    min-height:118px!important;
+  }
+  .demoRacer strong{
+    font-size:10.3px!important;
+  }
+  .demoFL,
+  .demoFL b{
+    font-size:6.3px!important;
   }
 }
 </style>
