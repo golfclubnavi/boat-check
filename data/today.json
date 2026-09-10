@@ -1,6 +1,6 @@
 {
   "schemaVersion": "43.0",
-  "updatedAt": "2026-09-10T19:45:05+09:00",
+  "updatedAt": "2026-09-10T19:55:47+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "live",
@@ -10369,45 +10369,6 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T19:45:15+09:00",
-          "startExhibition": [
-            {
-              "course": 1,
-              "lane": 2,
-              "st": 0.02,
-              "rawST": ".02"
-            },
-            {
-              "course": 2,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 3,
-              "lane": 2,
-              "st": 0.11,
-              "rawST": ".11"
-            },
-            {
-              "course": 4,
-              "lane": 2,
-              "st": 0.14,
-              "rawST": ".14"
-            },
-            {
-              "course": 5,
-              "lane": 2,
-              "st": 0.09,
-              "rawST": ".09"
-            },
-            {
-              "course": 6,
-              "lane": 2,
-              "st": 0.01,
-              "rawST": "F.01"
-            }
-          ],
           "result": {
             "finishers": [],
             "payouts": {
@@ -10471,7 +10432,46 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultUpdatedAt": "2026-09-10T19:45:26+09:00"
+          "resultUpdatedAt": "2026-09-10T19:45:26+09:00",
+          "beforeUpdatedAt": "2026-09-10T19:55:58+09:00",
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.02,
+              "rawST": ".02"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.11,
+              "rawST": ".11"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.11,
+              "rawST": ".11"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.14,
+              "rawST": ".14"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.09,
+              "rawST": ".09"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.01,
+              "rawST": "F.01"
+            }
+          ]
         },
         {
           "raceNo": 11,
@@ -10480,7 +10480,15 @@
             {
               "lane": 1,
               "racerName": "投票 笠 雅雄",
-              "class": "B1"
+              "class": "B1",
+              "before": {
+                "lane": 1,
+                "racerName": "笠 雅雄",
+                "weight": 52.8,
+                "exhibitionTime": 6.62,
+                "tilt": 0.0
+              },
+              "weight": 52.8
             },
             {
               "lane": 2,
@@ -10656,7 +10664,16 @@
                 "rank": 5
               },
               "motorRank": 1,
-              "boatRank": 5
+              "boatRank": 5,
+              "before": {
+                "lane": 2,
+                "racerName": "若林 樹蘭",
+                "weight": 52.0,
+                "exhibitionTime": 6.65,
+                "tilt": -0.5,
+                "course": 6,
+                "st": 0.17
+              }
             },
             {
               "lane": 3,
@@ -10832,7 +10849,14 @@
                 "rank": 2
               },
               "motorRank": 2,
-              "boatRank": 2
+              "boatRank": 2,
+              "before": {
+                "lane": 3,
+                "racerName": "廣瀬 将亨",
+                "weight": 55.8,
+                "exhibitionTime": 6.66,
+                "tilt": -0.5
+              }
             },
             {
               "lane": 4,
@@ -11008,7 +11032,14 @@
                 "rank": 1
               },
               "motorRank": 4,
-              "boatRank": 1
+              "boatRank": 1,
+              "before": {
+                "lane": 4,
+                "racerName": "齋藤 勇",
+                "weight": 52.0,
+                "exhibitionTime": 6.7,
+                "tilt": -0.5
+              }
             },
             {
               "lane": 5,
@@ -11180,7 +11211,14 @@
                 "rank": 4
               },
               "motorRank": 3,
-              "boatRank": 4
+              "boatRank": 4,
+              "before": {
+                "lane": 5,
+                "racerName": "河野 真也",
+                "weight": 52.1,
+                "exhibitionTime": 6.76,
+                "tilt": -0.5
+              }
             },
             {
               "lane": 6,
@@ -11353,7 +11391,14 @@
                 "rank": 3
               },
               "motorRank": 1,
-              "boatRank": 3
+              "boatRank": 3,
+              "before": {
+                "lane": 6,
+                "racerName": "伊藤 将吉",
+                "weight": 52.5,
+                "exhibitionTime": 6.74,
+                "tilt": -0.5
+              }
             }
           ],
           "replay": {
@@ -11367,9 +11412,91 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T19:45:15+09:00",
-          "beforeData": [],
-          "startExhibition": []
+          "beforeUpdatedAt": "2026-09-10T19:55:58+09:00",
+          "beforeData": [
+            {
+              "lane": 1,
+              "racerName": "笠 雅雄",
+              "weight": 52.8,
+              "exhibitionTime": 6.62,
+              "tilt": 0.0
+            },
+            {
+              "lane": 2,
+              "racerName": "若林 樹蘭",
+              "weight": 52.0,
+              "exhibitionTime": 6.65,
+              "tilt": -0.5,
+              "course": 6,
+              "st": 0.17
+            },
+            {
+              "lane": 3,
+              "racerName": "廣瀬 将亨",
+              "weight": 55.8,
+              "exhibitionTime": 6.66,
+              "tilt": -0.5
+            },
+            {
+              "lane": 4,
+              "racerName": "齋藤 勇",
+              "weight": 52.0,
+              "exhibitionTime": 6.7,
+              "tilt": -0.5
+            },
+            {
+              "lane": 5,
+              "racerName": "河野 真也",
+              "weight": 52.1,
+              "exhibitionTime": 6.76,
+              "tilt": -0.5
+            },
+            {
+              "lane": 6,
+              "racerName": "伊藤 将吉",
+              "weight": 52.5,
+              "exhibitionTime": 6.74,
+              "tilt": -0.5
+            }
+          ],
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.17,
+              "rawST": ".17"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.09,
+              "rawST": ".09"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.06,
+              "rawST": ".06"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.11,
+              "rawST": ".11"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.17,
+              "rawST": ".17"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.17,
+              "rawST": ".17"
+            }
+          ]
         },
         {
           "raceNo": 12,
@@ -14335,7 +14462,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "03",
@@ -26889,7 +27016,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "04",
@@ -40921,7 +41048,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "05",
@@ -49141,7 +49268,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "13",
@@ -60473,7 +60600,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "14",
@@ -72755,7 +72882,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "16",
@@ -84096,7 +84223,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "17",
@@ -92349,7 +92476,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "20",
@@ -99188,7 +99315,6 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T19:30:06+09:00",
           "result": {
             "finishers": [
               {
@@ -99308,14 +99434,8 @@
             "official": true,
             "note": "ボートレースガイドはこちら"
           },
-          "resultWeather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
-          "resultUpdatedAt": "2026-09-10T19:45:26+09:00"
+          "resultUpdatedAt": "2026-09-10T19:45:26+09:00",
+          "beforeUpdatedAt": "2026-09-10T19:30:06+09:00"
         },
         {
           "raceNo": 11,
@@ -99845,14 +99965,6 @@
             "officialPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=11"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20260910&race=11",
-          "weather": {
-            "airTemperature": 24.0,
-            "waterTemperature": 25.0,
-            "windSpeed": 3.0,
-            "waveHeight": 3.0,
-            "weather": "曇り"
-          },
-          "beforeUpdatedAt": "2026-09-10T19:45:15+09:00",
           "beforeData": [
             {
               "lane": 1,
@@ -99899,6 +100011,14 @@
               "tilt": -0.5
             }
           ],
+          "weather": {
+            "airTemperature": 24.0,
+            "waterTemperature": 25.0,
+            "windSpeed": 3.0,
+            "waveHeight": 3.0,
+            "weather": "曇り"
+          },
+          "beforeUpdatedAt": "2026-09-10T19:55:58+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -100426,11 +100546,13 @@
           "weather": {
             "airTemperature": 24.0,
             "waterTemperature": 25.0,
-            "windSpeed": 2.0,
-            "waveHeight": 2.0,
+            "windSpeed": 3.0,
+            "waveHeight": 3.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-10T19:03:25+09:00"
+          "beforeUpdatedAt": "2026-09-10T19:55:58+09:00",
+          "beforeData": [],
+          "startExhibition": []
         }
       ],
       "meetDays": [
@@ -100874,7 +100996,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "21",
@@ -108754,7 +108876,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     },
     {
       "venueCode": "24",
@@ -116706,7 +116828,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 山田 康二",
+              "racerName": "発売終了 山田 康二",
               "class": "A1",
               "before": {
                 "lane": 1,
@@ -117486,7 +117608,7 @@
             "waveHeight": 1.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T19:45:15+09:00",
+          "beforeUpdatedAt": "2026-09-10T19:55:58+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -117524,7 +117646,71 @@
               "st": 0.1,
               "rawST": ".10"
             }
-          ]
+          ],
+          "result": {
+            "finishers": [],
+            "payouts": {
+              "trifecta": [
+                {
+                  "combination": "3-1-5",
+                  "payout": 9580
+                }
+              ],
+              "trio": [
+                {
+                  "combination": "1=3=5",
+                  "payout": 480
+                }
+              ],
+              "exacta": [
+                {
+                  "combination": "3-1",
+                  "payout": 2630
+                }
+              ],
+              "quinella": [
+                {
+                  "combination": "1=3",
+                  "payout": 290
+                }
+              ],
+              "wide": [
+                {
+                  "combination": "1=3",
+                  "payout": 140
+                },
+                {
+                  "combination": "3=5",
+                  "payout": 510
+                },
+                {
+                  "combination": "1=5",
+                  "payout": 160
+                }
+              ],
+              "win": [
+                {
+                  "combination": "3",
+                  "payout": 1180
+                }
+              ],
+              "place": [
+                {
+                  "combination": "3",
+                  "payout": 210
+                },
+                {
+                  "combination": "1",
+                  "payout": 100
+                }
+              ]
+            },
+            "weather": {},
+            "kimarite": null,
+            "official": true,
+            "note": "ボートレースガイドはこちら"
+          },
+          "resultUpdatedAt": "2026-09-10T19:56:06+09:00"
         },
         {
           "raceNo": 11,
@@ -118196,7 +118382,7 @@
             "waveHeight": 1.0,
             "weather": "雨"
           },
-          "beforeUpdatedAt": "2026-09-10T19:45:15+09:00",
+          "beforeUpdatedAt": "2026-09-10T19:55:58+09:00",
           "beforeData": [],
           "startExhibition": []
         },
@@ -120209,7 +120395,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-10T19:45:45+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-10T19:56:25+09:00"
     }
   ],
   "errors": [],
