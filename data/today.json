@@ -1,6 +1,6 @@
 {
   "schemaVersion": "47.0",
-  "updatedAt": "2026-09-11T08:53:29+09:00",
+  "updatedAt": "2026-09-11T08:56:44+09:00",
   "dateJST": "20260911",
   "source": "BOAT RACE official public pages",
   "mode": "live",
@@ -9644,7 +9644,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "03",
@@ -97030,7 +97030,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "05",
@@ -133865,7 +133865,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "06",
@@ -143509,7 +143509,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "12",
@@ -153161,7 +153161,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "13",
@@ -222968,7 +222968,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "14",
@@ -224302,7 +224302,7 @@
             "note": "ボートレースガイドはこちら"
           },
           "resultUpdatedAt": "2026-09-11T08:52:26+09:00",
-          "beforeUpdatedAt": "2026-09-11T08:53:40+09:00",
+          "beforeUpdatedAt": "2026-09-11T08:56:54+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -224566,6 +224566,13 @@
                 "stRank": 7,
                 "preInspectionTime": 6.82,
                 "preInspectionRank": 37
+              },
+              "before": {
+                "lane": 1,
+                "racerName": "赤井 睦",
+                "weight": 47.6,
+                "exhibitionTime": 6.71,
+                "tilt": 0.0
               }
             },
             {
@@ -224767,6 +224774,15 @@
                 "stRank": 21,
                 "preInspectionTime": 6.82,
                 "preInspectionRank": 43
+              },
+              "before": {
+                "lane": 2,
+                "racerName": "藤本 紗弥香",
+                "weight": 46.5,
+                "exhibitionTime": 6.78,
+                "tilt": -0.5,
+                "course": 6,
+                "st": 0.03
               }
             },
             {
@@ -224976,6 +224992,13 @@
                 "stRank": 14,
                 "preInspectionTime": 6.79,
                 "preInspectionRank": 14
+              },
+              "before": {
+                "lane": 3,
+                "racerName": "豊田 結",
+                "weight": 53.7,
+                "exhibitionTime": 6.8,
+                "tilt": 0.0
               }
             },
             {
@@ -225174,6 +225197,13 @@
                 "stRank": 45,
                 "preInspectionTime": 6.8,
                 "preInspectionRank": 17
+              },
+              "before": {
+                "lane": 4,
+                "racerName": "野田 亜湖",
+                "weight": 50.1,
+                "exhibitionTime": 6.77,
+                "tilt": 0.0
               }
             },
             {
@@ -225359,6 +225389,13 @@
                 "stRank": 32,
                 "preInspectionTime": 6.84,
                 "preInspectionRank": 4
+              },
+              "before": {
+                "lane": 5,
+                "racerName": "加藤 奈月",
+                "weight": 52.2,
+                "exhibitionTime": 6.93,
+                "tilt": 0.0
               }
             },
             {
@@ -225572,6 +225609,13 @@
                 "stRank": 36,
                 "preInspectionTime": 6.89,
                 "preInspectionRank": 40
+              },
+              "before": {
+                "lane": 6,
+                "racerName": "前田 紗希",
+                "weight": 47.7,
+                "exhibitionTime": 6.88,
+                "tilt": 0.0
               }
             }
           ],
@@ -225586,9 +225630,91 @@
             "waveHeight": 2.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-11T08:53:40+09:00",
-          "beforeData": [],
-          "startExhibition": []
+          "beforeUpdatedAt": "2026-09-11T08:56:54+09:00",
+          "beforeData": [
+            {
+              "lane": 1,
+              "racerName": "赤井 睦",
+              "weight": 47.6,
+              "exhibitionTime": 6.71,
+              "tilt": 0.0
+            },
+            {
+              "lane": 2,
+              "racerName": "藤本 紗弥香",
+              "weight": 46.5,
+              "exhibitionTime": 6.78,
+              "tilt": -0.5,
+              "course": 6,
+              "st": 0.03
+            },
+            {
+              "lane": 3,
+              "racerName": "豊田 結",
+              "weight": 53.7,
+              "exhibitionTime": 6.8,
+              "tilt": 0.0
+            },
+            {
+              "lane": 4,
+              "racerName": "野田 亜湖",
+              "weight": 50.1,
+              "exhibitionTime": 6.77,
+              "tilt": 0.0
+            },
+            {
+              "lane": 5,
+              "racerName": "加藤 奈月",
+              "weight": 52.2,
+              "exhibitionTime": 6.93,
+              "tilt": 0.0
+            },
+            {
+              "lane": 6,
+              "racerName": "前田 紗希",
+              "weight": 47.7,
+              "exhibitionTime": 6.88,
+              "tilt": 0.0
+            }
+          ],
+          "startExhibition": [
+            {
+              "course": 1,
+              "lane": 2,
+              "st": 0.1,
+              "rawST": "F.10"
+            },
+            {
+              "course": 2,
+              "lane": 2,
+              "st": 0.08,
+              "rawST": "F.08"
+            },
+            {
+              "course": 3,
+              "lane": 2,
+              "st": 0.07,
+              "rawST": "F.07"
+            },
+            {
+              "course": 4,
+              "lane": 2,
+              "st": 0.24,
+              "rawST": ".24"
+            },
+            {
+              "course": 5,
+              "lane": 2,
+              "st": 0.12,
+              "rawST": ".12"
+            },
+            {
+              "course": 6,
+              "lane": 2,
+              "st": 0.03,
+              "rawST": ".03"
+            }
+          ]
         },
         {
           "raceNo": 3,
@@ -297836,7 +297962,7 @@
                 "note": "ボートレースガイドはこちら"
               },
               "resultUpdatedAt": "2026-09-11T08:52:26+09:00",
-              "beforeUpdatedAt": "2026-09-11T08:53:40+09:00",
+              "beforeUpdatedAt": "2026-09-11T08:56:54+09:00",
               "startExhibition": [
                 {
                   "course": 1,
@@ -298100,6 +298226,13 @@
                     "stRank": 7,
                     "preInspectionTime": 6.82,
                     "preInspectionRank": 37
+                  },
+                  "before": {
+                    "lane": 1,
+                    "racerName": "赤井 睦",
+                    "weight": 47.6,
+                    "exhibitionTime": 6.71,
+                    "tilt": 0.0
                   }
                 },
                 {
@@ -298301,6 +298434,15 @@
                     "stRank": 21,
                     "preInspectionTime": 6.82,
                     "preInspectionRank": 43
+                  },
+                  "before": {
+                    "lane": 2,
+                    "racerName": "藤本 紗弥香",
+                    "weight": 46.5,
+                    "exhibitionTime": 6.78,
+                    "tilt": -0.5,
+                    "course": 6,
+                    "st": 0.03
                   }
                 },
                 {
@@ -298510,6 +298652,13 @@
                     "stRank": 14,
                     "preInspectionTime": 6.79,
                     "preInspectionRank": 14
+                  },
+                  "before": {
+                    "lane": 3,
+                    "racerName": "豊田 結",
+                    "weight": 53.7,
+                    "exhibitionTime": 6.8,
+                    "tilt": 0.0
                   }
                 },
                 {
@@ -298708,6 +298857,13 @@
                     "stRank": 45,
                     "preInspectionTime": 6.8,
                     "preInspectionRank": 17
+                  },
+                  "before": {
+                    "lane": 4,
+                    "racerName": "野田 亜湖",
+                    "weight": 50.1,
+                    "exhibitionTime": 6.77,
+                    "tilt": 0.0
                   }
                 },
                 {
@@ -298893,6 +299049,13 @@
                     "stRank": 32,
                     "preInspectionTime": 6.84,
                     "preInspectionRank": 4
+                  },
+                  "before": {
+                    "lane": 5,
+                    "racerName": "加藤 奈月",
+                    "weight": 52.2,
+                    "exhibitionTime": 6.93,
+                    "tilt": 0.0
                   }
                 },
                 {
@@ -299106,6 +299269,13 @@
                     "stRank": 36,
                     "preInspectionTime": 6.89,
                     "preInspectionRank": 40
+                  },
+                  "before": {
+                    "lane": 6,
+                    "racerName": "前田 紗希",
+                    "weight": 47.7,
+                    "exhibitionTime": 6.88,
+                    "tilt": 0.0
                   }
                 }
               ],
@@ -299120,9 +299290,91 @@
                 "waveHeight": 2.0,
                 "weather": "曇り"
               },
-              "beforeUpdatedAt": "2026-09-11T08:53:40+09:00",
-              "beforeData": [],
-              "startExhibition": []
+              "beforeUpdatedAt": "2026-09-11T08:56:54+09:00",
+              "beforeData": [
+                {
+                  "lane": 1,
+                  "racerName": "赤井 睦",
+                  "weight": 47.6,
+                  "exhibitionTime": 6.71,
+                  "tilt": 0.0
+                },
+                {
+                  "lane": 2,
+                  "racerName": "藤本 紗弥香",
+                  "weight": 46.5,
+                  "exhibitionTime": 6.78,
+                  "tilt": -0.5,
+                  "course": 6,
+                  "st": 0.03
+                },
+                {
+                  "lane": 3,
+                  "racerName": "豊田 結",
+                  "weight": 53.7,
+                  "exhibitionTime": 6.8,
+                  "tilt": 0.0
+                },
+                {
+                  "lane": 4,
+                  "racerName": "野田 亜湖",
+                  "weight": 50.1,
+                  "exhibitionTime": 6.77,
+                  "tilt": 0.0
+                },
+                {
+                  "lane": 5,
+                  "racerName": "加藤 奈月",
+                  "weight": 52.2,
+                  "exhibitionTime": 6.93,
+                  "tilt": 0.0
+                },
+                {
+                  "lane": 6,
+                  "racerName": "前田 紗希",
+                  "weight": 47.7,
+                  "exhibitionTime": 6.88,
+                  "tilt": 0.0
+                }
+              ],
+              "startExhibition": [
+                {
+                  "course": 1,
+                  "lane": 2,
+                  "st": 0.1,
+                  "rawST": "F.10"
+                },
+                {
+                  "course": 2,
+                  "lane": 2,
+                  "st": 0.08,
+                  "rawST": "F.08"
+                },
+                {
+                  "course": 3,
+                  "lane": 2,
+                  "st": 0.07,
+                  "rawST": "F.07"
+                },
+                {
+                  "course": 4,
+                  "lane": 2,
+                  "st": 0.24,
+                  "rawST": ".24"
+                },
+                {
+                  "course": 5,
+                  "lane": 2,
+                  "st": 0.12,
+                  "rawST": ".12"
+                },
+                {
+                  "course": 6,
+                  "lane": 2,
+                  "st": 0.03,
+                  "rawST": ".03"
+                }
+              ]
             },
             {
               "raceNo": 3,
@@ -311544,7 +311796,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "16",
@@ -381522,7 +381774,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "17",
@@ -418647,7 +418899,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "20",
@@ -456587,7 +456839,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "21",
@@ -456887,7 +457139,7 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-11T08:53:40+09:00",
+          "beforeUpdatedAt": "2026-09-11T08:56:54+09:00",
           "startExhibition": [
             {
               "course": 1,
@@ -456942,7 +457194,7 @@
             "waveHeight": 1.0,
             "weather": "曇り"
           },
-          "beforeUpdatedAt": "2026-09-11T08:53:40+09:00",
+          "beforeUpdatedAt": "2026-09-11T08:56:54+09:00",
           "beforeData": [],
           "startExhibition": []
         },
@@ -457346,7 +457598,7 @@
                 "waveHeight": 1.0,
                 "weather": "曇り"
               },
-              "beforeUpdatedAt": "2026-09-11T08:53:40+09:00",
+              "beforeUpdatedAt": "2026-09-11T08:56:54+09:00",
               "startExhibition": [
                 {
                   "course": 1,
@@ -457401,7 +457653,7 @@
                 "waveHeight": 1.0,
                 "weather": "曇り"
               },
-              "beforeUpdatedAt": "2026-09-11T08:53:40+09:00",
+              "beforeUpdatedAt": "2026-09-11T08:56:54+09:00",
               "beforeData": [],
               "startExhibition": []
             },
@@ -457513,7 +457765,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     },
     {
       "venueCode": "24",
@@ -528893,7 +529145,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-09-11T08:53:59+09:00"
+      "meetDataLiveUpdatedAt": "2026-09-11T08:57:14+09:00"
     }
   ],
   "errors": [],
