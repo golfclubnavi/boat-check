@@ -3,11 +3,11 @@ name: Enrich BOAT CHECK data
 on:
   workflow_dispatch:
   schedule:
-    # 07:30 JST = 22:30 UTC (前日)
+    # 07:30 JST = previous day 22:30 UTC
     - cron: "30 22 * * *"
 
 concurrency:
-  group: boat-check-enrich-update
+  group: boat-check-data-update
   cancel-in-progress: false
 
 permissions:
@@ -35,7 +35,7 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Enrich racer and meeting data
+      - name: Enrich racer motor boat data
         run: python scripts/collect_today.py --enrich --out data/today.json --workers 10
 
       - name: Commit enriched data when changed
@@ -44,9 +44,9 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add data/today.json data/racers.json
           if git diff --cached --quiet; then
-            echo "No data changes."
+            echo "No enriched data changes."
             exit 0
           fi
-          git commit -m "Enrich BOAT CHECK data"
+          git commit -m "Enrich BOAT CHECK official data"
           git pull --rebase origin main
           git push origin HEAD:main

@@ -6,7 +6,7 @@ on:
     - cron: "*/30 * * * *"
 
 concurrency:
-  group: boat-check-fast-update
+  group: boat-check-data-update
   cancel-in-progress: true
 
 permissions:
@@ -34,7 +34,7 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Fast collect official race data
+      - name: Collect official race and live data
         run: python scripts/collect_today.py --out data/today.json --workers 8
 
       - name: Commit data when changed
@@ -46,6 +46,6 @@ jobs:
             echo "No data changes."
             exit 0
           fi
-          git commit -m "Fast update BOAT CHECK data"
+          git commit -m "Update BOAT CHECK official data"
           git pull --rebase origin main
           git push origin HEAD:main
