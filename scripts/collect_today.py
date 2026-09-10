@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v41 collector — official data phase 1
+BOAT CHECK v43 collector — current-meet results
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
@@ -14,6 +14,10 @@ ENRICH（1日1回 / 手動）
 - モーター番号/2連率/3連率、ボート番号/2連率/3連率
 - 支部/出身/年齢/体重/登録番号、登録期キャッシュ
 - 6艇内のモーター順位・ボート順位を2連率から算出
+- 今節成績（レース番号/進入/ST/着順）
+- 得点率/得点率順位/得点/減点/備考
+- 今節平均ST/ST順位/1着率/2連率/3連率
+- 前検タイム/前検順位
 
 PHASE 1対象
 - F/L、平均ST、全国/当地成績
@@ -46,6 +50,9 @@ RACEINDEX_URL = BASE + "/owpc/pc/race/raceindex"
 RACELIST_URL = BASE + "/owpc/pc/race/racelist"
 BEFOREINFO_URL = BASE + "/owpc/pc/race/beforeinfo"
 RACERESULT_URL = BASE + "/owpc/pc/race/raceresult"
+POINT_RANK_URL = BASE + "/owpc/pc/race/pointrank"
+RANKING_MOTOR_URL = BASE + "/owpc/pc/race/rankingmotor"
+INFORMATION_URL = BASE + "/owpc/pc/race/information"
 PROFILE_URL = BASE + "/owpc/pc/data/racersearch/profile"
 BOATCAST_REPLAY_URL = "https://race.boatcast.jp/replay"
 
@@ -57,7 +64,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.42; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.43; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -276,6 +283,240 @@ def apply_equipment_ranks(boats: list[dict]) -> None:
             b["boatRank"] = br[i]
 
 
+
+_ZEN_DIGITS = str.maketrans("１２３４５６７８９０", "1234567890")
+
+def _day_no_from_label(label: str) -> int | None:
+    s = str(label or "").translate(_ZEN_DIGITS)
+    if "初日" in s: return 1
+    m = re.search(r"(\d+)日目", s)
+    if m: return int(m.group(1))
+    return None
+
+def _clean_series_cell(v: str) -> str:
+    s = compact(str(v or "")).replace("\xa0", "").strip()
+    return "" if s in {"", "-", "--", "―", "－"} else s
+
+def _series_row_cells(tr) -> list[str]:
+    if tr is None: return []
+    cells=[_clean_series_cell(x.get_text(" ",strip=True)) for x in tr.find_all(["td","th"],recursive=False)]
+    if len(cells)<12:
+        cells=[_clean_series_cell(x.get_text(" ",strip=True)) for x in tr.find_all(["td","th"])]
+    if len(cells)>=13 and (not cells[-1] or re.fullmatch(r"\d{1,2}R", cells[-1] or "")):
+        cells=cells[:-1]
+    return cells[-12:] if len(cells)>=12 else []
+
+def _series_st_value(v: str):
+    s=_clean_series_cell(v).translate(_ZEN_DIGITS).upper()
+    if not s: return None
+    if re.fullmatch(r"(?:F|L)?\.\d{2}",s): return s
+    n=_num(s)
+    return n if n is not None else s
+
+def _series_finish_value(v: str):
+    s=_clean_series_cell(v).translate(_ZEN_DIGITS)
+    if not s: return None
+    if s in {"1","2","3","4","5","6"}: return int(s)
+    return s
+
+def parse_current_meet_results(racer_row) -> list[dict]:
+    """Parse official 今節成績: race no / course / ST / finish, 12 slots."""
+    if racer_row is None: return []
+    rows=[racer_row]
+    sib=racer_row
+    for _ in range(3):
+        sib=sib.find_next_sibling("tr") if sib else None
+        if sib is None: break
+        t=compact(sib.get_text(" ",strip=True))
+        if re.search(r"\b\d{4}\s*/\s*(?:A1|A2|B1|B2)\b",t): break
+        rows.append(sib)
+    if len(rows)<4:
+        nested=racer_row.find_all("tr")
+        if len(nested)>=4: rows=nested[:4]
+    if len(rows)<4: return []
+    rc,cc,sc,fc=map(_series_row_cells,rows[:4])
+    if not any((rc,cc,sc,fc)): return []
+    out=[]
+    for i in range(12):
+        rv=(rc[i] if i<len(rc) else "").translate(_ZEN_DIGITS)
+        cv=(cc[i] if i<len(cc) else "").translate(_ZEN_DIGITS)
+        race_no=int(rv) if re.fullmatch(r"\d{1,2}",rv or "") else None
+        course=int(cv) if re.fullmatch(r"[1-6]",cv or "") else None
+        st=_series_st_value(sc[i] if i<len(sc) else "")
+        finish=_series_finish_value(fc[i] if i<len(fc) else "")
+        if race_no is None and course is None and st is None and finish is None: continue
+        out.append({"day":i//2+1,"slot":i%2+1,"raceNo":race_no,"course":course,"st":st,"finish":finish,"source":"official_racelist"})
+    return out
+
+def parse_point_rank(soup: BeautifulSoup) -> dict[str,dict]:
+    """Official 得点率一覧 -> racerId keyed series summary."""
+    out={}
+    for tr in soup.find_all("tr"):
+        raw_cells=[compact(x.get_text(" ",strip=True)) for x in tr.find_all(["td","th"],recursive=False)]
+        cells=[x.translate(_ZEN_DIGITS) for x in raw_cells]
+        rid_idx=next((i for i,x in enumerate(cells) if re.fullmatch(r"\d{4}",x)),None)
+        class_idx=next((i for i,x in enumerate(cells) if i>(rid_idx if rid_idx is not None else -1) and x in {"A1","A2","B1","B2"}),None)
+
+        if rid_idx is not None and class_idx is not None and class_idx+4 < len(cells):
+            rid=cells[rid_idx]
+            rank_raw=cells[0] if cells else ""
+            rate=cells[class_idx+1]
+            series=cells[class_idx+2]
+            points=cells[class_idx+3]
+            deduction=cells[class_idx+4]
+            tail=" ".join(x for x in cells[class_idx+5:] if x)
+            if not re.fullmatch(r"-?\d+(?:\.\d+)?|-",rate):
+                continue
+            if not re.fullmatch(r"\d+",points) or not re.fullmatch(r"\d+",deduction):
+                continue
+            remark=next((x for x in ("賞典除外","途中帰郷","帰郷","失格") if x in tail),None)
+            out[rid]={
+                "pointRank":int(rank_raw) if rank_raw.isdigit() else None,
+                "pointRate":_num(rate),
+                "points":_num(points,integer=True),
+                "penalty":_num(deduction,integer=True),
+                "seriesSummary":compact(series),
+                "penaltyDetail":remark,
+                "official":True,
+            }
+            continue
+
+        # Fallback for compacted table markup.
+        text=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        m=re.match(r"^(\d+|-)\s+(\d{4})\s+(.+?)\s+(A1|A2|B1|B2)\s+(-?\d+(?:\.\d+)?|-)\s+(.+?)\s+(\d+)\s+(\d+)(?:\s+(.*))?$",text)
+        if not m: continue
+        rank,rid,name,klass,rate,series,points,deduction,tail=m.groups()
+        tail=compact(tail or "")
+        remark=next((x for x in ("賞典除外","途中帰郷","帰郷","失格") if x in tail),None)
+        out[rid]={"pointRank":int(rank) if rank.isdigit() else None,"pointRate":_num(rate),"points":_num(points,integer=True),"penalty":_num(deduction,integer=True),"seriesSummary":compact(series),"penaltyDetail":remark,"official":True}
+    return out
+
+def parse_ranking_motor(soup: BeautifulSoup) -> dict[str,dict]:
+    out={}
+    for tr in soup.find_all("tr"):
+        text=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        m=re.match(r"^(\d+)\s+(\d{4})\s+(.+?)\s+(A1|A2|B1|B2)\s+(\d+)\s+(\d+(?:\.\d+)?)%?\s+(\d+)\s+(\d+(?:\.\d+)?)%?\s+(\d+(?:\.\d+)?)",text)
+        if not m: continue
+        rank,rid,name,klass,mno,m2,bno,b2,ptime=m.groups()
+        out[rid]={"preInspectionRank":int(rank),"preInspectionTime":_num(ptime),"motorNo":int(mno),"motorTwoRate":_num(m2),"boatNo":int(bno),"boatTwoRate":_num(b2),"official":True}
+    return out
+
+def parse_meeting_information(soup: BeautifulSoup) -> dict[str,list[str]]:
+    out={}
+    for tr in soup.find_all("tr"):
+        cells=[compact(x.get_text(" ",strip=True)) for x in tr.find_all(["td","th"],recursive=False)]
+        if len(cells)<4 or not re.search(r"\d{1,2}/\d{1,2}"," ".join(cells)): continue
+        action=" ".join(cells[3:])
+        if not re.search(r"賞典除外|減点\d+点|処置なし|途中帰郷",action): continue
+        key=re.sub(r"\s+","",cells[2])
+        if key: out.setdefault(key,[]).append(action)
+    return out
+
+def _numeric_st(v):
+    if v is None: return None
+    s=str(v).strip().upper()
+    if s.startswith(("F","L")): return None
+    return _num(s)
+
+def _merge_meet_result_lists(a,b):
+    merged={}
+    for item in (a or [])+(b or []):
+        if not isinstance(item,dict): continue
+        day=int(item.get("day") or item.get("meetDay") or 0)
+        race_no=int(item.get("raceNo") or item.get("race") or 0)
+        slot=int(item.get("slot") or 0)
+        key=(day,race_no if race_no else 100+slot)
+        x=dict(merged.get(key,{}))
+        for k,v in item.items():
+            if v not in (None,"",[],{}): x[k]=v
+        merged[key]=x
+    return sorted(merged.values(),key=lambda x:(int(x.get("day") or 99),int(x.get("raceNo") or 99),int(x.get("slot") or 9)))
+
+def _current_day_result_entries(meeting:dict):
+    day_no=_day_no_from_label(meeting.get("day"))
+    if not day_no:
+        dates=[d.get("date") for d in meeting.get("meetDays",[]) if d.get("date")]
+        if meeting.get("date") in dates: day_no=dates.index(meeting["date"])+1
+    day_no=day_no or 1
+    out={}
+    for race in meeting.get("races",[]):
+        result=race.get("result") or {}
+        if result.get("official") is not True: continue
+        before_by_lane={int(x.get("lane") or 0):x for x in (race.get("beforeData") or [])}
+        for f in result.get("finishers",[]):
+            rid=str(f.get("racerId") or "")
+            if not rid: continue
+            lane=int(f.get("lane") or 0)
+            before=before_by_lane.get(lane,{})
+            out.setdefault(rid,[]).append({"day":day_no,"raceNo":int(race.get("raceNo") or 0),"course":before.get("course"),"st":f.get("st"),"finish":f.get("rank"),"exhibitionTime":before.get("exhibitionTime"),"source":"official_result_live"})
+    return out
+
+def apply_meeting_series_data(meeting:dict,point_map=None,pre_map=None,info_map=None):
+    point_map=point_map or {}; pre_map=pre_map or {}; info_map=info_map or {}
+    canonical={}
+    for race in meeting.get("races",[]):
+        for b in race.get("boats",[]):
+            rid=str(b.get("racerId") or b.get("registrationNo") or "")
+            if not rid: continue
+            cur=canonical.setdefault(rid,{"meetResults":[]})
+            cur["name"]=b.get("racerName") or cur.get("name")
+            cur["meetResults"]=_merge_meet_result_lists(cur.get("meetResults",[]),b.get("meetResults",[]))
+    for rid,items in _current_day_result_entries(meeting).items():
+        cur=canonical.setdefault(rid,{"meetResults":[]})
+        cur["meetResults"]=_merge_meet_result_lists(cur.get("meetResults",[]),items)
+
+    derived={}
+    for rid,cur in canonical.items():
+        hist=cur.get("meetResults",[])
+        finish_nums=[int(x.get("finish")) for x in hist if isinstance(x.get("finish"),(int,float)) and 1<=int(x.get("finish"))<=6]
+        sts=[_numeric_st(x.get("st")) for x in hist]; sts=[x for x in sts if x is not None]
+        exs=[_num(x.get("exhibitionTime")) for x in hist]; exs=[x for x in exs if x is not None]
+        courses=[_num(x.get("course")) for x in hist]; courses=[x for x in courses if x is not None]
+        starts=len(finish_nums)
+        derived[rid]={
+            "avgST":round(sum(sts)/len(sts),3) if sts else None,
+            "exhibitionTime":round(sum(exs)/len(exs),3) if exs else None,
+            "avgCourse":round(sum(courses)/len(courses),2) if courses else None,
+            "winRate":round(sum(1 for x in finish_nums if x==1)/starts*100,1) if starts else None,
+            "twoRate":round(sum(1 for x in finish_nums if x<=2)/starts*100,1) if starts else None,
+            "threeRate":round(sum(1 for x in finish_nums if x<=3)/starts*100,1) if starts else None,
+            "starts":starts,
+        }
+    st_ids=sorted([rid for rid,v in derived.items() if v.get("avgST") is not None],key=lambda rid:derived[rid]["avgST"])
+    ex_ids=sorted([rid for rid,v in derived.items() if v.get("exhibitionTime") is not None],key=lambda rid:derived[rid]["exhibitionTime"])
+    st_rank={rid:i+1 for i,rid in enumerate(st_ids)}; ex_rank={rid:i+1 for i,rid in enumerate(ex_ids)}
+
+    for race in meeting.get("races",[]):
+        for b in race.get("boats",[]):
+            rid=str(b.get("racerId") or b.get("registrationNo") or "")
+            if not rid: continue
+            can=canonical.get(rid,{})
+            if can.get("meetResults"): b["meetResults"]=can["meetResults"]
+            stats=dict(b.get("meetStats") or {})
+            for k,v in derived.get(rid,{}).items():
+                if v is not None: stats[k]=v
+            if rid in st_rank: stats["stRank"]=st_rank[rid]
+            if rid in ex_rank: stats["exhibitionRank"]=ex_rank[rid]
+            for k in ("pointRank","pointRate","points","penalty","seriesSummary","penaltyDetail"):
+                v=point_map.get(rid,{}).get(k)
+                if v is not None: stats[k]=v
+            pre=pre_map.get(rid,{})
+            if pre.get("preInspectionTime") is not None: stats["preInspectionTime"]=pre["preInspectionTime"]
+            if pre.get("preInspectionRank") is not None: stats["preInspectionRank"]=pre["preInspectionRank"]
+            name_key=re.sub(r"\s+","",str(b.get("racerName") or ""))
+            notes=info_map.get(name_key,[])
+            if notes: stats["penaltyDetail"]=" / ".join(dict.fromkeys(notes))
+            b["meetStats"]=stats
+            if pre:
+                if pre.get("motorNo") is not None:
+                    b["motorNo"]=pre["motorNo"]; b.setdefault("motor",{})["motorNo"]=pre["motorNo"]
+                if pre.get("motorTwoRate") is not None:
+                    b["motorTwoRate"]=pre["motorTwoRate"]; b.setdefault("motor",{})["twoRate"]=pre["motorTwoRate"]
+                if pre.get("boatNo") is not None:
+                    b["boatNo"]=pre["boatNo"]; b.setdefault("boat",{})["boatNo"]=pre["boatNo"]
+                if pre.get("boatTwoRate") is not None:
+                    b["boatTwoRate"]=pre["boatTwoRate"]; b.setdefault("boat",{})["twoRate"]=pre["boatTwoRate"]
+
 def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
     """Parse official racelist rows without inventing missing values."""
     found, used = [], set()
@@ -320,6 +561,9 @@ def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
             "racerName": name,
             "class": klass,
         }
+        meet_results = parse_current_meet_results(row)
+        if meet_results:
+            b["meetResults"] = meet_results
 
         md = detail_re.search(text)
         if md:
@@ -738,6 +982,28 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
     return result
 
 
+
+def fetch_point_rank_task(code: str, date: str):
+    try:
+        soup=get_soup(POINT_RANK_URL,{"jcd":code,"hd":date},timeout=18)
+        return code,parse_point_rank(soup),None
+    except Exception as e:
+        return code,{},f"{type(e).__name__}: {e}"
+
+def fetch_ranking_motor_task(code: str, date: str):
+    try:
+        soup=get_soup(RANKING_MOTOR_URL,{"jcd":code,"hd":date},timeout=18)
+        return code,parse_ranking_motor(soup),None
+    except Exception as e:
+        return code,{},f"{type(e).__name__}: {e}"
+
+def fetch_information_task(code: str, date: str):
+    try:
+        soup=get_soup(INFORMATION_URL,{"jcd":code,"hd":date},timeout=18)
+        return code,parse_meeting_information(soup),None
+    except Exception as e:
+        return code,{},f"{type(e).__name__}: {e}"
+
 def fetch_beforeinfo_task(code: str, date: str, race_no: int):
     try:
         soup=get_soup(BEFOREINFO_URL,{"rno":race_no,"jcd":code,"hd":date},timeout=16)
@@ -853,6 +1119,30 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 elif err:
                     race.setdefault("liveErrors",{})["result"]=err
 
+
+    # 得点率一覧は1場1ページなので5分更新でも軽量。結果反映と同時に節間成績へ同期する。
+    point_maps={}
+    with ThreadPoolExecutor(max_workers=min(workers,8)) as ex:
+        futs={ex.submit(fetch_point_rank_task,m.get("venueCode"),m.get("date")):m.get("venueCode") for m in payload.get("meetings",[])}
+        for fut in as_completed(futs):
+            code=futs[fut]
+            try: _,data,err=fut.result()
+            except Exception as e: data,err={},f"{type(e).__name__}: {e}"
+            point_maps[code]=data
+            if err:
+                for mm in payload.get("meetings",[]):
+                    if mm.get("venueCode")==code: mm.setdefault("liveErrors",{})["pointrank"]=err; break
+    for meeting in payload.get("meetings",[]):
+        apply_meeting_series_data(meeting,point_map=point_maps.get(meeting.get("venueCode"),{}))
+        meeting["meetDataLiveUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+
+def fetch_past_day_task(code: str, hd: str):
+    try:
+        soup=get_soup(RACEINDEX_URL,{"hd":hd,"jcd":code})
+        return code,hd,parse_races(soup),None
+    except Exception as e:
+        return code,hd,[],f"{type(e).__name__}: {e}"
+
 def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
     meetings = payload.get("meetings",[])
     racer_cache = load_json(cache_path, {})
@@ -887,6 +1177,27 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
                 apply_equipment_ranks(r["boats"])
             elif err:
                 r["metaError"] = err
+
+    ref_results={}
+    print(f"[BOAT CHECK] ENRICH meet-reference tasks={len(meetings)*3}")
+    with ThreadPoolExecutor(max_workers=min(workers,10)) as ex:
+        futs={}
+        for m in meetings:
+            code,hd=m["venueCode"],m["date"]
+            futs[ex.submit(fetch_point_rank_task,code,hd)]=(code,"point")
+            futs[ex.submit(fetch_ranking_motor_task,code,hd)]=(code,"pre")
+            futs[ex.submit(fetch_information_task,code,hd)]=(code,"info")
+        for fut in as_completed(futs):
+            code,kind=futs[fut]
+            try: _,data,err=fut.result()
+            except Exception as e: data,err={},f"{type(e).__name__}: {e}"
+            ref_results.setdefault(code,{})[kind]=data
+            if err: ref_results.setdefault(code,{}).setdefault("errors",{})[kind]=err
+    for m in meetings:
+        ref=ref_results.get(m["venueCode"],{})
+        apply_meeting_series_data(m,ref.get("point",{}),ref.get("pre",{}),ref.get("info",{}))
+        m["meetDataUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+        if ref.get("errors"): m["meetDataErrors"]=ref["errors"]
 
     # 過去開催日raceindexだけを並列取得（未来日は空のまま）
     past_tasks = []
@@ -974,7 +1285,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     meetings.sort(key=lambda m:int(m["venueCode"]))
 
     payload = {
-        "schemaVersion":"42.0",
+        "schemaVersion":"43.0",
         "updatedAt":datetime.now(JST).isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
@@ -1000,7 +1311,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--date",default=None,help="YYYYMMDD。省略時は日本時間の今日")
     p.add_argument("--out",default="data/today.json")
-    p.add_argument("--enrich",action="store_true",help="全Rの出走表/F・L/平均ST/モーター・ボート基本値/登録期を取得")
+    p.add_argument("--enrich",action="store_true",help="全R出走表に加え、今節成績/得点率/前検/モーター・ボート基本値を取得")
     p.add_argument("--deep",action="store_true",help="旧互換: --enrich と同じ")
     p.add_argument("--live",action="store_true",help="5分更新用: 直前展示と直近の結果・払戻を優先取得")
     p.add_argument("--workers",type=int,default=10)
