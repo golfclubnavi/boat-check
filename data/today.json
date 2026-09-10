@@ -1,6 +1,6 @@
 {
   "schemaVersion": "38.0",
-  "updatedAt": "2026-09-10T09:11:20+09:00",
+  "updatedAt": "2026-09-10T09:43:03+09:00",
   "dateJST": "20260910",
   "source": "BOAT RACE official public pages",
   "mode": "fast",
@@ -11713,7 +11713,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 千葉 真弥",
+              "racerName": "発売終了 千葉 真弥",
               "class": "A2"
             },
             {
@@ -18600,7 +18600,7 @@
           "boats": [
             {
               "lane": 1,
-              "racerName": "投票 井手 良太",
+              "racerName": "発売終了 井手 良太",
               "class": "A2"
             },
             {
