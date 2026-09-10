@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v44 collector — current-meet results + historical result links
+BOAT CHECK v46 collector — racer detail restore + historical preservation
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
@@ -64,7 +64,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.45; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.46; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -188,6 +188,7 @@ def parse_races(soup: BeautifulSoup) -> list[dict]:
             r"([一-龥々ヶヵぁ-んァ-ヶー・　 ]{2,24}?)\s+(A1|A2|B1|B2)(?=\s|$)", text
         ):
             name = re.sub(r"[　\s]+", " ", name).strip()
+            name = re.sub(r"^(?:投票|発売終了|発売中|投票受付中|受付終了)\s*", "", name).strip()
             if name and len(name) <= 20:
                 racers.append((name, klass))
 
@@ -581,144 +582,240 @@ def apply_meeting_series_data(meeting:dict,point_map=None,pre_map=None,info_map=
                 if pre.get("boatTwoRate") is not None:
                     b["boatTwoRate"]=pre["boatTwoRate"]; b.setdefault("boat",{})["twoRate"]=pre["boatTwoRate"]
 
+def _cell_texts(tr) -> list[str]:
+    return [compact(x.get_text(" ", strip=True)).translate(_ZEN_DIGITS)
+            for x in tr.find_all(["td","th"], recursive=False)]
+
+def _numeric_tokens(text: str) -> list[str]:
+    # Keep "-" placeholders while extracting the official three-line numeric blocks.
+    return re.findall(r"(?<!\d)(?:--?|―|－|\d+(?:\.\d+)?)(?!\d)", str(text or ""))
+
+def _triplet_from_cell(text: str):
+    vals=_numeric_tokens(text)
+    if len(vals) < 3:
+        return None
+    return vals[0], vals[1], vals[2]
+
 def parse_racelist_meta(soup: BeautifulSoup) -> list[dict]:
-    """Parse official racelist rows without inventing missing values."""
-    found, used = [], set()
+    """
+    Parse the BOAT RACE official racelist from table rows.
 
-    numeric = r"(?:-|--|―|－|\d+(?:\.\d+)?)"
-    detail_re = re.compile(
-        rf"([一-龥々ヶヵぁ-んァ-ヶー]+)\/([一-龥々ヶヵぁ-んァ-ヶー]+)\s+"
-        rf"(\d{{1,2}})歳\/(\d+(?:\.\d+)?)kg\s+"
-        rf"F(\d+)\s+L(\d+)\s+({numeric})\s+"
-        rf"({numeric})\s+({numeric})\s+({numeric})\s+"  # 全国 勝率/2/3
-        rf"({numeric})\s+({numeric})\s+({numeric})\s+"  # 当地 勝率/2/3
-        rf"({numeric})\s+({numeric})\s+({numeric})\s+"  # motor no/2/3
-        rf"({numeric})\s+({numeric})\s+({numeric})"      # boat no/2/3
-    )
+    Important:
+    - Do NOT depend on racer-profile <a ...toban=...> links. The official markup
+      can change while the visible table remains stable.
+    - Locate the main row by "registrationNo / class".
+    - Read F/L/ST, national/local, motor and boat data from the following cells.
+    """
+    found=[]
+    used=set()
 
-    for a in soup.find_all("a", href=True):
-        href = a.get("href", "")
-        mt = re.search(r"(?:[?&]|&amp;)toban=(\d{4})", href)
-        if not mt:
+    for tr in soup.find_all("tr"):
+        cells=_cell_texts(tr)
+        if not cells:
             continue
-        toban = mt.group(1)
+
+        row_text=compact(" ".join(cells))
+        mr=re.search(r"\b(\d{4})\s*/\s*(A1|A2|B1|B2)\b", row_text)
+        if not mr:
+            continue
+
+        toban,klass=mr.groups()
         if toban in used:
             continue
 
-        row = a.find_parent("tr")
-        text = compact((row or a.parent or a).get_text(" ", strip=True))
+        detail_idx=next(
+            (i for i,c in enumerate(cells)
+             if re.search(rf"\b{re.escape(toban)}\s*/\s*{klass}\b", c)),
+            -1
+        )
+        if detail_idx < 0:
+            continue
 
-        lane_no = None
-        if row is not None:
-            direct_cells = row.find_all(["td","th"], recursive=False)
-            first_text = compact(direct_cells[0].get_text(" ", strip=True)) if direct_cells else ""
-            first_text = first_text.translate(_ZEN_DIGITS)
-            mlane = re.match(r"^([1-6])(?:\s|$)", first_text)
-            if not mlane:
-                mlane = re.match(r"^([1-6])(?:\s|$)", text.translate(_ZEN_DIGITS))
-            if mlane:
-                lane_no = int(mlane.group(1))
+        # Lane is normally a cell before the racer-detail cell.
+        lane_no=None
+        for c in cells[:detail_idx+1]:
+            mm=re.fullmatch(r"\s*([1-6])\s*", c)
+            if mm:
+                lane_no=int(mm.group(1))
+                break
 
-        mk = re.search(rf"{re.escape(toban)}\s*/\s*(A1|A2|B1|B2)", text)
-        klass = mk.group(1) if mk else ""
+        detail=cells[detail_idx]
+        md=re.search(
+            rf"{re.escape(toban)}\s*/\s*{klass}\s+"
+            rf"(.+?)\s+"
+            rf"([一-龥々ヶヵぁ-んァ-ヶー]+)\s*/\s*([一-龥々ヶヵぁ-んァ-ヶー]+)\s+"
+            rf"(\d{{1,2}})歳\s*/\s*(\d+(?:\.\d+)?)kg",
+            detail
+        )
 
-        name = compact(a.get_text(" ", strip=True))
-        if not name or name == toban or len(name) > 24:
-            mn = re.search(
-                rf"{re.escape(toban)}\s*/\s*(?:A1|A2|B1|B2)\s+(.+?)\s+"
-                rf"[一-龥々ヶヵぁ-んァ-ヶー]+/[一-龥々ヶヵぁ-んァ-ヶー]+\s+\d{{1,2}}歳/",
-                text,
-            )
-            name = compact(mn.group(1)) if mn else ""
+        name=""
+        branch=""
+        origin=""
+        age=None
+        weight=None
+        if md:
+            name=compact(md.group(1))
+            branch=md.group(2)
+            origin=md.group(3)
+            age=int(md.group(4))
+            weight=_num(md.group(5))
+        else:
+            # Fallback if detail column spacing changes.
+            tail=re.split(rf"{re.escape(toban)}\s*/\s*{klass}", detail, maxsplit=1)
+            if len(tail)==2:
+                name=compact(tail[1]).split(" ")[0]
 
-        b = {
-            "racerId": toban,
-            "registrationNo": toban,
-            "racerName": name,
-            "class": klass,
+        b={
+            "racerId":toban,
+            "registrationNo":toban,
+            "racerName":name,
+            "class":klass,
         }
         if lane_no is not None:
-            b["lane"] = lane_no
-        meet_results = parse_current_meet_results(row)
+            b["lane"]=lane_no
+        if branch:
+            b["branch"]=branch
+        if origin:
+            b["origin"]=origin
+        if age is not None:
+            b["age"]=age
+        if weight is not None:
+            b["weight"]=weight
+
+        # Find F/L/average-ST cell after the racer-detail cell.
+        after=cells[detail_idx+1:]
+        fl_idx=None
+        for i,c in enumerate(after):
+            fm=re.search(r"F\s*(\d+)\s+L\s*(\d+)\s+((?:--?|―|－|\d+(?:\.\d+)?))", c)
+            if fm:
+                fl_idx=i
+                b["flyingCount"]=int(fm.group(1))
+                b["lateCount"]=int(fm.group(2))
+                b["avgST"]=_num(fm.group(3))
+                break
+
+        # The next four 3-value cells are 全国 / 当地 / モーター / ボート.
+        groups=[]
+        scan=after[(fl_idx+1 if fl_idx is not None else 0):]
+        for c in scan:
+            g=_triplet_from_cell(c)
+            if g:
+                groups.append(g)
+                if len(groups)==4:
+                    break
+
+        if len(groups)>=1:
+            nat_win,nat_two,nat_three=groups[0]
+            b["nationalWinRate"]=_num(nat_win)
+            b["national2Rate"]=_num(nat_two)
+            b["national3Rate"]=_num(nat_three)
+        if len(groups)>=2:
+            loc_win,loc_two,loc_three=groups[1]
+            b["localWinRate"]=_num(loc_win)
+            b["local2Rate"]=_num(loc_two)
+            b["local3Rate"]=_num(loc_three)
+        if len(groups)>=3:
+            motor_no,motor_two,motor_three=groups[2]
+            b["motorNo"]=_num(motor_no,integer=True)
+            b["motorTwoRate"]=_num(motor_two)
+            b["motorThreeRate"]=_num(motor_three)
+            b["motor"]={
+                "motorNo":b["motorNo"],
+                "twoRate":b["motorTwoRate"],
+                "threeRate":b["motorThreeRate"],
+            }
+        if len(groups)>=4:
+            boat_no,boat_two,boat_three=groups[3]
+            b["boatNo"]=_num(boat_no,integer=True)
+            b["boatTwoRate"]=_num(boat_two)
+            b["boatThreeRate"]=_num(boat_three)
+            b["boat"]={
+                "boatNo":b["boatNo"],
+                "twoRate":b["boatTwoRate"],
+                "threeRate":b["boatThreeRate"],
+            }
+
+        if any(k in b for k in ("nationalWinRate","localWinRate","avgST")):
+            b["stats"]={
+                "winRate":{
+                    "national":b.get("nationalWinRate"),
+                    "local":b.get("localWinRate"),
+                },
+                "quinella":{
+                    "national":b.get("national2Rate"),
+                    "local":b.get("local2Rate"),
+                },
+                "trifecta":{
+                    "national":b.get("national3Rate"),
+                    "local":b.get("local3Rate"),
+                },
+                "st":{"overall":b.get("avgST")},
+                "flyingCount":b.get("flyingCount"),
+                "lateCount":b.get("lateCount"),
+            }
+
+        meet_results=parse_current_meet_results(tr)
         if meet_results:
-            b["meetResults"] = meet_results
-
-        md = detail_re.search(text)
-        if md:
-            (
-                branch, origin, age, weight, f_count, l_count, avg_st,
-                nat_win, nat_two, nat_three,
-                loc_win, loc_two, loc_three,
-                motor_no, motor_two, motor_three,
-                boat_no, boat_two, boat_three,
-            ) = md.groups()
-
-            b.update({
-                "branch": branch,
-                "origin": origin,
-                "age": int(age),
-                "weight": _num(weight),
-                "flyingCount": int(f_count),
-                "lateCount": int(l_count),
-                "avgST": _num(avg_st),
-                "nationalWinRate": _num(nat_win),
-                "national2Rate": _num(nat_two),
-                "national3Rate": _num(nat_three),
-                "localWinRate": _num(loc_win),
-                "local2Rate": _num(loc_two),
-                "local3Rate": _num(loc_three),
-                "motorNo": _num(motor_no, integer=True),
-                "motorTwoRate": _num(motor_two),
-                "motorThreeRate": _num(motor_three),
-                "boatNo": _num(boat_no, integer=True),
-                "boatTwoRate": _num(boat_two),
-                "boatThreeRate": _num(boat_three),
-            })
-            b["stats"] = {
-                "winRate": {"national": _num(nat_win), "local": _num(loc_win)},
-                "quinella": {"national": _num(nat_two), "local": _num(loc_two)},
-                "trifecta": {"national": _num(nat_three), "local": _num(loc_three)},
-                "st": {"overall": _num(avg_st)},
-                "flyingCount": int(f_count),
-                "lateCount": int(l_count),
-            }
-            b["motor"] = {
-                "motorNo": _num(motor_no, integer=True),
-                "twoRate": _num(motor_two),
-                "threeRate": _num(motor_three),
-            }
-            b["boat"] = {
-                "boatNo": _num(boat_no, integer=True),
-                "twoRate": _num(boat_two),
-                "threeRate": _num(boat_three),
-            }
-        else:
-            # Fallback: at least keep branch / origin / age / weight if the numeric table changed.
-            mb = re.search(
-                r"([一-龥々ヶヵぁ-んァ-ヶー]+)\/([一-龥々ヶヵぁ-んァ-ヶー]+)\s+"
-                r"(\d{1,2})歳\/(\d+(?:\.\d+)?)kg",
-                text,
-            )
-            if mb:
-                b.update({
-                    "branch": mb.group(1),
-                    "origin": mb.group(2),
-                    "age": int(mb.group(3)),
-                    "weight": _num(mb.group(4)),
-                })
-            mf = re.search(r"F(\d+)\s+L(\d+)\s+(\d+(?:\.\d+)?)", text)
-            if mf:
-                b["flyingCount"] = int(mf.group(1))
-                b["lateCount"] = int(mf.group(2))
-                b["avgST"] = _num(mf.group(3))
+            b["meetResults"]=meet_results
 
         found.append(b)
         used.add(toban)
-        if len(found) == 6:
+        if len(found)==6:
             break
 
     apply_equipment_ranks(found)
     return found
+
+def _merge_racer_name_key(v: str) -> str:
+    s=compact(str(v or ""))
+    s=re.sub(r"^(?:投票|発売終了|発売中|投票受付中|受付終了)\s*", "", s)
+    return re.sub(r"[　\s]+", "", s)
+
+def merge_racelist_meta_into_race(race: dict, meta: list[dict], racer_cache: dict) -> None:
+    if not meta:
+        return
+
+    old_by_lane={
+        int(b.get("lane",0)):dict(b)
+        for b in race.get("boats",[])
+        if int(b.get("lane",0)) in range(1,7)
+    }
+    merged={i:dict(old_by_lane.get(i,{"lane":i})) for i in range(1,7)}
+    used_lanes=set()
+
+    for pos,b in enumerate(meta,1):
+        lane=int(b.get("lane") or 0)
+        target_name=_merge_racer_name_key(b.get("racerName"))
+
+        if lane not in range(1,7):
+            lane=next((
+                ln for ln,ob in merged.items()
+                if ln not in used_lanes
+                and target_name
+                and _merge_racer_name_key(ob.get("racerName"))==target_name
+            ),0)
+
+        if lane not in range(1,7):
+            lane=next((ln for ln in range(1,7) if ln not in used_lanes),0)
+
+        if lane not in range(1,7):
+            continue
+
+        item=dict(merged.get(lane,{"lane":lane}))
+        item.update({k:v for k,v in b.items() if v not in (None,"")})
+        item["lane"]=lane
+
+        rid=str(item.get("racerId") or "")
+        period=racer_cache.get(rid,{}).get("period") if rid else None
+        if period:
+            item["period"]=period
+
+        merged[lane]=item
+        used_lanes.add(lane)
+
+    race["boats"]=[merged[i] for i in range(1,7)]
+    race["metaCount"]=len(meta)
+    apply_equipment_ranks(race["boats"])
 
 def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache: dict):
     """Preserve enriched/live fields while refreshing raceindex timing/status."""
@@ -741,7 +838,7 @@ def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache
             ob = old_boats.get(int(b.get("lane",0)), {})
             same = (
                 not b.get("racerName") or not ob.get("racerName") or
-                compact(b["racerName"]) == compact(ob["racerName"])
+                _merge_racer_name_key(b["racerName"]) == _merge_racer_name_key(ob["racerName"])
             )
             if same:
                 merged = dict(ob)
@@ -763,7 +860,7 @@ def old_meeting_map(old_payload: dict) -> dict:
 
 
 def _racer_name_key(v) -> str:
-    return re.sub(r"[　\s]+", "", compact(str(v or "")))
+    return _merge_racer_name_key(v)
 
 def carry_ongoing_meeting_data(races: list[dict], old_meeting: dict, date: str, title: str, meet_days: list[dict]) -> None:
     """
@@ -1377,36 +1474,7 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
             meta, err = meta_results.get((m["venueCode"],int(r["raceNo"])),([],None))
 
             if meta:
-                old_by_lane={int(b.get("lane",0)):dict(b) for b in r.get("boats",[]) if int(b.get("lane",0)) in range(1,7)}
-                # Always keep six lane slots so a single metadata miss never shifts 2-6 into the wrong lane.
-                merged={i:dict(old_by_lane.get(i,{"lane":i})) for i in range(1,7)}
-                used_lanes=set()
-
-                def _norm_name(v):
-                    return re.sub(r"[　\s]+","",compact(str(v or "")))
-
-                for pos,b in enumerate(meta,1):
-                    lane=int(b.get("lane") or 0)
-                    if lane not in range(1,7):
-                        target_name=_norm_name(b.get("racerName"))
-                        lane=next((
-                            ln for ln,ob in merged.items()
-                            if ln not in used_lanes and target_name and _norm_name(ob.get("racerName"))==target_name
-                        ),0)
-                    if lane not in range(1,7):
-                        lane=next((ln for ln in range(1,7) if ln not in used_lanes),0)
-                    if lane not in range(1,7):
-                        continue
-
-                    item=dict(merged.get(lane,{"lane":lane}))
-                    item.update({k:v for k,v in b.items() if v not in (None,"")})
-                    item["lane"]=lane
-                    merged[lane]=item
-                    used_lanes.add(lane)
-
-                r["boats"]=[merged[i] for i in range(1,7)]
-                r["metaCount"]=len(meta)
-                apply_equipment_ranks(r["boats"])
+                merge_racelist_meta_into_race(r,meta,racer_cache)
 
             if err:
                 r["metaError"] = err
@@ -1452,7 +1520,47 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
                 key=(m["venueCode"],d.get("date"))
                 if key in past_results:
                     races,_ = past_results[key]
+                    existing=d.get("races",[]) or []
+                    merge_boat_details(races,existing,racer_cache)
                     d["races"] = races
+
+    # 過去日の出走表が以前の更新で「名前/級だけ」に戻ってしまった場合だけ、
+    # 公式 racelist から詳細データを再取得して復旧する。
+    # 一度復旧したレースは次回以降スキップするので、通常運用では軽い。
+    past_meta_tasks=[]
+    for m in meetings:
+        for d in m.get("meetDays",[]):
+            if not d.get("date") or d["date"] >= m.get("date",""):
+                continue
+            for r in d.get("races",[]):
+                boats=r.get("boats",[]) or []
+                rich=sum(1 for b in boats if b.get("racerId") and (b.get("branch") or b.get("period") or b.get("avgST") is not None))
+                if len(boats) and rich < min(6,len(boats)):
+                    past_meta_tasks.append((m["venueCode"],d["date"],int(r.get("raceNo") or 0)))
+
+    past_meta_tasks=[x for x in past_meta_tasks if x[2]]
+    if past_meta_tasks:
+        print(f"[BOAT CHECK] ENRICH historical racelist recovery tasks={len(past_meta_tasks)}")
+        past_meta_results={}
+        with ThreadPoolExecutor(max_workers=min(max(workers,12),16)) as ex:
+            futs={ex.submit(fetch_racelist_task,*t):t for t in past_meta_tasks}
+            for fut in as_completed(futs):
+                code,hd,rno=futs[fut]
+                try:
+                    _,_,meta,err=fut.result()
+                except Exception as e:
+                    meta,err=[],f"{type(e).__name__}: {e}"
+                past_meta_results[(code,hd,rno)]=(meta,err)
+
+        for m in meetings:
+            for d in m.get("meetDays",[]):
+                for r in d.get("races",[]):
+                    key=(m["venueCode"],d.get("date"),int(r.get("raceNo") or 0))
+                    meta,err=past_meta_results.get(key,([],None))
+                    if meta:
+                        merge_racelist_meta_into_race(r,meta,racer_cache)
+                    elif err:
+                        r.setdefault("errors",{})["racelist"]=err
 
     # 過去開催日の結果を取得。節間成績の「進入コース」補完と、
     # 節間成績から過去レース結果へ遷移するために保存する。
@@ -1501,10 +1609,70 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
             if d.get("date") == m.get("date"):
                 d["races"] = m.get("races",[])
 
+    # 同一開催の別日表示でも、選手の基本プロフィールが空白にならないように
+    # 登録番号をキーに最も情報量の多いレコードを共有する。
+    for m in meetings:
+        registry_by_id={}
+        registry_by_name={}
+
+        all_races=list(m.get("races",[]) or [])
+        for d in m.get("meetDays",[]) or []:
+            all_races.extend(d.get("races",[]) or [])
+
+        for r in all_races:
+            for b in r.get("boats",[]) or []:
+                rid=str(b.get("racerId") or b.get("registrationNo") or "")
+                name_key=_merge_racer_name_key(b.get("racerName"))
+                richness=sum(
+                    1 for k in (
+                        "racerId","branch","origin","period","age","weight",
+                        "flyingCount","lateCount","avgST","stats","meetResults","meetStats"
+                    )
+                    if b.get(k) not in (None,"",[],{})
+                )
+                if rid:
+                    old=registry_by_id.get(rid)
+                    if old is None or richness>old[0]:
+                        registry_by_id[rid]=(richness,b)
+                if name_key:
+                    old=registry_by_name.get(name_key)
+                    if old is None or richness>old[0]:
+                        registry_by_name[name_key]=(richness,b)
+
+        share_keys=(
+            "racerId","registrationNo","class","branch","origin","period","age",
+            "flyingCount","lateCount","avgST","nationalWinRate","national2Rate","national3Rate",
+            "localWinRate","local2Rate","local3Rate","stats","meetResults","meetStats"
+        )
+        for r in all_races:
+            for b in r.get("boats",[]) or []:
+                rid=str(b.get("racerId") or b.get("registrationNo") or "")
+                name_key=_merge_racer_name_key(b.get("racerName"))
+                src_pair=registry_by_id.get(rid) if rid else None
+                if src_pair is None and name_key:
+                    src_pair=registry_by_name.get(name_key)
+                if not src_pair:
+                    continue
+                src=src_pair[1]
+                for k in share_keys:
+                    if b.get(k) in (None,"",[],{}) and src.get(k) not in (None,"",[],{}):
+                        try:
+                            b[k]=json.loads(json.dumps(src[k],ensure_ascii=False))
+                        except Exception:
+                            b[k]=src[k]
+
     # 未取得の登録期だけprofile取得
+    all_profile_boats=[]
+    for m in meetings:
+        for r in m.get("races",[]) or []:
+            all_profile_boats.extend(r.get("boats",[]) or [])
+        for d in m.get("meetDays",[]) or []:
+            for r in d.get("races",[]) or []:
+                all_profile_boats.extend(r.get("boats",[]) or [])
+
     ids = {
         str(b.get("racerId"))
-        for m in meetings for r in m.get("races",[]) for b in r.get("boats",[])
+        for b in all_profile_boats
         if b.get("racerId")
     }
     missing = sorted(rid for rid in ids if not racer_cache.get(rid,{}).get("period"))
@@ -1516,13 +1684,11 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
                 rid, info = fut.result()
                 racer_cache[rid] = info
 
-    for m in meetings:
-        for r in m.get("races",[]):
-            for b in r.get("boats",[]):
-                rid = str(b.get("racerId",""))
-                p = racer_cache.get(rid,{}).get("period")
-                if p:
-                    b["period"] = p
+    for b in all_profile_boats:
+        rid = str(b.get("racerId",""))
+        p = racer_cache.get(rid,{}).get("period")
+        if p:
+            b["period"] = p
 
     cache_path.parent.mkdir(parents=True,exist_ok=True)
     cache_path.write_text(json.dumps(racer_cache,ensure_ascii=False,indent=2),encoding="utf-8")
@@ -1571,7 +1737,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"45.0",
+        "schemaVersion":"46.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
