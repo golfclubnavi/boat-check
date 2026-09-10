@@ -3734,34 +3734,62 @@ function renderHomeDeadline(){
   if(!panel)return;
   const now=jstNow();
 
-  const items=(state.meetings||[]).map(m=>{
-    if(m.date!==now.date)return null;
+  const allUpcoming=[];
+  (state.meetings||[]).forEach(m=>{
+    if(m.date!==now.date)return;
     const cancel=meetingCancelStatus(m);
-    if(cancel==="cancelled"||cancel==="postponed")return null;
-    const race=getNextRace(m);
-    if(!race)return null;
-    const mins=minutesUntil(race.deadline);
-    if(mins===null||mins<0)return null;
-    return {
-      venueCode:m.venueCode,
-      venueName:m.venueName||VENUES.find(v=>v[0]===m.venueCode)?.[1]||"--",
-      day:m.day||"",
-      grade:meetingGrade(m),
-      raceNo:Number(race.raceNo)||0,
-      deadline:race.deadline||"--:--",
-      mins,
-      timeMark:timeMark(m),
-      partial:cancel==="partial_cancelled"
-    };
-  }).filter(Boolean).sort((a,b)=>a.mins-b.mins).slice(0,10);
+    if(cancel==="cancelled"||cancel==="postponed")return;
+
+    (m.races||[]).forEach(r=>{
+      if(raceIsCancelled(r))return;
+      const mins=minutesUntil(r.deadline);
+      if(mins===null||mins<0)return;
+      allUpcoming.push({
+        venueCode:m.venueCode,
+        venueName:m.venueName||VENUES.find(v=>v[0]===m.venueCode)?.[1]||"--",
+        day:m.day||"",
+        grade:meetingGrade(m),
+        raceNo:Number(r.raceNo)||0,
+        deadline:r.deadline||"--:--",
+        mins,
+        partial:cancel==="partial_cancelled"
+      });
+    });
+  });
+
+  allUpcoming.sort((a,b)=>a.mins-b.mins || a.venueCode.localeCompare(b.venueCode) || a.raceNo-b.raceNo);
+
+  // 公式のようにまず「各場の直近」を並べる。
+  // 当日開催場が10場未満なら、次レースを追加して合計10件まで補完する。
+  const picked=[];
+  const seenVenue=new Set();
+  allUpcoming.forEach(x=>{
+    if(picked.length>=10)return;
+    if(!seenVenue.has(x.venueCode)){
+      picked.push(x);
+      seenVenue.add(x.venueCode);
+    }
+  });
+  if(picked.length<10){
+    const used=new Set(picked.map(x=>`${x.venueCode}:${x.raceNo}`));
+    allUpcoming.forEach(x=>{
+      if(picked.length>=10)return;
+      const key=`${x.venueCode}:${x.raceNo}`;
+      if(!used.has(key)){
+        picked.push(x);
+        used.add(key);
+      }
+    });
+    picked.sort((a,b)=>a.mins-b.mins || a.venueCode.localeCompare(b.venueCode) || a.raceNo-b.raceNo);
+  }
 
   panel.innerHTML=`<div class="homeListPage">
     <div class="homePanelTitle">
-      <div><h3>締切順</h3><p>直近の締切が近い開催場を10場表示</p></div>
+      <div><h3>締切順</h3><p>直近の締切が近いレースを10件表示</p></div>
       <span>BOAT RACE公式</span>
     </div>
-    ${items.length?`<div class="deadlineList">
-      ${items.map((x,i)=>{
+    ${picked.length?`<div class="deadlineList">
+      ${picked.map((x,i)=>{
         const urgent=x.mins<=10;
         return `<button class="deadlineRow ${urgent?"urgent":""}" onclick="homeOpenRace('${x.venueCode}',${x.raceNo})">
           <div class="deadlineRank">${i+1}</div>
@@ -3777,7 +3805,7 @@ function renderHomeDeadline(){
           <div class="deadlineArrow">›</div>
         </button>`;
       }).join("")}
-    </div>`:`<div class="homeEmptyState"><b>締切前の開催場はありません</b><span>開催データが更新されると自動で表示します。</span></div>`}
+    </div>`:`<div class="homeEmptyState"><b>締切前のレースはありません</b><span>開催データが更新されると自動で表示します。</span></div>`}
   </div>`;
 }
 function updateHomeFavoriteSearch(q){
@@ -3971,8 +3999,232 @@ function homeRenderBetInquiry(){
     ${homeHistoryRows(homeBetHistoryTab)}
   </div>`;
 }
+function homeRewardAdState(){
+  const today=jstNow().date;
+  let s=homeLoadJson("boatCheckRewardAdDaily",{date:today,count:0});
+  if(!s || s.date!==today)s={date:today,count:0};
+  return s;
+}
+function homeSaveRewardAdState(s){
+  homeSaveJson("boatCheckRewardAdDaily",s);
+}
+function homeRewardAdRemaining(){
+  return Math.max(0,5-homeRewardAdState().count);
+}
+let homeAdCountdownTimer=null;
+let homeAdCountdown=0;
+
+function homeWatchRewardAd(){
+  const s=homeRewardAdState();
+  if(s.count>=5){
+    demoToast("本日の広告視聴上限は5回です");
+    return;
+  }
+
+  // 将来、実広告SDKをつなぐときは window.boatCheckShowRewardAd(resolve,reject) を実装。
+  if(typeof window.boatCheckShowRewardAd==="function"){
+    window.boatCheckShowRewardAd(
+      ()=>homeGrantAdReward(),
+      ()=>demoToast("広告を最後まで視聴するとptを獲得できます")
+    );
+    return;
+  }
+
+  // 現段階は広告SDK未接続のため、テスト用の視聴確認画面を表示。
+  homeAdCountdown=10;
+  renderHomeAdModal();
+  clearInterval(homeAdCountdownTimer);
+  homeAdCountdownTimer=setInterval(()=>{
+    homeAdCountdown=Math.max(0,homeAdCountdown-1);
+    renderHomeAdModal();
+    if(homeAdCountdown<=0)clearInterval(homeAdCountdownTimer);
+  },1000);
+}
+function homeCloseAdModal(){
+  clearInterval(homeAdCountdownTimer);
+  const el=$("homeAdModal");
+  if(el)el.remove();
+}
+function renderHomeAdModal(){
+  let wrap=$("homeAdModal");
+  if(!wrap){
+    wrap=document.createElement("div");
+    wrap.id="homeAdModal";
+    document.body.appendChild(wrap);
+  }
+  wrap.className="rewardAdBackdrop";
+  wrap.innerHTML=`<div class="rewardAdModal">
+    <div class="rewardAdHead"><b>広告視聴</b><button onclick="homeCloseAdModal()">×</button></div>
+    <div class="rewardAdMock">
+      <span>AD</span>
+      <strong>リワード広告表示エリア</strong>
+      <small>現在は広告SDK接続前のテスト表示です</small>
+    </div>
+    <div class="rewardAdProgress">
+      ${homeAdCountdown>0?`あと <b>${homeAdCountdown}</b> 秒`:`視聴完了`}
+    </div>
+    <button class="rewardAdClaim" ${homeAdCountdown>0?"disabled":""} onclick="homeGrantAdReward()">視聴完了・500pt受け取る</button>
+  </div>`;
+}
+function homeGrantAdReward(){
+  const s=homeRewardAdState();
+  if(s.count>=5){
+    homeCloseAdModal();
+    demoToast("本日の広告視聴上限は5回です");
+    return;
+  }
+  s.count+=1;
+  homeSaveRewardAdState(s);
+  demoPoints+=500;
+  demoSavePoints();
+
+  const hist=homePtHistory();
+  hist.unshift({
+    at:new Date().toISOString(),
+    amount:500,
+    balance:demoPoints,
+    type:"reward_ad",
+    label:"広告視聴"
+  });
+  homeSaveJson("boatCheckPtHistory",hist.slice(0,200));
+  homeCloseAdModal();
+  renderHomeMyPage();
+  renderHomePointBalance();
+  demoToast("広告視聴ボーナス +500pt");
+}
+
+function homeMissionDefinitions(){
+  return [
+    {
+      id:"manshu",
+      title:"万舟チャレンジ",
+      desc:"オッズ100.0倍以上の買い目を的中",
+      reward:1000,
+      icon:"🎯"
+    },
+    {
+      id:"two_tickets",
+      title:"2点勝負",
+      desc:"同じレースを2点以内で的中",
+      reward:500,
+      icon:"✌️"
+    }
+  ];
+}
+function homeMissionState(){
+  const today=jstNow().date;
+  let s=homeLoadJson("boatCheckDailyMissionState",{date:today,claimed:{}});
+  if(!s || s.date!==today)s={date:today,claimed:{}};
+  if(!s.claimed)s.claimed={};
+  return s;
+}
+function homeMissionStatus(id){
+  const today=jstNow().date;
+  const histories=homeBetHistory();
+  const raceGroups=new Map();
+
+  histories.forEach(h=>{
+    const date=(h.at||"").slice(0,10);
+    // ISOはUTCのため、表示日がずれる可能性を避けるためJSTの日付も計算
+    let jstDate="";
+    try{
+      jstDate=new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Tokyo"}).format(new Date(h.at));
+    }catch(e){}
+    if(jstDate!==today && date!==today)return;
+
+    (h.bets||[]).forEach(b=>{
+      const key=`${b.venueCode||b.venueName||h.venue||""}:${b.raceNo||h.raceNo||""}`;
+      if(!raceGroups.has(key))raceGroups.set(key,[]);
+      raceGroups.get(key).push(b);
+    });
+  });
+
+  if(id==="manshu"){
+    for(const bets of raceGroups.values()){
+      for(const b of bets){
+        const hit=b.hit===true||b.isHit===true||b.result==="hit"||Number(b.payout||0)>0;
+        const odds=Number(b.odds||0);
+        if(hit && odds>=100)return {done:true,progress:"達成"};
+      }
+    }
+    return {done:false,progress:"0 / 1"};
+  }
+
+  if(id==="two_tickets"){
+    for(const bets of raceGroups.values()){
+      if(bets.length<=2 && bets.some(b=>b.hit===true||b.isHit===true||b.result==="hit"||Number(b.payout||0)>0)){
+        return {done:true,progress:"達成"};
+      }
+    }
+    return {done:false,progress:"0 / 1"};
+  }
+
+  return {done:false,progress:"0 / 1"};
+}
+function homeClaimMission(id){
+  const def=homeMissionDefinitions().find(x=>x.id===id);
+  if(!def)return;
+  const status=homeMissionStatus(id);
+  const stateM=homeMissionState();
+  if(stateM.claimed[id]){
+    demoToast("このミッションは受取済みです");
+    return;
+  }
+  if(!status.done){
+    demoToast("ミッションはまだ達成していません");
+    return;
+  }
+
+  stateM.claimed[id]=true;
+  homeSaveJson("boatCheckDailyMissionState",stateM);
+  demoPoints+=def.reward;
+  demoSavePoints();
+
+  const hist=homePtHistory();
+  hist.unshift({
+    at:new Date().toISOString(),
+    amount:def.reward,
+    balance:demoPoints,
+    type:"mission",
+    label:def.title
+  });
+  homeSaveJson("boatCheckPtHistory",hist.slice(0,200));
+  renderHomeMyPage();
+  renderHomePointBalance();
+  demoToast(`${def.title} +${def.reward.toLocaleString("ja-JP")}pt`);
+}
+function homeRenderMissions(){
+  const defs=homeMissionDefinitions();
+  const ms=homeMissionState();
+  return `<div class="dailyMissionBox">
+    <div class="dailyMissionHead">
+      <div><h4>本日のミッション</h4><span>毎日0:00にリセット</span></div>
+      <b>${Object.keys(ms.claimed||{}).length}/${defs.length} 受取</b>
+    </div>
+    ${defs.map(d=>{
+      const st=homeMissionStatus(d.id);
+      const claimed=!!ms.claimed[d.id];
+      return `<div class="dailyMissionRow ${st.done?"done":""}">
+        <div class="missionIcon">${d.icon}</div>
+        <div class="missionText">
+          <strong>${esc(d.title)}</strong>
+          <span>${esc(d.desc)}</span>
+          <small>報酬 +${d.reward.toLocaleString("ja-JP")}pt</small>
+        </div>
+        <div class="missionAction">
+          <span>${claimed?"受取済":st.progress}</span>
+          <button ${(!st.done||claimed)?"disabled":""} onclick="homeClaimMission('${d.id}')">${claimed?"受取済":"受け取る"}</button>
+        </div>
+      </div>`;
+    }).join("")}
+    <div class="missionNote">※ 的中ミッションはレース結果が投票履歴へ反映された後に自動判定します。</div>
+  </div>`;
+}
 function homeRenderPoints(){
   const hist=homePtHistory();
+  const adState=homeRewardAdState();
+  const remaining=Math.max(0,5-adState.count);
+
   return `<div class="myPageSection">
     <div class="myPointHero">
       <small>現在の所持pt</small>
@@ -3980,25 +4232,37 @@ function homeRenderPoints(){
       <span>デモ投票専用の仮想ポイント</span>
     </div>
 
-    <div class="myPointAdd">
-      <h4>ptを追加</h4>
-      <div class="myPointQuick">
-        ${[1000,5000,10000,30000].map(v=>`<button onclick="homeAddPoints(${v})">+${v.toLocaleString("ja-JP")}pt</button>`).join("")}
+    <div class="rewardAdCard">
+      <div class="rewardAdInfo">
+        <div class="rewardAdIcon">▶</div>
+        <div>
+          <h4>広告を見てpt追加</h4>
+          <p>広告を最後まで見ると <b>500pt</b> 獲得</p>
+        </div>
       </div>
-      <div class="myPointCustom">
-        <input id="myPointCustomInput" type="number" inputmode="numeric" min="1" step="1" placeholder="自由に入力">
-        <span>pt</span>
-        <button onclick="homeAddCustomPoints()">追加</button>
+      <div class="rewardAdLimit">
+        <span>本日の残り</span>
+        <strong>${remaining}<small>/5回</small></strong>
       </div>
+      <button ${remaining<=0?"disabled":""} onclick="homeWatchRewardAd()">${remaining>0?"広告を見る":"本日分終了"}</button>
+      <small class="rewardAdTestNote">現在は実広告SDK接続前のテスト表示。広告サービス導入後は実広告へ差し替え可能です。</small>
     </div>
 
-    <div class="favoriteSectionHead"><b>pt追加履歴</b><span>${hist.length}件</span></div>
+    ${homeRenderMissions()}
+
+    <div class="favoriteSectionHead"><b>pt獲得履歴</b><span>${hist.length}件</span></div>
     ${hist.length?`<div class="ptHistory">
       ${hist.slice(0,30).map(x=>`<div class="ptHistoryRow">
-        <div><strong>+${Number(x.amount||0).toLocaleString("ja-JP")}pt</strong><small>${homeFormatDateTime(x.at)}</small></div>
+        <div>
+          <strong>+${Number(x.amount||0).toLocaleString("ja-JP")}pt</strong>
+          <small>${esc(x.label||(
+            x.type==="reward_ad"?"広告視聴":
+            x.type==="mission"?"本日のミッション":"pt追加"
+          ))} ・ ${homeFormatDateTime(x.at)}</small>
+        </div>
         <span>残高 ${homeFormatPt(x.balance)}</span>
       </div>`).join("")}
-    </div>`:`<div class="myEmpty">pt追加履歴はまだありません。</div>`}
+    </div>`:`<div class="myEmpty">pt獲得履歴はまだありません。</div>`}
   </div>`;
 }
 function homeRenderFavoriteManage(){
@@ -10797,6 +11061,401 @@ document.addEventListener("DOMContentLoaded",()=>{
   .favoriteRun{grid-template-columns:34px 1fr 86px 12px;}
   .myPageTabs button{font-size:6.6px;}
   .myHistoryRow{grid-template-columns:1fr 86px 72px;}
+}
+</style>
+
+
+
+<style id="v104-home-visibility-rewards">
+/* マイページ全体を濃く・大きく・枠線強化 */
+#homeMyPagePanel .homeListPage{
+  border:2px solid #8fb8d1!important;
+}
+#homeMyPagePanel .homePanelTitle{
+  border-bottom:2px solid #a9c7da!important;
+}
+#homeMyPagePanel .homePanelTitle h3{
+  font-size:21px!important;
+}
+#homeMyPagePanel .homePanelTitle p{
+  font-size:9px!important;
+}
+#homeMyPagePanel .homePanelTitle>span{
+  font-size:8px!important;
+}
+#homeMyPagePanel .myBalanceBar{
+  border-bottom:2px solid #075b8e!important;
+}
+#homeMyPagePanel .myBalanceBar span{
+  font-size:9.5px!important;
+}
+#homeMyPagePanel .myBalanceBar strong{
+  font-size:20px!important;
+}
+#homeMyPagePanel .myPageTabs{
+  border-bottom:2px solid #9fc1d6!important;
+}
+#homeMyPagePanel .myPageTabs button{
+  min-height:50px!important;
+  border-right:1.5px solid #bdd2df!important;
+  font-size:8px!important;
+}
+#homeMyPagePanel .myStatGrid,
+#homeMyPagePanel .myHistoryList,
+#homeMyPagePanel .myPointAdd,
+#homeMyPagePanel .ptHistory,
+#homeMyPagePanel .myFavoriteManage,
+#homeMyPagePanel .myInfoCard{
+  border-width:2px!important;
+}
+#homeMyPagePanel .myStatGrid small,
+#homeMyPagePanel .myHistoryRow>div:first-child small,
+#homeMyPagePanel .ptHistoryRow small,
+#homeMyPagePanel .myFavoriteRow span,
+#homeMyPagePanel .myInfoCard span{
+  font-size:7px!important;
+}
+#homeMyPagePanel .myStatGrid strong{
+  font-size:11.5px!important;
+}
+#homeMyPagePanel .myHistoryRow>div:first-child strong,
+#homeMyPagePanel .ptHistoryRow strong,
+#homeMyPagePanel .myFavoriteRow strong,
+#homeMyPagePanel .myInfoCard strong{
+  font-size:10px!important;
+}
+#homeMyPagePanel .myHistoryTabs button{
+  min-height:42px!important;
+  border-width:1.5px!important;
+  font-size:7.5px!important;
+}
+#homeMyPagePanel .favoriteSectionHead b{
+  font-size:10px!important;
+}
+#homeMyPagePanel .favoriteSectionHead span{
+  font-size:7.5px!important;
+}
+#homeMyPagePanel .myEmpty{
+  border-width:1.5px!important;
+  font-size:8px!important;
+}
+
+/* pt：広告報酬 */
+.rewardAdCard{
+  margin-top:9px;
+  padding:11px;
+  border:2px solid #8fbfd9;
+  border-radius:11px;
+  background:#fff;
+}
+.rewardAdInfo{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.rewardAdIcon{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:linear-gradient(135deg,#0a6eaa,#0a9cce);
+  color:#fff;
+  font-size:14px;
+  font-weight:950;
+}
+.rewardAdInfo h4{
+  margin:0;
+  color:#164867;
+  font-size:11px;
+  font-weight:950;
+}
+.rewardAdInfo p{
+  margin:3px 0 0;
+  color:#6f8595;
+  font-size:7.5px;
+  font-weight:850;
+}
+.rewardAdInfo p b{color:#0a70aa;}
+.rewardAdLimit{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  margin-top:10px;
+  padding:8px 10px;
+  border:1.5px solid #c1d9e7;
+  border-radius:8px;
+  background:#f5fafd;
+}
+.rewardAdLimit span{
+  color:#6d8496;
+  font-size:8px;
+  font-weight:900;
+}
+.rewardAdLimit strong{
+  color:#0a6ea8;
+  font-size:17px;
+  font-weight:950;
+}
+.rewardAdLimit small{
+  font-size:7px;
+  margin-left:2px;
+}
+.rewardAdCard>button{
+  width:100%;
+  min-height:44px;
+  margin-top:8px;
+  border:0;
+  border-radius:9px;
+  background:linear-gradient(135deg,#0872b5,#079fd1);
+  color:#fff;
+  font-family:inherit;
+  font-size:10px;
+  font-weight:950;
+}
+.rewardAdCard>button:disabled{
+  background:#d6e0e6;
+  color:#8799a5;
+}
+.rewardAdTestNote{
+  display:block;
+  margin-top:7px;
+  color:#8a9aa5;
+  font-size:6px;
+  line-height:1.45;
+  font-weight:800;
+}
+
+/* reward ad modal */
+.rewardAdBackdrop{
+  position:fixed;
+  inset:0;
+  z-index:100001;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+  background:rgba(5,25,42,.62);
+}
+.rewardAdModal{
+  width:min(94vw,420px);
+  overflow:hidden;
+  border:2px solid #8dbad3;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 22px 55px rgba(0,0,0,.28);
+}
+.rewardAdHead{
+  display:grid;
+  grid-template-columns:1fr 34px;
+  align-items:center;
+  min-height:46px;
+  padding:0 8px 0 14px;
+  border-bottom:2px solid #0a85c4;
+}
+.rewardAdHead b{
+  text-align:center;
+  color:#0a68a0;
+  font-size:12px;
+  font-weight:950;
+}
+.rewardAdHead button{
+  width:30px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0;border:0;border-radius:50%;
+  background:#edf3f6;color:#6c8191;
+  font-size:19px;font-weight:900;
+}
+.rewardAdMock{
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  background:linear-gradient(135deg,#edf5fa,#dcebf4);
+}
+.rewardAdMock>span{
+  padding:5px 9px;
+  border-radius:6px;
+  background:#8ba4b4;
+  color:#fff;
+  font-size:8px;
+  font-weight:950;
+}
+.rewardAdMock strong{
+  color:#476779;
+  font-size:12px;
+  font-weight:950;
+}
+.rewardAdMock small{
+  color:#7e919e;
+  font-size:7px;
+  font-weight:850;
+}
+.rewardAdProgress{
+  padding:10px;
+  text-align:center;
+  color:#45677c;
+  font-size:9px;
+  font-weight:900;
+}
+.rewardAdProgress b{
+  color:#0a73ae;
+  font-size:14px;
+}
+.rewardAdClaim{
+  width:calc(100% - 20px);
+  min-height:44px;
+  margin:0 10px 10px;
+  border:0;
+  border-radius:9px;
+  background:#0a84c4;
+  color:#fff;
+  font-family:inherit;
+  font-size:9px;
+  font-weight:950;
+}
+.rewardAdClaim:disabled{
+  background:#d3dee5;
+  color:#8a9aa5;
+}
+
+/* 本日のミッション */
+.dailyMissionBox{
+  margin-top:9px;
+  overflow:hidden;
+  border:2px solid #96bed5;
+  border-radius:11px;
+  background:#fff;
+}
+.dailyMissionHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:10px 11px;
+  border-bottom:1.5px solid #bdd2df;
+  background:linear-gradient(90deg,#f6fbfe,#edf7fc);
+}
+.dailyMissionHead>div{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.dailyMissionHead h4{
+  margin:0;
+  color:#174a69;
+  font-size:11px;
+  font-weight:950;
+}
+.dailyMissionHead span{
+  color:#7a8f9f;
+  font-size:6.5px;
+  font-weight:850;
+}
+.dailyMissionHead>b{
+  color:#0a6fa9;
+  font-size:8px;
+  font-weight:950;
+}
+.dailyMissionRow{
+  display:grid;
+  grid-template-columns:38px 1fr 74px;
+  align-items:center;
+  gap:8px;
+  min-height:72px;
+  padding:9px 10px;
+  border-bottom:1.5px solid #d0e0e9;
+}
+.dailyMissionRow.done{
+  background:#f6fcf8;
+}
+.missionIcon{
+  width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:9px;
+  background:#eef6fb;
+  font-size:17px;
+}
+.missionText{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.missionText strong{
+  color:#173e5b;
+  font-size:9.5px;
+  font-weight:950;
+}
+.missionText span{
+  color:#6f8798;
+  font-size:7px;
+  font-weight:850;
+}
+.missionText small{
+  color:#0b7850;
+  font-size:6.5px;
+  font-weight:950;
+}
+.missionAction{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:5px;
+}
+.missionAction>span{
+  text-align:center;
+  color:#6e8596;
+  font-size:7px;
+  font-weight:900;
+}
+.missionAction button{
+  min-height:31px;
+  border:1.5px solid #0a7fc0;
+  border-radius:7px;
+  background:#eaf7fd;
+  color:#0870aa;
+  font-family:inherit;
+  font-size:7px;
+  font-weight:950;
+}
+.missionAction button:disabled{
+  border-color:#ccd9e1;
+  background:#f0f4f6;
+  color:#91a0aa;
+}
+.missionNote{
+  padding:7px 10px;
+  background:#f7fafc;
+  color:#7e909d;
+  font-size:6px;
+  line-height:1.45;
+  font-weight:800;
+}
+
+/* 締切順も少し見やすく */
+#homeDeadlinePanel .homeListPage{
+  border:2px solid #8fb8d1!important;
+}
+#homeDeadlinePanel .deadlineRow{
+  border-width:2px!important;
+}
+#homeDeadlinePanel .deadlineVenue strong{
+  font-size:12.5px!important;
+}
+#homeDeadlinePanel .deadlineRace b,
+#homeDeadlinePanel .deadlineTime strong{
+  font-size:13px!important;
+}
+
+@media(max-width:430px){
+  #homeMyPagePanel .homePanelTitle h3{font-size:20px!important;}
+  #homeMyPagePanel .myPageTabs button{font-size:7.5px!important;}
+  .dailyMissionRow{grid-template-columns:36px 1fr 70px;}
 }
 </style>
 
