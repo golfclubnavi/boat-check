@@ -64,7 +64,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.44; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.45; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -761,6 +761,99 @@ def old_meeting_map(old_payload: dict) -> dict:
         if m.get("venueCode")
     }
 
+
+def _racer_name_key(v) -> str:
+    return re.sub(r"[　\s]+", "", compact(str(v or "")))
+
+def carry_ongoing_meeting_data(races: list[dict], old_meeting: dict, date: str, title: str, meet_days: list[dict]) -> None:
+    """
+    At JST midnight today.json switches to the new race date before the daily
+    full enrichment may have completed.
+
+    For a continuing meeting, entrants/equipment/series stats already known
+    from yesterday are safely matched by racer name and carried forward.
+    Race-specific fields such as lane/before/result are NOT copied.
+    """
+    if not old_meeting or not races:
+        return
+
+    old_dates = {
+        str(d.get("date") or "")
+        for d in old_meeting.get("meetDays", [])
+        if d.get("date")
+    }
+    new_dates = {
+        str(d.get("date") or "")
+        for d in meet_days or []
+        if d.get("date")
+    }
+
+    old_title = compact(str(old_meeting.get("title") or ""))
+    new_title = compact(str(title or ""))
+
+    # Continue only when the official schedule/title indicates the same meet.
+    continuing = (
+        date in old_dates
+        or (
+            old_title and new_title
+            and old_title == new_title
+            and bool(old_dates.intersection(new_dates))
+        )
+    )
+    if not continuing:
+        return
+
+    source_by_name = {}
+    source_races = list(old_meeting.get("races", []) or [])
+    for day in old_meeting.get("meetDays", []) or []:
+        source_races.extend(day.get("races", []) or [])
+
+    # Prefer the richest record seen for each racer.
+    for race in source_races:
+        for boat in race.get("boats", []) or []:
+            key = _racer_name_key(boat.get("racerName"))
+            if not key:
+                continue
+            richness = sum(
+                1 for k in (
+                    "racerId","registrationNo","branch","origin","period","age",
+                    "flyingCount","lateCount","avgST","meetResults","meetStats",
+                    "motor","boat","motorNo","boatNo"
+                )
+                if boat.get(k) not in (None, "", [], {})
+            )
+            prev = source_by_name.get(key)
+            if prev is None or richness > prev[0]:
+                source_by_name[key] = (richness, boat)
+
+    safe_keys = (
+        "racerId","registrationNo","class","branch","origin","period","age","weight",
+        "flyingCount","lateCount","avgST",
+        "national","local","stats","racerStats","courseStats",
+        "meetResults","meetStats",
+        "motorNo","motorTwoRate","boatNo","boatTwoRate","motor","boat",
+    )
+
+    carried = 0
+    for race in races:
+        for boat in race.get("boats", []) or []:
+            key = _racer_name_key(boat.get("racerName"))
+            src_pair = source_by_name.get(key)
+            if not src_pair:
+                continue
+            src = src_pair[1]
+            for k in safe_keys:
+                if boat.get(k) in (None, "", [], {}) and src.get(k) not in (None, "", [], {}):
+                    # copy JSON-compatible nested values without sharing references
+                    try:
+                        boat[k] = json.loads(json.dumps(src[k], ensure_ascii=False))
+                    except Exception:
+                        boat[k] = src[k]
+            carried += 1
+
+    if carried:
+        print(f"  CARRY {old_meeting.get('venueCode','--')} {old_meeting.get('venueName','')}: {carried} racer rows across midnight")
+
 def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cache: dict) -> dict | None:
     soup = get_soup(RACEINDEX_URL, {"hd":date,"jcd":code})
     races = parse_races(soup)
@@ -779,6 +872,12 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
     meet_days = parse_meet_days(soup,date)
 
     old_meeting = old_meeting or {}
+
+    # If JST date has just rolled over during the same meeting, immediately
+    # reuse yesterday's enriched racer/series data while today's full enrich runs.
+    if old_meeting.get("date") and old_meeting.get("date") != date:
+        carry_ongoing_meeting_data(races, old_meeting, date, title, meet_days)
+
     old_current = old_meeting.get("races",[]) if old_meeting.get("date") == date else []
     merge_boat_details(races, old_current, racer_cache)
 
@@ -1459,21 +1558,37 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
 
     meetings.sort(key=lambda m:int(m["venueCode"]))
 
+    now_jst=datetime.now(JST)
+    static_enriched_date = old_payload.get("staticEnrichedDate") if old_payload.get("dateJST")==date else None
+
+    # First live job after midnight also performs the full static enrichment.
+    # If that run fails to commit, subsequent live jobs retry until 03:00 JST.
+    rollover_enrich = bool(
+        live
+        and meetings
+        and now_jst.hour < 3
+        and static_enriched_date != date
+    )
+
     payload = {
-        "schemaVersion":"44.0",
-        "updatedAt":datetime.now(JST).isoformat(timespec="seconds"),
+        "schemaVersion":"45.0",
+        "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
-        "mode":"enrich" if enrich else ("live" if live else "fast"),
-        "staticEnrichedDate": old_payload.get("staticEnrichedDate") if old_payload.get("dateJST")==date else None,
+        "mode":"enrich" if enrich else ("rollover-enrich" if rollover_enrich else ("live" if live else "fast")),
+        "staticEnrichedDate": static_enriched_date,
         "meetings":meetings,
         "errors":errors,
     }
 
-    if enrich and meetings:
+    if (enrich or rollover_enrich) and meetings:
+        if rollover_enrich:
+            print("[BOAT CHECK] JST date rollover detected -> full enrichment now")
         enrich_payload(payload,out_path.parent/"racers.json",workers=workers)
         payload["staticEnrichedDate"]=date
         payload["staticEnrichedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+        if rollover_enrich:
+            payload["rolloverEnriched"]=True
     elif old_payload.get("dateJST")==date and old_payload.get("staticEnrichedAt"):
         payload["staticEnrichedAt"]=old_payload.get("staticEnrichedAt")
 
