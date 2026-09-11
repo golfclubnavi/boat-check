@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v47 collector — Enrich profile failure fix
+BOAT CHECK v48 collector — official live odds
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
 - 取得済みの選手・モーター・ボート・直前・結果データを保持
 - 締切35分前〜20分後のレースは直前情報を5分間隔で更新
 - 締切後120分以内で未取得のレース結果・払戻を5分間隔で確認
+- 各場の直近2Rの公式オッズを5分間隔で更新
 
 ENRICH（1日1回 / 手動）
 - 当日の全Rの出走表を取得
@@ -53,6 +54,11 @@ RACERESULT_URL = BASE + "/owpc/pc/race/raceresult"
 POINT_RANK_URL = BASE + "/owpc/pc/race/pointrank"
 RANKING_MOTOR_URL = BASE + "/owpc/pc/race/rankingmotor"
 INFORMATION_URL = BASE + "/owpc/pc/race/information"
+ODDS3T_URL = BASE + "/owpc/pc/race/odds3t"
+ODDS3F_URL = BASE + "/owpc/pc/race/odds3f"
+ODDS2TF_URL = BASE + "/owpc/pc/race/odds2tf"
+ODDSK_URL = BASE + "/owpc/pc/race/oddsk"
+ODDSTF_URL = BASE + "/owpc/pc/race/oddstf"
 PROFILE_URL = BASE + "/owpc/pc/data/racersearch/profile"
 BOATCAST_REPLAY_URL = "https://race.boatcast.jp/replay"
 
@@ -64,7 +70,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.47; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.48; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -822,7 +828,7 @@ def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache
     old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
     keep_race_keys = (
         "title", "beforeData", "before", "weather", "weatherData", "conditions",
-        "result", "raceResult", "results", "payouts", "refunds", "odds",
+        "result", "raceResult", "results", "payouts", "refunds", "odds", "oddsUpdatedAt", "oddsSource",
         "replay", "officialReplayPage", "resultUpdatedAt", "beforeUpdatedAt",
     )
 
@@ -1336,6 +1342,280 @@ def fetch_profile_period(toban: str):
         return rid, info
 
 
+
+def _odds_table_after_label(soup: BeautifulSoup, label: str):
+    node=soup.find(string=lambda s: isinstance(s,str) and label in compact(s))
+    if node:
+        parent=node.parent
+        table=parent.find_next("table") if parent else None
+        if table:
+            return table
+
+    # Fallback: choose a table whose nearby text contains the label.
+    for table in soup.find_all("table"):
+        prev=table.find_previous(["h2","h3","h4","div","p"])
+        if prev and label in compact(prev.get_text(" ",strip=True)):
+            return table
+    return None
+
+def _expand_html_table(table) -> list[list[str]]:
+    """
+    Expand rowspan/colspan into a rectangular text grid.
+    This makes BOAT RACE's odds matrices easy to parse without relying on CSS classes.
+    """
+    if table is None:
+        return []
+
+    grid=[]
+    spans={}  # col -> (remaining_rows, value)
+
+    for tr in table.find_all("tr"):
+        row=[]
+        col=0
+
+        def fill_spans_until_open():
+            nonlocal col
+            while col in spans:
+                remaining,value=spans[col]
+                row.append(value)
+                if remaining<=1:
+                    spans.pop(col,None)
+                else:
+                    spans[col]=(remaining-1,value)
+                col+=1
+
+        fill_spans_until_open()
+
+        cells=tr.find_all(["th","td"],recursive=False)
+        for cell in cells:
+            fill_spans_until_open()
+
+            value=compact(cell.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+            try:
+                rowspan=max(1,int(cell.get("rowspan",1)))
+            except Exception:
+                rowspan=1
+            try:
+                colspan=max(1,int(cell.get("colspan",1)))
+            except Exception:
+                colspan=1
+
+            for _ in range(colspan):
+                row.append(value)
+                if rowspan>1:
+                    spans[col]=(rowspan-1,value)
+                col+=1
+
+        fill_spans_until_open()
+        grid.append(row)
+
+    width=max((len(r) for r in grid),default=0)
+    return [r+[""]*(width-len(r)) for r in grid]
+
+def _lane_token(v):
+    s=compact(str(v or "")).translate(_ZEN_DIGITS)
+    if re.fullmatch(r"[1-6]",s):
+        return int(s)
+    return None
+
+def _odds_token(v):
+    s=compact(str(v or "")).translate(_ZEN_DIGITS).replace(",","")
+    if re.fullmatch(r"\d+(?:\.\d+)?",s):
+        try:
+            return float(s)
+        except Exception:
+            return None
+    return None
+
+def _range_odds_token(v):
+    s=compact(str(v or "")).translate(_ZEN_DIGITS).replace("〜","-").replace("～","-")
+    m=re.fullmatch(r"(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)",s)
+    if not m:
+        return None
+    return [float(m.group(1)),float(m.group(2))]
+
+def _dedupe_odds(entries: list[dict]) -> list[dict]:
+    out=[]
+    seen=set()
+    for x in entries:
+        combo=str(x.get("combination") or "")
+        if not combo or combo in seen:
+            continue
+        seen.add(combo)
+        out.append(x)
+    return out
+
+def _parse_matrix_three(table, unordered=False) -> list[dict]:
+    """
+    3連単 / 3連複.
+    Official matrix uses 3-column groups: 2nd(or next) / 3rd / odds,
+    with the first boat implied by the column group.
+    """
+    grid=_expand_html_table(table)
+    if not grid:
+        return []
+
+    best=[]
+    width=max(len(r) for r in grid)
+    for offset in range(3):
+        entries=[]
+        groups=(width-offset)//3
+        for row in grid:
+            for g in range(groups):
+                c=offset+g*3
+                if c+2>=len(row):
+                    continue
+                a=_lane_token(row[c])
+                b=_lane_token(row[c+1])
+                odd=_odds_token(row[c+2])
+                first=g+1
+                if first not in range(1,7) or a is None or b is None or odd is None:
+                    continue
+                if len({first,a,b})<3:
+                    continue
+                combo=[first,a,b]
+                if unordered:
+                    combo=sorted(combo)
+                entries.append({
+                    "combination":"-".join(map(str,combo)),
+                    "odds":odd,
+                })
+        entries=_dedupe_odds(entries)
+        if len(entries)>len(best):
+            best=entries
+    return best
+
+def _parse_matrix_two(table, unordered=False, range_value=False) -> list[dict]:
+    """
+    2連単 / 2連複 / 拡連複.
+    Official matrix uses 2-column groups: other boat / odds,
+    with the first boat implied by the column group.
+    """
+    grid=_expand_html_table(table)
+    if not grid:
+        return []
+
+    best=[]
+    width=max(len(r) for r in grid)
+    for offset in range(2):
+        entries=[]
+        groups=(width-offset)//2
+        for row in grid:
+            for g in range(groups):
+                c=offset+g*2
+                if c+1>=len(row):
+                    continue
+                other=_lane_token(row[c])
+                value=_range_odds_token(row[c+1]) if range_value else _odds_token(row[c+1])
+                first=g+1
+                if first not in range(1,7) or other is None or value is None or first==other:
+                    continue
+                combo=[first,other]
+                if unordered:
+                    combo=sorted(combo)
+                item={"combination":"-".join(map(str,combo))}
+                if range_value:
+                    item["odds"]=value
+                    item["min"]=value[0]
+                    item["max"]=value[1]
+                else:
+                    item["odds"]=value
+                entries.append(item)
+        entries=_dedupe_odds(entries)
+        if len(entries)>len(best):
+            best=entries
+    return best
+
+def _parse_win_place_table(table, is_place=False) -> list[dict]:
+    if table is None:
+        return []
+    out=[]
+    for tr in table.find_all("tr"):
+        cells=[compact(x.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+               for x in tr.find_all(["th","td"],recursive=False)]
+        if len(cells)<2:
+            continue
+
+        lane=None
+        for c in cells[:2]:
+            lane=_lane_token(c)
+            if lane is not None:
+                break
+        if lane is None:
+            continue
+
+        if is_place:
+            val=next((_range_odds_token(c) for c in reversed(cells) if _range_odds_token(c) is not None),None)
+            if val is None:
+                continue
+            out.append({"combination":str(lane),"odds":val,"min":val[0],"max":val[1]})
+        else:
+            val=next((_odds_token(c) for c in reversed(cells) if _odds_token(c) is not None),None)
+            if val is None:
+                continue
+            out.append({"combination":str(lane),"odds":val})
+    return _dedupe_odds(out)
+
+def parse_official_odds(
+    soup3t: BeautifulSoup,
+    soup3f: BeautifulSoup,
+    soup2tf: BeautifulSoup,
+    soupk: BeautifulSoup,
+    souptf: BeautifulSoup,
+) -> dict:
+    trifecta=_parse_matrix_three(_odds_table_after_label(soup3t,"3連単オッズ"),unordered=False)
+    trio=_parse_matrix_three(_odds_table_after_label(soup3f,"3連複オッズ"),unordered=True)
+
+    exacta=_parse_matrix_two(_odds_table_after_label(soup2tf,"2連単オッズ"),unordered=False)
+    quinella=_parse_matrix_two(_odds_table_after_label(soup2tf,"2連複オッズ"),unordered=True)
+
+    wide=_parse_matrix_two(_odds_table_after_label(soupk,"拡連複オッズ"),unordered=True,range_value=True)
+
+    win=_parse_win_place_table(_odds_table_after_label(souptf,"単勝オッズ"),is_place=False)
+    place=_parse_win_place_table(_odds_table_after_label(souptf,"複勝オッズ"),is_place=True)
+
+    return {
+        "trifecta":trifecta,
+        "trio":trio,
+        "exacta":exacta,
+        "quinella":quinella,
+        "wide":wide,
+        "win":win,
+        "place":place,
+        "official":bool(trifecta or trio or exacta or quinella or wide or win or place),
+        "counts":{
+            "trifecta":len(trifecta),
+            "trio":len(trio),
+            "exacta":len(exacta),
+            "quinella":len(quinella),
+            "wide":len(wide),
+            "win":len(win),
+            "place":len(place),
+        },
+    }
+
+def fetch_odds_task(code: str, date: str, race_no: int):
+    params={"rno":race_no,"jcd":code,"hd":date}
+    try:
+        # Five official pages cover all seven wager types.
+        with ThreadPoolExecutor(max_workers=5) as ex:
+            futs={
+                "3t":ex.submit(get_soup,ODDS3T_URL,params,16),
+                "3f":ex.submit(get_soup,ODDS3F_URL,params,16),
+                "2tf":ex.submit(get_soup,ODDS2TF_URL,params,16),
+                "k":ex.submit(get_soup,ODDSK_URL,params,16),
+                "tf":ex.submit(get_soup,ODDSTF_URL,params,16),
+            }
+            soups={k:f.result() for k,f in futs.items()}
+
+        data=parse_official_odds(
+            soups["3t"],soups["3f"],soups["2tf"],soups["k"],soups["tf"]
+        )
+        return code,race_no,data,None
+    except Exception as e:
+        return code,race_no,{},f"{type(e).__name__}: {e}"
+
+
 def fetch_point_rank_task(code: str, date: str):
     try:
         soup=get_soup(POINT_RANK_URL,{"jcd":code,"hd":date},timeout=18)
@@ -1396,6 +1676,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     """
     before_tasks=[]
     result_tasks=[]
+    odds_tasks=[]
 
     for meeting in payload.get("meetings",[]):
         code=meeting.get("venueCode")
@@ -1423,6 +1704,43 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 result=race.get("result") or {}
                 if mins < 0 and not result.get("official"):
                     result_tasks.append((code,date,rno))
+
+    # Odds: update the nearest two races per venue every 5 minutes.
+    # This gives useful live odds without hammering the official site for all 12 races.
+    for meeting in payload.get("meetings",[]):
+        candidates=[]
+        for race in meeting.get("races",[]):
+            rno=int(race.get("raceNo") or 0)
+            mins=_minutes_from_now(race.get("deadline",""))
+            if not rno or mins is None:
+                continue
+            if -10 <= mins <= 120:
+                candidates.append((mins,rno))
+        candidates.sort()
+        for _,rno in candidates[:2]:
+            odds_tasks.append((meeting.get("venueCode"),meeting.get("date"),rno))
+
+    if odds_tasks:
+        # Deduplicate in case the same race is encountered twice.
+        odds_tasks=list(dict.fromkeys(odds_tasks))
+        print(f"[BOAT CHECK] LIVE odds tasks={len(odds_tasks)}")
+        odds_results={}
+        with ThreadPoolExecutor(max_workers=min(max(workers,8),12)) as ex:
+            futs=[ex.submit(fetch_odds_task,*x) for x in odds_tasks]
+            for fut in as_completed(futs):
+                code,rno,data,err=fut.result()
+                odds_results[(code,rno)]=(data,err)
+
+        for meeting in payload.get("meetings",[]):
+            for race in meeting.get("races",[]):
+                key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
+                data,err=odds_results.get(key,({},None))
+                if data and data.get("official"):
+                    race["odds"]=data
+                    race["oddsUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                    race["oddsSource"]="BOAT RACE official"
+                elif err:
+                    race.setdefault("liveErrors",{})["odds"]=err
 
     if before_tasks:
         print(f"[BOAT CHECK] LIVE beforeinfo tasks={len(before_tasks)}")
@@ -1795,7 +2113,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"47.0",
+        "schemaVersion":"48.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
