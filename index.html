@@ -5767,7 +5767,7 @@ function proRacerStrip(boats, label="出走表"){
         <span class="proLaneChip lane${lane}">${lane}</span>
         <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
         <span class="proRacerId">${esc(racerId)}</span>
-        <span class="proRacerMeta">${esc(klass)} / ${period}</span>
+        <span class="proRacerMeta"><span>${esc(klass)}</span><span>${period}</span></span>
         <span class="proRacerBranch">${esc(branch)}</span>
       </div>`;
     }).join("")}
@@ -14751,4 +14751,34 @@ button.meetPerfFinish.isLink.late{
     padding:3px 6px;
   }
 }
+</style>
+
+<style id="st-bow-and-entry-refinement">
+/* Both renderers use bowPos; the yellow line's right edge is exactly 61.5%. */
+.raceVisualCard .raceVisualZeroLine{left:61.5%!important;width:4px!important;transform:translateX(-100%)!important;box-shadow:none!important}
+.raceVisualCard .raceVisualRow{grid-template-columns:30px minmax(0,1fr)!important;min-height:38px!important;height:38px!important}
+.raceVisualCard .raceVisualBoat{width:68px!important;height:29px!important;transform:translate(-100%,-50%)!important;overflow:visible!important}
+/* Assets are 600px wide; visible hull spans x=42..562. Keep the hull tip at the anchor. */
+.raceVisualCard .raceBoatImg{position:absolute!important;top:50%!important;right:-7.3076923%!important;width:115.3846154%!important;max-width:none!important;height:auto!important;transform:translateY(-50%)!important;object-fit:contain!important}
+.raceVisualCard .raceWake{width:64px!important;height:9px!important;opacity:.65!important}
+.raceVisualCard .raceWake::before,.raceVisualCard .raceWake::after{width:54px!important;height:2px!important}
+.raceVisualCard .raceVisualST{min-width:32px!important;font-size:10px!important;padding:4px!important}
+.raceVisualCard .raceVisualLane strong{font-size:16px!important}
+/* A stronger six-lane palette, shared by the list and detail entry header. */
+.raceCardPro .lane1::after,.proRacerCard.proLaneBg1{background:#fff!important}
+.raceCardPro .lane2::after,.proRacerCard.proLaneBg2{background:#d8dfe5!important}
+.raceCardPro .lane3::after,.proRacerCard.proLaneBg3{background:#ffd4db!important}
+.raceCardPro .lane4::after,.proRacerCard.proLaneBg4{background:#cfe4fb!important}
+.raceCardPro .lane5::after,.proRacerCard.proLaneBg5{background:#ffedaa!important}
+.raceCardPro .lane6::after,.proRacerCard.proLaneBg6{background:#ccebd9!important}
+.proRacerStrip .proRacerLabel{background:linear-gradient(180deg,#f0f8fc,#deeff8)!important;color:#075172!important;font-size:12px!important;font-weight:750!important;line-height:1.5!important;border-right:1px solid #a9c6d8!important}
+.proRacerStrip .proRacerCard{padding:10px 2px!important;min-height:0!important;border-right:1px solid #a9c6d8!important}
+.proRacerStrip .proRacerCard:last-child{border-right:0!important}
+.proRacerStrip .proLaneChip{width:28px!important;height:28px!important;margin-bottom:8px!important;border-radius:8px!important;font-size:16px!important;font-weight:800!important;box-shadow:0 2px 4px #153e5812}
+.proRacerStrip .proRacerCard strong{font-size:13px!important;line-height:1.4!important;min-height:39px!important;letter-spacing:0!important;font-weight:750!important;overflow-wrap:anywhere!important;color:#123c56!important}
+.proRacerStrip .proRacerCard .proRacerId{font-size:12px!important;line-height:1.4!important;margin-top:8px!important;padding-top:6px;border-top:1px solid #123c5626;color:#31556c!important;font-weight:650!important}
+.proRacerStrip .proRacerCard .proRacerMeta,.proRacerStrip .proRacerCard .proRacerBranch{font-size:12px!important;line-height:1.5!important;color:#31556c!important;font-weight:650!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+.proRacerStrip .proRacerMeta>span{display:block}
+.proRacerStrip .proRacerMeta>span:first-child{font-size:13px;font-weight:800;color:#123c56}
+.proRacerStrip{border-bottom:1px solid #9abed3!important}
 </style>
