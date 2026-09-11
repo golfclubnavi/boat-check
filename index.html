@@ -4087,6 +4087,10 @@ function homeHistoryRows(mode){
         stake:Number(b.stake)||0,
         odds:b.odds,
         hit:b.hit===true||b.isHit===true||b.result==="hit",
+        refunded:b.refunded===true||b.status==="refund",
+        settled:b.settled===true,
+        status:b.status||"",
+        officialPayout:Number(b.officialPayout||0),
         payout:Number(b.payout||0)
       }));
       recentMeta={
@@ -4153,7 +4157,7 @@ function homeHistoryRows(mode){
           : refundCount===g.bets.length
             ? `<div class="myHistoryStatusBadge refund">返還</div>`
             : `<div class="myHistoryStatusBadge miss">確定</div>`;
-      return `<div class="myHistoryGroup ${isOpen?"open":""}">
+      return `<div class="myHistoryGroup ${isOpen?"open":""} ${hitCount?"hasHit":""}">
         <button class="myHistoryGroupHead" onclick="homeToggleHistoryGroup('${g.key.replace(/'/g,"\\'")}')">
           <div class="myHistoryGroupVenue">
             <strong>${esc(g.venueName)} ${esc(g.raceNo)}R</strong>
@@ -4173,7 +4177,7 @@ function homeHistoryRows(mode){
             <span>払戻 <b>${homeFormatPt(totalPayout)}</b></span>
             <span>収支 <b class="${totalPayout-totalStake>=0?"plus":"minus"}">${totalPayout-totalStake>=0?"+":""}${homeFormatPt(totalPayout-totalStake)}</b></span>
           </div>
-          ${g.bets.map(x=>`<div class="myHistoryBetRow">
+          ${g.bets.map(x=>`<div class="myHistoryBetRow ${x.hit?"isHit":""}">
             <div class="myHistoryBetType">${demoBetLabel(x.type)}</div>
             <div class="myHistoryBetCombo">${x.combo.length?oddsComboHtml(x.combo):"--"}</div>
             <div class="myHistoryBetAmount">
@@ -6978,6 +6982,17 @@ function motorHistoryTable(boats,motors){
   </div>`;
 }
 
+function equipmentIcon(type){
+  const common='viewBox="0 0 24 24" aria-hidden="true" focusable="false"';
+  if(type==="boat"){
+    return `<svg ${common} class="equipmentSvg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 14.5h17l-2.2 3.2a3 3 0 0 1-2.5 1.3H8.2a3 3 0 0 1-2.5-1.3L3.5 14.5Z"/><path d="m7 14.5 1.5-6h7l2 6"/><path d="M10 8.5V5h4v3.5"/><path d="M4 21c1.2-.8 2.4-.8 3.6 0 1.2-.8 2.4-.8 3.6 0 1.2-.8 2.4-.8 3.6 0 1.2-.8 2.4-.8 3.6 0"/></svg>`;
+  }
+  if(type==="history"){
+    return `<svg ${common} class="equipmentSvg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/><path d="M7 4v16"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="currentColor" stroke="none"/></svg>`;
+  }
+  return `<svg ${common} class="equipmentSvg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3.2v2.1M12 18.7v2.1M3.2 12h2.1M18.7 12h2.1M5.8 5.8l1.5 1.5M16.7 16.7l1.5 1.5M18.2 5.8l-1.5 1.5M7.3 16.7l-1.5 1.5"/><circle cx="12" cy="12" r="7.2"/></svg>`;
+}
+
 function renderMotorInfo(){
   const r=state.currentRace||{};
   const boats=(r.boats||[]).slice(0,6);
@@ -6999,11 +7014,11 @@ function renderMotorInfo(){
 
     <div class="motorInnerTabs">
       <button class="${motorInnerTab==="motor"?"active":""}" onclick="setMotorInnerTab('motor')">
-        <span class="motorTabIcon">⚙</span>
+        <span class="motorTabIcon">${equipmentIcon("motor")}</span>
         <span>モーター情報</span>
       </button>
       <button class="${motorInnerTab==="boat"?"active":""}" onclick="setMotorInnerTab('boat')">
-        <span class="motorTabIcon">▰</span>
+        <span class="motorTabIcon">${equipmentIcon("boat")}</span>
         <span>ボート情報</span>
       </button>
     </div>
@@ -7012,13 +7027,13 @@ function renderMotorInfo(){
       <div class="motorConnectedFrame motorProConnected">
         ${motorRacerHeader(boats)}
         <div class="motorSectionBar">
-          <b>⚙ モーター基本データ</b>
+          <b>${equipmentIcon("motor")}<span>モーター基本データ</span></b>
           <span>モーターの力を6艇比較</span>
         </div>
         ${motorBasicTable(boats,motors)}
 
         <div class="motorSectionBar motorHistoryBar">
-          <b>▥ モーター過去20走成績</b>
+          <b>${equipmentIcon("history")}<span>モーター過去20走成績</span></b>
           <span>進入・展示・級・着</span>
         </div>
         ${motorHistoryTable(boats,motors)}
@@ -7027,7 +7042,7 @@ function renderMotorInfo(){
       <div class="motorConnectedFrame boatConnectedFrame motorProConnected">
         ${motorRacerHeader(boats)}
         <div class="motorSectionBar boatSectionBar">
-          <b>▰ ボート基本データ</b>
+          <b>${equipmentIcon("boat")}<span>ボート基本データ</span></b>
           <span>ボート成績を6艇比較</span>
         </div>
         ${boatBasicTable(boats,boatInfos)}
@@ -9174,21 +9189,59 @@ function demoBetTouchesRefund(bet,refund){
   if(!returned.size)return false;
   return demoResultCombo(bet.combo).some(n=>returned.has(Number(n)));
 }
+function demoCanonicalBetType(type){
+  const raw=String(type||"").trim().toLowerCase();
+  const aliases={
+    trifecta:"trifecta","3連単":"trifecta","3t":"trifecta",sanrentan:"trifecta",
+    trio:"trio","3連複":"trio","3f":"trio",sanrenpuku:"trio",
+    exacta:"exacta","2連単":"exacta","2t":"exacta",nirentan:"exacta",
+    quinella:"quinella","2連複":"quinella","2f":"quinella",nirenpuku:"quinella",
+    wide:"wide","拡連複":"wide",kakurenpuku:"wide",
+    win:"win","単勝":"win",tansho:"win",
+    place:"place","複勝":"place",fukusho:"place"
+  };
+  return aliases[raw]||raw;
+}
+function demoPayoutEntries(result,type){
+  const payoutRoot=result?.payouts||result?.payoffs||result?.refunds||{};
+  const aliases={
+    trifecta:["trifecta","3t","sanrentan","3連単"],
+    trio:["trio","3f","sanrenpuku","3連複"],
+    exacta:["exacta","2t","nirentan","2連単"],
+    quinella:["quinella","2f","nirenpuku","2連複"],
+    wide:["wide","kakurenpuku","拡連複"],
+    win:["win","tansho","単勝"],
+    place:["place","fukusho","複勝"]
+  };
+  for(const key of aliases[type]||[type]){
+    const value=payoutRoot?.[key];
+    if(value!==undefined&&value!==null&&value!=="")return normalizePayoutCombos(value);
+  }
+  return [];
+}
 function demoOfficialPayoutForBet(race,bet){
   const result=race?.result||race?.raceResult||{};
-  if(result?.official!==true)return null;
+  const finishers=resultEntries(race);
+  const ranked=finishers.map((x,i)=>({
+    lane:Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"]))||i+1,
+    rank:Number(resultEntryValue(x,["rank","finish","arrival","place","finishPlace"]))
+  })).filter(x=>x.lane>=1&&x.lane<=6&&x.rank>=1&&x.rank<=6);
+  const hasOfficialOrder=[1,2,3].every(rank=>ranked.some(x=>x.rank===rank));
+  const status=String(result?.status||result?.state||"").toLowerCase();
+  const isOfficial=result?.official===true||/official|final|確定|終了/.test(status)||hasOfficialOrder;
+  if(!isOfficial)return null;
 
   const refund=result?.refund||result?.returnedBoat||result?.return||[];
   if(demoBetTouchesRefund(bet,refund)){
     return {settled:true,status:"refund",hit:false,refunded:true,officialPayout:0};
   }
 
-  const list=result?.payouts?.[bet.type];
-  if(!Array.isArray(list)||!list.length)return null;
+  const type=demoCanonicalBetType(bet.type);
+  const list=demoPayoutEntries(result,type);
+  const target=demoNormalizeResultCombo(type,bet.combo);
 
-  const target=demoNormalizeResultCombo(bet.type,bet.combo);
   const found=list.find(x=>
-    demoNormalizeResultCombo(bet.type,x?.combination??x?.combo??x?.number)===target
+    demoNormalizeResultCombo(type,x?.combination??x?.combo??x?.number)===target
   );
 
   if(found){
@@ -9197,7 +9250,21 @@ function demoOfficialPayoutForBet(race,bet){
       return {settled:true,status:"hit",hit:true,refunded:false,officialPayout:amount};
     }
   }
-  return {settled:true,status:"miss",hit:false,refunded:false,officialPayout:0};
+  // 払戻表に載るのは的中目だけ。公式確定後に一致しない買い目は不的中として確定する。
+  if(list.length)return {settled:true,status:"miss",hit:false,refunded:false,officialPayout:0};
+
+  // 古い保存データで払戻のキー形式が異なる場合も、着順から明らかな外れを確定する。
+  if(hasOfficialOrder){
+    const order=[1,2,3].map(rank=>ranked.find(x=>x.rank===rank)?.lane).filter(Boolean);
+    let winning="";
+    if(type==="trifecta")winning=order.join("-");
+    if(type==="trio")winning=[...order].sort((a,b)=>a-b).join("-");
+    if(type==="exacta")winning=order.slice(0,2).join("-");
+    if(type==="quinella")winning=order.slice(0,2).sort((a,b)=>a-b).join("-");
+    if(type==="win")winning=String(order[0]||"");
+    if(winning&&target!==winning)return {settled:true,status:"miss",hit:false,refunded:false,officialPayout:0};
+  }
+  return null;
 }
 function demoBuildSettlementRaceMap(){
   const raceMap=new Map();
@@ -14884,6 +14951,71 @@ button.meetPerfFinish.isLink.late{
 #venues .card.off{background:#f0f5f8!important;border-color:#d0e0e9!important;box-shadow:none!important;opacity:1!important}
 #venues .card.off .venueTitle{color:#708694!important}
 #venues .card.off .offtext b{font-size:12px!important;background:#e1eaf0!important;color:#617785!important;border:1px solid #d2e0e9;padding:5px 7px!important;box-shadow:none!important}
-@media(max-width:600px){#venues{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
-@media(max-width:360px){#venues{grid-template-columns:repeat(2,minmax(0,1fr))!important}#homeMyPagePanel .myPageTabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* 24場は端末幅にかかわらず4列×6段。淡い水色にネイビーの輪郭を効かせる。 */
+#venues{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:7px!important;
+}
+#venues .card{
+  min-width:0!important;
+  min-height:118px!important;
+  padding:7px 5px 8px!important;
+  border:1px solid #96bfd3!important;
+  border-top-color:#c4e2ef!important;
+  border-radius:13px!important;
+  background:linear-gradient(155deg,#ffffff 0%,#eef9fd 58%,#e4f4fb 100%)!important;
+  box-shadow:0 5px 13px rgba(8,63,94,.075),inset 0 1px 0 rgba(255,255,255,.95)!important;
+}
+#venues .card:not(.off):active{transform:translateY(1px);box-shadow:0 2px 7px rgba(8,63,94,.08)!important}
+#venues .card .nameRow{
+  min-height:31px!important;
+  margin:0 0 6px!important;
+  border:1px solid rgba(255,255,255,.72);
+  background:linear-gradient(135deg,rgba(218,246,255,.96),rgba(239,251,255,.88));
+  box-shadow:inset 0 -1px 0 rgba(20,111,151,.07);
+}
+#venues .card .nameRow .venueTitle{font-size:13px!important;line-height:1.15!important;white-space:nowrap!important}
+#venues .card .mark{width:13px!important;height:13px!important;font-size:8px!important}
+#venues .card .meta{padding-top:6px!important;gap:3px!important;font-size:10px!important;justify-content:center!important}
+#venues .card .kindText{font-size:9px!important;padding:2px 5px!important}
+#venues .card .gradeCenter{font-size:9px!important;padding:2px 5px!important}
+#venues .card .nextRow{margin-top:7px!important;align-items:center!important}
+#venues .card .nextRace b{font-size:15px!important}
+#venues .card .cutoff{font-size:8px!important;line-height:1.15!important;text-align:right!important}
+#venues .card .cutoff b{font-size:13px!important;line-height:1.15!important}
+#venues .card .countdown{margin-top:6px!important;padding:4px 2px!important;font-size:8px!important;line-height:1.2!important}
+#venues .card .endText{font-size:11px!important}
+#venues .card.off{background:linear-gradient(155deg,#f6fafc,#eaf3f8)!important}
+#venues .card.off .offtext b{font-size:9px!important;padding:4px 5px!important;white-space:nowrap!important}
+
+/* 立体ボートは位置基準を保ったまま一段だけ小さくする。 */
+.raceVisualCard .raceVisualBoat{width:61px!important;height:26px!important}
+.raceVisualCard .raceWake{width:58px!important;height:8px!important}
+
+/* モーター／ボート情報の共通ラインアイコン。 */
+.equipmentSvg{display:block;width:20px;height:20px;flex:0 0 auto}
+.motorTabIcon{width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:#e9f6fc;color:#0876ad}
+.motorInnerTabs button.active .motorTabIcon{background:rgba(255,255,255,.16);color:#fff}
+.motorSectionBar b{display:inline-flex;align-items:center;gap:7px}
+.motorSectionBar b .equipmentSvg{width:18px;height:18px}
+
+@media(max-width:600px){
+  #venues{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+  #venues .card{min-height:112px!important;padding:6px 4px 7px!important;border-radius:11px!important}
+  #venues .card .nameRow{min-height:29px!important;margin-bottom:5px!important;grid-template-columns:15px minmax(0,1fr) 15px!important}
+  #venues .card .nameRow .venueTitle{font-size:12.5px!important}
+  #venues .card .meta{font-size:9px!important;padding-top:5px!important}
+  #venues .card .nextRace b{font-size:14px!important}
+  #venues .card .cutoff{font-size:7.5px!important}
+  #venues .card .cutoff b{font-size:12px!important}
+  #venues .card .countdown{font-size:7.5px!important}
+}
+@media(max-width:360px){
+  #venues{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important}
+  #venues .card{min-height:108px!important;padding-left:3px!important;padding-right:3px!important}
+  #venues .card .nameRow .venueTitle{font-size:11.5px!important}
+  #venues .card .cutoff b{font-size:11px!important}
+  #venues .card .countdown{font-size:7px!important}
+  #homeMyPagePanel .myPageTabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
 </style>
