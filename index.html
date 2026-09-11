@@ -3461,7 +3461,7 @@ const VENUES=[
 ["19","下関"],["20","若松"],["21","芦屋"],["22","福岡"],["23","唐津"],["24","大村"]
 ];
 const $=id=>document.getElementById(id);
-let state={meetings:[],updatedAt:null,dateJST:null,currentMeeting:null,currentMeetingView:null,currentRace:null,currentDayDate:null};
+let state={meetings:[],recentResults:[],updatedAt:null,dateJST:null,currentMeeting:null,currentMeetingView:null,currentRace:null,currentDayDate:null};
 let homeActiveTab="venues";
 let homeMyPageTab="bets";
 let homeBetHistoryTab="recent";
@@ -3989,6 +3989,10 @@ function homeFlattenHistory(limit=999){
         stake:Number(b.stake)||0,
         odds:b.odds,
         hit:b.hit===true||b.isHit===true||b.result==="hit",
+        refunded:b.refunded===true||b.status==="refund",
+        settled:b.settled===true,
+        status:b.status||"",
+        officialPayout:Number(b.officialPayout||0),
         payout:Number(b.payout||0)
       });
     });
@@ -4079,7 +4083,16 @@ function homeHistoryRows(mode){
       const isOpen=homeHistoryOpenGroups.has(g.key);
       const totalStake=g.bets.reduce((s,x)=>s+x.stake,0);
       const totalPayout=g.bets.reduce((s,x)=>s+x.payout,0);
-      const hitCount=g.bets.filter(x=>x.hit||x.payout>0).length;
+      const hitCount=g.bets.filter(x=>x.hit).length;
+      const refundCount=g.bets.filter(x=>x.refunded).length;
+      const pendingCount=g.bets.filter(x=>!x.settled).length;
+      const groupStatus=pendingCount
+        ? `<div class="myHistoryStatusBadge pending">結果待ち ${pendingCount}</div>`
+        : hitCount
+          ? `<div class="myHistoryStatusBadge hit">的中 ${hitCount}</div>`
+          : refundCount===g.bets.length
+            ? `<div class="myHistoryStatusBadge refund">返還</div>`
+            : `<div class="myHistoryStatusBadge miss">確定</div>`;
       return `<div class="myHistoryGroup ${isOpen?"open":""}">
         <button class="myHistoryGroupHead" onclick="homeToggleHistoryGroup('${g.key.replace(/'/g,"\\'")}')">
           <div class="myHistoryGroupVenue">
@@ -4090,7 +4103,7 @@ function homeHistoryRows(mode){
             <b>${g.bets.length}点</b>
             <span>${homeFormatPt(totalStake)}</span>
           </div>
-          ${hitCount?`<div class="myHistoryHitBadge">的中 ${hitCount}</div>`:""}
+          ${groupStatus}
           <div class="myHistoryAccordionIcon">${isOpen?"−":"＋"}</div>
         </button>
 
@@ -4105,7 +4118,8 @@ function homeHistoryRows(mode){
             <div class="myHistoryBetCombo">${x.combo.length?oddsComboHtml(x.combo):"--"}</div>
             <div class="myHistoryBetAmount">
               <strong>${homeFormatPt(x.stake)}</strong>
-              ${x.hit||x.payout>0?`<small>払戻 ${homeFormatPt(x.payout)}</small>`:""}
+              <small class="betStatus ${x.refunded?"refund":x.hit?"hit":x.settled?"miss":"pending"}">${demoSettlementStatusText(x)}</small>
+              ${x.payout>0?`<small class="betPayout">${x.refunded?"返還":"払戻"} ${homeFormatPt(x.payout)}</small>`:""}
             </div>
           </div>`).join("")}
         </div>`:""}
@@ -4283,9 +4297,10 @@ function homeMissionStatus(id){
   if(id==="manshu"){
     for(const bets of raceGroups.values()){
       for(const b of bets){
-        const hit=b.hit===true||b.isHit===true||b.result==="hit"||Number(b.payout||0)>0;
+        const hit=b.hit===true||b.isHit===true||b.result==="hit";
+        const officialPayout=Number(b.officialPayout||0);
         const odds=Number(b.odds||0);
-        if(hit && odds>=100)return {done:true,progress:"達成"};
+        if(hit && (officialPayout>=10000 || odds>=100))return {done:true,progress:"達成"};
       }
     }
     return {done:false,progress:"0 / 1"};
@@ -8817,67 +8832,130 @@ function demoNormalizeResultCombo(type,combo){
   if(["trio","quinella","wide"].includes(type))return [...c].sort((a,b)=>a-b).join("-");
   return c.join("-");
 }
+function demoBetTouchesRefund(bet,refund){
+  const returned=new Set((Array.isArray(refund)?refund:demoResultCombo(refund)).map(Number));
+  if(!returned.size)return false;
+  return demoResultCombo(bet.combo).some(n=>returned.has(Number(n)));
+}
 function demoOfficialPayoutForBet(race,bet){
   const result=race?.result||race?.raceResult||{};
   if(result?.official!==true)return null;
+
+  const refund=result?.refund||result?.returnedBoat||result?.return||[];
+  if(demoBetTouchesRefund(bet,refund)){
+    return {settled:true,status:"refund",hit:false,refunded:true,officialPayout:0};
+  }
 
   const list=result?.payouts?.[bet.type];
   if(!Array.isArray(list)||!list.length)return null;
 
   const target=demoNormalizeResultCombo(bet.type,bet.combo);
-  const found=list.find(x=>demoNormalizeResultCombo(bet.type,x?.combination??x?.combo??x?.number)===target);
+  const found=list.find(x=>
+    demoNormalizeResultCombo(bet.type,x?.combination??x?.combo??x?.number)===target
+  );
 
   if(found){
     const amount=Number(found.payout??found.amount??found.value);
-    if(Number.isFinite(amount))return {hit:true,officialPayout:amount};
+    if(Number.isFinite(amount)){
+      return {settled:true,status:"hit",hit:true,refunded:false,officialPayout:amount};
+    }
   }
-  return {hit:false,officialPayout:0};
+  return {settled:true,status:"miss",hit:false,refunded:false,officialPayout:0};
 }
-function demoSettleHistoryFromOfficialResults(){
-  let history=[];
-  try{history=JSON.parse(localStorage.getItem("boatCheckDemoHistory")||"[]");}catch(e){return;}
-  if(!Array.isArray(history)||!history.length)return;
-
+function demoBuildSettlementRaceMap(){
   const raceMap=new Map();
+
   (state.meetings||[]).forEach(m=>{
+    const code=String(m.venueCode||"");
+
     (m.races||[]).forEach(r=>{
-      raceMap.set(`${m.venueCode}:${m.date}:${Number(r.raceNo)||0}`,r);
+      raceMap.set(`${code}:${m.date||""}:${Number(r.raceNo)||0}`,r);
+    });
+
+    (m.meetDays||[]).forEach(d=>{
+      (d.races||[]).forEach(r=>{
+        const key=`${code}:${d.date||""}:${Number(r.raceNo)||0}`;
+        if(!raceMap.has(key)||(r.result||{}).official===true)raceMap.set(key,r);
+      });
     });
   });
 
+  (state.recentResults||[]).forEach(x=>{
+    raceMap.set(
+      `${x.venueCode||""}:${x.date||""}:${Number(x.raceNo)||0}`,
+      {raceNo:Number(x.raceNo)||0,result:x.result||{},resultUpdatedAt:x.resultUpdatedAt||null}
+    );
+  });
+
+  return raceMap;
+}
+function demoSettlementKeyForBet(b,h){
+  const venueCode=String(b.venueCode||h.venueCode||h.venue||"");
+  const date=String(b.date||h.date||"");
+  const raceNo=Number(b.raceNo||h.raceNo)||0;
+  return `${venueCode}:${date}:${raceNo}`;
+}
+function demoSettlementStatusText(b){
+  if(b.refunded||b.status==="refund")return "返還";
+  if(b.settled!==true)return "結果待ち";
+  if(b.hit===true||b.status==="hit")return "的中";
+  return "不的中";
+}
+function demoSettleHistoryFromOfficialResults(){
+  let history=[];
+  try{history=JSON.parse(localStorage.getItem("boatCheckDemoHistory")||"[]");}
+  catch(e){return;}
+  if(!Array.isArray(history)||!history.length)return;
+
+  const raceMap=demoBuildSettlementRaceMap();
   let changed=false;
-  let newPayout=0;
+  let creditTotal=0;
+  let hitCount=0;
+  let refundCount=0;
   let settledCount=0;
 
   history.forEach(h=>{
     (h.bets||[]).forEach(b=>{
       if(b.settled===true)return;
-      const key=`${b.venueCode||""}:${b.date||""}:${Number(b.raceNo)||0}`;
-      const race=raceMap.get(key);
+
+      const race=raceMap.get(demoSettlementKeyForBet(b,h));
       if(!race)return;
 
       const settlement=demoOfficialPayoutForBet(race,b);
-      if(!settlement)return;
+      if(!settlement?.settled)return;
 
       const stake=Math.max(0,Number(b.stake)||0);
-      const payout=settlement.hit
-        ? Math.max(0,Math.round((stake/100)*settlement.officialPayout))
-        : 0;
+      let payout=0;
+
+      if(settlement.status==="refund"){
+        payout=stake;
+        refundCount+=1;
+      }else if(settlement.status==="hit"){
+        payout=Math.max(0,Math.round((stake/100)*Number(settlement.officialPayout||0)));
+        hitCount+=1;
+      }
 
       b.settled=true;
-      b.hit=settlement.hit;
+      b.status=settlement.status;
+      b.hit=settlement.status==="hit";
+      b.refunded=settlement.status==="refund";
       b.payout=payout;
-      b.officialPayout=settlement.officialPayout;
+      b.officialPayout=Number(settlement.officialPayout||0);
       b.settledAt=new Date().toISOString();
 
       changed=true;
       settledCount+=1;
-      newPayout+=payout;
+      creditTotal+=payout;
     });
 
     if(Array.isArray(h.bets)){
-      h.settled=h.bets.length>0 && h.bets.every(b=>b.settled===true);
+      h.settled=h.bets.length>0&&h.bets.every(b=>b.settled===true);
       h.payout=h.bets.reduce((s,b)=>s+(Number(b.payout)||0),0);
+      h.hitCount=h.bets.filter(b=>b.hit===true).length;
+      h.refundCount=h.bets.filter(b=>b.refunded===true).length;
+      h.status=h.settled
+        ? (h.hitCount>0?"hit":(h.refundCount===h.bets.length?"refund":"settled"))
+        : "pending";
     }
   });
 
@@ -8885,27 +8963,34 @@ function demoSettleHistoryFromOfficialResults(){
 
   localStorage.setItem("boatCheckDemoHistory",JSON.stringify(history.slice(0,100)));
 
-  if(newPayout>0){
-    demoPoints+=newPayout;
+  if(creditTotal>0){
+    demoPoints+=creditTotal;
     demoSavePoints();
+
     const ptHist=homePtHistory();
     ptHist.unshift({
       at:new Date().toISOString(),
-      amount:newPayout,
+      amount:creditTotal,
       balance:demoPoints,
       type:"payout",
-      label:"デモ投票 払戻"
+      label:hitCount>0
+        ? `デモ投票 払戻${refundCount?`・返還含む`:""}`
+        : "デモ投票 返還"
     });
     homeSaveJson("boatCheckPtHistory",ptHist.slice(0,200));
   }
 
   refreshHomeActivePanel();
+
   if(settledCount){
-    demoToast(newPayout>0
-      ? `投票結果を反映しました +${newPayout.toLocaleString("ja-JP")}pt`
-      : "投票結果を反映しました");
+    let msg=`${settledCount}点の投票結果を反映`;
+    if(hitCount)msg+=`・的中${hitCount}点`;
+    if(refundCount)msg+=`・返還${refundCount}点`;
+    if(creditTotal>0)msg+=` +${creditTotal.toLocaleString("ja-JP")}pt`;
+    demoToast(msg);
   }
 }
+
 function refreshCurrentQuickDataPanel(){
   const panel=$("quickDataPanel");
   if(!panel || !currentQuickDataType)return;
@@ -8932,6 +9017,7 @@ async function refreshOfficialData(){
     if(!Array.isArray(d.meetings))return;
 
     state.meetings=d.meetings;
+    state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];
     state.updatedAt=d.updatedAt;
     state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
@@ -8972,7 +9058,7 @@ async function loadData(){
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const d=await res.json();
     if(!Array.isArray(d.meetings))throw new Error("meetings invalid");
-    state.meetings=d.meetings;state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
+    state.meetings=d.meetings;state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
     $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
     renderVenues();
@@ -13427,6 +13513,42 @@ button.meetPerfFinish.isLink.late{
     padding:7px 1px!important;
     font-size:7.4px!important;
   }
+}
+</style>
+
+
+
+<style id="v120-auto-settlement">
+.myHistoryStatusBadge{
+  padding:4px 6px;
+  border-radius:999px;
+  font-size:5.8px;
+  line-height:1;
+  font-weight:950;
+  white-space:nowrap;
+}
+.myHistoryStatusBadge.pending{background:#edf3f7;color:#6e8494;}
+.myHistoryStatusBadge.hit{background:#e5f7ed;color:#10814d;}
+.myHistoryStatusBadge.refund{background:#fff5d9;color:#a76e00;}
+.myHistoryStatusBadge.miss{background:#f1f4f6;color:#758692;}
+
+.myHistoryBetAmount .betStatus{
+  display:block;
+  margin-top:3px;
+  font-size:5.7px;
+  line-height:1;
+  font-weight:950;
+}
+.myHistoryBetAmount .betStatus.pending{color:#7b8d99;}
+.myHistoryBetAmount .betStatus.hit{color:#10814d;}
+.myHistoryBetAmount .betStatus.refund{color:#aa7200;}
+.myHistoryBetAmount .betStatus.miss{color:#8b5960;}
+.myHistoryBetAmount .betPayout{
+  display:block;
+  margin-top:3px;
+  color:#10814d!important;
+  font-size:5.8px!important;
+  font-weight:950!important;
 }
 </style>
 
