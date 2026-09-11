@@ -7236,9 +7236,12 @@ function raceVisualSTMeta(v){
 
 function raceVisualPosition(v){
   const meta=raceVisualSTMeta(v);
+
+  // 採用デザインに合わせて、スタートラインは少し右寄り。
+  // ここで返す位置は「舟の中心」ではなく「舟の先端」の位置。
   const line=61.5;
-  const leftEdge=9;
-  const rightEdge=93;
+  const leftEdge=7.5;
+  const rightEdge=94.0;
 
   if(meta.kind==="f" && meta.value!==null){
     const n=Math.max(.01,Math.min(.30,meta.value));
@@ -7250,46 +7253,84 @@ function raceVisualPosition(v){
     return line - (n/.99)*(line-leftEdge);
   }
 
-  if(meta.kind==="l"){
-    return leftEdge;
-  }
-
+  if(meta.kind==="l") return leftEdge;
   return line-8;
 }
 
 function raceVisualBoatSvg(lane){
   const fill=raceVisualLaneColor(lane);
-  const text=raceVisualTextColor(lane);
-  const outline=Number(lane)===1?"#aeb7c3":"rgba(20,34,44,.72)";
-  return `<svg class="raceBoatSvg" viewBox="0 0 180 78" aria-hidden="true">
+  const isWhite=Number(lane)===1;
+  const outline=isWhite ? "#8a98a3" : "rgba(14,26,34,.82)";
+  const dark=isWhite ? "#cfd5da" : fill;
+
+  return `<svg class="raceBoatSvg" viewBox="0 0 190 72" aria-hidden="true">
     <defs>
-      <filter id="boatShadow${lane}" x="-25%" y="-30%" width="160%" height="190%">
-        <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#08314a" flood-opacity=".22"/>
+      <filter id="boatShadow${lane}" x="-30%" y="-50%" width="170%" height="210%">
+        <feDropShadow dx="0" dy="4" stdDeviation="4.5" flood-color="#06314b" flood-opacity=".28"/>
       </filter>
-      <linearGradient id="boatHull${lane}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#ffffff" stop-opacity=".16"/>
-        <stop offset=".12" stop-color="${fill}" stop-opacity="1"/>
-        <stop offset="1" stop-color="${fill}" stop-opacity=".96"/>
+
+      <linearGradient id="hull${lane}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${isWhite ? "#ffffff" : fill}"/>
+        <stop offset=".55" stop-color="${isWhite ? "#f4f6f8" : fill}"/>
+        <stop offset="1" stop-color="${isWhite ? "#d8dde1" : fill}"/>
       </linearGradient>
-      <linearGradient id="boatGloss${lane}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#ffffff" stop-opacity=".36"/>
-        <stop offset=".45" stop-color="#ffffff" stop-opacity=".08"/>
-        <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+
+      <linearGradient id="motor${lane}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#8b9297"/>
+        <stop offset="1" stop-color="#4d565c"/>
       </linearGradient>
     </defs>
+
     <g filter="url(#boatShadow${lane})">
-      <ellipse cx="87" cy="42" rx="62" ry="20" fill="rgba(5,28,43,.18)"/>
-      <path d="M28 39 C40 18, 74 10, 124 13 C145 14, 164 24, 171 37 C162 50, 143 60, 106 63 C70 66, 41 58, 28 39 Z"
-        fill="url(#boatHull${lane})" stroke="${outline}" stroke-width="3"/>
-      <path d="M35 39 C54 26, 93 20, 153 29 C146 40, 125 49, 67 52 C49 53, 40 48, 35 39 Z"
-        fill="url(#boatGloss${lane})"/>
-      <path d="M119 21 L155 36 L122 47 Z" fill="#ffffff" opacity=".95"/>
-      <path d="M58 26 C77 22, 101 24, 121 31" stroke="rgba(255,255,255,.65)" stroke-width="3" stroke-linecap="round" fill="none"/>
-      <path d="M16 34 L31 34 L33 46 L18 46 Q10 46 8 40 Q10 34 16 34 Z" fill="#6b737c" stroke="#4f5860" stroke-width="2"/>
-      <rect x="5" y="36" width="9" height="8" rx="2" fill="#8f959c"/>
-      <ellipse cx="97" cy="26" rx="18" ry="13" fill="#1f2730" opacity=".98"/>
-      <circle cx="98" cy="18" r="9" fill="${fill}" stroke="#111920" stroke-width="2"/>
-      <text x="100" y="41" text-anchor="middle" font-size="26" font-weight="900" font-family="Arial, sans-serif" fill="${text}">${lane}</text>
+      <!-- motor / transom -->
+      <rect x="6" y="29" width="23" height="16" rx="3" fill="url(#motor${lane})" stroke="#454d53" stroke-width="2"/>
+      <rect x="0" y="32" width="10" height="10" rx="2" fill="#a1a6aa" stroke="#70777c" stroke-width="1.5"/>
+      <rect x="25" y="24" width="11" height="26" rx="4" fill="#30383e"/>
+
+      <!-- hull -->
+      <path d="M31 37
+               C42 19, 77 12, 126 13
+               C149 14, 171 22, 189 36
+               C171 51, 148 59, 113 60
+               C75 61, 44 54, 31 37 Z"
+            fill="url(#hull${lane})"
+            stroke="${outline}" stroke-width="3"/>
+
+      <!-- top deck highlights -->
+      <path d="M42 35
+               C63 24, 95 21, 144 26"
+            fill="none" stroke="rgba(255,255,255,.65)"
+            stroke-width="3.5" stroke-linecap="round"/>
+
+      <path d="M39 42
+               C72 49, 112 49, 148 42"
+            fill="none" stroke="rgba(0,0,0,.10)"
+            stroke-width="2.5" stroke-linecap="round"/>
+
+      <!-- bow triangle -->
+      <path d="M151 24 L181 36 L151 48 Z"
+            fill="#ffffff" opacity=".96"
+            stroke="rgba(30,45,54,.22)" stroke-width="1.5"/>
+
+      <!-- cockpit -->
+      <ellipse cx="101" cy="28" rx="18" ry="12.5"
+               fill="#172027" stroke="#0c1217" stroke-width="2"/>
+      <ellipse cx="102" cy="29" rx="12" ry="8"
+               fill="rgba(255,255,255,.08)"/>
+
+      <!-- driver -->
+      <path d="M91 28 C89 38, 93 46, 101 49 C108 45, 112 37, 110 29 Z"
+            fill="#11191f"/>
+      <circle cx="101" cy="20" r="8.5"
+              fill="${isWhite ? "#f1f3f5" : fill}"
+              stroke="#101820" stroke-width="2"/>
+      <path d="M96 17 Q102 13 107 18"
+            fill="none" stroke="rgba(255,255,255,.55)"
+            stroke-width="2" stroke-linecap="round"/>
+
+      <!-- white boat gets a darker trim like the adopted reference -->
+      ${isWhite ? `<path d="M50 49 C80 55, 130 53, 159 44"
+          fill="none" stroke="#9ca6ad" stroke-width="2"/>` : ""}
     </g>
   </svg>`;
 }
@@ -7314,39 +7355,44 @@ function raceVisualScaleMarks(){
 function renderRaceWaterVisual(items,{mode="start",title=""}={}){
   const list=[...(items||[])];
   const haveCourses=list.every(x=>Number(x.course)>=1&&Number(x.course)<=6);
+
+  // スタート展示・本番ともに「実際の進入コース順」で上から並べる。
   if(haveCourses) list.sort((a,b)=>Number(a.course)-Number(b.course));
   else list.sort((a,b)=>Number(a.lane)-Number(b.lane));
 
   return `<div class="raceVisualCard ${mode==="result"?"isResult":"isStart"}">
-    ${title?`<div class="raceVisualTop"><b>${esc(title)}</b></div>`:""}
-
-    <div class="raceVisualScale minimalist">
-      <div class="raceVisualScaleBlank"></div>
-      <div class="raceVisualScaleWater">
-        <i class="raceScaleZero"></i>
-      </div>
-    </div>
-
     <div class="raceVisualRows">
       ${list.map(x=>{
         const lane=Number(x.lane)||1;
         const meta=raceVisualSTMeta(x.st);
-        const pos=raceVisualPosition(x.st);
-        const winnerBadge=(mode==="result" && String(x.rank)==="1" && x.move)
-          ? `<span class="raceVisualMove">${esc(x.move)}</span>` : "";
+        const bowPos=raceVisualPosition(x.st);
+
+        const winnerMove=(mode==="result" && String(x.rank)==="1" && x.move)
+          ? `<span class="raceVisualMove">${esc(x.move)}</span>`
+          : "";
+
         return `<div class="raceVisualRow">
-          <div class="raceVisualLane lane${lane}" style="background:${raceVisualLaneColor(lane)};color:${raceVisualTextColor(lane)}">
+          <div class="raceVisualLane lane${lane}"
+               style="background:${raceVisualLaneColor(lane)};color:${raceVisualTextColor(lane)}">
             <strong>${lane}</strong>
           </div>
+
           <div class="raceVisualWater">
-            <span class="raceVisualZeroLine"></span>
             <span class="raceVisualFZone"></span>
-            <span class="raceWake" style="left:${pos}%"></span>
-            <span class="raceVisualBoat" style="left:${pos}%">
+            <span class="raceVisualZeroLine"></span>
+
+            <span class="raceWake" style="left:${bowPos}%"></span>
+
+            <!-- left の位置＝舟の先端位置 -->
+            <span class="raceVisualBoat" style="left:${bowPos}%">
               ${raceVisualBoatSvg(lane)}
             </span>
-            ${winnerBadge}
-            <span class="raceVisualST ${meta.kind==="f"?"flying":meta.kind==="l"?"late":""}">${meta.label}</span>
+
+            ${winnerMove}
+
+            <span class="raceVisualST ${meta.kind==="f"?"flying":meta.kind==="l"?"late":""}">
+              ${meta.label}
+            </span>
           </div>
         </div>`;
       }).join("")}
@@ -14413,6 +14459,302 @@ button.meetPerfFinish.isLink.late{
   .raceWake{width:114px;height:17px}
   .raceVisualST{right:6px;min-width:40px;padding:5px 7px;font-size:9px}
   .raceVisualMove{left:8px;font-size:8px;padding:4px 8px}
+}
+</style>
+
+
+
+<style id="v131-bow-tip-st-visual">
+/* 採用写真に寄せた横長・コンパクト表示 */
+.raceVisualCard{
+  width:100%;
+  overflow:hidden;
+  background:#08aee0;
+  border:0!important;
+  border-radius:0!important;
+}
+
+.raceVisualTop,
+.raceVisualScale,
+.raceVisualLegend{
+  display:none!important;
+}
+
+.raceVisualRows{
+  width:100%;
+  background:#11afe0;
+}
+
+.raceVisualRow{
+  display:grid;
+  grid-template-columns:36px 1fr;
+  min-height:47px!important;
+  height:47px!important;
+}
+
+.raceVisualLane{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid rgba(255,255,255,.96);
+  border-bottom:2px solid rgba(255,255,255,.96);
+  box-shadow:none!important;
+}
+
+.raceVisualLane strong{
+  font-size:17px!important;
+  line-height:1;
+  font-weight:950;
+}
+
+.raceVisualWater{
+  position:relative;
+  overflow:hidden;
+  border-bottom:2px solid rgba(255,255,255,.96);
+  background:
+    radial-gradient(circle at 18% 32%,rgba(255,255,255,.14) 0 1px,transparent 2px),
+    radial-gradient(circle at 70% 68%,rgba(255,255,255,.10) 0 1px,transparent 2px),
+    linear-gradient(164deg,
+      transparent 0 15%,
+      rgba(255,255,255,.045) 15% 16.5%,
+      transparent 16.5% 34%,
+      rgba(255,255,255,.04) 34% 36%,
+      transparent 36% 60%,
+      rgba(255,255,255,.035) 60% 62%,
+      transparent 62%),
+    linear-gradient(180deg,#26b9e8 0%,#12afe0 48%,#08a4d8 100%);
+  background-size:48px 32px,62px 38px,auto,auto;
+}
+
+.raceVisualRow:last-child .raceVisualLane,
+.raceVisualRow:last-child .raceVisualWater{
+  border-bottom:0;
+}
+
+/* 0.00 ライン */
+.raceVisualZeroLine{
+  position:absolute;
+  z-index:5;
+  top:0;
+  bottom:0;
+  left:61.5%;
+  width:4px;
+  transform:translateX(-50%);
+  background:#ffe300;
+  box-shadow:
+    0 0 0 1px rgba(85,75,0,.08),
+    0 0 5px rgba(255,227,0,.22);
+}
+
+/* F側は薄くするだけ */
+.raceVisualFZone{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:61.5%;
+  right:0;
+  z-index:1;
+  background:linear-gradient(90deg,rgba(255,65,65,.018),rgba(255,65,65,.045));
+}
+
+/* 水しぶき：採用写真のように細長く */
+.raceWake{
+  position:absolute;
+  z-index:2;
+  top:50%;
+  width:105px;
+  height:15px;
+  transform:translate(-100%,-50%);
+  border-radius:50%;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,.16) 20%,
+      rgba(255,255,255,.65) 62%,
+      rgba(255,255,255,.90) 82%,
+      rgba(255,255,255,.15) 100%);
+  filter:blur(.25px);
+  opacity:.95;
+}
+
+.raceWake::before,
+.raceWake::after{
+  content:"";
+  position:absolute;
+  right:0;
+  width:88px;
+  height:3px;
+  border-radius:50%;
+  background:rgba(255,255,255,.62);
+  transform-origin:right center;
+}
+
+.raceWake::before{
+  top:2px;
+  transform:rotate(-6deg);
+}
+.raceWake::after{
+  bottom:2px;
+  transform:rotate(6deg);
+}
+
+/*
+  重要:
+  left = ST位置。
+  SVGの右端（舟の先端）をその位置へ合わせる。
+*/
+.raceVisualBoat{
+  position:absolute;
+  z-index:7;
+  top:50%;
+  width:74px!important;
+  height:31px!important;
+  transform:translate(-100%,-50%)!important;
+  transform-origin:right center!important;
+}
+
+.raceBoatSvg{
+  display:block;
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+
+/* STだけ右端へシンプル表示 */
+.raceVisualST{
+  position:absolute;
+  z-index:8;
+  right:5px;
+  top:50%;
+  transform:translateY(-50%);
+  min-width:38px;
+  padding:4px 6px;
+  border-radius:999px;
+  background:rgba(4,85,129,.72);
+  color:#fff;
+  text-align:center;
+  font-size:8px;
+  line-height:1;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+}
+
+.raceVisualST.flying{
+  background:#ef3340;
+}
+.raceVisualST.late{
+  background:#74808a;
+}
+
+/* 競争成績の1着のみ決まり手 */
+.raceVisualMove{
+  position:absolute;
+  z-index:8;
+  left:8px;
+  top:50%;
+  transform:translateY(-50%);
+  padding:4px 7px;
+  border-radius:999px;
+  background:rgba(0,60,96,.70);
+  color:#fff;
+  font-size:7px;
+  line-height:1;
+  font-weight:950;
+}
+
+/* スタート展示の下段データも少し圧縮 */
+.startVisualMeta{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  border-top:1px solid #bcd6e4;
+  background:#fff;
+}
+
+.startVisualMetaRow{
+  min-width:0;
+  min-height:46px!important;
+  padding:5px 2px!important;
+  display:grid;
+  grid-template-rows:auto auto auto;
+  align-items:center;
+  justify-items:center;
+  gap:2px!important;
+  border-right:1px solid #c9dce7;
+}
+
+.startVisualMetaRow:last-child{
+  border-right:0;
+}
+
+.startVisualMetaRow strong{
+  font-size:7.5px!important;
+  color:#174663;
+  font-weight:950;
+}
+
+.startVisualMetaRow b{
+  font-size:6px!important;
+  color:#718898;
+  font-weight:900;
+}
+
+.startVisualMetaRow b::before{
+  content:"展示ST順位 ";
+}
+
+/* 競争成績・スタート展示どちらも横幅100% */
+.proStartVisual,
+.resultVisualFull,
+.proStartVisual .raceVisualCard,
+.resultVisualFull .raceVisualCard{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+/* 結果表の旧ミニ舟は完全非表示 */
+.resultBoatArea,
+.resultBoatVisual,
+.resultBoatHull,
+.resultBoatDriver{
+  display:none!important;
+}
+
+@media(max-width:430px){
+  .raceVisualRow{
+    grid-template-columns:34px 1fr;
+    min-height:44px!important;
+    height:44px!important;
+  }
+
+  .raceVisualLane strong{
+    font-size:16px!important;
+  }
+
+  .raceVisualBoat{
+    width:70px!important;
+    height:29px!important;
+  }
+
+  .raceWake{
+    width:96px;
+    height:14px;
+  }
+
+  .raceVisualST{
+    right:4px;
+    min-width:35px;
+    padding:4px 5px;
+    font-size:7.5px;
+  }
+
+  .raceVisualMove{
+    left:6px;
+    font-size:6.5px;
+    padding:3px 6px;
+  }
 }
 </style>
 
