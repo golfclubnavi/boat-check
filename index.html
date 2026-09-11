@@ -6974,6 +6974,7 @@ function beforeMetric(d, boat, key){
     adjust:["weightAdjustment","adjustWeight","weightAdjust","adjustment"],
     parts:["partsExchange","partExchange","parts","replacement","exchange"],
     tilt:["tilt","tiltAngle","tiltValue"],
+    halfLap:["halfLapTime","halfLap","halfRoundTime"],
     lap:["lapTime","oneLapTime","lap","oneRoundTime"],
     turn:["turnTime","mawariashiTime","turningTime","cornerTime"],
     straight:["straightTime","straight","straightRunTime"]
@@ -6989,6 +6990,7 @@ function beforeMetric(d, boat, key){
     adjust:["weightAdjustment","adjustWeight"],
     parts:["partsExchange","partExchange"],
     tilt:["tilt","tiltAngle"],
+    halfLap:["halfLapTime"],
     lap:["lapTime","oneLapTime"],
     turn:["turnTime","mawariashiTime"],
     straight:["straightTime"]
@@ -7070,15 +7072,37 @@ function beforeRankClasses(values,mode="asc"){
   });
 }
 
-function renderOriginalExhibition(boats,data){
+function renderOriginalExhibition(boats,data,race=null){
+  const profile=state.currentMeeting?.localOfficialProfile||{};
+  const confirmed=new Set(profile.metrics||[]);
+
+  const hasAny=key=>boats.some((b,i)=>{
+    const v=beforeMetric(data[i],b,key);
+    return v!==undefined&&v!==null&&v!=="";
+  });
+
   const defs=[
-    {label:"展示タイム",key:"exhibition",digits:2,mode:"asc"},
-    {label:"一周タイム",key:"lap",digits:2,mode:"asc"},
-    {label:"まわり足タイム",key:"turn",digits:2,mode:"asc"},
-    {label:"直線タイム",key:"straight",digits:2,mode:"asc"},
-    {label:"チルト",key:"tilt",digits:1,mode:null,tilt:true}
-  ];
-  return `<div class="beforeOriginalTable">
+    {label:"展示タイム",key:"exhibition",digits:2,mode:"asc",always:true},
+    {label:"半周ラップ",key:"halfLap",field:"halfLapTime",digits:2,mode:"asc"},
+    {label:"一周タイム",key:"lap",field:"lapTime",digits:2,mode:"asc"},
+    {label:"まわり足タイム",key:"turn",field:"turnTime",digits:2,mode:"asc"},
+    {label:"直線タイム",key:"straight",field:"straightTime",digits:2,mode:"asc"},
+    {label:"チルト",key:"tilt",digits:1,mode:null,tilt:true,always:true}
+  ].filter(row=>{
+    if(row.always)return true;
+    return confirmed.has(row.field)||hasAny(row.key);
+  });
+
+  const status=profile.originalStatus==="suspended"
+    ? `<div class="originalVenueNotice suspended">この場の公式オリジナル展示データは現在休止案内中です。</div>`
+    : "";
+
+  const extraRows=defs.filter(x=>!x.always);
+  const noOriginal=extraRows.length===0
+    ? `<div class="originalVenueNotice">この場で確認済みの独自計測項目は現在ありません。BOAT RACE公式の展示データのみ表示します。</div>`
+    : "";
+
+  return `${status}${noOriginal}<div class="beforeOriginalTable">
     <div class="beforeOriginalHead">
       <div>項目</div>
       ${boats.map(b=>`<div class="beforeHeadLane laneHead${b.lane}">${b.lane}</div>`).join("")}
@@ -7270,7 +7294,8 @@ function renderBeforeInner(){
         <div class="beforeSubSectionTitle">オリジナル展示データ
           <span class="beforeHighlightLegend"><i></i>1位 <i></i>2位</span>
         </div>
-        ${renderOriginalExhibition(boats,data)}
+        <div class="originalSourceNote">各場公式サイトで提供を確認できた項目だけ表示</div>
+        ${renderOriginalExhibition(boats,data,r)}
       </div>`;
   }
 
@@ -13688,6 +13713,33 @@ button.meetPerfFinish.isLink.late{
     padding:7px;
   }
   .beforeCommentRow p{font-size:6.8px;}
+}
+</style>
+
+
+
+<style id="v125-venue-source-matrix">
+.originalSourceNote{
+  padding:6px 9px;
+  border-bottom:1px solid #d4e4ed;
+  background:#f7fbfd;
+  color:#748b99;
+  font-size:5.8px;
+  line-height:1.35;
+  font-weight:850;
+}
+.originalVenueNotice{
+  padding:9px 10px;
+  border-bottom:1px solid #cbdfe9;
+  background:#f7fbfd;
+  color:#607e90;
+  font-size:6.5px;
+  line-height:1.45;
+  font-weight:850;
+}
+.originalVenueNotice.suspended{
+  background:#fff8e7;
+  color:#9a6d17;
 }
 </style>
 
