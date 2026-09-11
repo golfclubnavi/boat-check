@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v48 collector — official live odds
+BOAT CHECK v49 collector — demo settlement result archive
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
@@ -70,7 +70,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.48; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.49; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -2069,6 +2069,73 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
     cache_path.parent.mkdir(parents=True,exist_ok=True)
     cache_path.write_text(json.dumps(racer_cache,ensure_ascii=False,indent=2),encoding="utf-8")
 
+
+def _result_archive_entries(payload: dict) -> list[dict]:
+    out=[]
+    for m in payload.get("meetings",[]) or []:
+        venue_code=str(m.get("venueCode") or "")
+        venue_name=m.get("venueName") or ""
+        meeting_title=m.get("title") or m.get("eventTitle") or ""
+
+        sources=[]
+        if m.get("date"):
+            sources.append((m.get("date"),m.get("races",[]) or []))
+        for d in m.get("meetDays",[]) or []:
+            if d.get("date"):
+                sources.append((d.get("date"),d.get("races",[]) or []))
+
+        seen=set()
+        for day_date,races in sources:
+            for r in races:
+                rno=int(r.get("raceNo") or 0)
+                key=(str(day_date),rno)
+                if not day_date or not rno or key in seen:
+                    continue
+                seen.add(key)
+                result=r.get("result") or r.get("raceResult") or {}
+                if result.get("official") is not True:
+                    continue
+                out.append({
+                    "venueCode":venue_code,
+                    "venueName":venue_name,
+                    "meetingTitle":meeting_title,
+                    "date":str(day_date),
+                    "raceNo":rno,
+                    "result":result,
+                    "resultUpdatedAt":r.get("resultUpdatedAt"),
+                })
+    return out
+
+def build_recent_results(old_payload: dict, payload: dict, keep_days: int=3) -> list[dict]:
+    items=[]
+    items.extend(old_payload.get("recentResults",[]) or [])
+    items.extend(_result_archive_entries(old_payload))
+    items.extend(_result_archive_entries(payload))
+
+    latest={}
+    for x in items:
+        code=str(x.get("venueCode") or "")
+        date=str(x.get("date") or "")
+        rno=int(x.get("raceNo") or 0)
+        result=x.get("result") or {}
+        if not code or not re.fullmatch(r"\d{8}",date) or not rno or result.get("official") is not True:
+            continue
+        latest[(code,date,rno)]=x
+
+    today=datetime.now(JST).date()
+    kept=[]
+    for (code,date,rno),x in latest.items():
+        try:
+            d=datetime.strptime(date,"%Y%m%d").date()
+            age=(today-d).days
+        except Exception:
+            continue
+        if 0 <= age <= keep_days:
+            kept.append(x)
+
+    kept.sort(key=lambda x:(x.get("date",""),int(x.get("venueCode") or 0),int(x.get("raceNo") or 0)))
+    return kept
+
 def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -> dict:
     old_payload = load_json(out_path, {})
     racer_cache = load_json(out_path.parent/"racers.json", {})
@@ -2113,7 +2180,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"48.0",
+        "schemaVersion":"49.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
@@ -2136,6 +2203,8 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
 
     if meetings:
         enrich_realtime(payload,workers=workers,live=live)
+
+    payload["recentResults"]=build_recent_results(old_payload,payload,keep_days=3)
 
     return payload
 
