@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v50 collector — wider future odds coverage
+BOAT CHECK v51 collector — enhanced official beforeinfo
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
 - 取得済みの選手・モーター・ボート・直前・結果データを保持
-- 締切35分前〜20分後のレースは直前情報を5分間隔で更新
+- 締切45分前〜25分後のレースは直前情報を5分間隔で更新
 - 締切後120分以内で未取得のレース結果・払戻を5分間隔で確認
 - 公式で公開済みの先レースオッズも段階更新（近いRは5分、先Rは15〜30分）
 
@@ -70,7 +70,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.50; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.51; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -1021,88 +1021,270 @@ def fetch_racelist_task(code: str, date: str, race_no: int):
 
 
 def _infer_lane_from_start_row(tr, fallback_course: int | None = None) -> int | None:
+    """
+    Infer the actual boat/lane from the image used in the official start-exhibition row.
+    The first visible number is the *course*, so never blindly use it as the boat number.
+    """
     attrs=[]
     for tag in tr.find_all(True):
         for key,val in tag.attrs.items():
             if isinstance(val,(list,tuple)):
                 val=" ".join(map(str,val))
             attrs.append(f"{key}={val}")
-    blob=" ".join(attrs).lower()
+
+        # alt/title sometimes contains the boat number or color name.
+        for key in ("alt","title"):
+            val=tag.get(key)
+            if val:
+                attrs.append(str(val))
+
+    blob=" ".join(attrs).lower().translate(_ZEN_DIGITS)
+
     patterns=[
-        r"(?:boat|teiban|lane|waku|frame)[_\-/]?(?:no)?[_\-]?([1-6])(?:\D|$)",
-        r"(?:is-|color-|boatcolor)([1-6])(?:\D|$)",
+        r"(?:boat|teiban|lane|waku|frame|艇|枠)[_\-/ ]?(?:no)?[_\- ]?([1-6])(?:\D|$)",
+        r"(?:is-|color-|boatcolor|boat_color|teiban_)([1-6])(?:\D|$)",
+        r"(?:^|[/_\-])([1-6])(?:号艇|艇|号|\.png|\.gif|\.svg|\.webp)(?:\D|$)",
     ]
     for pat in patterns:
         m=re.search(pat,blob)
         if m:
             return int(m.group(1))
+
+    # Official boat colors as a last-resort hint if the image title/alt contains the color name.
+    color_to_lane={
+        "白":1,"white":1,
+        "黒":2,"black":2,
+        "赤":3,"red":3,
+        "青":4,"blue":4,
+        "黄":5,"yellow":5,
+        "緑":6,"green":6,
+    }
+    for key,lane in color_to_lane.items():
+        if key in blob:
+            return lane
+
     return None
 
 
-def _weather_from_text(text: str) -> dict:
+def _weather_from_text(text: str, soup: BeautifulSoup | None = None) -> dict:
     out={}
     m=re.search(r"気温\s*(-?\d+(?:\.\d+)?)℃",text)
-    if m: out["airTemperature"]=_num(m.group(1))
+    if m:
+        out["airTemperature"]=_num(m.group(1))
+
     m=re.search(r"水温\s*(-?\d+(?:\.\d+)?)℃",text)
-    if m: out["waterTemperature"]=_num(m.group(1))
+    if m:
+        out["waterTemperature"]=_num(m.group(1))
+
     m=re.search(r"風速\s*(\d+(?:\.\d+)?)m",text)
-    if m: out["windSpeed"]=_num(m.group(1))
+    if m:
+        out["windSpeed"]=_num(m.group(1))
+
     m=re.search(r"波高\s*(\d+(?:\.\d+)?)cm",text)
-    if m: out["waveHeight"]=_num(m.group(1))
-    for w in ("晴", "曇り", "雨", "雪", "霧"):
+    if m:
+        out["waveHeight"]=_num(m.group(1))
+
+    for w in ("晴","曇り","雨","雪","霧"):
         if w in text:
             out["weather"]=w
             break
-    # Official page often renders wind direction as an image; only keep text when actually present.
+
     m=re.search(r"風向\s*(北東|南東|南西|北西|北|南|東|西)",text)
-    if m: out["windDirection"]=m.group(1)
+    if m:
+        out["windDirection"]=m.group(1)
+
+    # The official page often renders wind direction as an image.
+    # Read alt/title when available instead of fabricating a direction.
+    if "windDirection" not in out and soup is not None:
+        for tag in soup.find_all(["img","span","i"]):
+            blob=" ".join(
+                str(tag.get(k) or "")
+                for k in ("alt","title","class","src")
+            )
+            md=re.search(r"(北東|南東|南西|北西|北|南|東|西)",blob)
+            if md:
+                out["windDirection"]=md.group(1)
+                break
+
     return out
 
 
+def _before_row_cells(tr) -> list[str]:
+    return [
+        compact(x.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        for x in tr.find_all(["td","th"],recursive=False)
+    ]
+
+def _before_numeric(v):
+    s=compact(str(v or "")).translate(_ZEN_DIGITS)
+    if s in {"","-","--","―","－"}:
+        return None
+    m=re.fullmatch(r"-?\d+(?:\.\d+)?",s)
+    return _num(s) if m else None
+
+def _before_adjustment_from_following_rows(main_tr):
+    """
+    Official beforeinfo uses a second row for 調整重量 and previous-race info.
+    Prefer a decimal value in the small adjustment range and stop before next racer.
+    """
+    sib=main_tr.find_next_sibling("tr")
+    for _ in range(2):
+        if sib is None:
+            break
+
+        cells=_before_row_cells(sib)
+        row_text=compact(" ".join(cells))
+
+        # A new racer row means the adjustment row was absent.
+        if re.match(r"^[1-6]\s+",row_text) and re.search(r"\d+(?:\.\d+)?kg",row_text):
+            break
+
+        candidates=[]
+        for c in cells:
+            s=compact(c)
+            # Adjustment is displayed with one decimal (e.g. 0.0 / 0.5).
+            if re.fullmatch(r"\d{1,2}\.\d",s):
+                n=_num(s)
+                if n is not None and 0 <= n <= 10:
+                    candidates.append(n)
+
+        if candidates:
+            return candidates[0]
+
+        sib=sib.find_next_sibling("tr")
+
+    return None
+
+def _before_parts_from_cells(cells: list[str], row_text: str):
+    parts=[]
+    source=" ".join(cells)+" "+row_text
+
+    labels=[
+        ("ピストン","ピストン"),
+        ("リング","リング"),
+        ("電気","電気"),
+        ("キャブ","キャブ"),
+        ("シリンダ","シリンダ"),
+        ("シャフト","シャフト"),
+        ("ギヤ","ギヤ"),
+        ("キャリボ","キャリボ"),
+    ]
+    for needle,label in labels:
+        if needle in source:
+            parts.append(label)
+
+    # Official propeller column displays 新 when changed.
+    if re.search(r"(?:プロペラ|ペラ).{0,5}新",source) or any(c=="新" for c in cells):
+        parts.append("プロペラ新")
+
+    return " / ".join(dict.fromkeys(parts)) if parts else None
+
 def parse_beforeinfo(soup: BeautifulSoup) -> dict:
-    text=compact(soup.get_text(" ",strip=True))
+    text=compact(soup.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
     if "展示タイム" not in text and "展示 タイム" not in text and "スタート展示" not in text:
         return {}
 
     boats=[]
     seen=set()
-    for tr in soup.find_all("tr"):
-        row=compact(tr.get_text(" ",strip=True))
-        # Main pre-race row: lane / racer / weight / exhibition / tilt ...
-        m=re.match(
-            r"^([1-6])\s+(.+?)\s+(\d+(?:\.\d+)?)kg\s+"
-            r"(\d+(?:\.\d+)?|--?|-|―)\s+(-?\d+(?:\.\d+)?|--?|-|―)(?:\s+|$)",
-            row,
-        )
-        if not m:
-            continue
-        lane=int(m.group(1))
-        if lane in seen:
-            continue
-        name=compact(m.group(2))
-        weight=_num(m.group(3))
-        exhibition=_num(m.group(4))
-        tilt=_num(m.group(5))
-        item={"lane":lane,"racerName":name,"weight":weight,"exhibitionTime":exhibition,"tilt":tilt}
 
-        parts=[]
-        for p in ("ピストン", "リング", "電気", "キャブ", "シリンダ", "シャフト", "ギヤ", "キャリボ"):
-            if p in row:
-                parts.append(p)
-        if "新" in row:
-            parts.append("プロペラ新")
+    for tr in soup.find_all("tr"):
+        cells=_before_row_cells(tr)
+        if not cells:
+            continue
+        row=compact(" ".join(cells))
+
+        # Main pre-race row must contain lane + weight + exhibition time + tilt.
+        lane=None
+        for c in cells[:3]:
+            if re.fullmatch(r"[1-6]",c):
+                lane=int(c)
+                break
+        if lane is None or lane in seen:
+            continue
+
+        weight_idx=next(
+            (i for i,c in enumerate(cells) if re.fullmatch(r"\d+(?:\.\d+)?kg",c)),
+            -1
+        )
+        if weight_idx < 0:
+            continue
+
+        weight=_num(cells[weight_idx].replace("kg",""))
+
+        # Racer name is usually the profile link in the same row.
+        name=""
+        profile_link=tr.find("a",href=re.compile(r"(?:racersearch/profile|toban=)"))
+        if profile_link:
+            name=compact(profile_link.get_text(" ",strip=True))
+        if not name:
+            # Fallback: nearest non-numeric cell before weight.
+            for c in reversed(cells[:weight_idx]):
+                if c and not re.fullmatch(r"[1-6]",c) and "写真" not in c:
+                    name=c
+                    break
+
+        nums=[]
+        for i,c in enumerate(cells[weight_idx+1:],start=weight_idx+1):
+            n=_before_numeric(c)
+            if n is not None:
+                nums.append((i,n,c))
+
+        exhibition=None
+        tilt=None
+
+        # Exhibition is generally around 6.xx.
+        for _,n,_ in nums:
+            if 5.0 <= n <= 9.0:
+                exhibition=n
+                break
+
+        if exhibition is not None:
+            passed=False
+            for _,n,_ in nums:
+                if not passed:
+                    if n==exhibition:
+                        passed=True
+                    continue
+                # Tilt is normally -0.5 .. 3.0.
+                if -1.0 <= n <= 3.0:
+                    tilt=n
+                    break
+
+        # Fallback for unusual display values.
+        if exhibition is None and nums:
+            exhibition=nums[0][1]
+        if tilt is None and len(nums)>=2:
+            candidate=nums[1][1]
+            if -1.0 <= candidate <= 3.0:
+                tilt=candidate
+
+        adjust=_before_adjustment_from_following_rows(tr)
+        parts=_before_parts_from_cells(cells,row)
+
+        item={
+            "lane":lane,
+            "racerName":name,
+            "weight":weight,
+            "weightAdjustment":adjust,
+            "adjustWeight":adjust,
+            "exhibitionTime":exhibition,
+            "tilt":tilt,
+            "official":True,
+        }
         if parts:
-            item["partsExchange"]=" / ".join(dict.fromkeys(parts))
+            item["partsExchange"]=parts
+
         boats.append(item)
         seen.add(lane)
         if len(boats)==6:
             break
 
-    # Start exhibition. Map to lane only if the official HTML lets us infer the boat number.
+    # Start exhibition: actual course order + ST.
     start_rows=[]
     start_area=False
     for tr in soup.find_all("tr"):
-        row=compact(tr.get_text(" ",strip=True))
+        row=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+
         if "コース" in row and "ST" in row:
             start_area=True
             continue
@@ -1110,26 +1292,73 @@ def parse_beforeinfo(soup: BeautifulSoup) -> dict:
             continue
         if "水面気象情報" in row:
             break
-        ms=re.match(r"^([1-6])\s+.*?((?:F|L)?\.\d{2})$",row)
+
+        ms=re.match(r"^([1-6])\s+.*?((?:F|L)?\.\d{2})$",row,re.I)
         if not ms:
             continue
+
         course=int(ms.group(1))
-        raw=ms.group(2)
+        raw=ms.group(2).upper()
         lane=_infer_lane_from_start_row(tr,course)
         st=_num(raw.lstrip("FL"))
-        entry={"course":course,"lane":lane,"st":st,"rawST":raw}
+
+        entry={
+            "course":course,
+            "lane":lane,
+            "st":st,
+            "rawST":raw,
+            "official":True,
+        }
         start_rows.append(entry)
-        if lane:
+
+    # If all six actual lanes were detected, merge course/ST into the boat rows.
+    detected_lanes=[x.get("lane") for x in start_rows if x.get("lane")]
+    if len(start_rows)==6 and len(set(detected_lanes))==6:
+        by_lane={b["lane"]:b for b in boats}
+        for x in start_rows:
+            b=by_lane.get(x.get("lane"))
+            if not b:
+                continue
+            b["course"]=x["course"]
+            b["st"]=x["rawST"] if str(x["rawST"]).startswith(("F","L")) else x["st"]
+
+    # Rank display metrics (1 = best/lower time).
+    exhibition_ranked=sorted(
+        (b for b in boats if b.get("exhibitionTime") is not None),
+        key=lambda b:b["exhibitionTime"]
+    )
+    for rank,b in enumerate(exhibition_ranked,1):
+        b["exhibitionRank"]=rank
+
+    st_ranked=sorted(
+        (
+            x for x in start_rows
+            if x.get("st") is not None and not str(x.get("rawST") or "").startswith(("F","L"))
+        ),
+        key=lambda x:x["st"]
+    )
+    for rank,x in enumerate(st_ranked,1):
+        x["startRank"]=rank
+        if x.get("lane"):
             for b in boats:
-                if b.get("lane")==lane:
-                    b["course"]=course
-                    b["st"]=raw if raw.startswith(("F","L")) else st
+                if b.get("lane")==x["lane"]:
+                    b["startRank"]=rank
                     break
+
+    weather=_weather_from_text(text,soup)
+
+    # Official page states which race the weather data was measured at (e.g. 3R時点).
+    weather_at=None
+    mw=re.search(r"水面気象情報\s*(\d{1,2})R時点",text)
+    if mw:
+        weather_at=int(mw.group(1))
+        weather["observedRaceNo"]=weather_at
 
     return {
         "boats":boats,
         "startExhibition":start_rows,
-        "weather":_weather_from_text(text),
+        "weather":weather,
+        "official":bool(boats or start_rows or weather),
     }
 
 
@@ -1689,7 +1918,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
 
             if live:
                 # Exhibition/start-exhibition can change close to cutoff.
-                if -20 <= mins <= 35:
+                if -25 <= mins <= 45:
                     before_tasks.append((code,date,rno))
 
                 # Results are normally available soon after the race.
@@ -1823,6 +2052,20 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                             b["before"]=d
                             if d.get("weight") is not None:
                                 b["weight"]=d["weight"]
+
+                            # Mirror frequently used live fields for UI/analysis convenience.
+                            if d.get("weightAdjustment") is not None:
+                                b["weightAdjustment"]=d["weightAdjustment"]
+                            if d.get("exhibitionTime") is not None:
+                                b["exhibitionTime"]=d["exhibitionTime"]
+                            if d.get("tilt") is not None:
+                                b["tilt"]=d["tilt"]
+                            if d.get("partsExchange"):
+                                b["partsExchange"]=d["partsExchange"]
+                            if d.get("course") is not None:
+                                b["exhibitionCourse"]=d["course"]
+                            if d.get("st") is not None:
+                                b["exhibitionST"]=d["st"]
                 elif err:
                     race.setdefault("liveErrors",{})["beforeinfo"]=err
 
@@ -2236,7 +2479,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"50.0",
+        "schemaVersion":"51.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
