@@ -3288,21 +3288,6 @@ body{letter-spacing:0 !important}
 }
 </style>
 
-
-<style>
-/* v51: exact cutoff + demo vote lock */
-.demoClosedNotice{
-  margin:12px;padding:18px 14px;border:1.5px solid #e9a9ad;border-radius:12px;
-  background:#fff4f4;text-align:center;box-shadow:0 5px 16px rgba(150,40,50,.06);
-}
-.demoClosedNotice b{display:block;color:#b5222c;font-size:14px;font-weight:950;}
-.demoClosedNotice span{display:block;margin-top:6px;color:#75545a;font-size:9px;font-weight:850;line-height:1.6;}
-.demoMainTabs button:disabled{opacity:.45;cursor:not-allowed;}
-.demoCartRaceItem.isClosed{background:#fff6f6;}
-.demoClosedBadge{display:inline-flex;margin-left:5px;padding:1px 5px;border-radius:999px;background:#c92d38;color:#fff;font-style:normal;font-size:7px;font-weight:950;}
-.demoCartClosedWarning{margin:0 12px 9px;padding:8px 10px;border:1px solid #efb4b8;border-radius:8px;background:#fff1f2;color:#a8242e;font-size:8px;font-weight:900;text-align:center;}
-.demoCartActions .submit:disabled{opacity:.42;cursor:not-allowed;}
-</style>
 </head>
 <body>
 <header>
@@ -3493,14 +3478,7 @@ function jstNow(){
   const parts=new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
   const o=Object.fromEntries(parts.map(x=>[x.type,x.value]));return {date:`${o.year}${o.month}${o.day}`,time:`${o.hour}:${o.minute}`}
 }
-function raceIsPast(deadline, nowTime){
-  const toMinutes=v=>{
-    const m=String(v||"").match(/^(\d{1,2}):(\d{2})$/);
-    return m?Number(m[1])*60+Number(m[2]):null;
-  };
-  const d=toMinutes(deadline), n=toMinutes(nowTime);
-  return d!==null&&n!==null&&d<=n;
-}
+function raceIsPast(deadline, nowTime){return deadline && deadline<=nowTime}
 
 function normalizeCancelStatus(v){
   const s=String(v||"").toLowerCase();
@@ -3568,8 +3546,8 @@ function minutesUntil(deadline){
 function countdownText(deadline){
   const mins=minutesUntil(deadline);
   if(mins===null)return "";
-  // 締切予定時刻と同じ分になった時点で受付終了扱いにする。
-  if(mins<=0)return "締切済";
+  if(mins<0)return "締切済";
+  if(mins===0)return "締切まもなく";
   if(mins<60)return `締切まで ${mins}分`;
   return `締切まで ${Math.floor(mins/60)}時間${mins%60?mins%60+"分":""}`;
 }
@@ -3785,7 +3763,7 @@ function renderHomeDeadline(){
     (m.races||[]).forEach(r=>{
       if(raceIsCancelled(r))return;
       const mins=minutesUntil(r.deadline);
-      if(mins===null||mins<=0)return;
+      if(mins===null||mins<0)return;
       allUpcoming.push({
         venueCode:m.venueCode,
         venueName:m.venueName||VENUES.find(v=>v[0]===m.venueCode)?.[1]||"--",
@@ -3844,7 +3822,7 @@ function renderHomeDeadline(){
         const urgent=x.mins<=10;
         const soon=x.mins<=20;
         const stateClass=urgent?"urgent":soon?"soon":"normal";
-        const remain=`あと${x.mins}分`;
+        const remain=x.mins===0?"まもなく":`あと${x.mins}分`;
         const gradeClass=String(x.grade||"").toLowerCase().replace(/\s+/g,"");
         return `<button class="deadlinePremiumRow ${stateClass}" onclick="homeOpenRace('${x.venueCode}',${x.raceNo})">
           <div class="deadlineTopLine">
@@ -4902,7 +4880,7 @@ function renderRaces(m){
           ${(()=>{
             const mins=raceMinutesUntil(r.deadline);
             if(mins===null)return "";
-            if(mins<=0)return "締切済";
+            if(mins<0)return "締切済";
             return esc(countdownText(r.deadline));
           })()}
         </div>
@@ -4952,8 +4930,8 @@ function renderRaceContext(){
   const ctxMins=raceMinutesUntil(r.deadline);
   const ctxCountdown=$("ctxCountdown");
   if(ctxCountdown){
-    if(ctxMins===null||ctxMins<=0){
-      ctxCountdown.textContent=ctxMins!==null&&ctxMins<=0?"締切済":"";
+    if(ctxMins===null||ctxMins<0){
+      ctxCountdown.textContent=ctxMins!==null&&ctxMins<0?"締切済":"";
       ctxCountdown.classList.remove("urgent");
     }else{
       ctxCountdown.textContent=countdownText(r.deadline);
@@ -5007,7 +4985,13 @@ function openRace(no, push=true){
   state.currentRace=r;
   renderRaceContext();
   $("venue").classList.add("hidden");$("detail").classList.remove("hidden");
-showRaceData("racer", document.querySelector('#raceDataTabs [data-panel="racer"]'));
+
+  // Rを切り替えても、ユーザーが選択していた情報タブを維持する。
+  // 初めてレース詳細を開くときだけ「選手情報」を初期表示。
+  const keepType=currentQuickDataType||"racer";
+  const keepBtn=document.querySelector(`#raceDataTabs [data-panel="${keepType}"]`);
+  showRaceData(keepType,keepBtn);
+
   scrollTo({top:0,behavior:"instant"});
 }
 function scrollRaceDataToView(){
@@ -7630,7 +7614,6 @@ function resultBoatVisual(lane, move=""){
 function resultFinishRows(race){
   const boats=(race?.boats||[]).slice(0,6);
   const entries=resultEntries(race);
-  const root=resultRoot(race);
 
   const normalized=[];
   if(entries.length){
@@ -7642,8 +7625,7 @@ function resultFinishRows(race){
       const time=resultEntryValue(x,["time","raceTime","finishTime"]);
       const st=resultEntryValue(x,["st","startTiming","start"]);
       const move=resultEntryValue(x,["kimarite","winningMove","decision","move"]);
-      const course=Number(resultEntryValue(x,["course","entry","courseNo","actualCourse","startCourse"]))||null;
-      normalized.push({lane,rank,racerName,time,st,move,course});
+      normalized.push({lane,rank,racerName,time,st,move});
     });
   }else{
     boats.forEach(b=>{
@@ -7654,8 +7636,7 @@ function resultFinishRows(race){
         racerName:b.racerName||"--",
         time:firstStat(b,["result.time","raceTime","finishTime"]),
         st:firstStat(b,["result.st","result.startTiming","st"]),
-        move:firstStat(b,["result.kimarite","result.winningMove","kimarite"]),
-        course:Number(firstStat(b,["result.course","result.entry","course","entry","startCourse"]))||null
+        move:firstStat(b,["result.kimarite","result.winningMove","kimarite"])
       });
     });
   }
@@ -7666,45 +7647,21 @@ function resultFinishRows(race){
     return ar-br;
   });
 
-  // 左側（着・枠・選手名・タイム）は着順。
-  // 右側（レース図・ST）は実際の本番進入コース順で独立して並べる。
-  const rawStarts=Array.isArray(root?.startEntries)?root.startEntries:[];
-  let startRows=rawStarts.map((x,i)=>({
-    lane:Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"]))||i+1,
-    course:Number(resultEntryValue(x,["course","entry","courseNo","actualCourse","startCourse"]))||i+1,
-    st:resultEntryValue(x,["st","startTiming","start"]),
-    move:resultEntryValue(x,["kimarite","winningMove","decision","move"])||""
-  }));
-
-  if(!startRows.length){
-    startRows=normalized.map((x,i)=>({
-      lane:x.lane,
-      course:Number(x.course)||i+1,
-      st:x.st,
-      move:x.move||""
-    }));
-  }
-  startRows.sort((a,b)=>(Number(a.course)||99)-(Number(b.course)||99));
-
-  const winningLane=Number(normalized.find(x=>String(x.rank)==="1")?.lane)||0;
   const winnerMove = normalized.find(x=>String(x.rank)==="1")?.move ||
-    resultPath(root,["kimarite","winningMove","decision","move"]) || "";
+    resultPath(resultRoot(race),["kimarite","winningMove","decision","move"]) || "";
 
-  return normalized.map((x,rowIndex)=>{
+  return normalized.map(x=>{
     const rank=resultRankText(x.rank);
     const isWinner=rank==="1";
     const isSecond=rank==="2";
     const rankClass=isWinner?"resultWinner":isSecond?"resultSecond":"";
-    const start=startRows[rowIndex]||{lane:x.lane,st:x.st,move:x.move||""};
-    const startLane=Number(start.lane)||x.lane;
-    const startMove=startLane===winningLane?(winnerMove||start.move||""):"";
     return `<div class="resultFinishRow ${rankClass}">
       <div class="resultFinishRank">${rank}</div>
       <div>${oddsLaneChip(x.lane)}</div>
       <div class="resultRacerName">${formatRacerNameTwoLines(cleanRacerName(x.racerName)||"--")}</div>
       <div class="resultTime">${resultTime(x.time)}</div>
-      <div class="resultBoatArea">${resultBoatVisual(startLane,startMove)}</div>
-      <div class="resultST">${resultST(start.st)}</div>
+      <div class="resultBoatArea">${resultBoatVisual(x.lane,isWinner?winnerMove:"")}</div>
+      <div class="resultST">${resultST(x.st)}</div>
     </div>`;
   }).join("");
 }
@@ -8172,45 +8129,7 @@ function demoCurrentOdds(combo){
   });
   return found?oddsNumber(found.odds??found.value??found.rate):null;
 }
-function demoDeadlineClosed(date,deadline){
-  const now=jstNow();
-  const d=String(date||"");
-  const dl=String(deadline||"");
-  if(d && d<now.date)return true;
-  if(d && d>now.date)return false;
-  if(!dl)return false;
-  return raceIsPast(dl,now.time);
-}
-function demoCurrentRaceClosed(){
-  const r=state.currentRace||{};
-  const m=state.currentMeetingView||state.currentMeeting||{};
-  if(raceIsCancelled(r))return true;
-  return demoDeadlineClosed(m.date||state.currentDayDate||"",r.deadline||"");
-}
-function demoCartItemClosed(item){
-  if(!item)return false;
-  const meeting=(state.meetings||[]).find(m=>String(m.venueCode||"")===String(item.venueCode||""));
-  if(meeting){
-    let races=[];
-    if(String(meeting.date||"")===String(item.date||""))races=meeting.races||[];
-    const day=(meeting.meetDays||[]).find(d=>String(d.date||"")===String(item.date||""));
-    if(day?.races?.length)races=day.races;
-    const race=races.find(r=>Number(r.raceNo)===Number(item.raceNo));
-    if(race && raceIsCancelled(race))return true;
-  }
-  return demoDeadlineClosed(item.date||"",item.deadline||"");
-}
-function demoRequireOpenRace(){
-  if(!demoCurrentRaceClosed())return true;
-  demoBetModalOpen=false;
-  demoDraftList=[];
-  demoToast("締切済みのためデモ投票できません");
-  const panel=document.getElementById("demoBetRoot");
-  if(panel)panel.innerHTML=renderDemoBetInner();
-  return false;
-}
 function demoAddSelections(){
-  if(!demoRequireOpenRace())return;
   const combos=demoBuildCombos();
   if(!combos.length)return;
 
@@ -8247,7 +8166,7 @@ function demoToast(message){
 function demoCurrentMeetingMeta(){
   const m=state.currentMeetingView||state.currentMeeting||{};
   return {
-    venueCode:String(m.venueCode||state.currentMeeting?.venueCode||"").padStart(2,"0"),
+    venueCode:state.currentVenue||"",
     venueName:m.name||m.venueName||demoVenueLabel(),
     date:m.date||"",
     meetingTitle:m.title||m.eventTitle||""
@@ -8268,7 +8187,6 @@ function demoDraftToCartItems(){
   }));
 }
 function demoMergeDraftToCart(){
-  if(!demoRequireOpenRace())return false;
   const items=demoDraftToCartItems();
   items.forEach(item=>{
     const idx=demoCart.findIndex(x=>x.cartKey===item.cartKey);
@@ -8276,7 +8194,6 @@ function demoMergeDraftToCart(){
     else demoCart.push(item);
   });
   demoPersistCart();
-  return true;
 }
 function demoSetCartStake(cartKey,v){
   let n=Math.floor(Number(v)||0);
@@ -8319,14 +8236,6 @@ function demoCloseCart(){
 }
 function demoSubmitCart(){
   if(!demoCart.length)return;
-  const closedItems=demoCart.filter(demoCartItemClosed);
-  if(closedItems.length){
-    demoToast("締切済みの買い目は購入できません");
-    alert("締切済みの買い目が含まれています。削除してから投票してください。");
-    const panel=document.getElementById("demoBetRoot");
-    if(panel)panel.innerHTML=renderDemoBetInner();
-    return;
-  }
   const total=demoCartTotal();
   if(total>demoPoints){
     alert("所持ptが不足しています。");
@@ -8392,8 +8301,7 @@ function demoMergeDraft(){
   });
 }
 function demoDraftContinue(){
-  if(!demoRequireOpenRace())return;
-  if(!demoMergeDraftToCart())return;
+  demoMergeDraftToCart();
   demoBetModalOpen=false;
   demoDraftList=[];
   demoResetSelection();
@@ -8402,8 +8310,7 @@ function demoDraftContinue(){
   demoToast("ベットリストに追加されました");
 }
 function demoDraftVote(){
-  if(!demoRequireOpenRace())return;
-  if(!demoMergeDraftToCart())return;
+  demoMergeDraftToCart();
   demoBetModalOpen=false;
   demoDraftList=[];
   demoResetSelection();
@@ -8446,7 +8353,6 @@ function demoTotalStake(){
   return demoBetList.reduce((sum,x)=>sum+(Number(x.stake)||0),0);
 }
 function demoConfirmBet(){
-  if(!demoRequireOpenRace())return;
   const total=demoTotalStake();
   if(!demoBetList.length||total<=0)return;
   if(total>demoPoints){
@@ -8458,15 +8364,13 @@ function demoConfirmBet(){
 
   const r=state.currentRace||{};
   const history=JSON.parse(localStorage.getItem("boatCheckDemoHistory")||"[]");
-  const meta=demoCurrentMeetingMeta();
   history.unshift({
     at:new Date().toISOString(),
-    venueCode:meta.venueCode,
-    venue:meta.venueName,
+    venue:state.currentVenue||"",
     raceNo:r.raceNo||"",
-    date:meta.date,
+    date:(state.currentMeetingView||state.currentMeeting||{}).date||"",
     total,
-    bets:demoBetList.map(x=>({...x,venueCode:meta.venueCode,venueName:meta.venueName,date:meta.date,raceNo:r.raceNo||""}))
+    bets:demoBetList
   });
   localStorage.setItem("boatCheckDemoHistory",JSON.stringify(history.slice(0,100)));
   demoBetList=[];
@@ -8576,7 +8480,6 @@ function renderDemoOddsBet(){
   </div>`;
 }
 function demoAddOddsBet(comboStr){
-  if(!demoRequireOpenRace())return;
   const combo=String(comboStr).split("-").map(Number).filter(Boolean);
   if(!combo.length)return;
   demoDraftList=[{
@@ -8654,7 +8557,6 @@ function renderDemoDraftModal(){
 function renderDemoCart(){
   if(!demoCartOpen)return "";
   const total=demoCartTotal();
-  const hasClosed=demoCart.some(demoCartItemClosed);
   return `<div class="demoModalBackdrop">
     <div class="demoCartModal" role="dialog" aria-modal="true" aria-label="ベットリスト">
       <div class="demoCartHead">
@@ -8665,14 +8567,12 @@ function renderDemoCart(){
         </div>
       </div>
       <div class="demoCartBody">
-        ${demoCart.length ? demoCart.map((x,i)=>{
-          const closed=demoCartItemClosed(x);
-          return `
-          <div class="demoCartRaceItem ${closed?"isClosed":""}">
+        ${demoCart.length ? demoCart.map((x,i)=>`
+          <div class="demoCartRaceItem">
             <div class="demoCartMeta">
               <div>
                 <strong>${esc(x.venueName||"--")} ${x.raceNo||"--"}R</strong>
-                <span>${esc(x.date||"")} ${x.deadline?`締切 ${esc(x.deadline)}`:""} ${closed?'<em class="demoClosedBadge">締切済</em>':""}</span>
+                <span>${esc(x.date||"")} ${x.deadline?`締切 ${esc(x.deadline)}`:""}</span>
               </div>
               <small>${demoBetLabel(x.type)}</small>
             </div>
@@ -8689,7 +8589,7 @@ function renderDemoCart(){
                 <small>投資pt</small>
                 <div class="demoCartStakeInput">
                   <input type="number" inputmode="numeric" min="1" max="${demoPoints}" step="1"
-                    value="${Number(x.stake)||demoStake}" ${closed?"disabled":""}
+                    value="${Number(x.stake)||demoStake}"
                     onchange="demoSetCartStake('${x.cartKey}',this.value)">
                   <span>pt</span>
                 </div>
@@ -8699,17 +8599,16 @@ function renderDemoCart(){
 </button>
             </div>
           </div>
-        `}).join("") : `<div class="demoCartEmpty">ベットリストは空です。</div>`}
+        `).join("") : `<div class="demoCartEmpty">ベットリストは空です。</div>`}
       </div>
       <div class="demoCartSummary">
         <div><small>合計ベット数</small><strong>${demoCart.length}点</strong></div>
         <div><small>合計投資</small><strong>${demoFormatPt(total)}</strong></div>
         <div><small>投票後残高</small><strong>${demoFormatPt(Math.max(0,demoPoints-total))}</strong></div>
       </div>
-      ${hasClosed?`<div class="demoCartClosedWarning">締切済みの買い目が含まれています。削除すると投票できます。</div>`:""}
       <div class="demoCartActions">
         <button class="back" onclick="demoCloseCart()">入力に戻る</button>
-        <button class="submit" ${demoCart.length&&!hasClosed?"":"disabled"} onclick="demoSubmitCart()">まとめて投票する</button>
+        <button class="submit" ${demoCart.length?"":"disabled"} onclick="demoSubmitCart()">まとめて投票する</button>
       </div>
     </div>
   </div>`;
@@ -8748,7 +8647,6 @@ function renderDemoComplete(){
 
 function renderDemoBetInner(message=""){
   const r=state.currentRace||{};
-  const closed=demoCurrentRaceClosed();
   return `<div class="demoBetPage">
     ${message}
     <div class="demoTop">
@@ -8765,8 +8663,8 @@ function renderDemoBetInner(message=""){
     </div>
 
     <div class="demoMainTabs">
-      <button class="${demoMainTab==="bet"?"active":""}" ${closed?"disabled":""} onclick="setDemoMainTab('bet')">投票</button>
-      <button class="${demoMainTab==="odds"?"active":""}" ${closed?"disabled":""} onclick="setDemoMainTab('odds')">オッズ投票</button>
+      <button class="${demoMainTab==="bet"?"active":""}" onclick="setDemoMainTab('bet')">投票</button>
+      <button class="${demoMainTab==="odds"?"active":""}" onclick="setDemoMainTab('odds')">オッズ投票</button>
     </div>
 
     <button class="demoCartShortcut" onclick="demoOpenCart()">
@@ -8777,7 +8675,7 @@ function renderDemoBetInner(message=""){
     ${demoRacerHeader()}
 
     <div class="demoBody">
-      ${closed?`<div class="demoClosedNotice"><b>このレースは締切済みです</b><span>締切予定時刻を過ぎたため、新しいデモ投票はできません。</span></div>`:(demoMainTab==="bet"?renderDemoNormalBet():renderDemoOddsBet())}
+      ${demoMainTab==="bet"?renderDemoNormalBet():renderDemoOddsBet()}
     </div>
 
     <div class="demoSafety">
@@ -8785,7 +8683,7 @@ function renderDemoBetInner(message=""){
       <span>これは仮想ptを使った練習機能です。実際の舟券購入・換金・現金の授受は行いません。</span>
     </div>
 
-    ${closed?"":renderDemoDraftModal()}
+    ${renderDemoDraftModal()}
     ${renderDemoCart()}
     ${renderDemoComplete()}
   </div>`;
@@ -8819,7 +8717,8 @@ function showRaceData(type, btn){
   }
   if(type==="motor"){
     try{
-      motorInnerTab="motor";
+      // motorInnerTab はR切替時も維持する。
+      // 初期値は "motor" なので初回表示の挙動は従来どおり。
       panel.innerHTML=renderMotorInfo();
     }catch(err){
       console.error("motor info render error",err);
@@ -8974,7 +8873,7 @@ function demoBuildSettlementRaceMap(){
   const raceMap=new Map();
 
   (state.meetings||[]).forEach(m=>{
-    const code=String(m.venueCode||"").padStart(2,"0");
+    const code=String(m.venueCode||"");
 
     (m.races||[]).forEach(r=>{
       raceMap.set(`${code}:${m.date||""}:${Number(r.raceNo)||0}`,r);
@@ -8990,25 +8889,15 @@ function demoBuildSettlementRaceMap(){
 
   (state.recentResults||[]).forEach(x=>{
     raceMap.set(
-      `${String(x.venueCode||"").padStart(2,"0")}:${x.date||""}:${Number(x.raceNo)||0}`,
+      `${x.venueCode||""}:${x.date||""}:${Number(x.raceNo)||0}`,
       {raceNo:Number(x.raceNo)||0,result:x.result||{},resultUpdatedAt:x.resultUpdatedAt||null}
     );
   });
 
   return raceMap;
 }
-function demoVenueCodeFromName(name){
-  const target=String(name||"").replace(/\s+/g,"").trim();
-  if(!target)return "";
-  const hit=VENUES.find(v=>String(v?.[1]||"").replace(/\s+/g,"").trim()===target);
-  return hit?String(hit[0]).padStart(2,"0"):"";
-}
 function demoSettlementKeyForBet(b,h){
-  const rawCode=b.venueCode||h.venueCode||"";
-  const venueName=b.venueName||h.venueName||h.venue||"";
-  const venueCode=rawCode
-    ? String(rawCode).padStart(2,"0")
-    : demoVenueCodeFromName(venueName);
+  const venueCode=String(b.venueCode||h.venueCode||h.venue||"");
   const date=String(b.date||h.date||"");
   const raceNo=Number(b.raceNo||h.raceNo)||0;
   return `${venueCode}:${date}:${raceNo}`;
@@ -9218,10 +9107,6 @@ setInterval(()=>{
   }
   if(!$("detail").classList.contains("hidden") && state.currentRace){
     renderRaceContext();
-    if(currentQuickDataType==="demo"){
-      const panel=document.getElementById("demoBetRoot");
-      if(panel)panel.innerHTML=renderDemoBetInner();
-    }
   }
 },30000);
 </script>
