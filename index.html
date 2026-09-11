@@ -7630,6 +7630,7 @@ function resultBoatVisual(lane, move=""){
 function resultFinishRows(race){
   const boats=(race?.boats||[]).slice(0,6);
   const entries=resultEntries(race);
+  const root=resultRoot(race);
 
   const normalized=[];
   if(entries.length){
@@ -7641,7 +7642,8 @@ function resultFinishRows(race){
       const time=resultEntryValue(x,["time","raceTime","finishTime"]);
       const st=resultEntryValue(x,["st","startTiming","start"]);
       const move=resultEntryValue(x,["kimarite","winningMove","decision","move"]);
-      normalized.push({lane,rank,racerName,time,st,move});
+      const course=Number(resultEntryValue(x,["course","entry","courseNo","actualCourse","startCourse"]))||null;
+      normalized.push({lane,rank,racerName,time,st,move,course});
     });
   }else{
     boats.forEach(b=>{
@@ -7652,7 +7654,8 @@ function resultFinishRows(race){
         racerName:b.racerName||"--",
         time:firstStat(b,["result.time","raceTime","finishTime"]),
         st:firstStat(b,["result.st","result.startTiming","st"]),
-        move:firstStat(b,["result.kimarite","result.winningMove","kimarite"])
+        move:firstStat(b,["result.kimarite","result.winningMove","kimarite"]),
+        course:Number(firstStat(b,["result.course","result.entry","course","entry","startCourse"]))||null
       });
     });
   }
@@ -7663,21 +7666,45 @@ function resultFinishRows(race){
     return ar-br;
   });
 
-  const winnerMove = normalized.find(x=>String(x.rank)==="1")?.move ||
-    resultPath(resultRoot(race),["kimarite","winningMove","decision","move"]) || "";
+  // 左側（着・枠・選手名・タイム）は着順。
+  // 右側（レース図・ST）は実際の本番進入コース順で独立して並べる。
+  const rawStarts=Array.isArray(root?.startEntries)?root.startEntries:[];
+  let startRows=rawStarts.map((x,i)=>({
+    lane:Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"]))||i+1,
+    course:Number(resultEntryValue(x,["course","entry","courseNo","actualCourse","startCourse"]))||i+1,
+    st:resultEntryValue(x,["st","startTiming","start"]),
+    move:resultEntryValue(x,["kimarite","winningMove","decision","move"])||""
+  }));
 
-  return normalized.map(x=>{
+  if(!startRows.length){
+    startRows=normalized.map((x,i)=>({
+      lane:x.lane,
+      course:Number(x.course)||i+1,
+      st:x.st,
+      move:x.move||""
+    }));
+  }
+  startRows.sort((a,b)=>(Number(a.course)||99)-(Number(b.course)||99));
+
+  const winningLane=Number(normalized.find(x=>String(x.rank)==="1")?.lane)||0;
+  const winnerMove = normalized.find(x=>String(x.rank)==="1")?.move ||
+    resultPath(root,["kimarite","winningMove","decision","move"]) || "";
+
+  return normalized.map((x,rowIndex)=>{
     const rank=resultRankText(x.rank);
     const isWinner=rank==="1";
     const isSecond=rank==="2";
     const rankClass=isWinner?"resultWinner":isSecond?"resultSecond":"";
+    const start=startRows[rowIndex]||{lane:x.lane,st:x.st,move:x.move||""};
+    const startLane=Number(start.lane)||x.lane;
+    const startMove=startLane===winningLane?(winnerMove||start.move||""):"";
     return `<div class="resultFinishRow ${rankClass}">
       <div class="resultFinishRank">${rank}</div>
       <div>${oddsLaneChip(x.lane)}</div>
       <div class="resultRacerName">${formatRacerNameTwoLines(cleanRacerName(x.racerName)||"--")}</div>
       <div class="resultTime">${resultTime(x.time)}</div>
-      <div class="resultBoatArea">${resultBoatVisual(x.lane,isWinner?winnerMove:"")}</div>
-      <div class="resultST">${resultST(x.st)}</div>
+      <div class="resultBoatArea">${resultBoatVisual(startLane,startMove)}</div>
+      <div class="resultST">${resultST(start.st)}</div>
     </div>`;
   }).join("");
 }
@@ -8220,7 +8247,7 @@ function demoToast(message){
 function demoCurrentMeetingMeta(){
   const m=state.currentMeetingView||state.currentMeeting||{};
   return {
-    venueCode:state.currentVenue||"",
+    venueCode:String(m.venueCode||state.currentMeeting?.venueCode||"").padStart(2,"0"),
     venueName:m.name||m.venueName||demoVenueLabel(),
     date:m.date||"",
     meetingTitle:m.title||m.eventTitle||""
@@ -8431,13 +8458,15 @@ function demoConfirmBet(){
 
   const r=state.currentRace||{};
   const history=JSON.parse(localStorage.getItem("boatCheckDemoHistory")||"[]");
+  const meta=demoCurrentMeetingMeta();
   history.unshift({
     at:new Date().toISOString(),
-    venue:state.currentVenue||"",
+    venueCode:meta.venueCode,
+    venue:meta.venueName,
     raceNo:r.raceNo||"",
-    date:(state.currentMeetingView||state.currentMeeting||{}).date||"",
+    date:meta.date,
     total,
-    bets:demoBetList
+    bets:demoBetList.map(x=>({...x,venueCode:meta.venueCode,venueName:meta.venueName,date:meta.date,raceNo:r.raceNo||""}))
   });
   localStorage.setItem("boatCheckDemoHistory",JSON.stringify(history.slice(0,100)));
   demoBetList=[];
@@ -8945,7 +8974,7 @@ function demoBuildSettlementRaceMap(){
   const raceMap=new Map();
 
   (state.meetings||[]).forEach(m=>{
-    const code=String(m.venueCode||"");
+    const code=String(m.venueCode||"").padStart(2,"0");
 
     (m.races||[]).forEach(r=>{
       raceMap.set(`${code}:${m.date||""}:${Number(r.raceNo)||0}`,r);
@@ -8961,15 +8990,25 @@ function demoBuildSettlementRaceMap(){
 
   (state.recentResults||[]).forEach(x=>{
     raceMap.set(
-      `${x.venueCode||""}:${x.date||""}:${Number(x.raceNo)||0}`,
+      `${String(x.venueCode||"").padStart(2,"0")}:${x.date||""}:${Number(x.raceNo)||0}`,
       {raceNo:Number(x.raceNo)||0,result:x.result||{},resultUpdatedAt:x.resultUpdatedAt||null}
     );
   });
 
   return raceMap;
 }
+function demoVenueCodeFromName(name){
+  const target=String(name||"").replace(/\s+/g,"").trim();
+  if(!target)return "";
+  const hit=VENUES.find(v=>String(v?.[1]||"").replace(/\s+/g,"").trim()===target);
+  return hit?String(hit[0]).padStart(2,"0"):"";
+}
 function demoSettlementKeyForBet(b,h){
-  const venueCode=String(b.venueCode||h.venueCode||h.venue||"");
+  const rawCode=b.venueCode||h.venueCode||"";
+  const venueName=b.venueName||h.venueName||h.venue||"";
+  const venueCode=rawCode
+    ? String(rawCode).padStart(2,"0")
+    : demoVenueCodeFromName(venueName);
   const date=String(b.date||h.date||"");
   const raceNo=Number(b.raceNo||h.raceNo)||0;
   return `${venueCode}:${date}:${raceNo}`;
