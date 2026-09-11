@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v49 collector — demo settlement result archive
+BOAT CHECK v51 collector — resilient current-race repair
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
@@ -35,6 +35,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -70,7 +71,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.49; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.51; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -96,10 +97,20 @@ def attach_replay_urls(code: str, date: str, races: list[dict]) -> None:
         race.setdefault("officialReplayPage", page)
 
 def get_soup(url: str, params: dict, timeout: int = 18) -> BeautifulSoup:
-    r = requests.get(url, params=params, headers=HEADERS, timeout=timeout)
-    r.raise_for_status()
-    r.encoding = r.apparent_encoding or "utf-8"
-    return BeautifulSoup(r.text, "html.parser")
+    """Fetch an official page with a small retry window for transient failures."""
+    last_error = None
+    for attempt in range(3):
+        try:
+            r = requests.get(url, params=params, headers=HEADERS, timeout=timeout)
+            r.raise_for_status()
+            r.encoding = r.apparent_encoding or "utf-8"
+            return BeautifulSoup(r.text, "html.parser")
+        except (requests.RequestException, OSError) as e:
+            last_error = e
+            if attempt >= 2:
+                raise
+            time.sleep(0.6 * (attempt + 1))
+    raise last_error or RuntimeError("official page fetch failed")
 
 def load_json(path: Path, default):
     try:
@@ -1662,6 +1673,119 @@ def _minutes_from_now(deadline: str) -> int | None:
     return int((target-now).total_seconds()//60)
 
 
+def _race_needs_current_meta_repair(race: dict) -> bool:
+    """Return True when the raceindex row exists but racer detail enrichment is incomplete."""
+    boats = race.get("boats", []) or []
+    if len(boats) < 6:
+        return True
+    rich = 0
+    for b in boats[:6]:
+        rid = str(b.get("racerId") or b.get("registrationNo") or "")
+        has_basic = bool(rid and b.get("branch") and b.get("age") not in (None, ""))
+        has_stats = b.get("avgST") is not None or b.get("nationalWinRate") is not None
+        if has_basic and has_stats:
+            rich += 1
+    return rich < 6
+
+def repair_missing_current_racelist(payload: dict, cache_path: Path, workers: int=8) -> None:
+    """
+    Self-heal incomplete current-day racelist data during every update.
+
+    The daily full enrich can occasionally have a transient failure for one venue.
+    Without this repair, that venue can remain name/class-only until the next day.
+    Only incomplete races are retried, so normal 5-minute updates stay light.
+    """
+    meetings = payload.get("meetings", []) or []
+    if not meetings:
+        return
+
+    racer_cache = load_json(cache_path, {})
+    tasks = []
+    for m in meetings:
+        code = str(m.get("venueCode") or "")
+        date = str(m.get("date") or "")
+        for r in m.get("races", []) or []:
+            rno = int(r.get("raceNo") or 0)
+            if code and date and rno and _race_needs_current_meta_repair(r):
+                tasks.append((code, date, rno))
+
+    tasks = list(dict.fromkeys(tasks))
+    if not tasks:
+        return
+
+    print(f"[BOAT CHECK] REPAIR current racelist tasks={len(tasks)}")
+    results = {}
+    with ThreadPoolExecutor(max_workers=min(max(workers, 6), 12)) as ex:
+        futs = {ex.submit(fetch_racelist_task, *t): t for t in tasks}
+        for fut in as_completed(futs):
+            code, date, rno = futs[fut]
+            try:
+                _, _, meta, err = fut.result()
+            except Exception as e:
+                meta, err = [], f"{type(e).__name__}: {e}"
+            results[(code, date, rno)] = (meta, err)
+
+    repaired_boats = []
+    for m in meetings:
+        code = str(m.get("venueCode") or "")
+        date = str(m.get("date") or "")
+        for r in m.get("races", []) or []:
+            key = (code, date, int(r.get("raceNo") or 0))
+            if key not in results:
+                continue
+            meta, err = results[key]
+            if meta:
+                merge_racelist_meta_into_race(r, meta, racer_cache)
+                repaired_boats.extend(r.get("boats", []) or [])
+                r.pop("metaError", None)
+                r.pop("metaRepairError", None)
+                r["metaRepairedAt"] = datetime.now(JST).isoformat(timespec="seconds")
+            elif err:
+                r["metaRepairError"] = err
+
+    # Registration period is profile-only. Fetch only cache misses created by this repair.
+    ids = sorted({
+        str(b.get("racerId") or b.get("registrationNo") or "")
+        for b in repaired_boats
+        if str(b.get("racerId") or b.get("registrationNo") or "")
+    })
+    missing = [rid for rid in ids if not racer_cache.get(rid, {}).get("period")]
+    if missing:
+        print(f"[BOAT CHECK] REPAIR profile cache misses={len(missing)}")
+        with ThreadPoolExecutor(max_workers=min(max(workers, 6), 10)) as ex:
+            futs = [ex.submit(fetch_profile_period, rid) for rid in missing]
+            for fut in as_completed(futs):
+                rid, info = fut.result()
+                old_info = racer_cache.get(rid, {}) or {}
+                merged_info = dict(old_info)
+                merged_info.update({k: v for k, v in info.items() if v not in (None, "")})
+                racer_cache[rid] = merged_info
+
+    for b in repaired_boats:
+        rid = str(b.get("racerId") or b.get("registrationNo") or "")
+        info = racer_cache.get(rid, {}) or {}
+        if info.get("period"):
+            b["period"] = info["period"]
+        if not b.get("branch") and info.get("branch"):
+            b["branch"] = info["branch"]
+        if not b.get("origin") and info.get("origin"):
+            b["origin"] = info["origin"]
+        if b.get("weight") in (None, "") and info.get("weight") is not None:
+            b["weight"] = info["weight"]
+        if not b.get("class") and info.get("class"):
+            b["class"] = info["class"]
+
+    # Current-day meetDays usually points at the same race list, but explicitly sync it
+    # so future refactors cannot leave the day tab with stale name/class-only rows.
+    for m in meetings:
+        for d in m.get("meetDays", []) or []:
+            if str(d.get("date") or "") == str(m.get("date") or ""):
+                d["races"] = m.get("races", [])
+
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text(json.dumps(racer_cache, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     """
     Dynamic official data refresh.
@@ -2180,7 +2304,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"49.0",
+        "schemaVersion":"51.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
@@ -2202,6 +2326,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
         payload["staticEnrichedAt"]=old_payload.get("staticEnrichedAt")
 
     if meetings:
+        repair_missing_current_racelist(payload,out_path.parent/"racers.json",workers=workers)
         enrich_realtime(payload,workers=workers,live=live)
 
     payload["recentResults"]=build_recent_results(old_payload,payload,keep_days=3)
