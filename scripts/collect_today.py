@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v52 collector — local official exhibition/comments
+BOAT CHECK v53 collector — 24 venue verified source matrix
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
@@ -97,8 +97,63 @@ OFFICIAL_VENUE_BASES = {
     "24":"https://www.boatrace-omura.jp",
 }
 
+# 24場公式サイト調査結果。
+# metrics は「その場の公式サイトで提供を確認できた独自展示項目」のみ。
+# commentsAvailable はレーサー本人の「選手コメント」と確認できた場合のみTrue。
+# 記者寸評・記者予想・展示評価は選手コメントとして扱わない。
+VENUE_LOCAL_PROFILE = {
+    "01":{"metrics":["halfLapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"半周ラップ・まわり足・直線"},
+    "02":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"一周・まわり足・直線。記者寸評は選手コメントに含めない"},
+    "03":{"metrics":[],"commentsAvailable":False,
+          "fetch":"central","note":"独自展示タイム/選手本人コメントは未確認"},
+    "04":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"pending","note":"一周・まわり足・直線を公式提供"},
+    "05":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"一周・まわり足・直線を公式提供"},
+    "06":{"metrics":[],"commentsAvailable":False,
+          "fetch":"research","note":"公式独自展示/本人コメントを継続調査"},
+    "07":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足・直線。耳より情報は一律の選手コメント扱いにしない"},
+    "08":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"comments","originalStatus":"suspended","note":"オリジナル展示データは2026年8月に休止案内あり"},
+    "09":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"partial","note":"一周・まわり足・直線・選手コメントを公式提供"},
+    "10":{"metrics":[],"commentsAvailable":True,
+          "fetch":"comments-pending","note":"公式予想資料で選手コメント確認。取得方式を個別対応予定"},
+    "11":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足・直線"},
+    "12":{"metrics":["lapTime","turnTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足。直線は公式ページで未提供"},
+    "13":{"metrics":["lapTime","turnTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"1周・まわり足"},
+    "14":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"一周・まわり足・直線"},
+    "15":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"confirmed","note":"一周・まわり足・直線・選手コメント"},
+    "16":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足・直線"},
+    "17":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"pending","note":"公式メニューで選手コメント/周回タイム/オリジナル展示を確認。個別URL解析中"},
+    "18":{"metrics":["lapTime","turnTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足。直線は公式展示情報で未提供"},
+    "19":{"metrics":[],"commentsAvailable":True,
+          "fetch":"comments-pending","note":"公式予想資料で選手コメント確認。取得方式を個別対応予定"},
+    "20":{"metrics":["straightTime"],"commentsAvailable":True,
+          "fetch":"comments-pending","note":"直線タイムと公式予想資料の選手コメントを確認。詳細項目を継続調査"},
+    "21":{"metrics":[],"commentsAvailable":True,
+          "fetch":"comments-confirmed","note":"公式の全選手コメントを取得対象"},
+    "22":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"confirmed","note":"一周・まわり足・直線・選手コメント"},
+    "23":{"metrics":[],"commentsAvailable":True,
+          "fetch":"comments-confirmed","note":"全選手コメント確認。オリジナル展示の項目構成は継続調査"},
+    "24":{"metrics":[],"commentsAvailable":False,
+          "fetch":"research","note":"公式独自展示/本人コメントを継続調査"},
+}
+
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.52; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.53; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -1036,6 +1091,9 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
         "day":day,
         "status":meeting_status,
         "statusLabel":status_label,
+        "localOfficialProfile":VENUE_LOCAL_PROFILE.get(code,{
+            "metrics":[],"commentsAvailable":False,"fetch":"research"
+        }),
         "races":races,
         "meetDays":meet_days,
     }
@@ -1915,55 +1973,80 @@ def get_soup_full(url: str, timeout: int=14) -> BeautifulSoup:
 
 def _local_url_candidates(code: str, date: str, race_no: int) -> list[tuple[str,str]]:
     """
-    Candidate pages are all official racecourse sites.
-    Special URL structures are used where the venue exposes stable race URLs.
-    Legacy/common CMS routes are attempted only for the selected near-cutoff race.
+    Official venue-site routes.
+    Only routes that are confirmed or strongly tied to the venue's live-race UI
+    are queried. Unknown venues remain on BOAT RACE central data until mapped.
     """
     base=OFFICIAL_VENUE_BASES.get(code)
     r=int(race_no)
     urls=[]
 
-    # Confirmed/stable local structures.
-    if code=="07":  # 蒲郡
+    if not base:
+        return urls
+
+    if code=="01":  # 桐生: race info / timing page
+        urls.extend([
+            ("original",f"{base}/sp/index.php?page=raceinfo-timedata&race={r}"),
+            ("original",f"{base}/sp/index.php?page=raceinfo-timedata"),
+        ])
+
+    elif code=="02":  # 戸田: homepage race widgets include original exhibition
+        urls.append(("original",f"{base}/?race={r}"))
+
+    elif code=="05":  # 多摩川: 直前情報
+        urls.append(("original",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+
+    elif code=="07":  # 蒲郡
         urls.append(("race",f"{base}/asp/gamagori/sp/kyogi/kyogihtml/recomend/recomend{date}07{r:02d}.htm"))
-    elif code=="08":  # 常滑
-        urls.append(("original",f"{base}/sp/raceguide/kyogi19/{r}/"))
+
+    elif code=="08":  # 常滑: original data suspended; comments remain separate
         urls.append(("comments",f"{base}/raceguide/kyogi13/{r}/"))
+
+    elif code=="09":  # 津
+        urls.extend([
+            ("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"),
+            ("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}"),
+        ])
+
     elif code=="11":  # びわこ
         urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+
+    elif code=="12":  # 住之江
+        urls.append(("original",f"{base}/asp/kyogi/12/sp/yoso05{r:02d}.htm"))
+
+    elif code=="13":  # 尼崎
+        urls.append(("original",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+
+    elif code=="14":  # 鳴門
+        urls.append(("original",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+
+    elif code=="15":  # 丸亀
+        urls.append(("race",f"{base}/asp/kyogi/15/sp/yoso05{r:02d}.htm"))
+
     elif code=="16":  # 児島
-        urls.append(("race",f"{base}/asp/kyogi/16/sp/yoso05{r:02d}.htm"))
+        urls.append(("original",f"{base}/asp/kyogi/16/sp/yoso05{r:02d}.htm"))
+
     elif code=="18":  # 徳山
-        urls.append(("original",f"{base}/tenji-keisoku/m/?day={date}&race={r:02d}"))
-    elif code=="21":  # 芦屋
-        urls.append(("comments",f"{base}/sp/index.php?page=raceinfo-racer_comment"))
-        urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+        urls.extend([
+            ("original",f"{base}/tenji-keisoku/sp/?day={date}&race={r:02d}"),
+            ("original",f"{base}/tenji-keisoku/sp/"),
+        ])
+
+    elif code=="21":  # 芦屋: meeting-wide racer comments
+        urls.append(("comments",f"{base}/modules/raceinfo/?page=index_racers_comment"))
+
     elif code=="22":  # 福岡
-        urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
-        urls.append(("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}"))
-    else:
-        # Many venue sites use this public CMS route. If a venue does not,
-        # a 404/empty page is ignored without affecting the main collector.
-        if base:
-            urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
-            urls.append(("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}"))
+        urls.extend([
+            ("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"),
+            ("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}"),
+        ])
 
-    # Venue-specific fallback pages known to expose the selected race in one page.
-    if code=="02":
-        urls=[("race",f"{base}/?race={r}")]
-    elif code=="17":
-        urls=[("race",f"{base}/index.html?race={r}")]
-    elif code=="05":
-        urls=[("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}")]
-    elif code=="06":
-        urls=[("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}")]
-    elif code=="09":
-        urls=[("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"),
-              ("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}")]
-    elif code=="13":
-        urls=[("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}")]
+    elif code=="23":  # 唐津: meeting-wide racer comments + direct page candidate
+        urls.extend([
+            ("comments",f"{base}/modules/raceinfo/?page=index_racers_comment"),
+            ("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"),
+        ])
 
-    # Remove duplicates while preserving order.
     out=[]
     seen=set()
     for kind,url in urls:
@@ -1987,7 +2070,9 @@ def _local_header_map(grid: list[list[str]]) -> tuple[int,dict]:
                 mapping["lane"]=idx
             if "展示" in s and "展示" not in mapping and "スタート" not in s:
                 mapping["exhibition"]=idx
-            if "一周" in s or "1周" in s:
+            if "半周" in s:
+                mapping["halfLap"]=idx
+            elif "一周" in s or "1周" in s:
                 mapping["lap"]=idx
             if "まわり足" in s or "回り足" in s:
                 mapping["turn"]=idx
@@ -1997,7 +2082,7 @@ def _local_header_map(grid: list[list[str]]) -> tuple[int,dict]:
                 mapping["comment"]=idx
             elif s=="コメント" and "comment" not in mapping:
                 mapping["comment"]=idx
-        score=sum(1 for k in ("lap","turn","straight","comment") if k in mapping)
+        score=sum(1 for k in ("halfLap","lap","turn","straight","comment") if k in mapping)
         if score>len(best[1]):
             best=(i,mapping)
     return best
@@ -2006,14 +2091,15 @@ def _parse_local_original_tables(soup: BeautifulSoup) -> dict[int,dict]:
     out={}
     for table in soup.find_all("table"):
         text=compact(table.get_text(" ",strip=True))
-        if not (("一周" in text or "1周" in text) and ("まわり足" in text or "回り足" in text)):
+        has_distance=("半周" in text or "一周" in text or "1周" in text)
+        if not (has_distance and ("まわり足" in text or "回り足" in text)):
             continue
 
         grid=_expand_html_table(table)
         if not grid:
             continue
         hidx,hmap=_local_header_map(grid)
-        if hidx<0 or not ({"lap","turn"} & set(hmap)):
+        if hidx<0 or not ({"halfLap","lap","turn"} & set(hmap)):
             continue
 
         for row in grid[hidx+1:]:
@@ -2029,7 +2115,7 @@ def _parse_local_original_tables(soup: BeautifulSoup) -> dict[int,dict]:
                 continue
 
             item=out.setdefault(lane,{})
-            for key in ("exhibition","lap","turn","straight"):
+            for key in ("exhibition","halfLap","lap","turn","straight"):
                 idx=hmap.get(key)
                 if idx is None or idx>=len(row):
                     continue
@@ -2037,6 +2123,8 @@ def _parse_local_original_tables(soup: BeautifulSoup) -> dict[int,dict]:
                 if val is None:
                     continue
                 if key=="exhibition" and not (5.0 <= val <= 9.0):
+                    continue
+                if key=="halfLap" and not (10.0 <= val <= 40.0):
                     continue
                 if key=="lap" and not (20.0 <= val <= 60.0):
                     continue
@@ -2046,6 +2134,7 @@ def _parse_local_original_tables(soup: BeautifulSoup) -> dict[int,dict]:
                     continue
                 field={
                     "exhibition":"exhibitionTime",
+                    "halfLap":"halfLapTime",
                     "lap":"lapTime",
                     "turn":"turnTime",
                     "straight":"straightTime",
@@ -2061,13 +2150,15 @@ def _parse_local_original_tables(soup: BeautifulSoup) -> dict[int,dict]:
         for ch in chunks:
             if not re.match(r"\d{4}\s",ch):
                 continue
+            half=re.search(r"半周(?:ラップ)?\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
             lap=re.search(r"(?:一周|1周)\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
             turn=re.search(r"(?:まわり足|回り足)\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
             straight=re.search(r"直線\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
             exhib=re.search(r"展示\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
-            if lap or turn or straight:
+            if half or lap or turn or straight:
                 parsed.append({
                     "exhibitionTime":_num(exhib.group(1)) if exhib else None,
+                    "halfLapTime":_num(half.group(1)) if half else None,
                     "lapTime":_num(lap.group(1)) if lap else None,
                     "turnTime":_num(turn.group(1)) if turn else None,
                     "straightTime":_num(straight.group(1)) if straight else None,
@@ -2092,9 +2183,12 @@ def _parse_local_comments(soup: BeautifulSoup, race_boats: list[dict]) -> dict[i
         if b.get("racerName") and int(b.get("lane") or 0) in range(1,7)
     }
 
+    page_text=compact(soup.get_text(" ",strip=True))
+    page_is_comment_source=("選手コメント" in page_text or "選手コメント一覧" in page_text)
+
     for table in soup.find_all("table"):
         text=compact(table.get_text(" ",strip=True))
-        if "選手コメント" not in text:
+        if not page_is_comment_source and "選手コメント" not in text:
             continue
 
         grid=_expand_html_table(table)
@@ -2102,13 +2196,27 @@ def _parse_local_comments(soup: BeautifulSoup, race_boats: list[dict]) -> dict[i
             continue
         hidx,hmap=_local_header_map(grid)
         comment_idx=hmap.get("comment")
-        if comment_idx is None:
+        start_row=hidx+1
+        if comment_idx is None and page_is_comment_source:
+            # Meeting-wide pages sometimes omit a conventional table header.
+            # Identify the longest prose cell as comment, then match racer by name.
+            start_row=max(0,hidx+1)
+        elif comment_idx is None:
             continue
 
-        for row in grid[hidx+1:]:
-            if comment_idx>=len(row):
-                continue
-            comment=compact(row[comment_idx])
+        for row in grid[start_row:]:
+            if comment_idx is not None:
+                if comment_idx>=len(row):
+                    continue
+                comment=compact(row[comment_idx])
+            else:
+                prose=[
+                    compact(c) for c in row
+                    if len(compact(c))>=8
+                    and not re.fullmatch(r"\d{4}",compact(c))
+                ]
+                comment=max(prose,key=len) if prose else ""
+
             if not comment or comment in {"-","--","―","－"}:
                 continue
 
@@ -2145,18 +2253,29 @@ def fetch_local_race_task(code: str, date: str, race_no: int, race_boats: list[d
         if not text:
             continue
 
-        if kind in {"race","original"} and (
-            "一周" in text or "まわり足" in text or "回り足" in text or "直線" in text
+        profile=VENUE_LOCAL_PROFILE.get(code,{})
+        allowed_metrics=set(profile.get("metrics") or [])
+
+        if kind in {"race","original"} and allowed_metrics and (
+            "半周" in text or "一周" in text or "1周" in text or
+            "まわり足" in text or "回り足" in text or "直線" in text
         ):
             parsed=_parse_local_original_tables(soup)
             if parsed:
                 for lane,item in parsed.items():
-                    originals.setdefault(lane,{}).update(
-                        {k:v for k,v in item.items() if v is not None}
-                    )
-                sources.append(url)
+                    clean={}
+                    for k,v in item.items():
+                        if v is None:
+                            continue
+                        # 展示タイムは共通参考値として保存可。
+                        if k=="exhibitionTime" or k in allowed_metrics:
+                            clean[k]=v
+                    if clean:
+                        originals.setdefault(lane,{}).update(clean)
+                if originals:
+                    sources.append(url)
 
-        if kind in {"race","comments"} and "選手コメント" in text:
+        if kind in {"race","comments"} and profile.get("commentsAvailable") and "選手コメント" in text:
             parsed=_parse_local_comments(soup,race_boats)
             if parsed:
                 comments.update(parsed)
@@ -2882,7 +3001,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"52.0",
+        "schemaVersion":"53.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
