@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v51 collector — enhanced official beforeinfo
+BOAT CHECK v52 collector — local official exhibition/comments
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
@@ -26,6 +26,7 @@ PHASE 1対象
 - 展示タイム、チルト、体重、部品交換
 - スタート展示ST（艇番が公式HTMLから判別できた場合のみ）
 - 天候/風速/波高/気温/水温
+- 各場公式サイトの一周/まわり足/直線タイム・選手コメント（公開場のみ）
 - 着順、確定ST、決まり手、払戻
 
 未取得値は作らず null / -- 相当で保持します。
@@ -69,8 +70,35 @@ VENUES = {
     "19":"下関","20":"若松","21":"芦屋","22":"福岡","23":"唐津","24":"大村",
 }
 
+OFFICIAL_VENUE_BASES = {
+    "01":"https://www.kiryu-kyotei.com",
+    "02":"https://www.boatrace-toda.jp",
+    "03":"https://www.boatrace-edogawa.com",
+    "04":"https://www.heiwajima.gr.jp",
+    "05":"https://www.boatrace-tamagawa.com",
+    "06":"https://www.boatrace-hamanako.jp",
+    "07":"https://www.gamagori-kyotei.com",
+    "08":"https://www.boatrace-tokoname.jp",
+    "09":"https://www.boatrace-tsu.com",
+    "10":"https://www.boatrace-mikuni.jp",
+    "11":"https://www.boatrace-biwako.jp",
+    "12":"https://www.boatrace-suminoe.jp",
+    "13":"https://www.boatrace-amagasaki.jp",
+    "14":"https://www.n14.jp",
+    "15":"https://www.marugameboat.jp",
+    "16":"https://www.kojimaboat.jp",
+    "17":"https://www.boatrace-miyajima.com",
+    "18":"https://www.boatrace-tokuyama.jp",
+    "19":"https://www.boatrace-shimonoseki.jp",
+    "20":"https://www.wmb.jp",
+    "21":"https://www.boatrace-ashiya.com",
+    "22":"https://www.boatrace-fukuoka.com",
+    "23":"https://www.boatrace-karatsu.jp",
+    "24":"https://www.boatrace-omura.jp",
+}
+
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.51; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.52; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -828,7 +856,7 @@ def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache
     old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
     keep_race_keys = (
         "title", "beforeData", "before", "weather", "weatherData", "conditions",
-        "result", "raceResult", "results", "payouts", "refunds", "odds", "oddsUpdatedAt", "oddsLastAttemptAt", "oddsSource",
+        "result", "raceResult", "results", "payouts", "refunds", "odds", "oddsUpdatedAt", "oddsLastAttemptAt", "oddsSource", "racerComments", "localOfficialSources", "localSiteUpdatedAt",
         "replay", "officialReplayPage", "resultUpdatedAt", "beforeUpdatedAt",
     )
 
@@ -1310,6 +1338,39 @@ def parse_beforeinfo(soup: BeautifulSoup) -> dict:
             "official":True,
         }
         start_rows.append(entry)
+
+    # Fallback for the official page's compact start-exhibition markup.
+    # The public page often exposes "Image1.16 2.36 3.11 ..." where the number
+    # before ST is the BOAT number and DOM order is the actual course order.
+    # This solves cases where table-row parsing cannot see the image number.
+    if len(start_rows) < 6:
+        full_text=compact(soup.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        section=full_text
+        if "スタート展示" in full_text:
+            section=full_text.split("スタート展示",1)[1]
+        if "水面気象情報" in section:
+            section=section.split("水面気象情報",1)[0]
+
+        pairs=re.findall(r"(?<!\d)([1-6])\s*((?:F|L)?\.\d{2})(?!\d)",section,re.I)
+        if len(pairs)>=6:
+            candidate=[]
+            seen_lanes=set()
+            for course,(lane_raw,st_raw) in enumerate(pairs[:6],1):
+                lane=int(lane_raw)
+                if lane in seen_lanes:
+                    candidate=[]
+                    break
+                seen_lanes.add(lane)
+                raw=st_raw.upper()
+                candidate.append({
+                    "course":course,
+                    "lane":lane,
+                    "st":_num(raw.lstrip("FL")),
+                    "rawST":raw,
+                    "official":True,
+                })
+            if len(candidate)==6:
+                start_rows=candidate
 
     # If all six actual lanes were detected, merge course/ST into the boat rows.
     detected_lanes=[x.get("lane") for x in start_rows if x.get("lane")]
@@ -1845,6 +1906,273 @@ def fetch_odds_task(code: str, date: str, race_no: int):
         return code,race_no,{},f"{type(e).__name__}: {e}"
 
 
+
+def get_soup_full(url: str, timeout: int=14) -> BeautifulSoup:
+    r=requests.get(url,headers=HEADERS,timeout=timeout)
+    r.raise_for_status()
+    r.encoding=r.apparent_encoding or "utf-8"
+    return BeautifulSoup(r.text,"html.parser")
+
+def _local_url_candidates(code: str, date: str, race_no: int) -> list[tuple[str,str]]:
+    """
+    Candidate pages are all official racecourse sites.
+    Special URL structures are used where the venue exposes stable race URLs.
+    Legacy/common CMS routes are attempted only for the selected near-cutoff race.
+    """
+    base=OFFICIAL_VENUE_BASES.get(code)
+    r=int(race_no)
+    urls=[]
+
+    # Confirmed/stable local structures.
+    if code=="07":  # 蒲郡
+        urls.append(("race",f"{base}/asp/gamagori/sp/kyogi/kyogihtml/recomend/recomend{date}07{r:02d}.htm"))
+    elif code=="08":  # 常滑
+        urls.append(("original",f"{base}/sp/raceguide/kyogi19/{r}/"))
+        urls.append(("comments",f"{base}/raceguide/kyogi13/{r}/"))
+    elif code=="11":  # びわこ
+        urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+    elif code=="16":  # 児島
+        urls.append(("race",f"{base}/asp/kyogi/16/sp/yoso05{r:02d}.htm"))
+    elif code=="18":  # 徳山
+        urls.append(("original",f"{base}/tenji-keisoku/m/?day={date}&race={r:02d}"))
+    elif code=="21":  # 芦屋
+        urls.append(("comments",f"{base}/sp/index.php?page=raceinfo-racer_comment"))
+        urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+    elif code=="22":  # 福岡
+        urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+        urls.append(("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}"))
+    else:
+        # Many venue sites use this public CMS route. If a venue does not,
+        # a 404/empty page is ignored without affecting the main collector.
+        if base:
+            urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+            urls.append(("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}"))
+
+    # Venue-specific fallback pages known to expose the selected race in one page.
+    if code=="02":
+        urls=[("race",f"{base}/?race={r}")]
+    elif code=="17":
+        urls=[("race",f"{base}/index.html?race={r}")]
+    elif code=="05":
+        urls=[("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}")]
+    elif code=="06":
+        urls=[("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}")]
+    elif code=="09":
+        urls=[("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"),
+              ("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}")]
+    elif code=="13":
+        urls=[("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}")]
+
+    # Remove duplicates while preserving order.
+    out=[]
+    seen=set()
+    for kind,url in urls:
+        if url not in seen:
+            seen.add(url)
+            out.append((kind,url))
+    return out[:3]
+
+def _local_header_map(grid: list[list[str]]) -> tuple[int,dict]:
+    """
+    Find a likely header row and column indexes for local exhibition/comment tables.
+    Handles one/two-level table headers reasonably well.
+    """
+    best=(-1,{})
+    for i,row in enumerate(grid[:6]):
+        joined=" ".join(row)
+        mapping={}
+        for idx,v in enumerate(row):
+            s=compact(v).replace(" ","")
+            if ("枠" in s or "艇番" in s) and "枠" not in mapping:
+                mapping["lane"]=idx
+            if "展示" in s and "展示" not in mapping and "スタート" not in s:
+                mapping["exhibition"]=idx
+            if "一周" in s or "1周" in s:
+                mapping["lap"]=idx
+            if "まわり足" in s or "回り足" in s:
+                mapping["turn"]=idx
+            if "直線" in s:
+                mapping["straight"]=idx
+            if "選手コメント" in s:
+                mapping["comment"]=idx
+            elif s=="コメント" and "comment" not in mapping:
+                mapping["comment"]=idx
+        score=sum(1 for k in ("lap","turn","straight","comment") if k in mapping)
+        if score>len(best[1]):
+            best=(i,mapping)
+    return best
+
+def _parse_local_original_tables(soup: BeautifulSoup) -> dict[int,dict]:
+    out={}
+    for table in soup.find_all("table"):
+        text=compact(table.get_text(" ",strip=True))
+        if not (("一周" in text or "1周" in text) and ("まわり足" in text or "回り足" in text)):
+            continue
+
+        grid=_expand_html_table(table)
+        if not grid:
+            continue
+        hidx,hmap=_local_header_map(grid)
+        if hidx<0 or not ({"lap","turn"} & set(hmap)):
+            continue
+
+        for row in grid[hidx+1:]:
+            lane=None
+            if "lane" in hmap and hmap["lane"]<len(row):
+                lane=_lane_token(row[hmap["lane"]])
+            if lane is None:
+                for cell in row[:3]:
+                    lane=_lane_token(cell)
+                    if lane is not None:
+                        break
+            if lane is None:
+                continue
+
+            item=out.setdefault(lane,{})
+            for key in ("exhibition","lap","turn","straight"):
+                idx=hmap.get(key)
+                if idx is None or idx>=len(row):
+                    continue
+                val=_odds_token(row[idx])
+                if val is None:
+                    continue
+                if key=="exhibition" and not (5.0 <= val <= 9.0):
+                    continue
+                if key=="lap" and not (20.0 <= val <= 60.0):
+                    continue
+                if key=="turn" and not (3.0 <= val <= 20.0):
+                    continue
+                if key=="straight" and not (3.0 <= val <= 20.0):
+                    continue
+                field={
+                    "exhibition":"exhibitionTime",
+                    "lap":"lapTime",
+                    "turn":"turnTime",
+                    "straight":"straightTime",
+                }[key]
+                item[field]=val
+
+    # Text fallback for venues like 徳山 that publish a vertical layout.
+    if not out:
+        text=compact(soup.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        # Split at 4-digit registration numbers; use order as lane if six racers are present.
+        chunks=re.split(r"(?=\b\d{4}\s)",text)
+        parsed=[]
+        for ch in chunks:
+            if not re.match(r"\d{4}\s",ch):
+                continue
+            lap=re.search(r"(?:一周|1周)\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            turn=re.search(r"(?:まわり足|回り足)\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            straight=re.search(r"直線\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            exhib=re.search(r"展示\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            if lap or turn or straight:
+                parsed.append({
+                    "exhibitionTime":_num(exhib.group(1)) if exhib else None,
+                    "lapTime":_num(lap.group(1)) if lap else None,
+                    "turnTime":_num(turn.group(1)) if turn else None,
+                    "straightTime":_num(straight.group(1)) if straight else None,
+                })
+        if len(parsed)>=6:
+            out={i+1:v for i,v in enumerate(parsed[:6])}
+
+    return out
+
+def _norm_local_name(v) -> str:
+    return re.sub(r"[　\s]+","",compact(str(v or "")))
+
+def _parse_local_comments(soup: BeautifulSoup, race_boats: list[dict]) -> dict[int,str]:
+    """
+    Only accept tables explicitly labelled 選手コメント.
+    This intentionally avoids treating reporter/prediction remarks as racer quotes.
+    """
+    out={}
+    names={
+        _norm_local_name(b.get("racerName")):int(b.get("lane") or 0)
+        for b in race_boats
+        if b.get("racerName") and int(b.get("lane") or 0) in range(1,7)
+    }
+
+    for table in soup.find_all("table"):
+        text=compact(table.get_text(" ",strip=True))
+        if "選手コメント" not in text:
+            continue
+
+        grid=_expand_html_table(table)
+        if not grid:
+            continue
+        hidx,hmap=_local_header_map(grid)
+        comment_idx=hmap.get("comment")
+        if comment_idx is None:
+            continue
+
+        for row in grid[hidx+1:]:
+            if comment_idx>=len(row):
+                continue
+            comment=compact(row[comment_idx])
+            if not comment or comment in {"-","--","―","－"}:
+                continue
+
+            lane=None
+            if "lane" in hmap and hmap["lane"]<len(row):
+                lane=_lane_token(row[hmap["lane"]])
+
+            if lane is None:
+                row_text=_norm_local_name(" ".join(row))
+                for name,ln in names.items():
+                    if name and name in row_text:
+                        lane=ln
+                        break
+
+            if lane in range(1,7):
+                # Strip duplicated label if embedded in the cell.
+                comment=re.sub(r"^選手コメント[:：]?\s*","",comment).strip()
+                if comment:
+                    out[lane]=comment
+    return out
+
+def fetch_local_race_task(code: str, date: str, race_no: int, race_boats: list[dict]):
+    originals={}
+    comments={}
+    sources=[]
+
+    for kind,url in _local_url_candidates(code,date,race_no):
+        try:
+            soup=get_soup_full(url,timeout=12)
+        except Exception:
+            continue
+
+        text=compact(soup.get_text(" ",strip=True))
+        if not text:
+            continue
+
+        if kind in {"race","original"} and (
+            "一周" in text or "まわり足" in text or "回り足" in text or "直線" in text
+        ):
+            parsed=_parse_local_original_tables(soup)
+            if parsed:
+                for lane,item in parsed.items():
+                    originals.setdefault(lane,{}).update(
+                        {k:v for k,v in item.items() if v is not None}
+                    )
+                sources.append(url)
+
+        if kind in {"race","comments"} and "選手コメント" in text:
+            parsed=_parse_local_comments(soup,race_boats)
+            if parsed:
+                comments.update(parsed)
+                sources.append(url)
+
+        # Stop early if both types are already available.
+        if originals and comments:
+            break
+
+    return code,race_no,{
+        "originals":originals,
+        "comments":comments,
+        "sources":list(dict.fromkeys(sources)),
+        "official":bool(originals or comments),
+    },None
+
 def fetch_point_rank_task(code: str, date: str):
     try:
         soup=get_soup(POINT_RANK_URL,{"jcd":code,"hd":date},timeout=18)
@@ -1906,6 +2234,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     before_tasks=[]
     result_tasks=[]
     odds_tasks=[]
+    local_tasks=[]
 
     for meeting in payload.get("meetings",[]):
         code=meeting.get("venueCode")
@@ -1920,6 +2249,21 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 # Exhibition/start-exhibition can change close to cutoff.
                 if -25 <= mins <= 45:
                     before_tasks.append((code,date,rno))
+
+                    # Local official sites often publish original exhibition times
+                    # and racer comments. Recheck near-cutoff races every 10 minutes.
+                    last_local=race.get("localSiteUpdatedAt")
+                    due=True
+                    if last_local:
+                        try:
+                            dt=datetime.fromisoformat(str(last_local))
+                            if dt.tzinfo is None:
+                                dt=dt.replace(tzinfo=JST)
+                            due=(datetime.now(JST)-dt.astimezone(JST)).total_seconds()>=600
+                        except Exception:
+                            due=True
+                    if due:
+                        local_tasks.append((code,date,rno,race.get("boats",[]) or []))
 
                 # Results are normally available soon after the race.
                 result=race.get("result") or {}
@@ -2026,6 +2370,65 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                     race["oddsLastAttemptAt"]=datetime.now(JST).isoformat(timespec="seconds")
                     if err:
                         race.setdefault("liveErrors",{})["odds"]=err
+
+    if local_tasks:
+        print(f"[BOAT CHECK] LIVE local-official tasks={len(local_tasks)}")
+        local_results={}
+        with ThreadPoolExecutor(max_workers=min(max(workers,8),10)) as ex:
+            futs=[ex.submit(fetch_local_race_task,*x) for x in local_tasks]
+            for fut in as_completed(futs):
+                code,rno,data,err=fut.result()
+                local_results[(code,rno)]=(data,err)
+
+        for meeting in payload.get("meetings",[]):
+            for race in meeting.get("races",[]):
+                key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
+                data,err=local_results.get(key,({},None))
+                if not data:
+                    continue
+
+                originals=data.get("originals") or {}
+                if originals:
+                    before_rows=race.setdefault("beforeData",[])
+                    by_lane={
+                        int(x.get("lane") or 0):x
+                        for x in before_rows
+                        if int(x.get("lane") or 0) in range(1,7)
+                    }
+                    for lane,item in originals.items():
+                        row=by_lane.get(int(lane))
+                        if row is None:
+                            row={"lane":int(lane)}
+                            before_rows.append(row)
+                            by_lane[int(lane)]=row
+                        for k,v in item.items():
+                            if v is not None:
+                                row[k]=v
+
+                        for b in race.get("boats",[]):
+                            if int(b.get("lane") or 0)==int(lane):
+                                before=b.setdefault("before",{})
+                                for k,v in item.items():
+                                    if v is not None:
+                                        before[k]=v
+                                        # Mirror for current UI aliases.
+                                        b[k]=v
+                                break
+
+                comments=data.get("comments") or {}
+                if comments:
+                    race["racerComments"]=[
+                        {"lane":lane,"comment":comments[lane]}
+                        for lane in sorted(comments)
+                    ]
+                    for b in race.get("boats",[]):
+                        lane=int(b.get("lane") or 0)
+                        if lane in comments:
+                            b["comment"]=comments[lane]
+
+                if data.get("sources"):
+                    race["localOfficialSources"]=data["sources"]
+                race["localSiteUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
 
     if before_tasks:
         print(f"[BOAT CHECK] LIVE beforeinfo tasks={len(before_tasks)}")
@@ -2479,7 +2882,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"51.0",
+        "schemaVersion":"52.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
