@@ -2010,6 +2010,44 @@ body{letter-spacing:0 !important}
 
 
 
+
+<style id="v69-official-course-stats">
+.officialCourseBlock{
+  border:1.5px solid #9bcde4;
+  background:linear-gradient(180deg,#f7fcff 0%,#ffffff 100%);
+}
+.officialCourseLead{
+  padding:9px 10px 8px;
+  font-size:9.5px;
+  line-height:1.55;
+  color:#4a657c;
+  font-weight:800;
+  background:#f4fbff;
+  border-bottom:1px solid #d7e9f2;
+}
+.officialCourseTable td,.officialCourseTable th{min-height:38px}
+.officialCourseNo{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:38px;
+  height:22px;
+  padding:0 6px;
+  border-radius:999px;
+  background:#eaf7fd;
+  color:#006c9d;
+  border:1px solid #a9d9eb;
+  font-size:8.8px;
+  font-weight:950;
+  white-space:nowrap;
+}
+.officialCourseBlock.isEmpty .courseStatTable{opacity:.82}
+@media(max-width:390px){
+  .officialCourseLead{font-size:8.8px;padding:8px}
+  .officialCourseNo{min-width:34px;height:20px;padding:0 4px;font-size:8px}
+}
+</style>
+
 <style id="v68-course-info-final">
 .coursePanelPro{
   width:100%;
@@ -5548,6 +5586,69 @@ function courseFirstStat(b, keys){
   return null;
 }
 
+function courseOfficialMetric(b, courseNo, metric){
+  const aliases={
+    entryRate:[
+      `courseStatsOfficial.${courseNo}.entryRate`,
+      `courseStats.${courseNo}.official.entryRate`
+    ],
+    threeRate:[
+      `courseStatsOfficial.${courseNo}.threeRate`,
+      `courseStats.${courseNo}.official.threeRate`
+    ],
+    avgST:[
+      `courseStatsOfficial.${courseNo}.avgST`,
+      `courseStats.${courseNo}.official.avgST`
+    ],
+    avgStartRank:[
+      `courseStatsOfficial.${courseNo}.avgStartRank`,
+      `courseStats.${courseNo}.official.avgStartRank`
+    ]
+  };
+  return courseFirstStat(b,aliases[metric]||[]);
+}
+
+function officialCourseStatsAvailable(boats){
+  return (boats||[]).some((b,i)=>{
+    const c=assignedCourseForLane(b.lane||i+1);
+    return ["entryRate","threeRate","avgST","avgStartRank"]
+      .some(k=>courseOfficialMetric(b,c,k)!==null);
+  });
+}
+
+function renderOfficialCourseStatsBlock(boats){
+  const hasData=officialCourseStatsAvailable(boats);
+  const vals=(metric)=>boats.map((b,i)=>{
+    const c=assignedCourseForLane(b.lane||i+1);
+    return courseOfficialMetric(b,c,metric);
+  });
+  const courseCellsText=boats.map((b,i)=>{
+    const c=assignedCourseForLane(b.lane||i+1);
+    return `<td><span class="officialCourseNo">${c}コース</span></td>`;
+  }).join("");
+  const rows=[
+    `<tr><th>参照コース</th>${courseCellsText}</tr>`,
+    `<tr><th>進入率</th>${courseCells(vals("entryRate"),"desc","%",1)}</tr>`,
+    `<tr><th>3連対率</th>${courseCells(vals("threeRate"),"desc","%",1)}</tr>`,
+    `<tr><th>平均ST</th>${courseCells(vals("avgST"),"asc","",2)}</tr>`,
+    `<tr><th>平均スタート順</th>${courseCells(vals("avgStartRank"),"asc","位",1)}</tr>`
+  ].join("");
+  const checked=boats.map(b=>b.courseStatsCheckedAt).filter(Boolean).sort().slice(-1)[0];
+  let checkedText="";
+  if(checked){
+    try{
+      const d=new Date(checked);
+      checkedText=`最終取得 ${new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(d)}`;
+    }catch(e){}
+  }
+  return `<div class="courseDataBlock officialCourseBlock ${hasData?"":"isEmpty"}">
+    ${courseBar("公式コース別成績",checkedText||"BOAT RACE公式")}
+    <div class="officialCourseLead">各選手の現在の想定進入コースに対応した公式成績です。進入コース変更をすると参照コースも連動します。</div>
+    ${courseSimpleTable(rows,"officialCourseTable")}
+    <div class="courseDataNote">※ 公式選手ページの集計期間をそのまま使用。未取得項目は「--」表示。</div>
+  </div>`;
+}
+
 function courseMetric(b, courseNo, metric, period=coursePeriod){
   const aliases={
     win:[
@@ -5935,6 +6036,8 @@ function renderCourseRate(){
 
     <div class="courseUnifiedSheet">
       ${coursePlayerHeader(boats)}
+
+      ${renderOfficialCourseStatsBlock(boats)}
 
       <div class="courseDataBlock">
         ${courseBar("勝率",periodText)}
