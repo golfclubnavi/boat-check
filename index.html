@@ -7171,44 +7171,237 @@ function renderWeatherPanel(race){
   </div>`;
 }
 
+
+function raceVisualLaneColor(lane){
+  return {
+    1:"#f7f8fa",
+    2:"#20262d",
+    3:"#ef3340",
+    4:"#2d63db",
+    5:"#f2d300",
+    6:"#109447"
+  }[Number(lane)||1];
+}
+
+function raceVisualTextColor(lane){
+  return [2,3,4,6].includes(Number(lane)) ? "#fff" : "#111";
+}
+
+function raceVisualSTMeta(v){
+  if(v===undefined||v===null||v===""||v==="--"){
+    return {kind:"missing",value:null,label:"--"};
+  }
+
+  let s=String(v).trim().toUpperCase().replace(/^0(?=\.)/,"");
+  if(!s)return {kind:"missing",value:null,label:"--"};
+
+  if(/^F/.test(s)){
+    const n=Number(s.replace(/^F/,""));
+    return {
+      kind:"f",
+      value:Number.isFinite(n)?Math.abs(n):null,
+      label:Number.isFinite(n)?`F${n.toFixed(2).replace(/^0/,"")}`:s
+    };
+  }
+
+  if(/^L/.test(s)){
+    const n=Number(s.replace(/^L/,""));
+    return {
+      kind:"l",
+      value:Number.isFinite(n)?Math.abs(n):null,
+      label:Number.isFinite(n)?`L${n.toFixed(2).replace(/^0/,"")}`:s
+    };
+  }
+
+  const n=Number(s);
+  if(Number.isFinite(n)){
+    return {
+      kind:"normal",
+      value:Math.abs(n),
+      label:n.toFixed(2).replace(/^0/,"")
+    };
+  }
+
+  const m=s.match(/-?\d+(?:\.\d+)?/);
+  if(m){
+    const num=Math.abs(Number(m[0]));
+    return {
+      kind:"normal",
+      value:Number.isFinite(num)?num:null,
+      label:Number.isFinite(num)?num.toFixed(2).replace(/^0/,""):s
+    };
+  }
+  return {kind:"missing",value:null,label:esc(s)};
+}
+
+function raceVisualPosition(v){
+  // User specification:
+  // 0.00 = start line.
+  // Left side = 0.01 -> 0.99.
+  // Right side = F0.01 -> F0.30.
+  const meta=raceVisualSTMeta(v);
+  const line=64;
+  const leftEdge=8;
+  const rightEdge=94;
+
+  if(meta.kind==="f" && meta.value!==null){
+    const n=Math.max(.01,Math.min(.30,meta.value));
+    return line + (n/.30)*(rightEdge-line);
+  }
+
+  if(meta.kind==="normal" && meta.value!==null){
+    const n=Math.max(0,Math.min(.99,meta.value));
+    return line - (n/.99)*(line-leftEdge);
+  }
+
+  if(meta.kind==="l"){
+    return leftEdge;
+  }
+
+  return 18;
+}
+
+function raceVisualBoatSvg(lane){
+  const fill=raceVisualLaneColor(lane);
+  const text=raceVisualTextColor(lane);
+  const outline=Number(lane)===1?"#a7b5bf":"rgba(0,0,0,.28)";
+  return `<svg class="raceBoatSvg" viewBox="0 0 110 48" aria-hidden="true">
+    <defs>
+      <filter id="boatShadow${lane}" x="-25%" y="-35%" width="150%" height="180%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#062c43" flood-opacity=".26"/>
+      </filter>
+      <linearGradient id="hullGloss${lane}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff" stop-opacity=".28"/>
+        <stop offset=".48" stop-color="#ffffff" stop-opacity=".02"/>
+        <stop offset="1" stop-color="#000000" stop-opacity=".14"/>
+      </linearGradient>
+    </defs>
+    <g filter="url(#boatShadow${lane})">
+      <path d="M9 24 C18 11, 40 7, 73 9 C87 10, 101 16, 106 23 C97 33, 80 39, 54 40 C32 41, 16 35, 9 24Z"
+            fill="${fill}" stroke="${outline}" stroke-width="2"/>
+      <path d="M14 24 C31 17, 56 14, 94 20 C84 27, 64 31, 26 31Z"
+            fill="url(#hullGloss${lane})"/>
+      <path d="M77 17 L99 23 L80 28 Z" fill="#fff" opacity=".92"/>
+      <ellipse cx="53" cy="18" rx="12" ry="9" fill="#101820" opacity=".96"/>
+      <circle cx="53" cy="13" r="6" fill="${fill}" stroke="#0d1720" stroke-width="1.4"/>
+      <rect x="11" y="18" width="13" height="13" rx="3" fill="#4b555d"/>
+      <rect x="5" y="20" width="10" height="9" rx="2" fill="#767f85"/>
+      <text x="55" y="28" text-anchor="middle" font-size="15" font-weight="900"
+            font-family="Arial, sans-serif" fill="${text}">${lane}</text>
+    </g>
+  </svg>`;
+}
+
+function raceVisualScaleMarks(){
+  const marks=[
+    {label:".99",left:8},
+    {label:".50",left:35.7},
+    {label:".20",left:52.7},
+    {label:".10",left:58.3},
+    {label:"0.00",left:64,zero:true},
+    {label:"F.10",left:74},
+    {label:"F.20",left:84},
+    {label:"F.30",left:94},
+  ];
+  return marks.map(x=>`
+    <span class="raceScaleMark ${x.zero?"zero":""}" style="left:${x.left}%">
+      ${x.label}
+    </span>`).join("");
+}
+
+function renderRaceWaterVisual(items,{mode="start",title=""}={}){
+  const list=[...(items||[])];
+  const haveCourses=list.every(x=>Number(x.course)>=1&&Number(x.course)<=6);
+  if(haveCourses) list.sort((a,b)=>Number(a.course)-Number(b.course));
+  else list.sort((a,b)=>Number(a.lane)-Number(b.lane));
+
+  return `<div class="raceVisualCard ${mode==="result"?"isResult":"isStart"}">
+    ${title?`<div class="raceVisualTop">
+      <b>${esc(title)}</b>
+      <span>ST位置 / スタートライン 0.00</span>
+    </div>`:""}
+
+    <div class="raceVisualScale">
+      <div class="raceVisualScaleBlank"></div>
+      <div class="raceVisualScaleWater">
+        <span class="raceScaleCaption left">遅い</span>
+        ${raceVisualScaleMarks()}
+        <span class="raceScaleCaption right">F</span>
+        <i class="raceScaleZero"></i>
+      </div>
+    </div>
+
+    <div class="raceVisualRows">
+      ${list.map(x=>{
+        const lane=Number(x.lane)||1;
+        const meta=raceVisualSTMeta(x.st);
+        const pos=raceVisualPosition(x.st);
+        const course=Number(x.course);
+        const rank=x.rank!==undefined&&x.rank!==null&&x.rank!==""?String(x.rank):"";
+        return `<div class="raceVisualRow">
+          <div class="raceVisualLane lane${lane}" style="background:${raceVisualLaneColor(lane)};color:${raceVisualTextColor(lane)}">
+            <strong>${lane}</strong>
+            ${haveCourses?`<small>${course}C</small>`:""}
+          </div>
+          <div class="raceVisualWater">
+            <span class="raceVisualZeroLine"></span>
+            <span class="raceVisualFZone"></span>
+            <span class="raceWake" style="left:${pos}%"></span>
+            <span class="raceVisualBoat" style="left:${pos}%">
+              ${raceVisualBoatSvg(lane)}
+            </span>
+            <span class="raceVisualST ${meta.kind==="f"?"flying":meta.kind==="l"?"late":""}">
+              ${meta.label}
+            </span>
+            ${rank?`<span class="raceVisualRank">着 ${esc(rank)}</span>`:""}
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <div class="raceVisualLegend">
+      <span><i class="legendLine"></i>スタートライン = 0.00</span>
+      <span>左：0.01〜0.99</span>
+      <span>右：F0.01〜F0.30</span>
+    </div>
+  </div>`;
+}
+
 function renderStartSlit(boats,data){
   const stVals=boats.map((b,i)=>beforeMetric(data[i],b,"st"));
   const avgVals=boats.map(b=>firstStat(b,["stats.st.meet","st.meet","meetAvgST","avgST"]));
-  const rankVals=stVals.map((v,i)=>{
-    const n=parseRankableNumber(v);
-    if(n===null)return null;
-    const nums=stVals.map(parseRankableNumber).filter(x=>x!==null).sort((a,b)=>a-b);
-    return nums.indexOf(n)+1;
+
+  const items=boats.map((b,i)=>({
+    lane:Number(b.lane)||i+1,
+    course:beforeMetric(data[i],b,"course"),
+    st:stVals[i],
+  }));
+
+  const ranks=stVals.map(v=>{
+    const meta=raceVisualSTMeta(v);
+    if(meta.kind!=="normal" || meta.value===null) return null;
+    const valid=stVals
+      .map((x,idx)=>({idx,meta:raceVisualSTMeta(x)}))
+      .filter(x=>x.meta.kind==="normal"&&x.meta.value!==null)
+      .sort((a,b)=>a.meta.value-b.meta.value);
+    const found=valid.findIndex(x=>x.meta.value===meta.value);
+    return found>=0?found+1:null;
   });
 
-  const visualPos=v=>{
-    const n=parseRankableNumber(v);
-    if(n===null)return 50;
-    return Math.max(8,Math.min(88,72-(n*170)));
-  };
+  return `<div class="startSlitPanel proStartVisual">
+    ${renderRaceWaterVisual(items,{mode:"start",title:"スタート展示"})}
 
-  return `<div class="startSlitPanel">
-    <div class="startSlitTable">
-      <div class="startSlitHead">
-        <div>コース</div><div>枠</div><div>今節平均ST<br>スタート順</div><div>スタート展示</div><div>ST</div>
+    <div class="startVisualMeta">
+      <div class="startVisualMetaHead">
+        <span>枠</span><span>今節平均ST</span><span>展示ST順位</span>
       </div>
-      ${boats.map((b,i)=>{
-        const course=beforeMetric(data[i],b,"course");
-        const st=stVals[i];
-        const pos=visualPos(st);
-        return `<div class="startSlitRow">
-          <div>${course!==null?esc(course):"--"}</div>
-          <div>${beforeCourseChip(b.lane)}</div>
-          <div class="startAvg"><b>${beforeFmt(avgVals[i],2)}</b><span>${rankVals[i]||"--"}</span></div>
-          <div class="slitTrack">
-            <div class="slitStartLine"></div>
-            <div class="slitBoat lane${b.lane}" style="left:${pos}%">
-              <span>${b.lane}</span>
-            </div>
-          </div>
-          <div class="slitST">${beforeFmt(st,2)}</div>
-        </div>`;
-      }).join("")}
+      ${boats.map((b,i)=>`
+        <div class="startVisualMetaRow">
+          <span>${beforeCourseChip(b.lane)}</span>
+          <strong>${beforeFmt(avgVals[i],2)}</strong>
+          <b>${ranks[i]||"--"}</b>
+        </div>
+      `).join("")}
     </div>
   </div>`;
 }
@@ -7688,6 +7881,46 @@ function resultBoatVisual(lane, move=""){
   </div>`;
 }
 
+
+function resultStartVisualItems(race){
+  const boats=(race?.boats||[]).slice(0,6);
+  const root=resultRoot(race);
+  const starts=root?.startEntries||root?.startInfo||race?.startEntries||[];
+
+  const byLane=new Map();
+  (Array.isArray(starts)?starts:[]).forEach((x,i)=>{
+    const lane=Number(x?.lane||x?.boatNo||x?.frame||x?.number);
+    if(lane>=1&&lane<=6){
+      byLane.set(lane,{
+        lane,
+        course:Number(x?.course||x?.entryCourse||x?.actualCourse)||i+1,
+        st:x?.st??x?.startTiming??x?.start,
+      });
+    }
+  });
+
+  const entries=resultEntries(race);
+  entries.forEach((x,i)=>{
+    const lane=Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"]))||i+1;
+    const prev=byLane.get(lane)||{lane};
+    prev.course=prev.course||Number(resultEntryValue(x,["course","entryCourse","actualCourse"]))||lane;
+    prev.st=prev.st??resultEntryValue(x,["st","startTiming","start"]);
+    prev.rank=resultEntryValue(x,["rank","finish","arrival","place","finishPlace"]);
+    byLane.set(lane,prev);
+  });
+
+  boats.forEach(b=>{
+    const lane=Number(b.lane)||1;
+    const prev=byLane.get(lane)||{lane};
+    prev.course=prev.course||Number(firstStat(b,["result.course","result.entryCourse","course"]))||lane;
+    prev.st=prev.st??firstStat(b,["result.st","result.startTiming","startExhibitionST","st"]);
+    prev.rank=prev.rank??firstStat(b,["result.rank","result.finish","finish","rank"]);
+    byLane.set(lane,prev);
+  });
+
+  return [...byLane.values()].filter(x=>x.lane>=1&&x.lane<=6);
+}
+
 function resultFinishRows(race){
   const boats=(race?.boats||[]).slice(0,6);
   const entries=resultEntries(race);
@@ -7737,7 +7970,6 @@ function resultFinishRows(race){
       <div>${oddsLaneChip(x.lane)}</div>
       <div class="resultRacerName">${formatRacerNameTwoLines(cleanRacerName(x.racerName)||"--")}</div>
       <div class="resultTime">${resultTime(x.time)}</div>
-      <div class="resultBoatArea">${resultBoatVisual(x.lane,isWinner?winnerMove:"")}</div>
       <div class="resultST">${resultST(x.st)}</div>
     </div>`;
   }).join("");
@@ -7860,9 +8092,12 @@ function renderResultInfo(){
 
     <div class="resultConnectedFrame">
       <div class="resultSectionBar">競争成績</div>
+      <div class="resultVisualFull">
+        ${renderRaceWaterVisual(resultStartVisualItems(r),{mode:"result",title:"本番スタート"})}
+      </div>
       <div class="resultFinishTable">
         <div class="resultFinishHead">
-          <div>着</div><div>枠</div><div>選手名</div><div>タイム</div><div>レース</div><div>ST</div>
+          <div>着</div><div>枠</div><div>選手名</div><div>タイム</div><div>ST</div>
         </div>
         ${resultFinishRows(r)}
       </div>
@@ -13740,6 +13975,397 @@ button.meetPerfFinish.isLink.late{
 .originalVenueNotice.suspended{
   background:#fff8e7;
   color:#9a6d17;
+}
+</style>
+
+
+
+<style id="v129-pro-race-visual">
+/* ==========================================================
+   BOAT CHECK - Professional start / result water visual
+   Full-width, simple, high-visibility implementation.
+   ========================================================== */
+.raceVisualCard{
+  overflow:hidden;
+  width:100%;
+  background:#fff;
+  border-top:1px solid #8fc5de;
+  border-bottom:1px solid #8fc5de;
+}
+.raceVisualTop{
+  min-height:40px;
+  padding:8px 11px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  background:#f3f9fc;
+  border-bottom:1px solid #b9d6e5;
+}
+.raceVisualTop b{
+  color:#0a4d76;
+  font-size:11px;
+  font-weight:950;
+}
+.raceVisualTop span{
+  color:#708b9d;
+  font-size:6.5px;
+  font-weight:900;
+}
+
+/* scale */
+.raceVisualScale{
+  display:grid;
+  grid-template-columns:42px 1fr;
+  min-height:29px;
+  background:#089bd0;
+}
+.raceVisualScaleBlank{
+  background:#e9f3f8;
+  border-right:1px solid rgba(255,255,255,.82);
+}
+.raceVisualScaleWater{
+  position:relative;
+  overflow:visible;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,0)),
+    linear-gradient(90deg,#08a9df 0%,#0aa5dc 48%,#07a0d6 100%);
+  color:#fff;
+}
+.raceScaleMark{
+  position:absolute;
+  top:7px;
+  transform:translateX(-50%);
+  color:rgba(255,255,255,.92);
+  font-size:5.8px;
+  line-height:1;
+  font-weight:900;
+  white-space:nowrap;
+}
+.raceScaleMark.zero{
+  color:#ffe400;
+  font-size:6.3px;
+  font-weight:950;
+}
+.raceScaleZero{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:64%;
+  width:3px;
+  transform:translateX(-50%);
+  background:#ffe500;
+  box-shadow:0 0 0 1px rgba(102,85,0,.08);
+}
+.raceScaleCaption{
+  position:absolute;
+  top:7px;
+  color:rgba(255,255,255,.72);
+  font-size:5.4px;
+  font-weight:900;
+}
+.raceScaleCaption.left{left:2px;}
+.raceScaleCaption.right{right:3px;color:#ffe9ec;}
+
+/* rows */
+.raceVisualRows{
+  background:#08a7dc;
+}
+.raceVisualRow{
+  display:grid;
+  grid-template-columns:42px 1fr;
+  min-height:55px;
+}
+.raceVisualLane{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1px;
+  border-right:1px solid rgba(255,255,255,.95);
+  border-bottom:2px solid rgba(255,255,255,.9);
+  box-shadow:inset -1px 0 0 rgba(10,60,90,.08);
+}
+.raceVisualLane strong{
+  font-size:18px;
+  line-height:1;
+  font-weight:950;
+}
+.raceVisualLane small{
+  font-size:5.5px;
+  line-height:1;
+  font-weight:950;
+  opacity:.68;
+}
+
+.raceVisualWater{
+  position:relative;
+  overflow:hidden;
+  border-bottom:2px solid rgba(255,255,255,.9);
+  background:
+    radial-gradient(ellipse at 28% 35%,rgba(255,255,255,.18) 0 1px,transparent 2px),
+    radial-gradient(ellipse at 74% 62%,rgba(255,255,255,.11) 0 1px,transparent 2px),
+    repeating-linear-gradient(166deg,
+      rgba(255,255,255,.00) 0 24px,
+      rgba(255,255,255,.05) 25px 27px,
+      rgba(0,100,155,.025) 28px 42px),
+    linear-gradient(180deg,#16b6e8 0%,#08a9de 48%,#079bd0 100%);
+  background-size:41px 31px,55px 37px,auto,auto;
+}
+.raceVisualRow:last-child .raceVisualLane,
+.raceVisualRow:last-child .raceVisualWater{
+  border-bottom:0;
+}
+.raceVisualFZone{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:64%;
+  right:0;
+  background:linear-gradient(90deg,rgba(255,80,80,.035),rgba(255,80,80,.075));
+  pointer-events:none;
+}
+.raceVisualZeroLine{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:64%;
+  width:4px;
+  transform:translateX(-50%);
+  background:#ffe400;
+  box-shadow:
+    0 0 0 1px rgba(110,90,0,.10),
+    0 0 8px rgba(255,228,0,.25);
+  z-index:6;
+}
+.raceWake{
+  position:absolute;
+  top:50%;
+  width:76px;
+  height:18px;
+  transform:translate(-88%,-50%);
+  border-radius:60% 12px 12px 60%;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,0),
+      rgba(255,255,255,.24) 24%,
+      rgba(255,255,255,.78) 72%,
+      rgba(255,255,255,.15));
+  filter:blur(.3px);
+  opacity:.92;
+  z-index:2;
+}
+.raceWake::before,
+.raceWake::after{
+  content:"";
+  position:absolute;
+  right:0;
+  width:63px;
+  height:4px;
+  border-radius:50%;
+  background:rgba(255,255,255,.58);
+  transform-origin:right center;
+}
+.raceWake::before{top:2px;transform:rotate(-6deg);}
+.raceWake::after{bottom:2px;transform:rotate(6deg);}
+
+.raceVisualBoat{
+  position:absolute;
+  top:50%;
+  width:68px;
+  height:34px;
+  transform:translate(-50%,-50%);
+  z-index:7;
+}
+.raceBoatSvg{
+  display:block;
+  width:100%;
+  height:100%;
+}
+.raceVisualST{
+  position:absolute;
+  right:7px;
+  top:50%;
+  min-width:34px;
+  padding:3px 5px;
+  transform:translateY(-50%);
+  border-radius:999px;
+  background:rgba(3,69,105,.58);
+  color:#fff;
+  text-align:center;
+  font-size:7px;
+  line-height:1;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+  backdrop-filter:blur(2px);
+  z-index:8;
+}
+.raceVisualST.flying{
+  background:#e62739;
+}
+.raceVisualST.late{
+  background:#6c7780;
+}
+.raceVisualRank{
+  position:absolute;
+  left:6px;
+  top:50%;
+  transform:translateY(-50%);
+  padding:3px 5px;
+  border-radius:999px;
+  background:rgba(0,63,102,.50);
+  color:#fff;
+  font-size:5.8px;
+  line-height:1;
+  font-weight:950;
+  z-index:8;
+}
+
+.raceVisualLegend{
+  min-height:31px;
+  padding:7px 9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:5px 12px;
+  background:#f3f8fb;
+  border-top:1px solid #c1d9e6;
+  color:#678294;
+  font-size:5.8px;
+  line-height:1.25;
+  font-weight:900;
+}
+.raceVisualLegend span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.legendLine{
+  display:inline-block;
+  width:3px;
+  height:14px;
+  border-radius:2px;
+  background:#ffe400;
+}
+
+/* Start exhibition: visual gets full available width */
+.proStartVisual{
+  width:100%;
+  margin:0;
+}
+.proStartVisual .raceVisualCard{
+  border-left:0;
+  border-right:0;
+}
+.startVisualMeta{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  border-top:1px solid #bcd6e4;
+  background:#fff;
+}
+.startVisualMetaHead{
+  display:none;
+}
+.startVisualMetaRow{
+  min-width:0;
+  min-height:55px;
+  padding:6px 2px;
+  display:grid;
+  grid-template-rows:auto auto auto;
+  align-items:center;
+  justify-items:center;
+  gap:3px;
+  border-right:1px solid #c9dce7;
+}
+.startVisualMetaRow:last-child{border-right:0;}
+.startVisualMetaRow strong{
+  color:#174663;
+  font-size:8px;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+}
+.startVisualMetaRow b{
+  color:#718898;
+  font-size:6.5px;
+  font-weight:900;
+}
+.startVisualMetaRow b::before{
+  content:"展示ST順位 ";
+}
+
+/* Result screen: same visual, full width */
+.resultVisualFull{
+  width:100%;
+  background:#fff;
+}
+.resultVisualFull .raceVisualCard{
+  border-top:0;
+}
+.resultFinishHead,
+.resultFinishRow{
+  grid-template-columns:8% 10% 34% 24% 24%!important;
+}
+.resultFinishTable{
+  border-top:2px solid #8fbfd8;
+}
+.resultFinishHead{
+  min-height:36px;
+}
+.resultFinishRow{
+  min-height:54px;
+}
+
+/* Old tiny boat drawings are no longer used */
+.resultBoatArea,
+.resultBoatVisual,
+.resultBoatHull,
+.resultBoatDriver{
+  display:none!important;
+}
+
+/* Mobile refinements */
+@media(max-width:430px){
+  .raceVisualScale,
+  .raceVisualRow{
+    grid-template-columns:38px 1fr;
+  }
+  .raceVisualRow{
+    min-height:52px;
+  }
+  .raceVisualLane strong{
+    font-size:16px;
+  }
+  .raceVisualBoat{
+    width:62px;
+    height:31px;
+  }
+  .raceWake{
+    width:69px;
+    height:17px;
+  }
+  .raceVisualST{
+    right:4px;
+    min-width:31px;
+    padding:3px 4px;
+    font-size:6.5px;
+  }
+  .raceVisualRank{
+    left:4px;
+    font-size:5.4px;
+  }
+  .raceScaleMark{
+    font-size:5px;
+  }
+  .raceVisualLegend{
+    gap:4px 8px;
+    padding:6px;
+    font-size:5.3px;
+  }
+  .startVisualMetaRow{
+    min-height:50px;
+  }
 }
 </style>
 
