@@ -5885,7 +5885,7 @@ function proRacerStrip(boats, label="出走表"){
         <span class="proLaneChip lane${lane}">${lane}</span>
         <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
         <span class="proRacerId">${esc(racerId)}</span>
-        <span class="proRacerMeta">${esc(klass)} / ${period}</span>
+        <span class="proRacerMeta"><span>${esc(klass)}</span><span>${period}</span></span>
         <span class="proRacerBranch">${esc(branch)}</span>
       </div>`;
     }).join("")}
@@ -7267,44 +7267,109 @@ function renderWeatherPanel(race){
   </div>`;
 }
 
+function raceVisualLaneColor(lane){
+  return {
+    1:"#f7f8fa",2:"#20262d",3:"#ef3340",4:"#2d63db",5:"#f2d300",6:"#109447"
+  }[Number(lane)||1];
+}
+function raceVisualTextColor(lane){
+  return [2,3,4,6].includes(Number(lane)) ? "#fff" : "#111";
+}
+function raceVisualSTMeta(v){
+  if(v===undefined||v===null||v===""||v==="--")return {kind:"missing",value:null,label:"--"};
+  let s=String(v).trim().toUpperCase().replace(/^0(?=\.)/,"");
+  if(!s)return {kind:"missing",value:null,label:"--"};
+  if(/^F/.test(s)){
+    const n=Number(s.replace(/^F/,""));
+    return {kind:"f",value:Number.isFinite(n)?Math.abs(n):null,label:Number.isFinite(n)?`F${n.toFixed(2).replace(/^0/,"")}`:s};
+  }
+  if(/^L/.test(s)){
+    const n=Number(s.replace(/^L/,""));
+    return {kind:"l",value:Number.isFinite(n)?Math.abs(n):null,label:Number.isFinite(n)?`L${n.toFixed(2).replace(/^0/,"")}`:s};
+  }
+  const n=Number(s);
+  if(Number.isFinite(n))return {kind:"normal",value:Math.abs(n),label:n.toFixed(2).replace(/^0/,"")};
+  const m=s.match(/-?\d+(?:\.\d+)?/);
+  if(m){
+    const num=Math.abs(Number(m[0]));
+    return {kind:"normal",value:Number.isFinite(num)?num:null,label:Number.isFinite(num)?num.toFixed(2).replace(/^0/,""):s};
+  }
+  return {kind:"missing",value:null,label:esc(s)};
+}
+function raceVisualPosition(v){
+  const meta=raceVisualSTMeta(v);
+  const line=61.5, leftEdge=7.5, rightEdge=94.0;
+  if(meta.kind==="f" && meta.value!==null){
+    const n=Math.max(.01,Math.min(.30,meta.value));
+    return line+(n/.30)*(rightEdge-line);
+  }
+  if(meta.kind==="normal" && meta.value!==null){
+    const n=Math.max(0,Math.min(.99,meta.value));
+    return line-(n/.99)*(line-leftEdge);
+  }
+  if(meta.kind==="l")return leftEdge;
+  return line-8;
+}
+function raceVisualBoatSvg(lane){
+  lane=Number(lane)||1;
+  const colors={1:["#f7f8fa","#c9d0d5","#111"],2:["#20262d","#11161b","#fff"],3:["#ef3340","#c91e2b","#fff"],4:["#2d63db","#174bbb","#fff"],5:["#f2d300","#d1b700","#111"],6:["#109447","#087637","#fff"]}[lane];
+  const main=colors[0],dark=colors[1],ink=colors[2];
+  return `<svg class="raceBoatSvg" viewBox="0 0 120 52" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <ellipse cx="60" cy="43" rx="47" ry="4" fill="rgba(0,59,86,.14)"/>
+    <path d="M5 34 L72 32 L112 19 L101 38 L25 45 L11 42 Z" fill="#eef3f5" stroke="rgba(0,48,70,.24)" stroke-width="1.2"/>
+    <path d="M12 34 L72 31 L104 22 L92 34 L27 40 Z" fill="${main}"/>
+    <path d="M22 31 L76 29 L96 24 L80 34 L28 36 Z" fill="${dark}" opacity=".92"/>
+    <path d="M78 29 L108 19 L101 30 L89 34 Z" fill="#fff" opacity=".72"/>
+    <path d="M43 26 C46 18 56 14 67 15 C76 16 82 21 84 28 L73 31 L48 31 Z" fill="${main}" stroke="rgba(0,33,50,.24)" stroke-width="1"/>
+    <circle cx="62" cy="16" r="7" fill="${main}" stroke="rgba(0,33,50,.28)" stroke-width="1"/>
+    <path d="M57 16 Q62 10 67 16" stroke="#fff" stroke-width="1.5" fill="none" opacity=".65"/>
+    <rect x="28" y="25" width="17" height="13" rx="3" fill="#fff" stroke="rgba(0,33,50,.22)"/>
+    <text x="36.5" y="35" text-anchor="middle" font-size="10" font-weight="900" fill="#123">${lane}</text>
+    <path d="M13 39 Q29 43 48 42" stroke="#fff" stroke-width="2" fill="none" opacity=".6"/>
+  </svg>`;
+}
+function renderRaceWaterVisual(items,{mode="start",title=""}={}){
+  const list=[...(items||[])];
+  const haveCourses=list.length && list.every(x=>Number(x.course)>=1&&Number(x.course)<=6);
+  if(haveCourses)list.sort((a,b)=>Number(a.course)-Number(b.course));
+  else list.sort((a,b)=>Number(a.lane)-Number(b.lane));
+  return `<div class="raceVisualCard ${mode==="result"?"isResult":"isStart"}">
+    <div class="raceVisualRows">
+      ${list.map(x=>{
+        const lane=Number(x.lane)||1;
+        const meta=raceVisualSTMeta(x.st);
+        const bowPos=raceVisualPosition(x.st);
+        const winnerMove=(mode==="result" && String(x.rank)==="1" && x.move)?`<span class="raceVisualMove">${esc(x.move)}</span>`:"";
+        return `<div class="raceVisualRow">
+          <div class="raceVisualLane lane${lane}" style="background:${raceVisualLaneColor(lane)};color:${raceVisualTextColor(lane)}"><strong>${lane}</strong></div>
+          <div class="raceVisualWater">
+            <span class="raceVisualFZone"></span><span class="raceVisualZeroLine"></span>
+            <span class="raceWake" style="left:${bowPos}%"></span>
+            <span class="raceVisualBoat" style="left:${bowPos}%">${raceVisualBoatSvg(lane)}</span>
+            ${winnerMove}
+            <span class="raceVisualST ${meta.kind==="f"?"flying":meta.kind==="l"?"late":""}">${meta.label}</span>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+  </div>`;
+}
 function renderStartSlit(boats,data){
   const stVals=boats.map((b,i)=>beforeMetric(data[i],b,"st"));
   const avgVals=boats.map(b=>firstStat(b,["stats.st.meet","st.meet","meetAvgST","avgST"]));
-  const rankVals=stVals.map((v,i)=>{
-    const n=parseRankableNumber(v);
-    if(n===null)return null;
-    const nums=stVals.map(parseRankableNumber).filter(x=>x!==null).sort((a,b)=>a-b);
-    return nums.indexOf(n)+1;
+  const items=boats.map((b,i)=>({lane:Number(b.lane)||i+1,course:beforeMetric(data[i],b,"course"),st:stVals[i]}));
+  const ranks=stVals.map(v=>{
+    const meta=raceVisualSTMeta(v);
+    if(meta.kind!=="normal"||meta.value===null)return null;
+    const valid=stVals.map((x,idx)=>({idx,meta:raceVisualSTMeta(x)})).filter(x=>x.meta.kind==="normal"&&x.meta.value!==null).sort((a,b)=>a.meta.value-b.meta.value);
+    const found=valid.findIndex(x=>x.meta.value===meta.value);
+    return found>=0?found+1:null;
   });
-
-  const visualPos=v=>{
-    const n=parseRankableNumber(v);
-    if(n===null)return 50;
-    return Math.max(8,Math.min(88,72-(n*170)));
-  };
-
-  return `<div class="startSlitPanel">
-    <div class="startSlitTable">
-      <div class="startSlitHead">
-        <div>コース</div><div>枠</div><div>今節平均ST<br>スタート順</div><div>スタート展示</div><div>ST</div>
-      </div>
-      ${boats.map((b,i)=>{
-        const course=beforeMetric(data[i],b,"course");
-        const st=stVals[i];
-        const pos=visualPos(st);
-        return `<div class="startSlitRow">
-          <div>${course!==null?esc(course):"--"}</div>
-          <div>${beforeCourseChip(b.lane)}</div>
-          <div class="startAvg"><b>${beforeFmt(avgVals[i],2)}</b><span>${rankVals[i]||"--"}</span></div>
-          <div class="slitTrack">
-            <div class="slitStartLine"></div>
-            <div class="slitBoat lane${b.lane}" style="left:${pos}%">
-              <span>${b.lane}</span>
-            </div>
-          </div>
-          <div class="slitST">${beforeFmt(st,2)}</div>
-        </div>`;
-      }).join("")}
+  return `<div class="startSlitPanel proStartVisual">
+    ${renderRaceWaterVisual(items,{mode:"start",title:"スタート展示"})}
+    <div class="startVisualMeta">
+      <div class="startVisualMetaHead"><span>枠</span><span>今節平均ST</span><span>展示ST順位</span></div>
+      ${boats.map((b,i)=>`<div class="startVisualMetaRow"><span>${beforeCourseChip(b.lane)}</span><strong>${beforeFmt(avgVals[i],2)}</strong><b>${ranks[i]||"--"}</b></div>`).join("")}
     </div>
   </div>`;
 }
@@ -7731,85 +7796,65 @@ function resultBoatVisual(lane, move=""){
   </div>`;
 }
 
+function resultStartVisualItems(race){
+  const boats=(race?.boats||[]).slice(0,6);
+  const root=resultRoot(race);
+  const starts=root?.startEntries||root?.startInfo||race?.startEntries||[];
+  const byLane=new Map();
+  (Array.isArray(starts)?starts:[]).forEach((x,i)=>{
+    const lane=Number(x?.lane||x?.boatNo||x?.frame||x?.number);
+    if(lane>=1&&lane<=6)byLane.set(lane,{lane,course:Number(x?.course||x?.entryCourse||x?.actualCourse||x?.courseNo)||i+1,st:x?.st??x?.startTiming??x?.start});
+  });
+  const entries=resultEntries(race);
+  entries.forEach((x,i)=>{
+    const lane=Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"]))||i+1;
+    const prev=byLane.get(lane)||{lane};
+    prev.course=prev.course||Number(resultEntryValue(x,["course","entry","courseNo","entryCourse","actualCourse","startCourse"]))||lane;
+    prev.st=prev.st??resultEntryValue(x,["st","startTiming","start"]);
+    prev.rank=resultEntryValue(x,["rank","finish","arrival","place","finishPlace"]);
+    prev.move=prev.move??resultEntryValue(x,["kimarite","winningMove","decision","move"]);
+    byLane.set(lane,prev);
+  });
+  boats.forEach(b=>{
+    const lane=Number(b.lane)||1;
+    const prev=byLane.get(lane)||{lane};
+    prev.course=prev.course||Number(firstStat(b,["result.course","result.entry","result.entryCourse","course","entry","startCourse"]))||lane;
+    prev.st=prev.st??firstStat(b,["result.st","result.startTiming","startExhibitionST","st"]);
+    prev.rank=prev.rank??firstStat(b,["result.rank","result.finish","finish","rank"]);
+    prev.move=prev.move??firstStat(b,["result.kimarite","result.winningMove","kimarite"]);
+    byLane.set(lane,prev);
+  });
+  const winnerMove=resultPath(root,["kimarite","winningMove","decision","move"])||"";
+  return [...byLane.values()].filter(x=>x.lane>=1&&x.lane<=6).map(x=>{if(String(x.rank)==="1"&&!x.move)x.move=winnerMove;return x;});
+}
 function resultFinishRows(race){
   const boats=(race?.boats||[]).slice(0,6);
   const entries=resultEntries(race);
-  const root=resultRoot(race);
-
   const normalized=[];
   if(entries.length){
     entries.forEach((x,i)=>{
-      const lane=Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"])) || Number(x?.lane) || i+1;
+      const lane=Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"]))||Number(x?.lane)||i+1;
       const rank=resultEntryValue(x,["rank","finish","arrival","place","finishPlace"]);
-      const racerName=resultEntryValue(x,["racerName","name","playerName"]) ||
-        boats.find(b=>Number(b.lane)===lane)?.racerName || "--";
+      const racerName=resultEntryValue(x,["racerName","name","playerName"])||boats.find(b=>Number(b.lane)===lane)?.racerName||"--";
       const time=resultEntryValue(x,["time","raceTime","finishTime"]);
       const st=resultEntryValue(x,["st","startTiming","start"]);
-      const move=resultEntryValue(x,["kimarite","winningMove","decision","move"]);
-      const course=Number(resultEntryValue(x,["course","entry","courseNo","actualCourse","startCourse"]))||null;
-      normalized.push({lane,rank,racerName,time,st,move,course});
+      normalized.push({lane,rank,racerName,time,st});
     });
   }else{
     boats.forEach(b=>{
       const lane=Number(b.lane)||1;
-      normalized.push({
-        lane,
-        rank:firstStat(b,["result.rank","result.finish","finish","rank"]),
-        racerName:b.racerName||"--",
-        time:firstStat(b,["result.time","raceTime","finishTime"]),
-        st:firstStat(b,["result.st","result.startTiming","st"]),
-        move:firstStat(b,["result.kimarite","result.winningMove","kimarite"]),
-        course:Number(firstStat(b,["result.course","result.entry","course","entry","startCourse"]))||null
-      });
+      normalized.push({lane,rank:firstStat(b,["result.rank","result.finish","finish","rank"]),racerName:b.racerName||"--",time:firstStat(b,["result.time","raceTime","finishTime"]),st:firstStat(b,["result.st","result.startTiming","st"])});
     });
   }
-
   normalized.sort((a,b)=>{
     const ar=/^[1-6]$/.test(String(a.rank||""))?Number(a.rank):99;
     const br=/^[1-6]$/.test(String(b.rank||""))?Number(b.rank):99;
     return ar-br;
   });
-
-  // 左側（着・枠・選手名・タイム）は着順。
-  // 右側（レース図・ST）は実際の本番進入コース順で独立して並べる。
-  const rawStarts=Array.isArray(root?.startEntries)?root.startEntries:[];
-  let startRows=rawStarts.map((x,i)=>({
-    lane:Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"]))||i+1,
-    course:Number(resultEntryValue(x,["course","entry","courseNo","actualCourse","startCourse"]))||i+1,
-    st:resultEntryValue(x,["st","startTiming","start"]),
-    move:resultEntryValue(x,["kimarite","winningMove","decision","move"])||""
-  }));
-
-  if(!startRows.length){
-    startRows=normalized.map((x,i)=>({
-      lane:x.lane,
-      course:Number(x.course)||i+1,
-      st:x.st,
-      move:x.move||""
-    }));
-  }
-  startRows.sort((a,b)=>(Number(a.course)||99)-(Number(b.course)||99));
-
-  const winningLane=Number(normalized.find(x=>String(x.rank)==="1")?.lane)||0;
-  const winnerMove = normalized.find(x=>String(x.rank)==="1")?.move ||
-    resultPath(root,["kimarite","winningMove","decision","move"]) || "";
-
-  return normalized.map((x,rowIndex)=>{
-    const rank=resultRankText(x.rank);
-    const isWinner=rank==="1";
-    const isSecond=rank==="2";
+  return normalized.map(x=>{
+    const rank=resultRankText(x.rank),isWinner=rank==="1",isSecond=rank==="2";
     const rankClass=isWinner?"resultWinner":isSecond?"resultSecond":"";
-    const start=startRows[rowIndex]||{lane:x.lane,st:x.st,move:x.move||""};
-    const startLane=Number(start.lane)||x.lane;
-    const startMove=startLane===winningLane?(winnerMove||start.move||""):"";
-    return `<div class="resultFinishRow ${rankClass}">
-      <div class="resultFinishRank">${rank}</div>
-      <div>${oddsLaneChip(x.lane)}</div>
-      <div class="resultRacerName">${formatRacerNameTwoLines(cleanRacerName(x.racerName)||"--")}</div>
-      <div class="resultTime">${resultTime(x.time)}</div>
-      <div class="resultBoatArea">${resultBoatVisual(startLane,startMove)}</div>
-      <div class="resultST">${resultST(start.st)}</div>
-    </div>`;
+    return `<div class="resultFinishRow ${rankClass}"><div class="resultFinishRank">${rank}</div><div>${oddsLaneChip(x.lane)}</div><div class="resultRacerName">${formatRacerNameTwoLines(cleanRacerName(x.racerName)||"--")}</div><div class="resultTime">${resultTime(x.time)}</div><div class="resultST">${resultST(x.st)}</div></div>`;
   }).join("");
 }
 
@@ -7910,44 +7955,22 @@ function renderResultInfo(){
   const r=state.currentRace||{};
   const root=resultRoot(r);
   const hasResult=Object.keys(root||{}).length || resultEntries(r).length;
-
   return `<div class="resultInfoPage">
-    <div class="resultPageTitle">
-      <div>
-        <h3>結果</h3>
-        <p>競争成績・払戻金・気象状況</p>
-      </div>
-      <span>${hasResult?"確定データ":"未取得は --"}</span>
-    </div>
-
-    <div class="resultRaceStatus">
-      <div>
-        <b>${r.raceNo||"--"}R</b>
-        <strong>${esc(r.title||"レース結果")}</strong>
-      </div>
-      <small>締切 ${esc(r.deadline||"--:--")}</small>
-    </div>
-
+    <div class="resultPageTitle"><div><h3>結果</h3><p>競争成績・払戻金・気象状況</p></div><span>${hasResult?"確定データ":"未取得は --"}</span></div>
+    <div class="resultRaceStatus"><div><b>${r.raceNo||"--"}R</b><strong>${esc(r.title||"レース結果")}</strong></div><small>締切 ${esc(r.deadline||"--:--")}</small></div>
     <div class="resultConnectedFrame">
       <div class="resultSectionBar">競争成績</div>
+      <div class="resultVisualFull">${renderRaceWaterVisual(resultStartVisualItems(r),{mode:"result",title:"本番スタート"})}</div>
       <div class="resultFinishTable">
-        <div class="resultFinishHead">
-          <div>着</div><div>枠</div><div>選手名</div><div>タイム</div><div>レース</div><div>ST</div>
-        </div>
+        <div class="resultFinishHead"><div>着</div><div>枠</div><div>選手名</div><div>タイム</div><div>ST</div></div>
         ${resultFinishRows(r)}
       </div>
-
-      <div class="resultSectionBar">払戻金</div>
-      ${renderPayouts(r)}
-
-      <div class="resultSectionBar">気象状況</div>
-      ${renderResultWeather(r)}
+      <div class="resultSectionBar">払戻金</div>${renderPayouts(r)}
+      <div class="resultSectionBar">気象状況</div>${renderResultWeather(r)}
     </div>
-
     <div class="resultNote">※ 結果・払戻金は主催者発表のものと照合してください。</div>
   </div>`;
 }
-
 
 function replayPath(obj, keys){
   for(const key of keys){
@@ -13864,6 +13887,73 @@ button.meetPerfFinish.isLink.late{
   color:#10814d!important;
   font-size:5.8px!important;
   font-weight:950!important;
+}
+</style>
+
+<style id="v131-work-ui-restore">
+/* Work採用デザインを最終優先で復元：出走表 / スタート展示 / 競争成績 */
+.raceCardPro .lane1::after,.proRacerCard.proLaneBg1{background:#fff!important}
+.raceCardPro .lane2::after,.proRacerCard.proLaneBg2{background:#d8dfe5!important}
+.raceCardPro .lane3::after,.proRacerCard.proLaneBg3{background:#ffd4db!important}
+.raceCardPro .lane4::after,.proRacerCard.proLaneBg4{background:#cfe4fb!important}
+.raceCardPro .lane5::after,.proRacerCard.proLaneBg5{background:#ffedaa!important}
+.raceCardPro .lane6::after,.proRacerCard.proLaneBg6{background:#ccebd9!important}
+
+/* レース一覧側の出走表もWork版の密度・文字サイズへ */
+.raceCardPro .laneName{min-height:150px!important;padding:10px 3px 8px!important;gap:7px!important}
+.raceCardPro .laneName b{font-size:14.4px!important;line-height:1.25!important;min-height:39px!important;font-weight:800!important;letter-spacing:-.01em!important}
+.raceCardPro .laneMeta{border-top:1px solid rgba(38,84,112,.22)!important}
+.raceCardPro .laneMeta .metaTop,.raceCardPro .laneMeta .metaRow{min-height:27px!important;font-size:10px!important;line-height:1.25!important;font-weight:750!important;border-top:1px solid rgba(38,84,112,.18)!important}
+.raceCardPro .laneMeta .metaTop{border-top:0!important}
+.raceCardPro .lane2 .laneName b,.raceCardPro .lane2 .laneMeta .metaTop,.raceCardPro .lane2 .laneMeta .metaRow{color:#153b55!important}
+
+/* 共通出走表 */
+.proRacerStrip{grid-template-columns:14% repeat(6,1fr)!important;border-bottom:1.5px solid #a9c6d8!important;background:#fff!important}
+.proRacerStrip .proRacerLabel{display:flex!important;align-items:center!important;justify-content:center!important;background:linear-gradient(180deg,#f0f8fc,#deeff8)!important;color:#075172!important;font-size:12px!important;font-weight:800!important;line-height:1.5!important;border-right:1px solid #a9c6d8!important;padding:5px 2px!important}
+.proRacerStrip .proRacerCard{padding:10px 2px!important;min-height:145px!important;border-right:1px solid #a9c6d8!important;text-align:center!important}
+.proRacerStrip .proRacerCard:last-child{border-right:0!important}
+.proRacerStrip .proLaneChip{width:32px!important;height:32px!important;margin:0 auto 8px!important;border-radius:8px!important;font-size:17px!important;line-height:1!important;font-weight:850!important;box-shadow:0 2px 4px rgba(21,62,88,.07)!important}
+.proRacerStrip .proRacerCard strong{font-size:13.2px!important;line-height:1.35!important;min-height:42px!important;letter-spacing:0!important;font-weight:800!important;overflow-wrap:anywhere!important;color:#123c56!important}
+.proRacerStrip .proRacerCard .proRacerId{font-size:11.5px!important;line-height:1.35!important;margin-top:8px!important;padding-top:6px!important;border-top:1px solid rgba(18,60,86,.14)!important;color:#31556c!important;font-weight:750!important}
+.proRacerStrip .proRacerCard .proRacerMeta,.proRacerStrip .proRacerCard .proRacerBranch{font-size:10.8px!important;line-height:1.4!important;color:#31556c!important;font-weight:700!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;margin-top:3px!important}
+.proRacerStrip .proRacerMeta>span{display:block!important}
+.proRacerStrip .proRacerMeta>span:first-child{font-size:11.5px!important;font-weight:850!important;color:#234b65!important}
+
+/* Work版のスタート展示 / 本番スタート図 */
+.raceVisualCard{width:100%!important;overflow:hidden!important;background:#08aee0!important;border:0!important;border-radius:0!important}
+.raceVisualRows{width:100%!important;background:#11afe0!important}
+.raceVisualRow{display:grid!important;grid-template-columns:30px minmax(0,1fr)!important;min-height:45px!important;height:45px!important}
+.raceVisualLane{min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;border-right:1px solid rgba(255,255,255,.96)!important;border-bottom:2px solid rgba(255,255,255,.96)!important;box-shadow:none!important}
+.raceVisualLane strong{font-size:17px!important;line-height:1!important;font-weight:950!important}
+.raceVisualWater{position:relative!important;overflow:hidden!important;border-bottom:2px solid rgba(255,255,255,.96)!important;background:radial-gradient(circle at 18% 32%,rgba(255,255,255,.14) 0 1px,transparent 2px),radial-gradient(circle at 70% 68%,rgba(255,255,255,.10) 0 1px,transparent 2px),linear-gradient(164deg,transparent 0 15%,rgba(255,255,255,.045) 15% 16.5%,transparent 16.5% 34%,rgba(255,255,255,.04) 34% 36%,transparent 36% 60%,rgba(255,255,255,.035) 60% 62%,transparent 62%),linear-gradient(180deg,#26b9e8 0%,#12afe0 48%,#08a4d8 100%)!important;background-size:48px 32px,62px 38px,auto,auto!important}
+.raceVisualRow:last-child .raceVisualLane,.raceVisualRow:last-child .raceVisualWater{border-bottom:0!important}
+.raceVisualFZone{position:absolute!important;top:0!important;bottom:0!important;left:61.5%!important;right:0!important;z-index:1!important;background:linear-gradient(90deg,rgba(255,65,65,.018),rgba(255,65,65,.045))!important}
+.raceVisualZeroLine{position:absolute!important;z-index:5!important;top:0!important;bottom:0!important;left:61.5%!important;width:4px!important;transform:translateX(-100%)!important;background:#ffe300!important;box-shadow:none!important}
+.raceWake{position:absolute!important;z-index:2!important;top:50%!important;width:72px!important;height:10px!important;transform:translate(-100%,-50%)!important;border-radius:50%!important;background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.16) 20%,rgba(255,255,255,.65) 62%,rgba(255,255,255,.90) 82%,rgba(255,255,255,.15) 100%)!important;filter:blur(.2px)!important;opacity:.9!important}
+.raceWake::before,.raceWake::after{content:""!important;position:absolute!important;right:0!important;width:60px!important;height:2px!important;border-radius:50%!important;background:rgba(255,255,255,.60)!important;transform-origin:right center!important}
+.raceWake::before{top:1px!important;transform:rotate(-6deg)!important}.raceWake::after{bottom:1px!important;transform:rotate(6deg)!important}
+.raceVisualBoat{position:absolute!important;z-index:7!important;top:50%!important;width:74px!important;height:32px!important;transform:translate(-100%,-50%)!important;overflow:visible!important}
+.raceBoatSvg{display:block!important;width:100%!important;height:100%!important;filter:drop-shadow(0 2px 2px rgba(0,56,80,.18))!important}
+.raceVisualST{position:absolute!important;z-index:8!important;right:5px!important;top:50%!important;min-width:36px!important;padding:5px!important;transform:translateY(-50%)!important;border-radius:999px!important;background:rgba(6,88,132,.74)!important;color:#fff!important;text-align:center!important;font-size:10px!important;line-height:1!important;font-weight:950!important;font-variant-numeric:tabular-nums!important;backdrop-filter:blur(2px)!important}
+.raceVisualST.flying{background:#ef3340!important}.raceVisualST.late{background:#74808a!important}
+.raceVisualMove{position:absolute!important;z-index:8!important;left:8px!important;top:50%!important;transform:translateY(-50%)!important;padding:4px 7px!important;border-radius:999px!important;background:rgba(0,60,96,.72)!important;color:#fff!important;font-size:7px!important;line-height:1!important;font-weight:950!important}
+.proStartVisual,.resultVisualFull,.proStartVisual .raceVisualCard,.resultVisualFull .raceVisualCard{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+.startVisualMeta{display:grid!important;grid-template-columns:repeat(6,1fr)!important;border-top:1px solid #bcd6e4!important;background:#fff!important}
+.startVisualMetaHead{display:none!important}
+.startVisualMetaRow{min-width:0!important;min-height:50px!important;padding:5px 2px!important;display:grid!important;grid-template-rows:auto auto auto!important;align-items:center!important;justify-items:center!important;gap:2px!important;border-right:1px solid #c9dce7!important}
+.startVisualMetaRow:last-child{border-right:0!important}.startVisualMetaRow strong{font-size:8px!important;color:#174663!important;font-weight:950!important}.startVisualMetaRow b{font-size:6.4px!important;color:#718898!important;font-weight:900!important}.startVisualMetaRow b::before{content:"展示ST順位 "!important}
+
+/* 競争成績：スタート図を全幅、その下は着順表 */
+.resultVisualFull{background:#fff!important}
+.resultFinishHead,.resultFinishRow{display:grid!important;grid-template-columns:8% 10% 34% 24% 24%!important;align-items:stretch!important}
+.resultFinishTable{border-top:2px solid #8fbfd8!important}
+.resultFinishHead{min-height:36px!important}.resultFinishRow{min-height:54px!important}
+.resultBoatArea,.resultBoatVisual,.resultBoatHull,.resultBoatDriver{display:none!important}
+
+@media(max-width:430px){
+ .raceCardPro .laneName{min-height:140px!important;padding:9px 2px 7px!important}.raceCardPro .laneName b{font-size:13.4px!important;min-height:36px!important}.raceCardPro .laneMeta .metaTop,.raceCardPro .laneMeta .metaRow{min-height:25px!important;font-size:9.2px!important}
+ .proRacerStrip{grid-template-columns:13.5% repeat(6,1fr)!important}.proRacerStrip .proRacerLabel{font-size:10px!important}.proRacerStrip .proRacerCard{min-height:132px!important;padding:8px 1px!important}.proRacerStrip .proLaneChip{width:28px!important;height:28px!important;font-size:15px!important;margin-bottom:6px!important}.proRacerStrip .proRacerCard strong{font-size:11.7px!important;min-height:38px!important}.proRacerStrip .proRacerCard .proRacerId{font-size:9.8px!important;margin-top:6px!important;padding-top:5px!important}.proRacerStrip .proRacerCard .proRacerMeta,.proRacerStrip .proRacerCard .proRacerBranch{font-size:9.2px!important}
+ .raceVisualRow{grid-template-columns:28px minmax(0,1fr)!important;min-height:42px!important;height:42px!important}.raceVisualLane strong{font-size:15px!important}.raceVisualBoat{width:68px!important;height:29px!important}.raceWake{width:64px!important;height:9px!important}.raceVisualST{right:4px!important;min-width:32px!important;padding:4px!important;font-size:9px!important}.raceVisualMove{left:6px!important;font-size:6.5px!important;padding:3px 6px!important}.startVisualMetaRow{min-height:46px!important}.startVisualMetaRow strong{font-size:7.5px!important}.startVisualMetaRow b{font-size:6px!important}
 }
 </style>
 
