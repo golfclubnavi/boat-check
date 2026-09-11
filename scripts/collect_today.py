@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v51 collector — resilient current-race repair
+BOAT CHECK v50 collector — wider future odds coverage
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
 - 取得済みの選手・モーター・ボート・直前・結果データを保持
 - 締切35分前〜20分後のレースは直前情報を5分間隔で更新
 - 締切後120分以内で未取得のレース結果・払戻を5分間隔で確認
-- 各場の直近2Rの公式オッズを5分間隔で更新
+- 公式で公開済みの先レースオッズも段階更新（近いRは5分、先Rは15〜30分）
 
 ENRICH（1日1回 / 手動）
 - 当日の全Rの出走表を取得
@@ -35,7 +35,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -71,7 +70,7 @@ VENUES = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.51; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.50; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -97,20 +96,10 @@ def attach_replay_urls(code: str, date: str, races: list[dict]) -> None:
         race.setdefault("officialReplayPage", page)
 
 def get_soup(url: str, params: dict, timeout: int = 18) -> BeautifulSoup:
-    """Fetch an official page with a small retry window for transient failures."""
-    last_error = None
-    for attempt in range(3):
-        try:
-            r = requests.get(url, params=params, headers=HEADERS, timeout=timeout)
-            r.raise_for_status()
-            r.encoding = r.apparent_encoding or "utf-8"
-            return BeautifulSoup(r.text, "html.parser")
-        except (requests.RequestException, OSError) as e:
-            last_error = e
-            if attempt >= 2:
-                raise
-            time.sleep(0.6 * (attempt + 1))
-    raise last_error or RuntimeError("official page fetch failed")
+    r = requests.get(url, params=params, headers=HEADERS, timeout=timeout)
+    r.raise_for_status()
+    r.encoding = r.apparent_encoding or "utf-8"
+    return BeautifulSoup(r.text, "html.parser")
 
 def load_json(path: Path, default):
     try:
@@ -839,7 +828,7 @@ def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache
     old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
     keep_race_keys = (
         "title", "beforeData", "before", "weather", "weatherData", "conditions",
-        "result", "raceResult", "results", "payouts", "refunds", "odds", "oddsUpdatedAt", "oddsSource",
+        "result", "raceResult", "results", "payouts", "refunds", "odds", "oddsUpdatedAt", "oddsLastAttemptAt", "oddsSource",
         "replay", "officialReplayPage", "resultUpdatedAt", "beforeUpdatedAt",
     )
 
@@ -1673,119 +1662,6 @@ def _minutes_from_now(deadline: str) -> int | None:
     return int((target-now).total_seconds()//60)
 
 
-def _race_needs_current_meta_repair(race: dict) -> bool:
-    """Return True when the raceindex row exists but racer detail enrichment is incomplete."""
-    boats = race.get("boats", []) or []
-    if len(boats) < 6:
-        return True
-    rich = 0
-    for b in boats[:6]:
-        rid = str(b.get("racerId") or b.get("registrationNo") or "")
-        has_basic = bool(rid and b.get("branch") and b.get("age") not in (None, ""))
-        has_stats = b.get("avgST") is not None or b.get("nationalWinRate") is not None
-        if has_basic and has_stats:
-            rich += 1
-    return rich < 6
-
-def repair_missing_current_racelist(payload: dict, cache_path: Path, workers: int=8) -> None:
-    """
-    Self-heal incomplete current-day racelist data during every update.
-
-    The daily full enrich can occasionally have a transient failure for one venue.
-    Without this repair, that venue can remain name/class-only until the next day.
-    Only incomplete races are retried, so normal 5-minute updates stay light.
-    """
-    meetings = payload.get("meetings", []) or []
-    if not meetings:
-        return
-
-    racer_cache = load_json(cache_path, {})
-    tasks = []
-    for m in meetings:
-        code = str(m.get("venueCode") or "")
-        date = str(m.get("date") or "")
-        for r in m.get("races", []) or []:
-            rno = int(r.get("raceNo") or 0)
-            if code and date and rno and _race_needs_current_meta_repair(r):
-                tasks.append((code, date, rno))
-
-    tasks = list(dict.fromkeys(tasks))
-    if not tasks:
-        return
-
-    print(f"[BOAT CHECK] REPAIR current racelist tasks={len(tasks)}")
-    results = {}
-    with ThreadPoolExecutor(max_workers=min(max(workers, 6), 12)) as ex:
-        futs = {ex.submit(fetch_racelist_task, *t): t for t in tasks}
-        for fut in as_completed(futs):
-            code, date, rno = futs[fut]
-            try:
-                _, _, meta, err = fut.result()
-            except Exception as e:
-                meta, err = [], f"{type(e).__name__}: {e}"
-            results[(code, date, rno)] = (meta, err)
-
-    repaired_boats = []
-    for m in meetings:
-        code = str(m.get("venueCode") or "")
-        date = str(m.get("date") or "")
-        for r in m.get("races", []) or []:
-            key = (code, date, int(r.get("raceNo") or 0))
-            if key not in results:
-                continue
-            meta, err = results[key]
-            if meta:
-                merge_racelist_meta_into_race(r, meta, racer_cache)
-                repaired_boats.extend(r.get("boats", []) or [])
-                r.pop("metaError", None)
-                r.pop("metaRepairError", None)
-                r["metaRepairedAt"] = datetime.now(JST).isoformat(timespec="seconds")
-            elif err:
-                r["metaRepairError"] = err
-
-    # Registration period is profile-only. Fetch only cache misses created by this repair.
-    ids = sorted({
-        str(b.get("racerId") or b.get("registrationNo") or "")
-        for b in repaired_boats
-        if str(b.get("racerId") or b.get("registrationNo") or "")
-    })
-    missing = [rid for rid in ids if not racer_cache.get(rid, {}).get("period")]
-    if missing:
-        print(f"[BOAT CHECK] REPAIR profile cache misses={len(missing)}")
-        with ThreadPoolExecutor(max_workers=min(max(workers, 6), 10)) as ex:
-            futs = [ex.submit(fetch_profile_period, rid) for rid in missing]
-            for fut in as_completed(futs):
-                rid, info = fut.result()
-                old_info = racer_cache.get(rid, {}) or {}
-                merged_info = dict(old_info)
-                merged_info.update({k: v for k, v in info.items() if v not in (None, "")})
-                racer_cache[rid] = merged_info
-
-    for b in repaired_boats:
-        rid = str(b.get("racerId") or b.get("registrationNo") or "")
-        info = racer_cache.get(rid, {}) or {}
-        if info.get("period"):
-            b["period"] = info["period"]
-        if not b.get("branch") and info.get("branch"):
-            b["branch"] = info["branch"]
-        if not b.get("origin") and info.get("origin"):
-            b["origin"] = info["origin"]
-        if b.get("weight") in (None, "") and info.get("weight") is not None:
-            b["weight"] = info["weight"]
-        if not b.get("class") and info.get("class"):
-            b["class"] = info["class"]
-
-    # Current-day meetDays usually points at the same race list, but explicitly sync it
-    # so future refactors cannot leave the day tab with stale name/class-only rows.
-    for m in meetings:
-        for d in m.get("meetDays", []) or []:
-            if str(d.get("date") or "") == str(m.get("date") or ""):
-                d["races"] = m.get("races", [])
-
-    cache_path.parent.mkdir(parents=True, exist_ok=True)
-    cache_path.write_text(json.dumps(racer_cache, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
 def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     """
     Dynamic official data refresh.
@@ -1829,8 +1705,54 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 if mins < 0 and not result.get("official"):
                     result_tasks.append((code,date,rno))
 
-    # Odds: update the nearest two races per venue every 5 minutes.
-    # This gives useful live odds without hammering the official site for all 12 races.
+    # Odds:
+    # 公式で公開されている範囲は、先のレースもできるだけ取得する。
+    # ただし全12Rを5分ごとに再取得すると負荷が大きいため、
+    # 締切までの残り時間で更新間隔を段階化する。
+    #
+    #   ～120分 : 5分ごと
+    #   ～240分 : 15分ごと
+    #   240分超 : 30分ごと
+    #
+    # 未取得レースは時間帯に関係なく一度取得を試す。
+    def _odds_refresh_due(race, mins):
+        updated=race.get("oddsUpdatedAt")
+        attempted=race.get("oddsLastAttemptAt")
+        has_odds=bool((race.get("odds") or {}).get("official"))
+
+        # 未公開レースも5分ごとに全件叩かない。
+        # 一度も試していない場合だけ即時、以降は30分ごとに再試行。
+        if not has_odds:
+            if not attempted:
+                return True
+            try:
+                last=datetime.fromisoformat(str(attempted))
+                if last.tzinfo is None:
+                    last=last.replace(tzinfo=JST)
+                age=(datetime.now(JST)-last.astimezone(JST)).total_seconds()/60
+                return age >= 30
+            except Exception:
+                return True
+
+        if not updated:
+            return True
+
+        if mins <= 120:
+            interval=5
+        elif mins <= 240:
+            interval=15
+        else:
+            interval=30
+
+        try:
+            last=datetime.fromisoformat(str(updated))
+            if last.tzinfo is None:
+                last=last.replace(tzinfo=JST)
+            age=(datetime.now(JST)-last.astimezone(JST)).total_seconds()/60
+            return age >= interval
+        except Exception:
+            return True
+
     for meeting in payload.get("meetings",[]):
         candidates=[]
         for race in meeting.get("races",[]):
@@ -1838,10 +1760,15 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
             mins=_minutes_from_now(race.get("deadline",""))
             if not rno or mins is None:
                 continue
-            if -10 <= mins <= 120:
+
+            # 締切済み直後は最終オッズ確認、未来レースは全て候補。
+            if mins >= -10 and _odds_refresh_due(race,mins):
                 candidates.append((mins,rno))
-        candidates.sort()
-        for _,rno in candidates[:2]:
+
+        # 近いRから処理。1回のLive更新で各場最大6Rまでに制限し、
+        # 次の5分更新で残りRも順次埋める。
+        candidates.sort(key=lambda x:x[0])
+        for _,rno in candidates[:6]:
             odds_tasks.append((meeting.get("venueCode"),meeting.get("date"),rno))
 
     if odds_tasks:
@@ -1862,9 +1789,14 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 if data and data.get("official"):
                     race["odds"]=data
                     race["oddsUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                    race["oddsLastAttemptAt"]=race["oddsUpdatedAt"]
                     race["oddsSource"]="BOAT RACE official"
-                elif err:
-                    race.setdefault("liveErrors",{})["odds"]=err
+                else:
+                    # 先のレースはまだ公式オッズ未公開の場合がある。
+                    # エラー扱いで表示を壊さず、試行時刻だけ記録して次回再取得する。
+                    race["oddsLastAttemptAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                    if err:
+                        race.setdefault("liveErrors",{})["odds"]=err
 
     if before_tasks:
         print(f"[BOAT CHECK] LIVE beforeinfo tasks={len(before_tasks)}")
@@ -2304,7 +2236,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"51.0",
+        "schemaVersion":"50.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
@@ -2326,7 +2258,6 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
         payload["staticEnrichedAt"]=old_payload.get("staticEnrichedAt")
 
     if meetings:
-        repair_missing_current_racelist(payload,out_path.parent/"racers.json",workers=workers)
         enrich_realtime(payload,workers=workers,live=live)
 
     payload["recentResults"]=build_recent_results(old_payload,payload,keep_days=3)
