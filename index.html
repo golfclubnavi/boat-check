@@ -3507,6 +3507,7 @@ body{letter-spacing:0 !important}
 
 <script>
 const DATA_URL="./data/today.json";
+const RECENT20_URL="./data/recent20.json";
 const VENUES=[
 ["01","桐生"],["02","戸田"],["03","江戸川"],["04","平和島"],["05","多摩川"],["06","浜名湖"],
 ["07","蒲郡"],["08","常滑"],["09","津"],["10","三国"],["11","びわこ"],["12","住之江"],
@@ -3514,7 +3515,7 @@ const VENUES=[
 ["19","下関"],["20","若松"],["21","芦屋"],["22","福岡"],["23","唐津"],["24","大村"]
 ];
 const $=id=>document.getElementById(id);
-let state={meetings:[],recentResults:[],updatedAt:null,dateJST:null,currentMeeting:null,currentMeetingView:null,currentRace:null,currentDayDate:null};
+let state={meetings:[],recentResults:[],recent20ByRacer:{},updatedAt:null,dateJST:null,currentMeeting:null,currentMeetingView:null,currentRace:null,currentDayDate:null};
 let homeActiveTab="venues";
 let homeMyPageTab="bets";
 let homeBetHistoryTab="recent";
@@ -3645,10 +3646,10 @@ function timeMark(m){
   const total=h*60+min;
 
   // User-defined classification based on 1R time.
-  if(total>=510 && total<=540)return ["morning","☀"];   // 08:30-09:00
-  if(total>=680 && total<=780)return ["summer","☀"];   // 11:20-13:00
-  if(total>=900 && total<=960)return ["night","☾"];    // 15:00-16:00
-  if(total>=1020 && total<=1080)return ["midnight","★"]; // 17:00-18:00
+  if(total>=510 && total<=540)return ["morning","","モーニング"];   // 08:30-09:00
+  if(total>=680 && total<=780)return ["summer","","サマータイム"]; // 11:20-13:00
+  if(total>=900 && total<=960)return ["night","","ナイター"];      // 15:00-16:00
+  if(total>=1020 && total<=1080)return ["midnight","","ミッドナイト"]; // 17:00-18:00
   return null;
 }
 function timeClass(m){
@@ -3658,7 +3659,7 @@ function timeClass(m){
 function eventMarks(m){
   const title=normTitle(m), marks=[];
   const tm=timeMark(m);
-  if(tm)marks.push(`<span class="mark ${tm[0]}" aria-label="${tm[0]}">${tm[1]}</span>`);
+  if(tm)marks.push(`<span class="mark ${tm[0]}" aria-label="${tm[2]}">${tm[1]}</span>`);
   if(/オールレディース|ヴィーナスシリーズ|レディースオールスター|クイーンズクライマックス|クイーン|QUEEN|レディースチャレンジカップ/.test(title))marks.push(`<span class="mark women" aria-label="女子戦">♥</span>`);
   const grade=meetingGrade(m);
   if(["G3","G2","G1","SG"].includes(grade))marks.push(`<span class="gradeMark ${grade.toLowerCase()}">${grade}</span>`);
@@ -4639,7 +4640,7 @@ function renderVenues(){
     const tm=timeMark(m);
 
     const left = tm
-      ? `<span class="mark ${tm[0]}" aria-label="${tm[0]}">${tm[1]}</span>`
+      ? `<span class="mark ${tm[0]}" aria-label="${tm[2]}">${tm[1]}</span>`
       : "";
 
     const right = /オールレディース|ヴィーナスシリーズ|レディースオールスター|クイーンズクライマックス|クイーン|QUEEN|レディースチャレンジカップ/.test(title)
@@ -6079,8 +6080,11 @@ function renderCourseRate(){
 
 
 function recent20HistoryForBoat(b){
+  const racerId=String(b?.racerId||b?.registrationNo||"");
   const sources=[b?.recent20,b?.recent20Races,b?.last20,b?.history20,b?.recentRaces,b?.stats?.recent20,b?.stats?.recent20Races,b?.history?.recent20];
-  for(const s of sources){if(Array.isArray(s))return s.slice(0,20);}
+  for(const s of sources){if(Array.isArray(s))return s;}
+  const shared=state.recent20ByRacer?.[racerId];
+  if(Array.isArray(shared))return shared;
   return [];
 }
 function recent20Value(row,keys){
@@ -9432,6 +9436,7 @@ async function refreshOfficialData(){
 
     state.meetings=d.meetings;
     state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];
+    if(d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;
     state.updatedAt=d.updatedAt;
     state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
@@ -9472,7 +9477,7 @@ async function loadData(){
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const d=await res.json();
     if(!Array.isArray(d.meetings))throw new Error("meetings invalid");
-    state.meetings=d.meetings;state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
+    state.meetings=d.meetings;state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];if(d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
     $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
     renderVenues();
@@ -9484,6 +9489,45 @@ async function loadData(){
     $("loadError").classList.remove("hidden");
     $("loadError").textContent="公式データを読み込めませんでした。ページを再読み込みしてください。";
     $("venues").innerHTML=VENUES.map(v=>`<div class="card off"><div class="name">${v[1]}</div><div class="offtext"><b>確認中</b></div></div>`).join("");
+  }
+}
+
+async function loadRecent20Data(){
+  try{
+    const res=await fetch(`${RECENT20_URL}?v=${Date.now()}`,{cache:"no-store"});
+    if(!res.ok)return;
+    const d=await res.json();
+    let byRacer=d?.byRacer||d?.recent20ByRacer||d;
+    if(d?.compact===true&&d?.schemaVersion===2&&byRacer&&typeof byRacer==="object"){
+      const venueNames=d.venueNames||{};
+      const grades=Array.isArray(d.grades)?d.grades:[];
+      const kimarite=Array.isArray(d.kimarite)?d.kimarite:[];
+      byRacer=Object.fromEntries(Object.entries(byRacer).map(([racerId,rows])=>[
+        racerId,
+        (Array.isArray(rows)?rows:[]).map(row=>({
+          date:`20${String(row[0]||"").slice(0,2)}-${String(row[0]||"").slice(2,4)}-${String(row[0]||"").slice(4,6)}`,
+          venueCode:String(row[1]||"").padStart(2,"0"),
+          venueName:venueNames[String(row[1]||"").padStart(2,"0")]||"--",
+          grade:grades[Number(row[2])]||"一般",
+          raceNo:Number(row[3])||0,
+          lane:Number(row[4])||0,
+          course:Number(row[5])||0,
+          finish:row[6]??"--",
+          kimarite:kimarite[Number(row[7])]||"",
+          result:String(row[8]||"").split("").map(Number).filter(Number.isFinite),
+          exhibitionTime:row[9]??null,
+          st:row[10]??null
+        }))
+      ]));
+    }
+    if(!byRacer||typeof byRacer!=="object"||Array.isArray(byRacer))return;
+    state.recent20ByRacer=byRacer;
+    if(currentQuickDataType==="course"&&courseSubTab==="last20"){
+      const panel=document.getElementById("courseInnerPanel");
+      if(panel)panel.innerHTML=renderRecent20();
+    }
+  }catch(e){
+    console.warn("recent20 data load failed",e);
   }
 }
 
@@ -9504,7 +9548,9 @@ window.addEventListener("popstate",(e)=>{
 });
 
 loadData();
+loadRecent20Data();
 setInterval(refreshOfficialData,60000);
+setInterval(loadRecent20Data,1800000);
 setInterval(()=>{
   if(!state.meetings.length)return;
   renderVenues();
@@ -15017,5 +15063,66 @@ button.meetPerfFinish.isLink.late{
   #venues .card .cutoff b{font-size:11px!important}
   #venues .card .countdown{font-size:7px!important}
   #homeMyPagePanel .myPageTabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+/* v43: official-inspired time-band headers and custom compact symbols */
+#venues .card.time-morning:not(.off) .nameRow{
+  background:linear-gradient(135deg,#fff8d8 0%,#ffe7a9 55%,#ffc982 100%)!important;
+  border-color:rgba(232,163,55,.22)!important;
+}
+#venues .card.time-summer:not(.off) .nameRow{
+  background:linear-gradient(135deg,#fff1df 0%,#ffd9c9 52%,#ffb9b2 100%)!important;
+  border-color:rgba(226,112,96,.20)!important;
+}
+#venues .card.time-night:not(.off) .nameRow{
+  background:linear-gradient(135deg,#f5f1ff 0%,#e7ddff 55%,#d6c9fa 100%)!important;
+  border-color:rgba(112,89,187,.18)!important;
+}
+#venues .card.time-midnight:not(.off) .nameRow{
+  background:linear-gradient(135deg,#d9c9f2 0%,#b99ce4 52%,#9674cf 100%)!important;
+  border-color:rgba(82,49,139,.24)!important;
+}
+#venues .card.time-midnight:not(.off) .nameRow .venueTitle{color:#24133f!important}
+
+#venues .card .mark.morning,
+#venues .card .mark.summer,
+#venues .card .mark.night,
+#venues .card .mark.midnight{
+  position:relative!important;
+  overflow:visible!important;
+  border:0!important;
+  background:transparent!important;
+  color:transparent!important;
+}
+#venues .card .mark.morning::before{
+  content:""!important;
+  width:8px!important;height:8px!important;border-radius:50%!important;
+  background:#f5a000!important;
+  box-shadow:0 0 0 2px rgba(255,205,84,.35)!important;
+  transform:none!important;
+}
+#venues .card .mark.summer::before{
+  content:""!important;
+  width:11px!important;height:7px!important;
+  border-radius:8px 8px 2px 2px!important;
+  background:linear-gradient(to bottom,#ff9a55 0 55%,#ee5267 56% 72%,#fff0d7 73%)!important;
+  box-shadow:0 2px 0 rgba(204,83,85,.18)!important;
+  transform:none!important;
+}
+#venues .card .mark.night::before,
+#venues .card .mark.midnight::before{
+  content:""!important;
+  width:10px!important;height:10px!important;border-radius:50%!important;
+  background:#6650b7!important;
+  box-shadow:3px -1px 0 0 #eee8ff!important;
+  transform:translateX(-1px)!important;
+}
+#venues .card .mark.midnight::before{
+  background:#3f247c!important;
+  box-shadow:3px -1px 0 0 #cdb8eb!important;
+}
+#venues .card .mark.midnight::after{
+  content:"✦";position:absolute;right:-1px;top:-4px;
+  color:#fff2a6;font-size:6px;line-height:1;
 }
 </style>
