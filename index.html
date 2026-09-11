@@ -7198,6 +7198,57 @@ function setBeforeSubTab(tab){
   );
 }
 
+
+function beforeRaceComments(race,boats){
+  const raw=race?.racerComments||race?.comments||[];
+  const map=new Map();
+
+  if(Array.isArray(raw)){
+    raw.forEach(x=>{
+      const lane=Number(x?.lane||x?.boatNo||x?.frame);
+      const comment=x?.comment||x?.text||x?.racerComment;
+      if(lane>=1&&lane<=6&&comment)map.set(lane,String(comment).trim());
+    });
+  }else if(raw&&typeof raw==="object"){
+    Object.entries(raw).forEach(([k,v])=>{
+      const lane=Number(k);
+      const comment=typeof v==="string"?v:(v?.comment||v?.text);
+      if(lane>=1&&lane<=6&&comment)map.set(lane,String(comment).trim());
+    });
+  }
+
+  (boats||[]).forEach(b=>{
+    const lane=Number(b.lane);
+    const comment=b.comment||b.racerComment||b.before?.comment;
+    if(!map.has(lane)&&comment)map.set(lane,String(comment).trim());
+  });
+
+  return map;
+}
+function renderBeforeRacerComments(race,boats){
+  const comments=beforeRaceComments(race,boats);
+  if(!comments.size)return "";
+
+  return `<div class="beforeCommentBlock">
+    <div class="beforeCommentTitle">
+      <b>選手コメント</b>
+      <span>各場公式発表</span>
+    </div>
+    <div class="beforeCommentRows">
+      ${boats.map(b=>{
+        const lane=Number(b.lane)||1;
+        const comment=comments.get(lane);
+        if(!comment)return "";
+        return `<div class="beforeCommentRow">
+          <span class="beforeCommentLane lane${lane}">${lane}</span>
+          <strong>${cleanRacerName(b.racerName)||"--"}</strong>
+          <p>${esc(comment)}</p>
+        </div>`;
+      }).join("")}
+    </div>
+  </div>`;
+}
+
 function renderBeforeInner(){
   const r=state.currentRace||{};
   const boats=(r.boats||[]).slice(0,6);
@@ -7225,6 +7276,7 @@ function renderBeforeInner(){
 
   return `<div class="beforeSectionBlock beforeProConnected">
       ${beforeRacerHeader(boats)}
+      ${renderBeforeRacerComments(r,boats)}
       <div class="beforeSubSectionTitle">直前情報</div>
       ${beforeTable(boats,data)}
     </div>`;
@@ -13556,6 +13608,86 @@ button.meetPerfFinish.isLink.late{
   color:#10814d!important;
   font-size:5.8px!important;
   font-weight:950!important;
+}
+</style>
+
+
+
+<style id="v124-racer-comments">
+.beforeCommentBlock{
+  border-bottom:1.5px solid #b4d0e0;
+  background:#f8fcfe;
+}
+.beforeCommentTitle{
+  min-height:38px;
+  padding:8px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  background:linear-gradient(90deg,#eef8fd,#f8fcff);
+  border-bottom:1px solid #c9dce8;
+}
+.beforeCommentTitle b{
+  color:#134a6b;
+  font-size:10px;
+  font-weight:950;
+}
+.beforeCommentTitle span{
+  color:#738b9b;
+  font-size:6px;
+  font-weight:900;
+}
+.beforeCommentRows{
+  display:grid;
+}
+.beforeCommentRow{
+  min-height:48px;
+  display:grid;
+  grid-template-columns:30px 74px 1fr;
+  align-items:center;
+  gap:7px;
+  padding:7px 9px;
+  border-bottom:1px solid #d7e5ed;
+}
+.beforeCommentRow:last-child{border-bottom:0;}
+.beforeCommentLane{
+  width:27px;
+  height:27px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:7px;
+  font-size:10px;
+  line-height:1;
+  font-weight:950;
+}
+.beforeCommentLane.lane1{background:#fff;color:#111;border:1.5px solid #bdd0db;}
+.beforeCommentLane.lane2{background:#22282e;color:#fff;}
+.beforeCommentLane.lane3{background:#ef3340;color:#fff;}
+.beforeCommentLane.lane4{background:#315fd5;color:#fff;}
+.beforeCommentLane.lane5{background:#f1d600;color:#111;}
+.beforeCommentLane.lane6{background:#13964a;color:#fff;}
+.beforeCommentRow strong{
+  color:#173d58;
+  font-size:8px;
+  line-height:1.15;
+  font-weight:950;
+}
+.beforeCommentRow p{
+  margin:0;
+  color:#315c74;
+  font-size:7.2px;
+  line-height:1.45;
+  font-weight:750;
+}
+@media(max-width:430px){
+  .beforeCommentRow{
+    grid-template-columns:28px 67px 1fr;
+    gap:5px;
+    padding:7px;
+  }
+  .beforeCommentRow p{font-size:6.8px;}
 }
 </style>
 
