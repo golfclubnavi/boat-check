@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """
-BOAT CHECK v51 collector — resilient current-race repair
+BOAT CHECK v56 collector — complete race result rank/time/ST fix
 
 LIVE（5分ごと）
 - BOAT RACE公式の当日開催場 / 締切 / 中止情報を更新
 - 取得済みの選手・モーター・ボート・直前・結果データを保持
-- 締切35分前〜20分後のレースは直前情報を5分間隔で更新
+- 締切45分前〜25分後のレースは直前情報を5分間隔で更新
 - 締切後120分以内で未取得のレース結果・払戻を5分間隔で確認
-- 各場の直近2Rの公式オッズを5分間隔で更新
+- 公式で公開済みの先レースオッズも段階更新（近いRは5分、先Rは15〜30分）
 
 ENRICH（1日1回 / 手動）
 - 当日の全Rの出走表を取得
 - F/L・平均ST・全国/当地勝率/2連率/3連率
 - モーター番号/2連率/3連率、ボート番号/2連率/3連率
 - 支部/出身/年齢/体重/登録番号、登録期キャッシュ
-- 選手の公式コース別成績（進入率/3連対率/平均ST/平均スタート順）
 - 6艇内のモーター順位・ボート順位を2連率から算出
 - 今節成績（レース番号/進入/ST/着順）
 - 得点率/得点率順位/得点/減点/備考
@@ -27,6 +26,7 @@ PHASE 1対象
 - 展示タイム、チルト、体重、部品交換
 - スタート展示ST（艇番が公式HTMLから判別できた場合のみ）
 - 天候/風速/波高/気温/水温
+- 各場公式サイトの一周/まわり足/直線タイム・選手コメント（公開場のみ）
 - 着順、確定ST、決まり手、払戻
 
 未取得値は作らず null / -- 相当で保持します。
@@ -36,7 +36,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -62,7 +61,6 @@ ODDS2TF_URL = BASE + "/owpc/pc/race/odds2tf"
 ODDSK_URL = BASE + "/owpc/pc/race/oddsk"
 ODDSTF_URL = BASE + "/owpc/pc/race/oddstf"
 PROFILE_URL = BASE + "/owpc/pc/data/racersearch/profile"
-COURSE_STATS_URL = BASE + "/owpc/pc/data/racersearch/course"
 BOATCAST_REPLAY_URL = "https://race.boatcast.jp/replay"
 
 VENUES = {
@@ -72,8 +70,91 @@ VENUES = {
     "19":"下関","20":"若松","21":"芦屋","22":"福岡","23":"唐津","24":"大村",
 }
 
+OFFICIAL_VENUE_BASES = {
+    "01":"https://www.kiryu-kyotei.com",
+    "02":"https://www.boatrace-toda.jp",
+    "03":"https://www.boatrace-edogawa.com",
+    "04":"https://www.heiwajima.gr.jp",
+    "05":"https://www.boatrace-tamagawa.com",
+    "06":"https://www.boatrace-hamanako.jp",
+    "07":"https://www.gamagori-kyotei.com",
+    "08":"https://www.boatrace-tokoname.jp",
+    "09":"https://www.boatrace-tsu.com",
+    "10":"https://www.boatrace-mikuni.jp",
+    "11":"https://www.boatrace-biwako.jp",
+    "12":"https://www.boatrace-suminoe.jp",
+    "13":"https://www.boatrace-amagasaki.jp",
+    "14":"https://www.n14.jp",
+    "15":"https://www.marugameboat.jp",
+    "16":"https://www.kojimaboat.jp",
+    "17":"https://www.boatrace-miyajima.com",
+    "18":"https://www.boatrace-tokuyama.jp",
+    "19":"https://www.boatrace-shimonoseki.jp",
+    "20":"https://www.wmb.jp",
+    "21":"https://www.boatrace-ashiya.com",
+    "22":"https://www.boatrace-fukuoka.com",
+    "23":"https://www.boatrace-karatsu.jp",
+    "24":"https://www.boatrace-omura.jp",
+}
+
+# 24場公式サイト調査結果。
+# metrics は「その場の公式サイトで提供を確認できた独自展示項目」のみ。
+# commentsAvailable はレーサー本人の「選手コメント」と確認できた場合のみTrue。
+# 記者寸評・記者予想・展示評価は選手コメントとして扱わない。
+VENUE_LOCAL_PROFILE = {
+    "01":{"metrics":["halfLapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"半周ラップ・まわり足・直線"},
+    "02":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"一周・まわり足・直線。記者寸評は選手コメントに含めない"},
+    "03":{"metrics":[],"commentsAvailable":False,
+          "fetch":"central","note":"独自展示タイム/選手本人コメントは未確認"},
+    "04":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"pending","note":"一周・まわり足・直線を公式提供"},
+    "05":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"一周・まわり足・直線を公式提供"},
+    "06":{"metrics":[],"commentsAvailable":False,
+          "fetch":"research","note":"公式独自展示/本人コメントを継続調査"},
+    "07":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足・直線。耳より情報は一律の選手コメント扱いにしない"},
+    "08":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"comments","originalStatus":"suspended","note":"オリジナル展示データは2026年8月に休止案内あり"},
+    "09":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"partial","note":"一周・まわり足・直線・選手コメントを公式提供"},
+    "10":{"metrics":[],"commentsAvailable":True,
+          "fetch":"comments-pending","note":"公式予想資料で選手コメント確認。取得方式を個別対応予定"},
+    "11":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足・直線"},
+    "12":{"metrics":["lapTime","turnTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足。直線は公式ページで未提供"},
+    "13":{"metrics":["lapTime","turnTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"1周・まわり足"},
+    "14":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"partial","commentsFetch":"pending-pdf",
+          "note":"一周・まわり足・直線。公式予想PDFで選手コメントを確認"},
+    "15":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"confirmed","note":"一周・まわり足・直線・選手コメント"},
+    "16":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足・直線"},
+    "17":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"pending","note":"公式メニューで選手コメント/周回タイム/オリジナル展示を確認。個別URL解析中"},
+    "18":{"metrics":["lapTime","turnTime"],"commentsAvailable":False,
+          "fetch":"confirmed","note":"一周・まわり足。直線は公式展示情報で未提供"},
+    "19":{"metrics":[],"commentsAvailable":True,
+          "fetch":"comments-pending","note":"公式予想資料で選手コメント確認。取得方式を個別対応予定"},
+    "20":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":False,
+          "fetch":"partial","note":"一周・まわり足・直線の独自計測を公式データで確認。本人コメントは未確認"},
+    "21":{"metrics":[],"commentsAvailable":True,
+          "fetch":"comments-confirmed","note":"公式の全選手コメントを取得対象"},
+    "22":{"metrics":["lapTime","turnTime","straightTime"],"commentsAvailable":True,
+          "fetch":"confirmed","note":"一周・まわり足・直線・選手コメント"},
+    "23":{"metrics":[],"commentsAvailable":True,
+          "fetch":"comments-confirmed","note":"全選手コメント確認。オリジナル展示の項目構成は継続調査"},
+    "24":{"metrics":[],"commentsAvailable":False,
+          "fetch":"research","note":"公式独自展示/本人コメントを継続調査"},
+}
+
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.51; +https://github.com/golfclubnavi/boat-check)",
+    "User-Agent": "Mozilla/5.0 (compatible; BOAT-CHECK/0.56; +https://github.com/golfclubnavi/boat-check)",
     "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
 }
 
@@ -99,20 +180,10 @@ def attach_replay_urls(code: str, date: str, races: list[dict]) -> None:
         race.setdefault("officialReplayPage", page)
 
 def get_soup(url: str, params: dict, timeout: int = 18) -> BeautifulSoup:
-    """Fetch an official page with a small retry window for transient failures."""
-    last_error = None
-    for attempt in range(3):
-        try:
-            r = requests.get(url, params=params, headers=HEADERS, timeout=timeout)
-            r.raise_for_status()
-            r.encoding = r.apparent_encoding or "utf-8"
-            return BeautifulSoup(r.text, "html.parser")
-        except (requests.RequestException, OSError) as e:
-            last_error = e
-            if attempt >= 2:
-                raise
-            time.sleep(0.6 * (attempt + 1))
-    raise last_error or RuntimeError("official page fetch failed")
+    r = requests.get(url, params=params, headers=HEADERS, timeout=timeout)
+    r.raise_for_status()
+    r.encoding = r.apparent_encoding or "utf-8"
+    return BeautifulSoup(r.text, "html.parser")
 
 def load_json(path: Path, default):
     try:
@@ -841,7 +912,7 @@ def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache
     old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
     keep_race_keys = (
         "title", "beforeData", "before", "weather", "weatherData", "conditions",
-        "result", "raceResult", "results", "payouts", "refunds", "odds", "oddsUpdatedAt", "oddsSource",
+        "result", "raceResult", "results", "payouts", "refunds", "resultLastAttemptAt", "odds", "oddsUpdatedAt", "oddsLastAttemptAt", "oddsSource", "racerComments", "localOfficialSources", "localSiteUpdatedAt",
         "replay", "officialReplayPage", "resultUpdatedAt", "beforeUpdatedAt",
     )
 
@@ -945,7 +1016,7 @@ def carry_ongoing_meeting_data(races: list[dict], old_meeting: dict, date: str, 
     safe_keys = (
         "racerId","registrationNo","class","branch","origin","period","age","weight",
         "flyingCount","lateCount","avgST",
-        "national","local","stats","racerStats","courseStats","courseStatsOfficial","courseStatsSource","courseStatsCheckedAt",
+        "national","local","stats","racerStats","courseStats",
         "meetResults","meetStats",
         "motorNo","motorTwoRate","boatNo","boatTwoRate","motor","boat",
     )
@@ -1021,6 +1092,9 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
         "day":day,
         "status":meeting_status,
         "statusLabel":status_label,
+        "localOfficialProfile":VENUE_LOCAL_PROFILE.get(code,{
+            "metrics":[],"commentsAvailable":False,"fetch":"research"
+        }),
         "races":races,
         "meetDays":meet_days,
     }
@@ -1034,88 +1108,294 @@ def fetch_racelist_task(code: str, date: str, race_no: int):
 
 
 def _infer_lane_from_start_row(tr, fallback_course: int | None = None) -> int | None:
+    """
+    Infer the actual BOAT number from BOAT RACE official start-exhibition markup.
+
+    Important:
+    Official start-exhibition images use filenames such as:
+      img_boat2_1.png ... img_boat2_6.png
+
+    The "2" in "boat2" is part of the image asset family, NOT boat No.2.
+    Always prioritize the final "_N" segment.
+    """
+    # 1) Exact BOAT RACE official image filename.
+    for img in tr.find_all("img"):
+        src=str(img.get("src") or "").lower().translate(_ZEN_DIGITS)
+
+        m=re.search(
+            r"(?:^|/)(?:img_)?boat2?_([1-6])(?:\.(?:png|gif|svg|webp)|(?:\?|$))",
+            src,
+        )
+        if m:
+            return int(m.group(1))
+
+        # Current official asset: img_boat2_1.png
+        m=re.search(r"img_boat2_([1-6])(?:\D|$)",src)
+        if m:
+            return int(m.group(1))
+
+        # Additional safe filename variants.
+        m=re.search(r"(?:boat|teiban|waku|frame)[_-](?:no[_-]?)?([1-6])(?:\D|$)",src)
+        if m:
+            return int(m.group(1))
+
+    # 2) alt/title/class may explicitly state the boat number or color.
     attrs=[]
     for tag in tr.find_all(True):
-        for key,val in tag.attrs.items():
+        for key in ("alt","title","class","data-boat","data-lane","data-teiban"):
+            val=tag.get(key)
             if isinstance(val,(list,tuple)):
                 val=" ".join(map(str,val))
-            attrs.append(f"{key}={val}")
-    blob=" ".join(attrs).lower()
-    patterns=[
-        r"(?:boat|teiban|lane|waku|frame)[_\-/]?(?:no)?[_\-]?([1-6])(?:\D|$)",
-        r"(?:is-|color-|boatcolor)([1-6])(?:\D|$)",
+            if val:
+                attrs.append(str(val))
+
+    blob=" ".join(attrs).lower().translate(_ZEN_DIGITS)
+
+    safe_patterns=[
+        r"(?:boat|teiban|lane|waku|frame|艇|枠)[_\-/ ]+(?:no)?[_\- ]?([1-6])(?:\D|$)",
+        r"(?:boatno|teibanno|laneno)[_\-:= ]*([1-6])(?:\D|$)",
     ]
-    for pat in patterns:
+    for pat in safe_patterns:
         m=re.search(pat,blob)
         if m:
             return int(m.group(1))
+
+    color_to_lane={
+        "白":1,"white":1,
+        "黒":2,"black":2,
+        "赤":3,"red":3,
+        "青":4,"blue":4,
+        "黄":5,"yellow":5,
+        "緑":6,"green":6,
+    }
+    for key,lane in color_to_lane.items():
+        if key in blob:
+            return lane
+
+    # Do NOT use fallback_course as boat number.
+    # Course and boat number differ when the start-exhibition entry changes.
     return None
 
 
-def _weather_from_text(text: str) -> dict:
+def _weather_from_text(text: str, soup: BeautifulSoup | None = None) -> dict:
     out={}
     m=re.search(r"気温\s*(-?\d+(?:\.\d+)?)℃",text)
-    if m: out["airTemperature"]=_num(m.group(1))
+    if m:
+        out["airTemperature"]=_num(m.group(1))
+
     m=re.search(r"水温\s*(-?\d+(?:\.\d+)?)℃",text)
-    if m: out["waterTemperature"]=_num(m.group(1))
+    if m:
+        out["waterTemperature"]=_num(m.group(1))
+
     m=re.search(r"風速\s*(\d+(?:\.\d+)?)m",text)
-    if m: out["windSpeed"]=_num(m.group(1))
+    if m:
+        out["windSpeed"]=_num(m.group(1))
+
     m=re.search(r"波高\s*(\d+(?:\.\d+)?)cm",text)
-    if m: out["waveHeight"]=_num(m.group(1))
-    for w in ("晴", "曇り", "雨", "雪", "霧"):
+    if m:
+        out["waveHeight"]=_num(m.group(1))
+
+    for w in ("晴","曇り","雨","雪","霧"):
         if w in text:
             out["weather"]=w
             break
-    # Official page often renders wind direction as an image; only keep text when actually present.
+
     m=re.search(r"風向\s*(北東|南東|南西|北西|北|南|東|西)",text)
-    if m: out["windDirection"]=m.group(1)
+    if m:
+        out["windDirection"]=m.group(1)
+
+    # The official page often renders wind direction as an image.
+    # Read alt/title when available instead of fabricating a direction.
+    if "windDirection" not in out and soup is not None:
+        for tag in soup.find_all(["img","span","i"]):
+            blob=" ".join(
+                str(tag.get(k) or "")
+                for k in ("alt","title","class","src")
+            )
+            md=re.search(r"(北東|南東|南西|北西|北|南|東|西)",blob)
+            if md:
+                out["windDirection"]=md.group(1)
+                break
+
     return out
 
 
+def _before_row_cells(tr) -> list[str]:
+    return [
+        compact(x.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        for x in tr.find_all(["td","th"],recursive=False)
+    ]
+
+def _before_numeric(v):
+    s=compact(str(v or "")).translate(_ZEN_DIGITS)
+    if s in {"","-","--","―","－"}:
+        return None
+    m=re.fullmatch(r"-?\d+(?:\.\d+)?",s)
+    return _num(s) if m else None
+
+def _before_adjustment_from_following_rows(main_tr):
+    """
+    Official beforeinfo uses a second row for 調整重量 and previous-race info.
+    Prefer a decimal value in the small adjustment range and stop before next racer.
+    """
+    sib=main_tr.find_next_sibling("tr")
+    for _ in range(2):
+        if sib is None:
+            break
+
+        cells=_before_row_cells(sib)
+        row_text=compact(" ".join(cells))
+
+        # A new racer row means the adjustment row was absent.
+        if re.match(r"^[1-6]\s+",row_text) and re.search(r"\d+(?:\.\d+)?kg",row_text):
+            break
+
+        candidates=[]
+        for c in cells:
+            s=compact(c)
+            # Adjustment is displayed with one decimal (e.g. 0.0 / 0.5).
+            if re.fullmatch(r"\d{1,2}\.\d",s):
+                n=_num(s)
+                if n is not None and 0 <= n <= 10:
+                    candidates.append(n)
+
+        if candidates:
+            return candidates[0]
+
+        sib=sib.find_next_sibling("tr")
+
+    return None
+
+def _before_parts_from_cells(cells: list[str], row_text: str):
+    parts=[]
+    source=" ".join(cells)+" "+row_text
+
+    labels=[
+        ("ピストン","ピストン"),
+        ("リング","リング"),
+        ("電気","電気"),
+        ("キャブ","キャブ"),
+        ("シリンダ","シリンダ"),
+        ("シャフト","シャフト"),
+        ("ギヤ","ギヤ"),
+        ("キャリボ","キャリボ"),
+    ]
+    for needle,label in labels:
+        if needle in source:
+            parts.append(label)
+
+    # Official propeller column displays 新 when changed.
+    if re.search(r"(?:プロペラ|ペラ).{0,5}新",source) or any(c=="新" for c in cells):
+        parts.append("プロペラ新")
+
+    return " / ".join(dict.fromkeys(parts)) if parts else None
+
 def parse_beforeinfo(soup: BeautifulSoup) -> dict:
-    text=compact(soup.get_text(" ",strip=True))
+    text=compact(soup.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
     if "展示タイム" not in text and "展示 タイム" not in text and "スタート展示" not in text:
         return {}
 
     boats=[]
     seen=set()
-    for tr in soup.find_all("tr"):
-        row=compact(tr.get_text(" ",strip=True))
-        # Main pre-race row: lane / racer / weight / exhibition / tilt ...
-        m=re.match(
-            r"^([1-6])\s+(.+?)\s+(\d+(?:\.\d+)?)kg\s+"
-            r"(\d+(?:\.\d+)?|--?|-|―)\s+(-?\d+(?:\.\d+)?|--?|-|―)(?:\s+|$)",
-            row,
-        )
-        if not m:
-            continue
-        lane=int(m.group(1))
-        if lane in seen:
-            continue
-        name=compact(m.group(2))
-        weight=_num(m.group(3))
-        exhibition=_num(m.group(4))
-        tilt=_num(m.group(5))
-        item={"lane":lane,"racerName":name,"weight":weight,"exhibitionTime":exhibition,"tilt":tilt}
 
-        parts=[]
-        for p in ("ピストン", "リング", "電気", "キャブ", "シリンダ", "シャフト", "ギヤ", "キャリボ"):
-            if p in row:
-                parts.append(p)
-        if "新" in row:
-            parts.append("プロペラ新")
+    for tr in soup.find_all("tr"):
+        cells=_before_row_cells(tr)
+        if not cells:
+            continue
+        row=compact(" ".join(cells))
+
+        # Main pre-race row must contain lane + weight + exhibition time + tilt.
+        lane=None
+        for c in cells[:3]:
+            if re.fullmatch(r"[1-6]",c):
+                lane=int(c)
+                break
+        if lane is None or lane in seen:
+            continue
+
+        weight_idx=next(
+            (i for i,c in enumerate(cells) if re.fullmatch(r"\d+(?:\.\d+)?kg",c)),
+            -1
+        )
+        if weight_idx < 0:
+            continue
+
+        weight=_num(cells[weight_idx].replace("kg",""))
+
+        # Racer name is usually the profile link in the same row.
+        name=""
+        profile_link=tr.find("a",href=re.compile(r"(?:racersearch/profile|toban=)"))
+        if profile_link:
+            name=compact(profile_link.get_text(" ",strip=True))
+        if not name:
+            # Fallback: nearest non-numeric cell before weight.
+            for c in reversed(cells[:weight_idx]):
+                if c and not re.fullmatch(r"[1-6]",c) and "写真" not in c:
+                    name=c
+                    break
+
+        nums=[]
+        for i,c in enumerate(cells[weight_idx+1:],start=weight_idx+1):
+            n=_before_numeric(c)
+            if n is not None:
+                nums.append((i,n,c))
+
+        exhibition=None
+        tilt=None
+
+        # Exhibition is generally around 6.xx.
+        for _,n,_ in nums:
+            if 5.0 <= n <= 9.0:
+                exhibition=n
+                break
+
+        if exhibition is not None:
+            passed=False
+            for _,n,_ in nums:
+                if not passed:
+                    if n==exhibition:
+                        passed=True
+                    continue
+                # Tilt is normally -0.5 .. 3.0.
+                if -1.0 <= n <= 3.0:
+                    tilt=n
+                    break
+
+        # Fallback for unusual display values.
+        if exhibition is None and nums:
+            exhibition=nums[0][1]
+        if tilt is None and len(nums)>=2:
+            candidate=nums[1][1]
+            if -1.0 <= candidate <= 3.0:
+                tilt=candidate
+
+        adjust=_before_adjustment_from_following_rows(tr)
+        parts=_before_parts_from_cells(cells,row)
+
+        item={
+            "lane":lane,
+            "racerName":name,
+            "weight":weight,
+            "weightAdjustment":adjust,
+            "adjustWeight":adjust,
+            "exhibitionTime":exhibition,
+            "tilt":tilt,
+            "official":True,
+        }
         if parts:
-            item["partsExchange"]=" / ".join(dict.fromkeys(parts))
+            item["partsExchange"]=parts
+
         boats.append(item)
         seen.add(lane)
         if len(boats)==6:
             break
 
-    # Start exhibition. Map to lane only if the official HTML lets us infer the boat number.
+    # Start exhibition: actual course order + ST.
     start_rows=[]
     start_area=False
     for tr in soup.find_all("tr"):
-        row=compact(tr.get_text(" ",strip=True))
+        row=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+
         if "コース" in row and "ST" in row:
             start_area=True
             continue
@@ -1123,26 +1403,126 @@ def parse_beforeinfo(soup: BeautifulSoup) -> dict:
             continue
         if "水面気象情報" in row:
             break
-        ms=re.match(r"^([1-6])\s+.*?((?:F|L)?\.\d{2})$",row)
+
+        # Typical official row text: "1 .09", "5 F.05", etc.
+        ms=re.match(r"^\s*([1-6])\s+.*?((?:F|L)?\.\d{2})\s*$",row,re.I)
         if not ms:
             continue
+
         course=int(ms.group(1))
-        raw=ms.group(2)
+        raw=ms.group(2).upper()
         lane=_infer_lane_from_start_row(tr,course)
-        st=_num(raw.lstrip("FL"))
-        entry={"course":course,"lane":lane,"st":st,"rawST":raw}
+        if lane is None:
+            continue
+
+        entry={
+            "course":course,
+            "lane":lane,
+            "st":_num(raw.lstrip("FL")),
+            "rawST":raw,
+            "official":True,
+        }
         start_rows.append(entry)
-        if lane:
+
+    # Keep only a complete, unique 6-boat set.
+    if start_rows:
+        unique_lanes={x.get("lane") for x in start_rows}
+        unique_courses={x.get("course") for x in start_rows}
+        if len(start_rows)!=6 or len(unique_lanes)!=6 or len(unique_courses)!=6:
+            start_rows=[]
+
+    # DOM fallback: pair each official boat image with the ST in its parent row.
+    # This remains correct even when entry order is not 1-2-3-4-5-6.
+    if len(start_rows) != 6:
+        candidate=[]
+        for img in soup.find_all("img"):
+            src=str(img.get("src") or "").lower().translate(_ZEN_DIGITS)
+            mm=re.search(r"img_boat2_([1-6])(?:\D|$)",src)
+            if not mm:
+                continue
+
+            lane=int(mm.group(1))
+            tr=img.find_parent("tr")
+            if tr is None:
+                continue
+
+            row=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+            mc=re.match(r"^\s*([1-6])\s+",row)
+            ms=re.search(r"((?:F|L)?\.\d{2})\s*$",row,re.I)
+            if not mc or not ms:
+                continue
+
+            raw=ms.group(1).upper()
+            candidate.append({
+                "course":int(mc.group(1)),
+                "lane":lane,
+                "st":_num(raw.lstrip("FL")),
+                "rawST":raw,
+                "official":True,
+            })
+
+        # Deduplicate by course/lane while preserving order.
+        dedup=[]
+        seen_course=set()
+        seen_lane=set()
+        for x in candidate:
+            if x["course"] in seen_course or x["lane"] in seen_lane:
+                continue
+            seen_course.add(x["course"])
+            seen_lane.add(x["lane"])
+            dedup.append(x)
+
+        if len(dedup)==6 and len(seen_course)==6 and len(seen_lane)==6:
+            start_rows=sorted(dedup,key=lambda x:x["course"])
+
+    # If all six actual lanes were detected, merge course/ST into the boat rows.
+    detected_lanes=[x.get("lane") for x in start_rows if x.get("lane")]
+    if len(start_rows)==6 and len(set(detected_lanes))==6:
+        by_lane={b["lane"]:b for b in boats}
+        for x in start_rows:
+            b=by_lane.get(x.get("lane"))
+            if not b:
+                continue
+            b["course"]=x["course"]
+            b["st"]=x["rawST"] if str(x["rawST"]).startswith(("F","L")) else x["st"]
+
+    # Rank display metrics (1 = best/lower time).
+    exhibition_ranked=sorted(
+        (b for b in boats if b.get("exhibitionTime") is not None),
+        key=lambda b:b["exhibitionTime"]
+    )
+    for rank,b in enumerate(exhibition_ranked,1):
+        b["exhibitionRank"]=rank
+
+    st_ranked=sorted(
+        (
+            x for x in start_rows
+            if x.get("st") is not None and not str(x.get("rawST") or "").startswith(("F","L"))
+        ),
+        key=lambda x:x["st"]
+    )
+    for rank,x in enumerate(st_ranked,1):
+        x["startRank"]=rank
+        if x.get("lane"):
             for b in boats:
-                if b.get("lane")==lane:
-                    b["course"]=course
-                    b["st"]=raw if raw.startswith(("F","L")) else st
+                if b.get("lane")==x["lane"]:
+                    b["startRank"]=rank
                     break
+
+    weather=_weather_from_text(text,soup)
+
+    # Official page states which race the weather data was measured at (e.g. 3R時点).
+    weather_at=None
+    mw=re.search(r"水面気象情報\s*(\d{1,2})R時点",text)
+    if mw:
+        weather_at=int(mw.group(1))
+        weather["observedRaceNo"]=weather_at
 
     return {
         "boats":boats,
         "startExhibition":start_rows,
-        "weather":_weather_from_text(text),
+        "weather":weather,
+        "official":bool(boats or start_rows or weather),
     }
 
 
@@ -1168,36 +1548,64 @@ def _payout_pairs(segment: str, combo_len: int) -> list[dict]:
     return out
 
 
-def parse_raceresult(soup: BeautifulSoup) -> dict:
-    text=compact(soup.get_text(" ",strip=True))
-    if "着 枠 ボートレーサー" not in text and "払戻金" not in text:
-        return {}
+def _result_rank_value(v):
+    s=compact(str(v or "")).translate(_ZEN_DIGITS).strip()
+    if s in {"1","2","3","4","5","6"}:
+        return int(s)
 
+    u=s.upper().replace(" ","")
+    if u in {"転","転覆"} or "転覆" in u:
+        return "転"
+    if u in {"落","落水"} or "落水" in u:
+        return "落"
+    if u=="F" or "フライング" in u:
+        return "F"
+    if u=="L" or "出遅" in u:
+        return "L"
+    return None
+
+def _result_time_value(v):
+    s=compact(str(v or "")).translate(_ZEN_DIGITS)
+    s=s.replace("’","'").replace("′","'").replace("″",'"').replace("”",'"')
+    m=re.search(r"\b(\d'[\d]{2}\"[\d])\b",s)
+    return m.group(1) if m else None
+
+def _result_table_finishers(soup: BeautifulSoup) -> list[dict]:
     finishers=[]
     seen_lanes=set()
 
-    def _official_finish_rank(v):
-        s=compact(str(v or "")).translate(_ZEN_DIGITS).strip()
-        if s in {"1","2","3","4","5","6"}:
-            return int(s)
-        u=s.upper().replace(" ","")
-        if u in {"転","転覆"} or "転覆" in u:
-            return "転"
-        if u in {"落","落水"} or "落水" in u:
-            return "落"
-        if u=="F" or "フライング" in u:
-            return "F"
-        if u=="L" or "出遅" in u:
-            return "L"
-        return s or None
+    # Prefer the specific competition-result table.
+    candidate_tables=[]
+    for table in soup.find_all("table"):
+        t=compact(table.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        if "ボートレーサー" in t and "レースタイム" in t and ("着" in t or "枠" in t):
+            candidate_tables.append(table)
 
-    for tr in soup.find_all("tr"):
-        cells=[compact(x.get_text(" ",strip=True)) for x in tr.find_all(["td","th"],recursive=False)]
+    # Fallback to all rows if the official HTML wrapper changes.
+    row_sources=[]
+    if candidate_tables:
+        for table in candidate_tables:
+            row_sources.extend(table.find_all("tr"))
+    else:
+        row_sources=soup.find_all("tr")
+
+    for tr in row_sources:
+        cells=[
+            compact(x.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+            for x in tr.find_all(["td","th"],recursive=False)
+        ]
+        if len(cells)<3:
+            # Some official wrappers nest cell content one level deeper.
+            cells=[
+                compact(x.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+                for x in tr.find_all(["td","th"])
+            ]
+
         if len(cells)<3:
             continue
 
-        rank=_official_finish_rank(cells[0])
-        lane_raw=cells[1].translate(_ZEN_DIGITS).strip()
+        rank=_result_rank_value(cells[0])
+        lane_raw=compact(cells[1])
         if rank is None or not re.fullmatch(r"[1-6]",lane_raw):
             continue
 
@@ -1206,52 +1614,139 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
             continue
 
         racer_text=cells[2]
-        mr=re.search(r"(\d{4})\s+(.+)",racer_text)
+        mr=re.search(r"\b(\d{4})\s+(.+)",racer_text)
+        if not mr:
+            # Row-level fallback: registration number and name may be split in nested tags.
+            row_text=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+            mr=re.search(r"\b(\d{4})\s+(.+?)(?=\s+\d'[\d]{2}\"[\d]\b|$)",row_text)
         if not mr:
             continue
 
-        time_val=cells[3] if len(cells)>=4 and re.fullmatch(r"1'\d{2}\"\d",cells[3] or "") else None
+        racer_id=mr.group(1)
+        racer_name=compact(mr.group(2))
+        # Remove a race time accidentally captured by the row-level fallback.
+        racer_name=re.sub(r"\s+\d'[\d]{2}\"[\d].*$","",racer_name).strip()
+
+        time_val=None
+        if len(cells)>=4:
+            time_val=_result_time_value(cells[3])
+        if time_val is None:
+            time_val=_result_time_value(tr.get_text(" ",strip=True))
 
         finishers.append({
             "rank":rank,
             "lane":lane,
-            "racerId":mr.group(1),
-            "racerName":compact(mr.group(2)),
+            "racerId":racer_id,
+            "racerName":racer_name,
             "time":time_val,
         })
         seen_lanes.add(lane)
+
         if len(finishers)==6:
             break
 
-    # Final ST / winning move from the start information block.
-    start_block=text
-    if "スタート情報" in text:
-        start_block=text.split("スタート情報",1)[1]
-    if "勝式" in start_block:
-        start_block=start_block.split("勝式",1)[0]
-    st_map={}
-    start_entries=[]
-    for idx,(lane,raw,move) in enumerate(re.findall(
+    return finishers
+
+def _result_start_entries(soup: BeautifulSoup, text: str) -> list[dict]:
+    """
+    Parse final start information using the official boat image filenames.
+    Course = row order / visible course number.
+    Lane   = img_boat2_N.png final N.
+    """
+    entries=[]
+
+    # First choice: DOM rows with the official boat image.
+    for img in soup.find_all("img"):
+        src=str(img.get("src") or "").lower().translate(_ZEN_DIGITS)
+        m_lane=re.search(r"img_boat2_([1-6])(?:\D|$)",src)
+        if not m_lane:
+            continue
+
+        tr=img.find_parent("tr")
+        if tr is None:
+            continue
+
+        row=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        m_course=re.match(r"^\s*([1-6])(?:\s|$)",row)
+        m_st=re.search(r"((?:F|L)?\.\d{2})\s*(?:逃げ|差し|まくり差し|まくり|抜き|恵まれ)?\s*$",row,re.I)
+        if not m_course or not m_st:
+            continue
+
+        move_match=re.search(r"(逃げ|差し|まくり差し|まくり|抜き|恵まれ)",row)
+        raw=m_st.group(1).upper()
+
+        entries.append({
+            "lane":int(m_lane.group(1)),
+            "course":int(m_course.group(1)),
+            "st":raw,
+            "move":move_match.group(1) if move_match else "",
+        })
+
+    # Deduplicate and validate complete six-boat set.
+    dedup=[]
+    seen_lane=set()
+    seen_course=set()
+    for x in sorted(entries,key=lambda y:y["course"]):
+        if x["lane"] in seen_lane or x["course"] in seen_course:
+            continue
+        seen_lane.add(x["lane"])
+        seen_course.add(x["course"])
+        dedup.append(x)
+
+    if len(dedup)==6 and len(seen_lane)==6 and len(seen_course)==6:
+        return dedup
+
+    # Fallback: plain-text start block. This is safe only when six unique visible
+    # course/boat numbers are present. It covers official markup without image src.
+    block=text
+    if "スタート情報" in block:
+        block=block.split("スタート情報",1)[1]
+    if "勝式" in block:
+        block=block.split("勝式",1)[0]
+
+    pairs=re.findall(
         r"(?:^|\s)([1-6])\s+((?:F|L)?\.\d{2})(?:\s+(逃げ|差し|まくり差し|まくり|抜き|恵まれ))?",
-        start_block,
-    ),1):
-        entry={"st":raw,"move":move or "","course":idx}
-        st_map[int(lane)]=entry
-        start_entries.append({"lane":int(lane),"course":idx,"st":raw,"move":move or ""})
+        block,
+        flags=re.I,
+    )
+    if len(pairs)>=6:
+        candidate=[]
+        for course,(lane_raw,st_raw,move) in enumerate(pairs[:6],1):
+            candidate.append({
+                "lane":int(lane_raw),
+                "course":course,
+                "st":st_raw.upper(),
+                "move":move or "",
+            })
+        if len({x["lane"] for x in candidate})==6:
+            return candidate
+
+    return []
+
+def parse_raceresult(soup: BeautifulSoup) -> dict:
+    text=compact(soup.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+    if "払戻金" not in text and "ボートレーサー" not in text and "スタート情報" not in text:
+        return {}
+
+    finishers=_result_table_finishers(soup)
+    start_entries=_result_start_entries(soup,text)
+
+    st_map={int(x["lane"]):x for x in start_entries}
     for f in finishers:
         st=st_map.get(int(f.get("lane") or 0))
         if st:
             f["st"]=st["st"]
             f["course"]=st["course"]
-            if st["move"]:
+            if st.get("move"):
                 f["kimarite"]=st["move"]
 
     kimarite=""
     mk=re.search(r"決まり手\s*(逃げ|差し|まくり差し|まくり|抜き|恵まれ)",text)
     if mk:
         kimarite=mk.group(1)
-    elif st_map:
-        kimarite=next((x["move"] for x in st_map.values() if x.get("move")),"")
+    elif start_entries:
+        kimarite=next((x.get("move") for x in start_entries if x.get("move")),"")
+
     if kimarite:
         for f in finishers:
             if f.get("rank")==1:
@@ -1263,6 +1758,7 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
         ptext=text.split("勝式",1)[1]
         if "水面気象情報" in ptext:
             ptext=ptext.split("水面気象情報",1)[0]
+
         labels=[
             ("3連単","trifecta",3),("3連複","trio",3),
             ("2連単","exacta",2),("2連複","quinella",2),
@@ -1271,11 +1767,13 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
         positions=[]
         for label,key,n in labels:
             idx=ptext.find(label)
-            if idx>=0: positions.append((idx,label,key,n))
+            if idx>=0:
+                positions.append((idx,label,key,n))
         positions.sort()
+
         for i,(idx,label,key,n) in enumerate(positions):
-            end=positions[i+1][0] if i+1<len(positions) else len(ptext)
-            seg=ptext[idx+len(label):end]
+            seg_end=positions[i+1][0] if i+1<len(positions) else len(ptext)
+            seg=ptext[idx+len(label):seg_end]
             vals=_payout_pairs(seg,n)
             if vals:
                 payouts[key]=vals
@@ -1292,170 +1790,34 @@ def parse_raceresult(soup: BeautifulSoup) -> dict:
         if candidate and candidate not in {"---","-"}:
             note=candidate[:200]
 
-    if not finishers and not payouts and not kimarite:
+    weather=_weather_from_text(text,soup)
+
+    if not finishers and not payouts and not start_entries and not kimarite:
         return {}
+
+    finisher_st_count=sum(1 for x in finishers if x.get("st") not in (None,""))
+    complete=(len(finishers)==6 and len(start_entries)==6 and finisher_st_count==6)
 
     result={
         "finishers":finishers,
         "payouts":payouts,
-        "weather":_weather_from_text(text),
+        "weather":weather,
         "kimarite":kimarite or None,
         "startEntries":start_entries,
         "official":True,
+        "complete":complete,
+        "competitionComplete":len(finishers)==6,
+        "startInfoComplete":len(start_entries)==6,
     }
-    if refund: result["refund"]=refund
-    if note: result["note"]=note
+
+    if refund:
+        result["refund"]=refund
+    if note:
+        result["note"]=note
+
     return result
 
 
-
-
-def _section_between(text: str, start_label: str, end_labels: tuple[str, ...]) -> str:
-    """Return normalized text between one course-stat heading and the next heading."""
-    src=compact(str(text or "")).translate(_ZEN_DIGITS)
-    start=src.find(start_label)
-    if start < 0:
-        return ""
-    body=src[start+len(start_label):]
-    stops=[body.find(x) for x in end_labels if body.find(x) >= 0]
-    if stops:
-        body=body[:min(stops)]
-    return compact(body)
-
-def _parse_six_course_values(section: str, percent: bool=False) -> dict[str, float | None]:
-    """Parse `1 value ... 6 value` rows from the official racer course page.
-
-    The official page renders some values graphically, but the total value for each
-    course is still present in the page text. Missing values are kept as None.
-    """
-    out={str(i):None for i in range(1,7)}
-    src=compact(str(section or "")).translate(_ZEN_DIGITS)
-    # Normalize the official missing-value variants ("- -", full-width dashes, etc.).
-    src=src.replace("－","-").replace("―","-").replace("—","-")
-    for i in range(1,7):
-        # Stop the value at the next course number so labels such as 1着率/2着率 do not match.
-        nxt=i+1
-        if i < 6:
-            m=re.search(rf"(?:^|\s){i}\s+(.+?)(?=\s+{nxt}\s+)",src)
-        else:
-            m=re.search(rf"(?:^|\s){i}\s+(.+)$",src)
-        if not m:
-            continue
-        chunk=compact(m.group(1))
-        if re.fullmatch(r"(?:-\s*)+",chunk):
-            continue
-        num=re.search(r"-?\d+(?:\.\d+)?",chunk)
-        if not num:
-            continue
-        try:
-            out[str(i)]=float(num.group(0))
-        except ValueError:
-            pass
-    return out
-
-def parse_racer_course_stats(soup: BeautifulSoup) -> dict:
-    """Parse BOAT RACE official racer course-by-course statistics.
-
-    Collected fields currently exposed reliably in page text:
-      - entryRate: course-entry rate (%)
-      - threeRate: top-3 rate (%)
-      - avgST: average start timing
-      - avgStartRank: average start order/rank
-
-    We intentionally do not fabricate 1st/2nd-place rates when the official HTML
-    only exposes them as graphical segments. Those can be added later once a
-    stable source is confirmed.
-    """
-    text=compact(soup.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
-    entry=_parse_six_course_values(_section_between(
-        text,"コース別進入率",("コース別3連対率","コース別平均スタートタイミング","コース別スタート順")
-    ),percent=True)
-    three=_parse_six_course_values(_section_between(
-        text,"コース別3連対率",("コース別平均スタートタイミング","コース別スタート順")
-    ),percent=True)
-    avg_st=_parse_six_course_values(_section_between(
-        text,"コース別平均スタートタイミング",("コース別スタート順",)
-    ))
-    start_rank=_parse_six_course_values(_section_between(
-        text,"コース別スタート順",("集計期間内","ボートレーサー検索へ戻る")
-    ))
-
-    courses={}
-    for i in range(1,7):
-        k=str(i)
-        row={
-            "entryRate":entry.get(k),
-            "threeRate":three.get(k),
-            "avgST":avg_st.get(k),
-            "avgStartRank":start_rank.get(k),
-        }
-        # Keep the key even when one or more fields are absent; the UI can show --.
-        courses[k]=row
-
-    valid=sum(1 for row in courses.values() if any(v is not None for v in row.values()))
-    return {
-        "courses":courses,
-        "source":"BOAT RACE official racer course page",
-        "sourcePath":"/owpc/pc/data/racersearch/course",
-        "validCourses":valid,
-    }
-
-def fetch_profile_course_stats(toban: str):
-    """Fetch one racer's official course-by-course statistics."""
-    rid=str(toban or "").strip()
-    now=datetime.now(JST).isoformat(timespec="seconds")
-    if not re.fullmatch(r"\d{4}",rid):
-        return rid,{"courseStatsCheckedAt":now,"courseStatsError":"invalid racer id"}
-    try:
-        soup=get_soup(COURSE_STATS_URL,{"toban":rid},timeout=18)
-        parsed=parse_racer_course_stats(soup)
-        if not parsed.get("validCourses"):
-            return rid,{
-                "courseStatsCheckedAt":now,
-                "courseStatsError":"course stats not found",
-            }
-        return rid,{
-            "courseStatsOfficial":parsed.get("courses",{}),
-            "courseStatsSource":parsed.get("source"),
-            "courseStatsCheckedAt":now,
-        }
-    except Exception as e:
-        return rid,{
-            "courseStatsCheckedAt":now,
-            "courseStatsError":f"{type(e).__name__}: {e}",
-        }
-
-def _iso_age_hours(v: str | None) -> float | None:
-    if not v:
-        return None
-    try:
-        dt=datetime.fromisoformat(str(v))
-        if dt.tzinfo is None:
-            dt=dt.replace(tzinfo=JST)
-        return max(0.0,(datetime.now(JST)-dt.astimezone(JST)).total_seconds()/3600.0)
-    except Exception:
-        return None
-
-def _course_cache_stale(info: dict, max_age_hours: float=20.0) -> bool:
-    stats=info.get("courseStatsOfficial") or {}
-    if not isinstance(stats,dict) or not any(isinstance(v,dict) and any(x is not None for x in v.values()) for v in stats.values()):
-        return True
-    age=_iso_age_hours(info.get("courseStatsCheckedAt"))
-    return age is None or age >= max_age_hours
-
-def _official_course_stats_for_ui(info: dict) -> dict:
-    """Map official course stats into the site's existing courseStats schema.
-
-    The official racer course page does not state a period label in the extracted
-    text, so we preserve it under `official` rather than pretending it is 1/3/6/12 months.
-    """
-    raw=info.get("courseStatsOfficial") or {}
-    out={}
-    for course,row in raw.items():
-        if not isinstance(row,dict):
-            continue
-        out[str(course)]={"official":dict(row)}
-    return out
 
 def fetch_profile_period(toban: str):
     """
@@ -1776,6 +2138,366 @@ def fetch_odds_task(code: str, date: str, race_no: int):
         return code,race_no,{},f"{type(e).__name__}: {e}"
 
 
+
+def get_soup_full(url: str, timeout: int=14) -> BeautifulSoup:
+    r=requests.get(url,headers=HEADERS,timeout=timeout)
+    r.raise_for_status()
+    r.encoding=r.apparent_encoding or "utf-8"
+    return BeautifulSoup(r.text,"html.parser")
+
+def _local_url_candidates(code: str, date: str, race_no: int) -> list[tuple[str,str]]:
+    """
+    Official venue-site routes.
+    Only routes that are confirmed or strongly tied to the venue's live-race UI
+    are queried. Unknown venues remain on BOAT RACE central data until mapped.
+    """
+    base=OFFICIAL_VENUE_BASES.get(code)
+    r=int(race_no)
+    urls=[]
+
+    if not base:
+        return urls
+
+    if code=="01":  # 桐生: race info / timing page
+        urls.extend([
+            ("original",f"{base}/sp/index.php?page=raceinfo-timedata&race={r}"),
+            ("original",f"{base}/sp/index.php?page=raceinfo-timedata"),
+        ])
+
+    elif code=="02":  # 戸田: current official homepage contains exhibition/original tables
+        urls.extend([
+            ("original",f"{base}/?race={r}"),
+            ("original",f"{base}/?r={r}"),
+        ])
+
+    elif code=="05":  # 多摩川: 直前情報
+        urls.append(("original",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+
+    elif code=="07":  # 蒲郡
+        urls.append(("race",f"{base}/asp/gamagori/sp/kyogi/kyogihtml/recomend/recomend{date}07{r:02d}.htm"))
+
+    elif code=="08":  # 常滑: original data suspended; comments remain separate
+        urls.append(("comments",f"{base}/raceguide/kyogi13/{r}/"))
+
+    elif code=="09":  # 津
+        urls.extend([
+            ("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"),
+            ("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}"),
+        ])
+
+    elif code=="11":  # びわこ
+        urls.append(("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+
+    elif code=="12":  # 住之江: official st02RR page contains 展示/一周/まわり足
+        urls.extend([
+            ("original",f"{base}/asp/kyogi/12/pc/st02{r:02d}.htm"),
+            ("original",f"{base}/asp/kyogi/12/sp/st02{r:02d}.htm"),
+        ])
+
+    elif code=="13":  # 尼崎
+        urls.append(("original",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+
+    elif code=="14":  # 鳴門
+        urls.append(("original",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"))
+
+    elif code=="15":  # 丸亀
+        urls.append(("race",f"{base}/asp/kyogi/15/sp/yoso05{r:02d}.htm"))
+
+    elif code=="16":  # 児島
+        urls.append(("original",f"{base}/asp/kyogi/16/sp/yoso05{r:02d}.htm"))
+
+    elif code=="17":  # 宮島: current official site exposes comments / start exhibition / original exhibition
+        urls.extend([
+            ("race",f"{base}/index.html?race={r}"),
+            ("race",f"{base}/?race={r}"),
+        ])
+
+    elif code=="18":  # 徳山
+        urls.extend([
+            ("original",f"{base}/tenji-keisoku/sp/?day={date}&race={r:02d}"),
+            ("original",f"{base}/tenji-keisoku/sp/"),
+        ])
+
+    elif code=="20":  # 若松: current official race page
+        urls.extend([
+            ("original",f"{base}/?r={r}"),
+            ("original",f"{base}/index.php?r={r}"),
+        ])
+
+    elif code=="21":  # 芦屋: meeting-wide racer comments
+        urls.append(("comments",f"{base}/modules/raceinfo/?page=index_racers_comment"))
+
+    elif code=="22":  # 福岡
+        urls.extend([
+            ("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"),
+            ("comments",f"{base}/sp/index.php?page=yosou-syussou&race={r}"),
+        ])
+
+    elif code=="23":  # 唐津: meeting-wide racer comments + direct page candidate
+        urls.extend([
+            ("comments",f"{base}/modules/raceinfo/?page=index_racers_comment"),
+            ("race",f"{base}/sp/index.php?page=yosou-cyokuzen&race={r}"),
+        ])
+
+    out=[]
+    seen=set()
+    for kind,url in urls:
+        if url not in seen:
+            seen.add(url)
+            out.append((kind,url))
+    return out[:3]
+
+def _local_header_map(grid: list[list[str]]) -> tuple[int,dict]:
+    """
+    Find a likely header row and column indexes for local exhibition/comment tables.
+    Handles one/two-level table headers reasonably well.
+    """
+    best=(-1,{})
+    for i,row in enumerate(grid[:6]):
+        joined=" ".join(row)
+        mapping={}
+        for idx,v in enumerate(row):
+            s=compact(v).replace(" ","")
+            if ("枠" in s or "艇番" in s) and "枠" not in mapping:
+                mapping["lane"]=idx
+            if "展示" in s and "展示" not in mapping and "スタート" not in s:
+                mapping["exhibition"]=idx
+            if "半周" in s:
+                mapping["halfLap"]=idx
+            elif "一周" in s or "1周" in s:
+                mapping["lap"]=idx
+            if "まわり足" in s or "回り足" in s:
+                mapping["turn"]=idx
+            if "直線" in s:
+                mapping["straight"]=idx
+            if "選手コメント" in s:
+                mapping["comment"]=idx
+            elif s=="コメント" and "comment" not in mapping:
+                mapping["comment"]=idx
+        score=sum(1 for k in ("halfLap","lap","turn","straight","comment") if k in mapping)
+        if score>len(best[1]):
+            best=(i,mapping)
+    return best
+
+def _local_table_matches_race(table, race_boats: list[dict] | None) -> bool:
+    if not race_boats:
+        return True
+    text=_norm_local_name(table.get_text(" ",strip=True))
+    names=[
+        _norm_local_name(b.get("racerName"))
+        for b in race_boats
+        if b.get("racerName")
+    ]
+    hits=sum(1 for n in names if n and n in text)
+    return hits>=2
+
+def _parse_local_original_tables(soup: BeautifulSoup, race_boats: list[dict] | None=None) -> dict[int,dict]:
+    out={}
+    for table in soup.find_all("table"):
+        if not _local_table_matches_race(table,race_boats):
+            continue
+        text=compact(table.get_text(" ",strip=True))
+        has_distance=("半周" in text or "一周" in text or "1周" in text)
+        if not (has_distance and ("まわり足" in text or "回り足" in text)):
+            continue
+
+        grid=_expand_html_table(table)
+        if not grid:
+            continue
+        hidx,hmap=_local_header_map(grid)
+        if hidx<0 or not ({"halfLap","lap","turn"} & set(hmap)):
+            continue
+
+        for row in grid[hidx+1:]:
+            lane=None
+            if "lane" in hmap and hmap["lane"]<len(row):
+                lane=_lane_token(row[hmap["lane"]])
+            if lane is None:
+                for cell in row[:3]:
+                    lane=_lane_token(cell)
+                    if lane is not None:
+                        break
+            if lane is None:
+                continue
+
+            item=out.setdefault(lane,{})
+            for key in ("exhibition","halfLap","lap","turn","straight"):
+                idx=hmap.get(key)
+                if idx is None or idx>=len(row):
+                    continue
+                val=_odds_token(row[idx])
+                if val is None:
+                    continue
+                if key=="exhibition" and not (5.0 <= val <= 9.0):
+                    continue
+                if key=="halfLap" and not (10.0 <= val <= 40.0):
+                    continue
+                if key=="lap" and not (20.0 <= val <= 60.0):
+                    continue
+                if key=="turn" and not (3.0 <= val <= 20.0):
+                    continue
+                if key=="straight" and not (3.0 <= val <= 20.0):
+                    continue
+                field={
+                    "exhibition":"exhibitionTime",
+                    "halfLap":"halfLapTime",
+                    "lap":"lapTime",
+                    "turn":"turnTime",
+                    "straight":"straightTime",
+                }[key]
+                item[field]=val
+
+    # Text fallback for venues like 徳山 that publish a vertical layout.
+    if not out:
+        text=compact(soup.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
+        # Split at 4-digit registration numbers; use order as lane if six racers are present.
+        chunks=re.split(r"(?=\b\d{4}\s)",text)
+        parsed=[]
+        for ch in chunks:
+            if not re.match(r"\d{4}\s",ch):
+                continue
+            half=re.search(r"半周(?:ラップ)?\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            lap=re.search(r"(?:一周|1周)\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            turn=re.search(r"(?:まわり足|回り足)\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            straight=re.search(r"直線\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            exhib=re.search(r"展示\s*[:：]?\s*(\d+(?:\.\d+)?)",ch)
+            if half or lap or turn or straight:
+                parsed.append({
+                    "exhibitionTime":_num(exhib.group(1)) if exhib else None,
+                    "halfLapTime":_num(half.group(1)) if half else None,
+                    "lapTime":_num(lap.group(1)) if lap else None,
+                    "turnTime":_num(turn.group(1)) if turn else None,
+                    "straightTime":_num(straight.group(1)) if straight else None,
+                })
+        if len(parsed)>=6:
+            out={i+1:v for i,v in enumerate(parsed[:6])}
+
+    return out
+
+def _norm_local_name(v) -> str:
+    return re.sub(r"[　\s]+","",compact(str(v or "")))
+
+def _parse_local_comments(soup: BeautifulSoup, race_boats: list[dict]) -> dict[int,str]:
+    """
+    Only accept tables explicitly labelled 選手コメント.
+    This intentionally avoids treating reporter/prediction remarks as racer quotes.
+    """
+    out={}
+    names={
+        _norm_local_name(b.get("racerName")):int(b.get("lane") or 0)
+        for b in race_boats
+        if b.get("racerName") and int(b.get("lane") or 0) in range(1,7)
+    }
+
+    page_text=compact(soup.get_text(" ",strip=True))
+    page_is_comment_source=("選手コメント" in page_text or "選手コメント一覧" in page_text)
+
+    for table in soup.find_all("table"):
+        text=compact(table.get_text(" ",strip=True))
+        if not page_is_comment_source and "選手コメント" not in text:
+            continue
+
+        grid=_expand_html_table(table)
+        if not grid:
+            continue
+        hidx,hmap=_local_header_map(grid)
+        comment_idx=hmap.get("comment")
+        start_row=hidx+1
+        if comment_idx is None and page_is_comment_source:
+            # Meeting-wide pages sometimes omit a conventional table header.
+            # Identify the longest prose cell as comment, then match racer by name.
+            start_row=max(0,hidx+1)
+        elif comment_idx is None:
+            continue
+
+        for row in grid[start_row:]:
+            if comment_idx is not None:
+                if comment_idx>=len(row):
+                    continue
+                comment=compact(row[comment_idx])
+            else:
+                prose=[
+                    compact(c) for c in row
+                    if len(compact(c))>=8
+                    and not re.fullmatch(r"\d{4}",compact(c))
+                ]
+                comment=max(prose,key=len) if prose else ""
+
+            if not comment or comment in {"-","--","―","－"}:
+                continue
+
+            lane=None
+            if "lane" in hmap and hmap["lane"]<len(row):
+                lane=_lane_token(row[hmap["lane"]])
+
+            if lane is None:
+                row_text=_norm_local_name(" ".join(row))
+                for name,ln in names.items():
+                    if name and name in row_text:
+                        lane=ln
+                        break
+
+            if lane in range(1,7):
+                # Strip duplicated label if embedded in the cell.
+                comment=re.sub(r"^選手コメント[:：]?\s*","",comment).strip()
+                if comment:
+                    out[lane]=comment
+    return out
+
+def fetch_local_race_task(code: str, date: str, race_no: int, race_boats: list[dict]):
+    originals={}
+    comments={}
+    sources=[]
+
+    for kind,url in _local_url_candidates(code,date,race_no):
+        try:
+            soup=get_soup_full(url,timeout=12)
+        except Exception:
+            continue
+
+        text=compact(soup.get_text(" ",strip=True))
+        if not text:
+            continue
+
+        profile=VENUE_LOCAL_PROFILE.get(code,{})
+        allowed_metrics=set(profile.get("metrics") or [])
+
+        if kind in {"race","original"} and allowed_metrics and (
+            "半周" in text or "一周" in text or "1周" in text or
+            "まわり足" in text or "回り足" in text or "直線" in text
+        ):
+            parsed=_parse_local_original_tables(soup,race_boats)
+            if parsed:
+                for lane,item in parsed.items():
+                    clean={}
+                    for k,v in item.items():
+                        if v is None:
+                            continue
+                        # 展示タイムは共通参考値として保存可。
+                        if k=="exhibitionTime" or k in allowed_metrics:
+                            clean[k]=v
+                    if clean:
+                        originals.setdefault(lane,{}).update(clean)
+                if originals:
+                    sources.append(url)
+
+        if kind in {"race","comments"} and profile.get("commentsAvailable") and "選手コメント" in text:
+            parsed=_parse_local_comments(soup,race_boats)
+            if parsed:
+                comments.update(parsed)
+                sources.append(url)
+
+        # Stop early if both types are already available.
+        if originals and comments:
+            break
+
+    return code,race_no,{
+        "originals":originals,
+        "comments":comments,
+        "sources":list(dict.fromkeys(sources)),
+        "official":bool(originals or comments),
+    },None
+
 def fetch_point_rank_task(code: str, date: str):
     try:
         soup=get_soup(POINT_RANK_URL,{"jcd":code,"hd":date},timeout=18)
@@ -1805,6 +2527,46 @@ def fetch_beforeinfo_task(code: str, date: str, race_no: int):
         return code,race_no,{},f"{type(e).__name__}: {e}"
 
 
+def _result_is_complete(result: dict) -> bool:
+    if not isinstance(result,dict):
+        return False
+    if result.get("complete") is True:
+        return True
+
+    finishers=result.get("finishers") or []
+    starts=result.get("startEntries") or []
+    st_count=sum(1 for x in finishers if x.get("st") not in (None,""))
+    return len(finishers)==6 and len(starts)==6 and st_count==6
+
+def _result_refresh_due(race: dict, mins: int) -> bool:
+    # Do not retry races explicitly cancelled/postponed.
+    if str(race.get("status") or "").lower() in {"cancelled","postponed"}:
+        return False
+
+    result=race.get("result") or {}
+    if _result_is_complete(result):
+        return False
+
+    # Keep repairing incomplete results for the whole current race day.
+    if not (-720 <= mins < 0):
+        return False
+
+    last=race.get("resultLastAttemptAt")
+    if not last:
+        return True
+
+    # Immediate period: every 5 minutes. Older race: every 15 minutes.
+    interval=5 if mins>=-120 else 15
+    try:
+        dt=datetime.fromisoformat(str(last))
+        if dt.tzinfo is None:
+            dt=dt.replace(tzinfo=JST)
+        age=(datetime.now(JST)-dt.astimezone(JST)).total_seconds()/60
+        return age>=interval
+    except Exception:
+        return True
+
+
 def fetch_result_task(code: str, date: str, race_no: int):
     try:
         soup=get_soup(RACERESULT_URL,{"rno":race_no,"jcd":code,"hd":date},timeout=16)
@@ -1822,118 +2584,47 @@ def _minutes_from_now(deadline: str) -> int | None:
     return int((target-now).total_seconds()//60)
 
 
-def _race_needs_current_meta_repair(race: dict) -> bool:
-    """Return True when the raceindex row exists but racer detail enrichment is incomplete."""
-    boats = race.get("boats", []) or []
-    if len(boats) < 6:
-        return True
-    rich = 0
-    for b in boats[:6]:
-        rid = str(b.get("racerId") or b.get("registrationNo") or "")
-        has_basic = bool(rid and b.get("branch") and b.get("age") not in (None, ""))
-        has_stats = b.get("avgST") is not None or b.get("nationalWinRate") is not None
-        if has_basic and has_stats:
-            rich += 1
-    return rich < 6
-
-def repair_missing_current_racelist(payload: dict, cache_path: Path, workers: int=8) -> None:
-    """
-    Self-heal incomplete current-day racelist data during every update.
-
-    The daily full enrich can occasionally have a transient failure for one venue.
-    Without this repair, that venue can remain name/class-only until the next day.
-    Only incomplete races are retried, so normal 5-minute updates stay light.
-    """
-    meetings = payload.get("meetings", []) or []
-    if not meetings:
-        return
-
-    racer_cache = load_json(cache_path, {})
-    tasks = []
-    for m in meetings:
-        code = str(m.get("venueCode") or "")
-        date = str(m.get("date") or "")
-        for r in m.get("races", []) or []:
-            rno = int(r.get("raceNo") or 0)
-            if code and date and rno and _race_needs_current_meta_repair(r):
-                tasks.append((code, date, rno))
-
-    tasks = list(dict.fromkeys(tasks))
-    if not tasks:
-        return
-
-    print(f"[BOAT CHECK] REPAIR current racelist tasks={len(tasks)}")
-    results = {}
-    with ThreadPoolExecutor(max_workers=min(max(workers, 6), 12)) as ex:
-        futs = {ex.submit(fetch_racelist_task, *t): t for t in tasks}
-        for fut in as_completed(futs):
-            code, date, rno = futs[fut]
-            try:
-                _, _, meta, err = fut.result()
-            except Exception as e:
-                meta, err = [], f"{type(e).__name__}: {e}"
-            results[(code, date, rno)] = (meta, err)
-
-    repaired_boats = []
-    for m in meetings:
-        code = str(m.get("venueCode") or "")
-        date = str(m.get("date") or "")
-        for r in m.get("races", []) or []:
-            key = (code, date, int(r.get("raceNo") or 0))
-            if key not in results:
-                continue
-            meta, err = results[key]
-            if meta:
-                merge_racelist_meta_into_race(r, meta, racer_cache)
-                repaired_boats.extend(r.get("boats", []) or [])
-                r.pop("metaError", None)
-                r.pop("metaRepairError", None)
-                r["metaRepairedAt"] = datetime.now(JST).isoformat(timespec="seconds")
-            elif err:
-                r["metaRepairError"] = err
-
-    # Registration period is profile-only. Fetch only cache misses created by this repair.
-    ids = sorted({
-        str(b.get("racerId") or b.get("registrationNo") or "")
-        for b in repaired_boats
-        if str(b.get("racerId") or b.get("registrationNo") or "")
-    })
-    missing = [rid for rid in ids if not racer_cache.get(rid, {}).get("period")]
-    if missing:
-        print(f"[BOAT CHECK] REPAIR profile cache misses={len(missing)}")
-        with ThreadPoolExecutor(max_workers=min(max(workers, 6), 10)) as ex:
-            futs = [ex.submit(fetch_profile_period, rid) for rid in missing]
-            for fut in as_completed(futs):
-                rid, info = fut.result()
-                old_info = racer_cache.get(rid, {}) or {}
-                merged_info = dict(old_info)
-                merged_info.update({k: v for k, v in info.items() if v not in (None, "")})
-                racer_cache[rid] = merged_info
-
-    for b in repaired_boats:
-        rid = str(b.get("racerId") or b.get("registrationNo") or "")
-        info = racer_cache.get(rid, {}) or {}
-        if info.get("period"):
-            b["period"] = info["period"]
-        if not b.get("branch") and info.get("branch"):
-            b["branch"] = info["branch"]
-        if not b.get("origin") and info.get("origin"):
-            b["origin"] = info["origin"]
-        if b.get("weight") in (None, "") and info.get("weight") is not None:
-            b["weight"] = info["weight"]
-        if not b.get("class") and info.get("class"):
-            b["class"] = info["class"]
-
-    # Current-day meetDays usually points at the same race list, but explicitly sync it
-    # so future refactors cannot leave the day tab with stale name/class-only rows.
-    for m in meetings:
-        for d in m.get("meetDays", []) or []:
-            if str(d.get("date") or "") == str(m.get("date") or ""):
-                d["races"] = m.get("races", [])
-
-    cache_path.parent.mkdir(parents=True, exist_ok=True)
-    cache_path.write_text(json.dumps(racer_cache, ensure_ascii=False, indent=2), encoding="utf-8")
-
+def build_local_official_audit(payload: dict) -> list[dict]:
+    """Runtime diagnostics for currently active venues only."""
+    out=[]
+    for m in payload.get("meetings",[]) or []:
+        code=str(m.get("venueCode") or "")
+        profile=VENUE_LOCAL_PROFILE.get(code,{})
+        races=m.get("races",[]) or []
+        with_original=0
+        with_comments=0
+        checked=0
+        metric_hits={k:0 for k in ("halfLapTime","lapTime","turnTime","straightTime")}
+        for r in races:
+            if r.get("localSiteUpdatedAt"):
+                checked+=1
+            if r.get("racerComments"):
+                with_comments+=1
+            has_original=False
+            for row in r.get("beforeData",[]) or []:
+                for key in metric_hits:
+                    if row.get(key) not in (None,""):
+                        metric_hits[key]+=1
+                        has_original=True
+            if has_original:
+                with_original+=1
+        routes=_local_url_candidates(code,m.get("date") or "",1)
+        out.append({
+            "venueCode":code,
+            "venueName":m.get("venueName") or VENUES.get(code,code),
+            "date":m.get("date"),
+            "expectedMetrics":profile.get("metrics") or [],
+            "commentsExpected":bool(profile.get("commentsAvailable")),
+            "routeConfigured":bool(routes),
+            "configuredRouteCount":len(routes),
+            "racesChecked":checked,
+            "racesWithOriginalData":with_original,
+            "racesWithComments":with_comments,
+            "metricCellHits":metric_hits,
+            "fetchProfile":profile.get("fetch","research"),
+            "note":profile.get("note",""),
+        })
+    return out
 
 def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     """
@@ -1950,6 +2641,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     before_tasks=[]
     result_tasks=[]
     odds_tasks=[]
+    local_tasks=[]
 
     for meeting in payload.get("meetings",[]):
         code=meeting.get("venueCode")
@@ -1962,24 +2654,100 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
 
             if live:
                 # Exhibition/start-exhibition can change close to cutoff.
-                if -20 <= mins <= 35:
+                if -25 <= mins <= 45:
                     before_tasks.append((code,date,rno))
 
-                # Results are normally available soon after the race.
-                result=race.get("result") or {}
-                if -120 <= mins < 0 and not result.get("official"):
+                    # Local official sites often publish original exhibition times
+                    # and racer comments. Recheck near-cutoff races every 10 minutes.
+                    last_local=race.get("localSiteUpdatedAt")
+                    due=True
+                    if last_local:
+                        try:
+                            dt=datetime.fromisoformat(str(last_local))
+                            if dt.tzinfo is None:
+                                dt=dt.replace(tzinfo=JST)
+                            due=(datetime.now(JST)-dt.astimezone(JST)).total_seconds()>=600
+                        except Exception:
+                            due=True
+                    if due and _local_url_candidates(code,date,rno):
+                        local_tasks.append((code,date,rno,race.get("boats",[]) or []))
+
+                # Results: keep retrying until rank/time/final-ST are complete.
+                # This also repairs a partial result that already has payouts.
+                if _result_refresh_due(race,mins):
                     result_tasks.append((code,date,rno))
             else:
-                # Wider recovery window for manual / enrichment runs.
-                if -180 <= mins <= 120:
+                # Recovery / Enrich mode:
+                # repair any today's race whose six start-exhibition course/ST rows
+                # are missing or incomplete, even if the race ended hours ago.
+                before_rows=race.get("beforeData") or []
+                complete_courses=sum(
+                    1 for x in before_rows
+                    if x.get("course") in (1,2,3,4,5,6)
+                )
+                complete_st=sum(
+                    1 for x in before_rows
+                    if x.get("st") not in (None,"")
+                )
+
+                if -720 <= mins <= 120 and (
+                    len(before_rows)<6 or complete_courses<6 or complete_st<6
+                ):
+                    before_tasks.append((code,date,rno))
+                elif -180 <= mins <= 120:
                     before_tasks.append((code,date,rno))
 
-                result=race.get("result") or {}
-                if mins < 0 and not result.get("official"):
+                if _result_refresh_due(race,mins):
                     result_tasks.append((code,date,rno))
 
-    # Odds: update the nearest two races per venue every 5 minutes.
-    # This gives useful live odds without hammering the official site for all 12 races.
+    # Odds:
+    # 公式で公開されている範囲は、先のレースもできるだけ取得する。
+    # ただし全12Rを5分ごとに再取得すると負荷が大きいため、
+    # 締切までの残り時間で更新間隔を段階化する。
+    #
+    #   ～120分 : 5分ごと
+    #   ～240分 : 15分ごと
+    #   240分超 : 30分ごと
+    #
+    # 未取得レースは時間帯に関係なく一度取得を試す。
+    def _odds_refresh_due(race, mins):
+        updated=race.get("oddsUpdatedAt")
+        attempted=race.get("oddsLastAttemptAt")
+        has_odds=bool((race.get("odds") or {}).get("official"))
+
+        # 未公開レースも5分ごとに全件叩かない。
+        # 一度も試していない場合だけ即時、以降は30分ごとに再試行。
+        if not has_odds:
+            if not attempted:
+                return True
+            try:
+                last=datetime.fromisoformat(str(attempted))
+                if last.tzinfo is None:
+                    last=last.replace(tzinfo=JST)
+                age=(datetime.now(JST)-last.astimezone(JST)).total_seconds()/60
+                return age >= 30
+            except Exception:
+                return True
+
+        if not updated:
+            return True
+
+        if mins <= 120:
+            interval=5
+        elif mins <= 240:
+            interval=15
+        else:
+            interval=30
+
+        try:
+            last=datetime.fromisoformat(str(updated))
+            if last.tzinfo is None:
+                last=last.replace(tzinfo=JST)
+            age=(datetime.now(JST)-last.astimezone(JST)).total_seconds()/60
+            return age >= interval
+        except Exception:
+            return True
+
     for meeting in payload.get("meetings",[]):
         candidates=[]
         for race in meeting.get("races",[]):
@@ -1987,10 +2755,15 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
             mins=_minutes_from_now(race.get("deadline",""))
             if not rno or mins is None:
                 continue
-            if -10 <= mins <= 120:
+
+            # 締切済み直後は最終オッズ確認、未来レースは全て候補。
+            if mins >= -10 and _odds_refresh_due(race,mins):
                 candidates.append((mins,rno))
-        candidates.sort()
-        for _,rno in candidates[:2]:
+
+        # 近いRから処理。1回のLive更新で各場最大6Rまでに制限し、
+        # 次の5分更新で残りRも順次埋める。
+        candidates.sort(key=lambda x:x[0])
+        for _,rno in candidates[:6]:
             odds_tasks.append((meeting.get("venueCode"),meeting.get("date"),rno))
 
     if odds_tasks:
@@ -2011,9 +2784,73 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 if data and data.get("official"):
                     race["odds"]=data
                     race["oddsUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                    race["oddsLastAttemptAt"]=race["oddsUpdatedAt"]
                     race["oddsSource"]="BOAT RACE official"
-                elif err:
-                    race.setdefault("liveErrors",{})["odds"]=err
+                else:
+                    # 先のレースはまだ公式オッズ未公開の場合がある。
+                    # エラー扱いで表示を壊さず、試行時刻だけ記録して次回再取得する。
+                    race["oddsLastAttemptAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                    if err:
+                        race.setdefault("liveErrors",{})["odds"]=err
+
+    if local_tasks:
+        print(f"[BOAT CHECK] LIVE local-official tasks={len(local_tasks)}")
+        local_results={}
+        with ThreadPoolExecutor(max_workers=min(max(workers,8),10)) as ex:
+            futs=[ex.submit(fetch_local_race_task,*x) for x in local_tasks]
+            for fut in as_completed(futs):
+                code,rno,data,err=fut.result()
+                local_results[(code,rno)]=(data,err)
+
+        for meeting in payload.get("meetings",[]):
+            for race in meeting.get("races",[]):
+                key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
+                data,err=local_results.get(key,({},None))
+                if not data:
+                    continue
+
+                originals=data.get("originals") or {}
+                if originals:
+                    before_rows=race.setdefault("beforeData",[])
+                    by_lane={
+                        int(x.get("lane") or 0):x
+                        for x in before_rows
+                        if int(x.get("lane") or 0) in range(1,7)
+                    }
+                    for lane,item in originals.items():
+                        row=by_lane.get(int(lane))
+                        if row is None:
+                            row={"lane":int(lane)}
+                            before_rows.append(row)
+                            by_lane[int(lane)]=row
+                        for k,v in item.items():
+                            if v is not None:
+                                row[k]=v
+
+                        for b in race.get("boats",[]):
+                            if int(b.get("lane") or 0)==int(lane):
+                                before=b.setdefault("before",{})
+                                for k,v in item.items():
+                                    if v is not None:
+                                        before[k]=v
+                                        # Mirror for current UI aliases.
+                                        b[k]=v
+                                break
+
+                comments=data.get("comments") or {}
+                if comments:
+                    race["racerComments"]=[
+                        {"lane":lane,"comment":comments[lane]}
+                        for lane in sorted(comments)
+                    ]
+                    for b in race.get("boats",[]):
+                        lane=int(b.get("lane") or 0)
+                        if lane in comments:
+                            b["comment"]=comments[lane]
+
+                if data.get("sources"):
+                    race["localOfficialSources"]=data["sources"]
+                race["localSiteUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
 
     if before_tasks:
         print(f"[BOAT CHECK] LIVE beforeinfo tasks={len(before_tasks)}")
@@ -2040,6 +2877,22 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                             b["before"]=d
                             if d.get("weight") is not None:
                                 b["weight"]=d["weight"]
+
+                            # Mirror frequently used live fields for UI/analysis convenience.
+                            if d.get("weightAdjustment") is not None:
+                                b["weightAdjustment"]=d["weightAdjustment"]
+                            if d.get("exhibitionTime") is not None:
+                                b["exhibitionTime"]=d["exhibitionTime"]
+                            if d.get("tilt") is not None:
+                                b["tilt"]=d["tilt"]
+                            if d.get("partsExchange"):
+                                b["partsExchange"]=d["partsExchange"]
+                            if d.get("course") is not None:
+                                b["exhibitionCourse"]=d["course"]
+                                b["course"]=d["course"]
+                            if d.get("st") is not None:
+                                b["exhibitionST"]=d["st"]
+                                b["startExhibitionST"]=d["st"]
                 elif err:
                     race.setdefault("liveErrors",{})["beforeinfo"]=err
 
@@ -2055,11 +2908,48 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
             for race in meeting.get("races",[]):
                 key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
                 data,err=results.get(key,({},None))
+                if key in results:
+                    race["resultLastAttemptAt"]=datetime.now(JST).isoformat(timespec="seconds")
+
                 if data:
-                    race["result"]=data
-                    if data.get("weather"):
-                        race["resultWeather"]=data["weather"]
+                    old_result=race.get("result") or {}
+                    merged=dict(old_result)
+
+                    # Never erase already-good data with a temporary partial response.
+                    for k,v in data.items():
+                        if v not in (None,"",[],{}):
+                            merged[k]=v
+
+                    # Completeness must reflect the merged result.
+                    merged["complete"]=_result_is_complete(merged)
+                    merged["competitionComplete"]=len(merged.get("finishers") or [])==6
+                    merged["startInfoComplete"]=len(merged.get("startEntries") or [])==6
+
+                    race["result"]=merged
+
+                    if merged.get("weather"):
+                        race["resultWeather"]=merged["weather"]
+
                     race["resultUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+
+                    # Mirror final ST / course onto race boats for reuse by other screens.
+                    by_lane={
+                        int(x.get("lane") or 0):x
+                        for x in merged.get("finishers",[])
+                        if int(x.get("lane") or 0) in range(1,7)
+                    }
+                    for b in race.get("boats",[]) or []:
+                        lane=int(b.get("lane") or 0)
+                        f=by_lane.get(lane)
+                        if not f:
+                            continue
+                        b.setdefault("result",{}).update({
+                            "rank":f.get("rank"),
+                            "time":f.get("time"),
+                            "st":f.get("st"),
+                            "course":f.get("course"),
+                        })
+
                 elif err:
                     race.setdefault("liveErrors",{})["result"]=err
 
@@ -2263,7 +3153,7 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
                 richness=sum(
                     1 for k in (
                         "racerId","branch","origin","period","age","weight",
-                        "flyingCount","lateCount","avgST","stats","courseStats","courseStatsOfficial","meetResults","meetStats"
+                        "flyingCount","lateCount","avgST","stats","meetResults","meetStats"
                     )
                     if b.get(k) not in (None,"",[],{})
                 )
@@ -2279,8 +3169,7 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
         share_keys=(
             "racerId","registrationNo","class","branch","origin","period","age",
             "flyingCount","lateCount","avgST","nationalWinRate","national2Rate","national3Rate",
-            "localWinRate","local2Rate","local3Rate","stats","courseStats","courseStatsOfficial",
-            "courseStatsSource","courseStatsCheckedAt","meetResults","meetStats"
+            "localWinRate","local2Rate","local3Rate","stats","meetResults","meetStats"
         )
         for r in all_races:
             for b in r.get("boats",[]) or []:
@@ -2325,37 +3214,9 @@ def enrich_payload(payload: dict, cache_path: Path, workers: int = 10):
                 merged_info.update({k:v for k,v in info.items() if v not in (None,"")})
                 racer_cache[rid]=merged_info
 
-    # 選手の公式コース別成績を取得。
-    # 1日何度も同じ選手ページへアクセスしないよう約20時間キャッシュする。
-    course_refresh = sorted(rid for rid in ids if _course_cache_stale(racer_cache.get(rid,{}) or {}))
-    print(f"[BOAT CHECK] ENRICH racer course stats refresh={len(course_refresh)}")
-    if course_refresh:
-        with ThreadPoolExecutor(max_workers=min(max(workers,6),10)) as ex:
-            futs=[ex.submit(fetch_profile_course_stats,rid) for rid in course_refresh]
-            for fut in as_completed(futs):
-                rid,course_info=fut.result()
-                old_info=racer_cache.get(rid,{}) or {}
-                merged_info=dict(old_info)
-                # Do not erase last good course stats when today's request fails.
-                if course_info.get("courseStatsOfficial"):
-                    merged_info["courseStatsOfficial"]=course_info["courseStatsOfficial"]
-                    merged_info["courseStatsSource"]=course_info.get("courseStatsSource")
-                    merged_info.pop("courseStatsError",None)
-                elif course_info.get("courseStatsError"):
-                    merged_info["courseStatsError"]=course_info["courseStatsError"]
-                if course_info.get("courseStatsCheckedAt"):
-                    merged_info["courseStatsCheckedAt"]=course_info["courseStatsCheckedAt"]
-                racer_cache[rid]=merged_info
-
     for b in all_profile_boats:
-        rid=str(b.get("racerId","") or b.get("registrationNo","") or "")
+        rid=str(b.get("racerId",""))
         info=racer_cache.get(rid,{}) or {}
-
-        if info.get("courseStatsOfficial"):
-            b["courseStatsOfficial"]=info["courseStatsOfficial"]
-            b["courseStats"]=_official_course_stats_for_ui(info)
-            b["courseStatsSource"]=info.get("courseStatsSource")
-            b["courseStatsCheckedAt"]=info.get("courseStatsCheckedAt")
 
         if info.get("period"):
             b["period"]=info["period"]
@@ -2482,7 +3343,7 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     )
 
     payload = {
-        "schemaVersion":"51.0",
+        "schemaVersion":"56.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
@@ -2504,9 +3365,9 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
         payload["staticEnrichedAt"]=old_payload.get("staticEnrichedAt")
 
     if meetings:
-        repair_missing_current_racelist(payload,out_path.parent/"racers.json",workers=workers)
         enrich_realtime(payload,workers=workers,live=live)
 
+    payload["localOfficialAudit"]=build_local_official_audit(payload)
     payload["recentResults"]=build_recent_results(old_payload,payload,keep_days=3)
 
     return payload
