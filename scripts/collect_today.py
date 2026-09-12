@@ -3269,34 +3269,29 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
     now_jst=datetime.now(JST)
     static_enriched_date = old_payload.get("staticEnrichedDate") if old_payload.get("dateJST")==date else None
 
-    # First live job after midnight also performs the full static enrichment.
-    # If that run fails to commit, subsequent live jobs retry until 03:00 JST.
-    rollover_enrich = bool(
-        live
-        and meetings
-        and now_jst.hour < 3
-        and static_enriched_date != date
-    )
+    # A live job must remain lightweight.  Previously the first live run after
+    # midnight also started the full static enrichment.  When that work exceeded
+    # the workflow timeout, every following live run retried it until 03:00 JST,
+    # producing repeated GitHub Actions failure notifications.
+    #
+    # Full enrichment is intentionally limited to an explicit --enrich run.
+    rollover_enrich = False
 
     payload = {
         "schemaVersion":"56.0",
         "updatedAt":now_jst.isoformat(timespec="seconds"),
         "dateJST":date,
         "source":"BOAT RACE official public pages",
-        "mode":"enrich" if enrich else ("rollover-enrich" if rollover_enrich else ("live" if live else "fast")),
+        "mode":"enrich" if enrich else ("live" if live else "fast"),
         "staticEnrichedDate": static_enriched_date,
         "meetings":meetings,
         "errors":errors,
     }
 
-    if (enrich or rollover_enrich) and meetings:
-        if rollover_enrich:
-            print("[BOAT CHECK] JST date rollover detected -> full enrichment now")
+    if enrich and meetings:
         enrich_payload(payload,out_path.parent/"racers.json",workers=workers)
         payload["staticEnrichedDate"]=date
         payload["staticEnrichedAt"]=datetime.now(JST).isoformat(timespec="seconds")
-        if rollover_enrich:
-            payload["rolloverEnriched"]=True
     elif old_payload.get("dateJST")==date and old_payload.get("staticEnrichedAt"):
         payload["staticEnrichedAt"]=old_payload.get("staticEnrichedAt")
 
