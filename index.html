@@ -5654,7 +5654,19 @@ function renderOfficialCourseStatsBlock(boats){
   </div>`;
 }
 
+function courseAggregatedBoat(b){
+  const id=String(b?.racerId||b?.registrationNo||"");
+  const aggregate=state.courseStatsByRacer?.[id];
+  if(!aggregate)return b;
+  return {...b,courseStats:Object.fromEntries([1,2,3,4,5,6].map(c=>[c,{...b.courseStats?.[c],...aggregate[c]}]))};
+}
 function courseMetric(b, courseNo, metric, period=coursePeriod){
+  b=courseAggregatedBoat(b);
+  const sample=b.courseStats?.[courseNo]?.[period];
+  if(sample?.entryCount===0 && metric!=="entryCount" && metric!=="frameWin") return "対象なし";
+  if(sample && metric==="frameWin" && sample.frameWinRate==null)return "対象なし";
+  const optional={st:"avgST",stRank:"stRank",displayRank:"displayRank"};
+  if(sample?.entryCount>0 && optional[metric] && sample[optional[metric]]==null)return "記録なし";
   const aliases={
     win:[
       `courseStats.${courseNo}.${period}.winRate`,
@@ -5754,6 +5766,7 @@ function courseMetric(b, courseNo, metric, period=coursePeriod){
 }
 
 function courseMetricCount(b, courseNo, key, period=coursePeriod){
+  b=courseAggregatedBoat(b);
   const aliases = [
     `courseStats.${courseNo}.${period}.kimarite.${key}Count`,
     `courseStats.${courseNo}.${period}.kimarite.${key}.count`,
@@ -5775,6 +5788,7 @@ function courseCountText(v){
 }
 
 function courseCountDisplay(b, courseNo, key, period=coursePeriod){
+  if(courseMetric(b,courseNo,"entryCount",period)===0)return "対象なし";
   const count = courseMetricCount(b, courseNo, key, period);
   const total = courseMetric(b, courseNo, "entryCount", period);
   if((count===undefined || count===null || count==="") && (total===undefined || total===null || total==="")){
@@ -5791,6 +5805,7 @@ function courseFmt(v, suffix="", digits=null){
   if(digits!==null && /^-?\d+(?:\.\d+)?$/.test(raw)){
     s=Number(raw).toFixed(digits);
   }
+  if(s==="対象なし"||s==="記録なし")return s;
   if(suffix && !s.endsWith(suffix))s+=suffix;
   return esc(s);
 }
@@ -5939,7 +5954,7 @@ function renderKimariteLayout(boats, periodText){
       const assigned=assignedCourseForLane(laneNo);
       const raw=courseMetric(boat,assigned,row.metric);
       const isActive=!row.limited || row.limited.includes(assigned);
-      return `<td class="${isActive?"":"mutedCell"}">${isActive?courseFmt(raw,"%",1):"--"}</td>`;
+      return `<td class="${isActive?"":"mutedCell"}">${isActive?courseFmt(raw,"%",1):"対象外"}</td>`;
     }).join("");
     return `<tr><th>${row.label}</th>${vals}</tr>`;
   }).join("");
@@ -6007,12 +6022,13 @@ function renderCourseRate(){
   };
 
   const winRows=[
+    row("出走数","entryCount","desc","走",0),
     row("1着率","win","desc","%",1),
     row("2連対率","two","desc","%",1),
     row("3連対率","three","desc","%",1)
   ].join("");
 
-  const frameRows=row("枠別勝率","frameWin","desc","%",1);
+  const frameRows=row("枠別1着率","frameWin","desc","%",1);
 
   const stRows=[
     row("平均ST","st","asc","",2),
@@ -6050,7 +6066,7 @@ function renderCourseRate(){
       </div>
 
       <div class="courseDataBlock">
-        ${courseBar("枠別勝率",periodText)}
+        ${courseBar("枠別1着率",periodText)}
         ${courseSimpleTable(frameRows)}
       </div>
 
@@ -6073,7 +6089,8 @@ function renderCourseRate(){
     </div>
 
     <div class="courseDataNote">
-      ※ 未取得データは「--」で表示します。各数値はデータ取得後に自動反映します。
+      ${state.courseStatsMeta?`集計基準：${esc(state.courseStatsMeta.to)}まで。期間別に公式結果を独自集計。${state.courseStatsMeta.errors?.length?`未取得日が${state.courseStatsMeta.errors.length}日あり、取得済み分の集計です。`:""}`:"期間別データを読み込み中です。"}<br>
+      1着率・連対率・決まり手割合は該当コースの出走数が分母。枠別1着率は枠番で集計。STはF・Lを除外し、同値は同順位。逃し率は1コースが逃げた割合。対象なし＝期間内出走なし。
     </div>
   </div>`;
 }
@@ -6108,6 +6125,12 @@ function recent20Result(v){
   if(v===undefined||v===null||v==="")return "--";
   if(Array.isArray(v))return `<span class="r20Result">${v.slice(0,3).map(x=>recent20LaneChip(x)).join("")}</span>`;
   const s=String(v).trim(),nums=s.match(/[1-6]/g);if(nums&&nums.length>=2)return `<span class="r20Result">${nums.slice(0,3).map(x=>recent20LaneChip(x)).join("")}</span>`;return esc(s);
+}
+function recent20ResultLink(row){
+  const date=String(recent20Value(row,["date","raceDate","heldAt"])||"").replace(/[^0-9]/g,"").slice(0,8);
+  const code=String(row.venueCode||"").padStart(2,"0"),rno=Number(row.raceNo);
+  if(!/^20\d{6}$/.test(date)||!/^\d{2}$/.test(code)||Number(code)<1||Number(code)>24||!Number.isInteger(rno)||rno<1||rno>12)return "";
+  return `https://www.boatrace.jp/owpc/pc/race/raceresult?hd=${date}&jcd=${code}&rno=${rno}`;
 }
 function recent20Selector(boats){
   const displayBoats=orderedBoatsByAssignedCourse(boats,false);
@@ -6160,7 +6183,7 @@ function renderRecent20(){
     const kimarite=recent20Value(x,["kimarite","winningMove","decision","move"]);
     const result=recent20Value(x,["result","combination","resultCombo","order","top3"]);
     return `<div class="r20Row">
-      <div class="date">${recent20Date(date)}</div>
+      <div class="date">${recent20ResultLink(x)?`<a href="${recent20ResultLink(x)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(date)} ${esc(venue)} ${Number(x.raceNo)}R 公式結果">${recent20Date(date)}<small>${Number(x.raceNo)}R 結果 ↗</small></a>`:recent20Date(date)}</div>
       <div class="venue">${venue?esc(venue):"--"}</div>
       <div>${recent20Grade(grade)}</div>
       <div>${recent20LaneChip(frame)}</div>
@@ -7075,36 +7098,45 @@ function beforeValue(obj, keys){
 }
 
 function beforeDataForBoat(boat, race){
-  const roots=[
-    boat?.before, boat?.beforeData, boat?.exhibition, boat?.exhibitionData,
-    boat?.preRace, boat?.preRaceData, boat?.currentExhibition
-  ];
-  for(const x of roots){
-    if(x && typeof x==="object" && !Array.isArray(x)) return x;
+  const lane=Number(boat?.lane);
+  const sameBoat=x=>{
+    if(!x || typeof x!=="object") return false;
+    const n=Number(x.lane??x.boatNo??x.frame);
+    if(n>=1 && n<=6) return n===lane;
+    const id=String(x.racerId??x.registrationNo??"");
+    const target=String(boat?.racerId??boat?.registrationNo??"");
+    return Boolean(id && target && id===target);
+  };
+  let data={};
+  const root=race?.beforeData || race?.before || race?.exhibition || race?.exhibitionData || race?.preRaceData;
+  if(Array.isArray(root)) data={...(root.find(sameBoat)||{})};
+  else if(root && typeof root==="object"){
+    const list=root.boats || root.runners;
+    const row=Array.isArray(list)?list.find(sameBoat):null;
+    data={...(row || root.byLane?.[lane] || root[lane] || root[`lane${lane}`] || root[`boat${lane}`] || {})};
   }
-
-  const root=race?.beforeData || race?.before || race?.exhibition || race?.exhibitionData || race?.preRaceData || null;
-  if(!root) return {};
-  if(Array.isArray(root)){
-    return root.find(x=>
-      Number(x?.lane||x?.boatNo||x?.frame)===Number(boat?.lane) ||
-      String(x?.racerId||x?.registrationNo||"")===String(boat?.racerId||boat?.registrationNo||"")
-    ) || {};
-  }
-  if(typeof root==="object"){
-    const lane=Number(boat?.lane)||1;
-    const candidates=[
-      root[lane],root[String(lane)],root[`lane${lane}`],root[`boat${lane}`],
-      root.boats?.[lane-1],root.runners?.[lane-1],root.byLane?.[lane],root.byLane?.[String(lane)]
-    ];
-    for(const x of candidates){
-      if(x && typeof x==="object") return x;
+  for(const local of [boat?.before,boat?.beforeData,boat?.exhibition,boat?.exhibitionData,boat?.preRace,boat?.preRaceData,boat?.currentExhibition]){
+    if(local && typeof local==="object" && !Array.isArray(local)){
+      for(const [key,value] of Object.entries(local)) if(value!==null && value!==undefined && value!=="") data[key]=value;
+      break;
     }
   }
-  return {};
+  const rows=race?.startExhibition;
+  if(Array.isArray(rows) && rows.length){
+    const valid=rows.length===6 && rows.every(x=>Number.isInteger(Number(x.lane)) && Number(x.lane)>=1 && Number(x.lane)<=6 && Number.isInteger(Number(x.course)) && Number(x.course)>=1 && Number(x.course)<=6) && new Set(rows.map(x=>Number(x.lane))).size===6 && new Set(rows.map(x=>Number(x.course))).size===6;
+    if(valid){
+      const row=rows.find(sameBoat);
+      if(row){data.course=Number(row.course);data.st=row.rawST??row.st;}
+    }else{
+      // Do not present corrupt old data as an official ST or course.
+      data._invalidStart=true;
+    }
+  }
+  return data;
 }
 
 function beforeMetric(d, boat, key){
+  if(d?._invalidStart && (key==="course" || key==="st")) return null;
   const aliases={
     course:["course","entry","courseNo","actualCourse","startCourse"],
     exhibition:["exhibitionTime","tenjiTime","displayTime","exhibition","time"],
@@ -7353,7 +7385,7 @@ function raceVisualPosition(v){
 
   // 採用デザインに合わせて、スタートラインは少し右寄り。
   // ここで返す位置は「舟の中心」ではなく「舟の先端」の位置。
-  const line=61.5;
+  const line=78;
   const leftEdge=7.5;
   const rightEdge=94.0;
 
@@ -7368,7 +7400,7 @@ function raceVisualPosition(v){
   }
 
   if(meta.kind==="l") return leftEdge;
-  return line-8;
+  return null;
 }
 
 /*
@@ -7392,20 +7424,7 @@ function raceVisualBoatSvg(lane){
 }
 
 function raceVisualScaleMarks(){
-  const marks=[
-    {label:".99",left:8},
-    {label:".50",left:35.7},
-    {label:".20",left:52.7},
-    {label:".10",left:58.3},
-    {label:"0.00",left:64,zero:true},
-    {label:"F.10",left:74},
-    {label:"F.20",left:84},
-    {label:"F.30",left:94},
-  ];
-  return marks.map(x=>`
-    <span class="raceScaleMark ${x.zero?"zero":""}" style="left:${x.left}%">
-      ${x.label}
-    </span>`).join("");
+  return [".99",".50",".20",".10","0.00","F.10","F.20","F.30"].map(label=>`<span class="raceScaleMark ${label==="0.00"?"zero":""}" style="left:${raceVisualPosition(label)}%">${label}</span>`).join("");
 }
 
 function renderRaceWaterVisual(items,{mode="start",title=""}={}){
@@ -7437,12 +7456,10 @@ function renderRaceWaterVisual(items,{mode="start",title=""}={}){
             <span class="raceVisualFZone"></span>
             <span class="raceVisualZeroLine"></span>
 
-            <span class="raceWake" style="left:${bowPos}%"></span>
+            ${bowPos!==null?`<span class="raceWake" style="left:${bowPos}%"></span>`:""}
 
             <!-- left の位置＝舟の先端位置 -->
-            <span class="raceVisualBoat" style="left:${bowPos}%">
-              ${raceVisualBoatSvg(lane)}
-            </span>
+            ${bowPos!==null?`<span class="raceVisualBoat" style="left:${bowPos}%">${raceVisualBoatSvg(lane)}</span>`:`<span class="raceVisualUnavailable">${mode==="result"?"本番ST未取得":"展示ST未取得"}</span>`}
 
             ${winnerMove}
 
@@ -7924,13 +7941,13 @@ function resultStartVisualItems(race){
   const byLane=new Map();
   (Array.isArray(starts)?starts:[]).forEach((x,i)=>{
     const lane=Number(x?.lane||x?.boatNo||x?.frame||x?.number);
-    if(lane>=1&&lane<=6)byLane.set(lane,{lane,course:Number(x?.course||x?.entryCourse||x?.actualCourse||x?.courseNo)||i+1,st:x?.st??x?.startTiming??x?.start});
+    if(lane>=1&&lane<=6)byLane.set(lane,{lane,course:Number(x?.course||x?.entryCourse||x?.actualCourse||x?.courseNo)||null,st:x?.st??x?.startTiming??x?.start});
   });
   const entries=resultEntries(race);
   entries.forEach((x,i)=>{
     const lane=Number(resultEntryValue(x,["lane","boatNo","frame","waku","number"]))||i+1;
     const prev=byLane.get(lane)||{lane};
-    prev.course=prev.course||Number(resultEntryValue(x,["course","entry","courseNo","entryCourse","actualCourse","startCourse"]))||lane;
+    prev.course=prev.course||Number(resultEntryValue(x,["course","entry","courseNo","entryCourse","actualCourse","startCourse"]))||null;
     prev.st=prev.st??resultEntryValue(x,["st","startTiming","start"]);
     prev.rank=resultEntryValue(x,["rank","finish","arrival","place","finishPlace"]);
     prev.move=prev.move??resultEntryValue(x,["kimarite","winningMove","decision","move"]);
@@ -7939,8 +7956,8 @@ function resultStartVisualItems(race){
   boats.forEach(b=>{
     const lane=Number(b.lane)||1;
     const prev=byLane.get(lane)||{lane};
-    prev.course=prev.course||Number(firstStat(b,["result.course","result.entry","result.entryCourse","course","entry","startCourse"]))||lane;
-    prev.st=prev.st??firstStat(b,["result.st","result.startTiming","startExhibitionST","st"]);
+    prev.course=prev.course||Number(firstStat(b,["result.course","result.entry","result.entryCourse"]))||null;
+    prev.st=prev.st??firstStat(b,["result.st","result.startTiming"]);
     prev.rank=prev.rank??firstStat(b,["result.rank","result.finish","finish","rank"]);
     prev.move=prev.move??firstStat(b,["result.kimarite","result.winningMove","kimarite"]);
     byLane.set(lane,prev);
@@ -7964,7 +7981,7 @@ function resultFinishRows(race){
   }else{
     boats.forEach(b=>{
       const lane=Number(b.lane)||1;
-      normalized.push({lane,rank:firstStat(b,["result.rank","result.finish","finish","rank"]),racerName:b.racerName||"--",time:firstStat(b,["result.time","raceTime","finishTime"]),st:firstStat(b,["result.st","result.startTiming","st"])});
+      normalized.push({lane,rank:firstStat(b,["result.rank","result.finish","finish","rank"]),racerName:b.racerName||"--",time:firstStat(b,["result.time","raceTime","finishTime"]),st:firstStat(b,["result.st","result.startTiming"])});
     });
   }
   normalized.sort((a,b)=>{
@@ -8075,9 +8092,9 @@ function renderResultWeather(race){
 function renderResultInfo(){
   const r=state.currentRace||{};
   const root=resultRoot(r);
-  const hasResult=Object.keys(root||{}).length || resultEntries(r).length;
+  const hasResult=resultEntries(r).length>0;
   return `<div class="resultInfoPage">
-    <div class="resultPageTitle"><div><h3>結果</h3><p>競争成績・払戻金・気象状況</p></div><span>${hasResult?"確定データ":"未取得は --"}</span></div>
+    <div class="resultPageTitle"><div><h3>結果</h3><p>競争成績・払戻金・気象状況</p></div><span>${hasResult?"本番結果":"本番結果を取得中"}</span></div>
     <div class="resultRaceStatus"><div><b>${r.raceNo||"--"}R</b><strong>${esc(r.title||"レース結果")}</strong></div><small>締切 ${esc(r.deadline||"--:--")}</small></div>
     <div class="resultConnectedFrame">
       <div class="resultSectionBar">競争成績</div>
@@ -9492,6 +9509,18 @@ async function loadData(){
   }
 }
 
+async function loadCourseStatsData(){
+  try{
+    const res=await fetch(`data/course-stats.json?v=${Date.now()}`,{cache:"no-store"});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    if(data.schemaVersion!==1 || !data.byRacer || typeof data.byRacer!=="object")throw new Error("Invalid course stats");
+    state.courseStatsByRacer=data.byRacer;state.courseStatsMeta={to:data.to,errors:data.errors||[]};
+    if(currentQuickDataType==="course" && courseSubTab==="rate"){
+      const panel=document.getElementById("courseInnerPanel");if(panel)panel.innerHTML=renderCourseRate();
+    }
+  }catch(error){console.warn("Course stats load failed",error);}
+}
 async function loadRecent20Data(){
   try{
     const res=await fetch(`${RECENT20_URL}?v=${Date.now()}`,{cache:"no-store"});
@@ -9549,6 +9578,7 @@ window.addEventListener("popstate",(e)=>{
 
 loadData();
 loadRecent20Data();
+loadCourseStatsData();
 setInterval(refreshOfficialData,60000);
 setInterval(loadRecent20Data,1800000);
 setInterval(()=>{
@@ -9567,6 +9597,618 @@ setInterval(()=>{
   }
 },30000);
 </script>
+<style id="detail-readability-and-final-st">
+#quickDataPanel .tag{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .live{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .sub{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .data-state{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .data-state strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .homeTab{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meta{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .race{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .offtext b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .jh{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .jp{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .scale-label{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .status-head{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .status small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .status p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .event{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .status-chip{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .tab{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .tab b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .section span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineInline{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineInline b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .summaryState{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .summaryState b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .badge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .runnerHead{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .runnerName{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .runnerClass{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceAction{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .analysisNotice{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .analysisNotice b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .big small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .reason{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .boat{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .player b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .cell b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .player span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .cell span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .tool{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .empty{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .errorbox{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .venueCode{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .stateMark{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .nextRace{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .cutoff{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .cutoff b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .countdown{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .cardLegend{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .gradeMark{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .card .meta{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .mark{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .nextRace b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kindText{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .gradeCenter{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .mark.summer::before{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .venueBack{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .venueHeroMeta{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .venueHeroBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .venueEvent{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .quickBox small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .quickBox b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceSectionHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceNoPro small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceTiming small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceStatePro{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .laneNo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .laneName b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .laneName small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceFootPro{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceFootPro b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .dataNoticePro{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .dataNoticePro strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .detailMeta{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .detailStatus{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .detailStatus b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetDayTab .md{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetDayTab .dl{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceJump button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .quickDataTitle span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .quickDataTools .tool{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .quickDataPanel .qdh span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .quickDataPanel p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceQuickGrid button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .laneMeta span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .laneMeta .racerNo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .dayNoData{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .laneMeta .metaTop{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .laneMeta .dataChip{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseHead .sub{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseIntro{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseMatrix th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseMatrix td{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseMiniCard small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseMiniCard b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceQuickGrid9 button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceDataTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .dataSectionHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .dataPlaceholder{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .sixCell .laneBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .sixCell strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .sixCell small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .skipPrep p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetDayTabs .meetDate{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetDayTabs .meetLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .backToListBtn{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextMeta{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextTitle{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextGrade{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextDays button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextDays button span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextRaces button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextRaceName span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextTime span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .laneMeta .metaRow{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceTiming .raceCountdown{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceContextTime .ctxCountdown{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerInfoTop p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerInfoTop>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riLane{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riRacer strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riRacer span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riGroup th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable tbody td{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerInfoNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riSub{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetLead{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetGrid small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetGrid strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riProfileGrid>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riRacerCard>div:not(.riName){font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riCorner{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riMain{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riProfileGrid .riLabelName{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareTable .riRacerCard .riName{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .officialCourseLead{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .officialCourseNo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .coursePeriodTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseBoat strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseBoat span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseStatBar span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseStatTable th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseStatTable td{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteHead{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteOne th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteOne td{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteAttack th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteAttack td{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteOne thead th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteAttack thead th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteOne tbody th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .kimariteAttack tbody th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseDataNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseComing span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseStatBar b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseSubTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Intro p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Intro>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20RacerCard strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20RacerCard small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20RacerCard em{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Selected small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Header{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Row>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Row .date strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Row .date small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Row .venue{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Row .finish{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Row .move{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Grade{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Lane{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Result .r20Lane{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Empty strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Empty span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20Note{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20RacerCard .r20Meta{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .r20RacerCard i{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseBoat i{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseChangeHead p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseChangeHead button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseChangeCard strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseChangeCard small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseChangeCard label{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseChangeCard select{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseOrderPreview span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseOrderPreview strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseChangeNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseOrderSummary span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseOrderSummary em{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .sequenceGuide b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .sequenceGuide span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseSequenceCard strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseSequenceCard small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseSequenceCard em{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseSequenceCard i{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseSequenceHelp b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseSequenceHelp span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseChangeActions button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .courseBoat .coursePosLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRacerCard strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRacerCard>span:not(.meetBoatNo){font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRacerCard em{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetSelectedTitle small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetSectionTitle span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetSectionTitle em{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetMetric span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRaceHead{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRaceRow>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRaceRow .st{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRaceRow .finish{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetLane{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetEmpty b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetEmpty span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetDataNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetPageTitle p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetPageTitle>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetHeaderLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetHeaderBoat strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetHeaderBoat small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetDayLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunCell>span:first-child{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunCell b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCourseBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetSimpleLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetSimpleCell{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetLegend span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetRunCell>span:first-child{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetRunCell b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetCourseBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetDayLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetRunLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetSimpleLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetSimpleCell{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunsGrid thead th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetDayCell b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetDayCell span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunNo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunsGrid .meetRunCell>span:first-child{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunsGrid .meetRunCell b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunsGrid .meetCourseBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetRunsGrid td > .meetRunCell > span:first-child{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetRunsGrid td > .meetRunCell > b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetConnectedFrame .meetRunsGrid .meetCourseBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoClosedNotice span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoClosedBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartClosedWarning{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceCard .raceQuickGrid button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel [class*="raceCard"] .raceQuickGrid button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .card.todayEnded .endedSpacer{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .card.todayEnded .endText{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorPageTitle p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorPageTitle>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorRacer strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorRacer small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorSectionBar span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorBasicHead>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHeadLane b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHeadLane span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorBasicLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorBasicCell{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorMoveCombo b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorMoveCombo small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorNoCol{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHistoryLane b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHistoryLane span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHistLabels span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHistoryNo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHistCell>*{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHistCell b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorHistCell .meetCourseBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorLegend span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorLegend small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforePageTitle p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforePageTitle>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeSubTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeRacer strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeRacer small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeHighlightLegend{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeCompareHead>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeOriginalHead>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeCompareLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeOriginalLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeCompareCell{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeOriginalCell{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .beforeCourse{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .startSlitHead>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .startSlitRow>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .startAvg b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .startAvg span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .slitBoat span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .slitST{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .weatherGrid small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .weatherGrid strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .weatherGrid b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .windCompass span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsPageTitle p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsPageTitle>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsRaceStatus span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsRaceStatus strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsRaceStatus small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsSubTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsSort button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsFirstHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsFirstTableHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsFirstRow>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsFirstRow>div:last-child{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsChip{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsSep{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsRankTitle{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsRankHead>*{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsRankRow>*{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsRankRow b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsSimpleHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsSimpleRow>*{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsSimpleRow b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsWPHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsWPRow strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsWPRow b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsEmpty b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsEmpty span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsMiniEmpty{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .oddsNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .card.cancelledMeeting .cancelSub{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .partialCancelBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel #raceJump button.cancelledRaceJump small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultPageTitle p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultPageTitle>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultRaceStatus strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultRaceStatus small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultFinishHead>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultFinishRow>div{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultRacerName{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultTime{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultST{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultBoatVisual em{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultPayoutLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultPayoutCombo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultPayoutAmount{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultExtraRow span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultExtraRow b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultWeatherTable small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultWeatherTable strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .resultNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayPageTitle p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayPageTitle>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayRaceStatus strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayRaceStatus small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replaySectionHead a{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayEmpty strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayEmpty span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayNotice b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayNotice span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .replayRaceNav button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoTop p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoPoints small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoRaceBar span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoRaceBar strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoMainTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoRacer strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoRacer small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCardTitle span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetListHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetTypes button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoMethods button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoPickLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoHint{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoAddBtn{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetItem small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetOdds b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetStake b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetListEmpty{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoStakeRow label{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoStakeButtons button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoConfirmBtn{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoOddsItem strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoOddsItem span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoOddsEmpty{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoSafety b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoSafety span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoSuccess{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoLanePick.selected::after{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoSelectedMark{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoStakeTitle label{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoStakeTitle span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoStakeInputWrap span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoTotalConfirm small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoTotalConfirm .demoConfirmBtn{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetStakeInput input{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetStakeInput span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetStake small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoPickButtons.hasAll .demoSelectedMark{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftRace strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftRace span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftTableHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftRow>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftRow>strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftRow>b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftStake label{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftStake small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftStakeInput span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftSummary span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftActions button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoDraftClose{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartShortcut{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartShortcut b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartMeta strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartMeta span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartMeta small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartBetRow small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartOdds b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartStakeInput input{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartStakeInput span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartEmpty{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartSummary small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartSummary strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartActions button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteHead small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteMessage{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteNo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteMain small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteAmount{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteStatus{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteSummary small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteSummary strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCompleteClose{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoToast{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoCartDelete .demoDeleteText{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoBetItem>button::after{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoFL{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoFL b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .demoClearAllBtn{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .homePtBalance small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .homePtBalance>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .homePanelTitle p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .homePanelTitle>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .homeEmptyState b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .homeEmptyState span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineRank{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineVenue small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineRace small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineTime span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteSearchBox>label{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteSearchInput input{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteSearchHint{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoritePlayer strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoritePlayer span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteSectionHead b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteSectionHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteRunPlayer strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteRunPlayer span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteRunRace b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .favoriteRunRace span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myBalanceBar span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myPageTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myStatGrid small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myStatGrid strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myCartOpen{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryRow>div:first-child strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryRow>div:first-child small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryMoney strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryMoney small.hit{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myEmpty{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myPointHero small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myPointHero span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myPointAdd h4{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myPointQuick button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myPointCustom span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myPointCustom button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .ptHistoryRow strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .ptHistoryRow small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .ptHistoryRow>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myFavoriteRow strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myFavoriteRow span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myRemoveFavorite{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myInfoCard strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myInfoCard span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myDataActions b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myDataActions span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myLoginNote b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myLoginNote span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineVenue strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineTime strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdInfo h4{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdInfo p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdLimit span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdLimit small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdCard>button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdTestNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdMock>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdMock small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdProgress{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .rewardAdClaim{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .dailyMissionHead h4{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .dailyMissionHead span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .dailyMissionHead>b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .missionText strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .missionText span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .missionText small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .missionAction>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .missionAction button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .missionNote{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineEyebrow{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineHero p{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineHeroBadge span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineOrderNo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineGrade{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlinePartial{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineVenueBlock>small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineRaceBlock strong small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineRaceBlock span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineRemain{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .deadlineClock{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryGroupVenue strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryGroupVenue span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryGroupSummary b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryGroupSummary span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryHitBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryGroupTotals span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryGroupTotals b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryBetType{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryBetAmount strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryBetAmount small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .homeTabLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .recentBetListSummary small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .recentBetListSummary strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .motorInnerTabs button{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .boatBasicTable .motorBasicCell{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .venueSelectedDayBanner small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .venueSelectedDayBanner>span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetResultsBar small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCellCourse small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCellST small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCellFinish small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCellCourse .meetCourseBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCellST b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCellFinish b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCellFinish.resultLink small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetCellFinish.resultLink b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunsGrid .meetDayCell b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunsGrid .meetDayCell span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetRunsGrid .meetRunNo{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetPerfCourseLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetPerfCourse .meetCourseBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetPerfST span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetPerfST b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetPerfFinish span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .meetPerfFinish b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel button.meetPerfFinish.isLink small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel button.meetPerfFinish.isLink b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel button.meetPerfFinish.isLink i{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .proRacerLabel{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .proRacerCard strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .proRacerCard .proRacerId{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .proRacerCard .proRacerMeta{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .proRacerCard .proRacerBranch{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareDataOnly .riGroup th{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareDataOnly .riMain{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareDataOnly .riSub{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .racerCompareDataOnly td{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryStatusBadge{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryBetAmount .betStatus{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .myHistoryBetAmount .betPayout{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceVisualTop b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceVisualTop span{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceScaleMark{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceScaleMark.zero{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceScaleCaption{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceVisualLane small{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceVisualST{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceVisualRank{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceVisualLegend{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .startVisualMetaRow strong{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .startVisualMetaRow b{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceVisualMove{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel .raceVisualCard .raceVisualST{font-size:12px!important;line-height:1.45!important;}
+#quickDataPanel{font-size:14px!important;line-height:1.5}
+#raceDataTabs button,.beforeSubTabs button,.courseSubTabs button,.coursePeriodTabs button,.motorSubTabs button{font-size:14px!important;min-height:44px!important;line-height:1.4!important}
+#quickDataPanel .proRacerStrip .proRacerCard strong,#quickDataPanel .r20RacerCard strong,#quickDataPanel .meetRacerCard strong{font-size:14px!important;line-height:1.45!important}
+#quickDataPanel .proRacerStrip .proRacerLabel{font-size:13px!important}
+#quickDataPanel .proRacerStrip .proRacerCard .proRacerMeta,#quickDataPanel .proRacerStrip .proRacerCard .proRacerBranch,#quickDataPanel .proRacerStrip .proRacerCard .proRacerId{font-size:13px!important}
+#quickDataPanel td{font-size:14px!important;line-height:1.5!important;padding:9px 3px!important}
+#quickDataPanel th{font-size:12px!important;line-height:1.45!important;padding:9px 3px!important;overflow-wrap:anywhere}
+#quickDataPanel .resultRacerName,#quickDataPanel .resultTime,#quickDataPanel .resultST{font-size:14px!important;line-height:1.45!important}
+#quickDataPanel .resultFinishHead{font-size:13px!important}
+#quickDataPanel .courseStatBar b,#quickDataPanel .beforeSubSectionTitle,#quickDataPanel .resultSectionBar,#quickDataPanel .meetFullBar{font-size:16px!important}
+#quickDataPanel .r20Lane.lane1{border:2px solid #52758d!important;background:#eef4f8!important;color:#0a2438!important;box-shadow:inset 0 0 0 1px #fff}
+#quickDataPanel .r20Row .date a{color:#0867a5;text-decoration:underline;text-underline-offset:3px;display:block;padding:6px 0;font-weight:800}
+#quickDataPanel .r20Row .date a small{display:block;font-size:11px!important;white-space:nowrap}
+#quickDataPanel .r20Row>div{font-size:13px!important;line-height:1.5!important;padding:10px 3px!important}
+#quickDataPanel .r20Row .r20Lane{font-size:13px!important;min-width:21px;min-height:25px}
+#quickDataPanel .r20Result{gap:2px!important}
+#quickDataPanel .raceVisualCard .raceVisualZeroLine{left:78%!important;transform:translateX(-100%)!important}
+#quickDataPanel .raceVisualCard .raceVisualFZone{left:78%!important}
+#quickDataPanel .raceVisualCard .raceVisualST{font-size:13px!important;min-width:36px!important}
+#quickDataPanel .raceVisualCard .raceVisualUnavailable{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;color:#084664;font-weight:700}
+#quickDataPanel .courseDataNote{font-size:12px!important;line-height:1.7!important}
+#quickDataPanel .racerInfoPro,#quickDataPanel .courseUnifiedSheet,#quickDataPanel .meetResults,#quickDataPanel .motorInfoPage{overflow-x:auto}
+#quickDataPanel .riTable{min-width:470px}
+#quickDataPanel .courseStatTable{min-width:390px;width:100%}
+#quickDataPanel .kimariteSplit{min-width:390px}
+#quickDataPanel .recent20Panel{overflow-x:auto}
+#quickDataPanel .recent20Panel .r20Table{min-width:440px}
+#quickDataPanel .r20Header,#quickDataPanel .r20Row{grid-template-columns:1.05fr .9fr .9fr .55fr .55fr .55fr 1fr 1.4fr!important}
+#quickDataPanel .r20Header>div{font-size:12px!important;line-height:1.5!important;overflow-wrap:anywhere}
+
+</style>
 </body>
 </html>
 
