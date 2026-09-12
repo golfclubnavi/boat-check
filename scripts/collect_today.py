@@ -1177,6 +1177,25 @@ def _infer_lane_from_start_row(tr, fallback_course: int | None = None) -> int | 
     return None
 
 
+def _start_exhibition_rows(soup):
+    # Official visible numbers identify boats. Course is vertical DOM order.
+    for table in soup.find_all("table"):
+        rows=table.select(".table1_boatImage1")
+        if len(rows)!=6:
+            continue
+        entries=[]
+        for course,row in enumerate(rows,1):
+            lane=_infer_lane_from_start_row(row)
+            time=row.select_one(".table1_boatImage1Time")
+            raw=compact(time.get_text(" ",strip=True)).upper() if time else ""
+            if lane is None or not re.fullmatch(r"(?:F|L)?(?:0)?\.\d{2}",raw):
+                break
+            entries.append({"course":course,"lane":lane,"st":_num(raw.lstrip("FL")),"rawST":raw})
+        if len(entries)==6 and len({x["lane"] for x in entries})==6:
+            return entries
+    return []
+
+
 def _weather_from_text(text: str, soup: BeautifulSoup | None = None) -> dict:
     out={}
     m=re.search(r"気温\s*(-?\d+(?:\.\d+)?)℃",text)
@@ -1390,90 +1409,7 @@ def parse_beforeinfo(soup: BeautifulSoup) -> dict:
         if len(boats)==6:
             break
 
-    # Start exhibition: actual course order + ST.
-    start_rows=[]
-    start_area=False
-    for tr in soup.find_all("tr"):
-        row=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
-
-        if "コース" in row and "ST" in row:
-            start_area=True
-            continue
-        if not start_area:
-            continue
-        if "水面気象情報" in row:
-            break
-
-        # Typical official row text: "1 .09", "5 F.05", etc.
-        ms=re.match(r"^\s*([1-6])\s+.*?((?:F|L)?\.\d{2})\s*$",row,re.I)
-        if not ms:
-            continue
-
-        course=int(ms.group(1))
-        raw=ms.group(2).upper()
-        lane=_infer_lane_from_start_row(tr,course)
-        if lane is None:
-            continue
-
-        entry={
-            "course":course,
-            "lane":lane,
-            "st":_num(raw.lstrip("FL")),
-            "rawST":raw,
-            "official":True,
-        }
-        start_rows.append(entry)
-
-    # Keep only a complete, unique 6-boat set.
-    if start_rows:
-        unique_lanes={x.get("lane") for x in start_rows}
-        unique_courses={x.get("course") for x in start_rows}
-        if len(start_rows)!=6 or len(unique_lanes)!=6 or len(unique_courses)!=6:
-            start_rows=[]
-
-    # DOM fallback: pair each official boat image with the ST in its parent row.
-    # This remains correct even when entry order is not 1-2-3-4-5-6.
-    if len(start_rows) != 6:
-        candidate=[]
-        for img in soup.find_all("img"):
-            src=str(img.get("src") or "").lower().translate(_ZEN_DIGITS)
-            mm=re.search(r"img_boat2_([1-6])(?:\D|$)",src)
-            if not mm:
-                continue
-
-            lane=int(mm.group(1))
-            tr=img.find_parent("tr")
-            if tr is None:
-                continue
-
-            row=compact(tr.get_text(" ",strip=True)).translate(_ZEN_DIGITS)
-            mc=re.match(r"^\s*([1-6])\s+",row)
-            ms=re.search(r"((?:F|L)?\.\d{2})\s*$",row,re.I)
-            if not mc or not ms:
-                continue
-
-            raw=ms.group(1).upper()
-            candidate.append({
-                "course":int(mc.group(1)),
-                "lane":lane,
-                "st":_num(raw.lstrip("FL")),
-                "rawST":raw,
-                "official":True,
-            })
-
-        # Deduplicate by course/lane while preserving order.
-        dedup=[]
-        seen_course=set()
-        seen_lane=set()
-        for x in candidate:
-            if x["course"] in seen_course or x["lane"] in seen_lane:
-                continue
-            seen_course.add(x["course"])
-            seen_lane.add(x["lane"])
-            dedup.append(x)
-
-        if len(dedup)==6 and len(seen_course)==6 and len(seen_lane)==6:
-            start_rows=sorted(dedup,key=lambda x:x["course"])
+    start_rows=_start_exhibition_rows(soup)
 
     # If all six actual lanes were detected, merge course/ST into the boat rows.
     detected_lanes=[x.get("lane") for x in start_rows if x.get("lane")]
@@ -1677,7 +1613,7 @@ def _result_start_entries(soup: BeautifulSoup, text: str) -> list[dict]:
 
         entries.append({
             "lane":int(m_lane.group(1)),
-            "course":int(m_course.group(1)),
+            "course":len(entries)+1,
             "st":raw,
             "move":move_match.group(1) if move_match else "",
         })
