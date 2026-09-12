@@ -6111,7 +6111,7 @@ function recent20Value(row,keys){
 function recent20Date(v){
   if(v===undefined||v===null||v==="")return "--";
   const s=String(v).trim();const m=s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
-  if(m)return `<strong>${Number(m[2])}/${Number(m[3])}</strong><small>${m[1]}</small>`;
+  if(m)return `<strong>${Number(m[2])}/${Number(m[3])}</strong>`;
   return esc(s);
 }
 function recent20Grade(v){
@@ -6183,7 +6183,7 @@ function renderRecent20(){
     const kimarite=recent20Value(x,["kimarite","winningMove","decision","move"]);
     const result=recent20Value(x,["result","combination","resultCombo","order","top3"]);
     return `<div class="r20Row">
-      <div class="date">${recent20ResultLink(x)?`<a href="${recent20ResultLink(x)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(date)} ${esc(venue)} ${Number(x.raceNo)}R 公式結果">${recent20Date(date)}<small>${Number(x.raceNo)}R 結果 ↗</small></a>`:recent20Date(date)}</div>
+      <div class="date">${recent20ResultLink(x)?`<a href="${recent20ResultLink(x)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(date)} ${esc(venue)} ${Number(x.raceNo)}R 公式結果">${recent20Date(date)}</a>`:recent20Date(date)}</div>
       <div class="venue">${venue?esc(venue):"--"}</div>
       <div>${recent20Grade(grade)}</div>
       <div>${recent20LaneChip(frame)}</div>
@@ -15825,5 +15825,124 @@ button.meetPerfFinish.isLink.late{
  #homeVenuesPanel #venues .card .nameRow .venueTitle{font-size:12px!important}
  #homeVenuesPanel #venues .card .nextRace b,#homeVenuesPanel #venues .card .cutoff b{font-size:12px!important}
  #homeVenuesPanel #venues .card .endText{font-size:10px!important}
+}
+</style>
+
+<style id="v132-waterblue-icons-odds-recent20">
+/* 24場：ヘッダーに調和する濃い水色。情報区切りは維持し、暗さを抑える。 */
+#homeVenuesPanel{
+  background:linear-gradient(180deg,#eaf7fc 0%,#d9eef7 100%)!important;
+  border-color:#9fc9dc!important;
+}
+#homeVenuesPanel #venues .card{
+  background:linear-gradient(155deg,#3d9fc4 0%,#287fa8 100%)!important;
+  border-color:#1d6f98!important;
+  color:#fff!important;
+  box-shadow:0 4px 11px rgba(14,79,111,.18)!important;
+}
+#homeVenuesPanel #venues .card .nameRow{
+  background:linear-gradient(120deg,#69b9d5,#49a4c7)!important;
+  border-bottom-color:rgba(255,255,255,.40)!important;
+}
+#homeVenuesPanel #venues .card .nameRow .venueTitle,
+#homeVenuesPanel #venues .card .kindText,
+#homeVenuesPanel #venues .card .nextRace b,
+#homeVenuesPanel #venues .card .cutoff b{color:#fff!important}
+#homeVenuesPanel #venues .card .meta{
+  color:#f1fbff!important;
+  border-bottom-color:rgba(255,255,255,.38)!important;
+}
+#homeVenuesPanel #venues .card .nextRace{border-right-color:rgba(255,255,255,.38)!important}
+#homeVenuesPanel #venues .card .cutoff b.urgentTime{color:#ffe083!important}
+#homeVenuesPanel #venues .card.off{
+  background:linear-gradient(155deg,#78aec3,#6398ae)!important;
+  border-color:#578ba1!important;
+}
+#homeVenuesPanel #venues .card.off .nameRow{background:#76a9bd!important}
+#homeVenuesPanel #venues .card.off .venueTitle,
+#homeVenuesPanel #venues .card.off .offtext b{color:#f3f9fc!important}
+#homeVenuesPanel .homePtBalance{
+  background:linear-gradient(135deg,#23799f,#176789)!important;
+  border-color:#145f80!important;
+}
+
+/* 時間帯アイコン：小さい画面でも意味が一目で分かる記号へ統一。 */
+#homeVenuesPanel #venues .card .mark.morning,
+#homeVenuesPanel #venues .card .mark.summer,
+#homeVenuesPanel #venues .card .mark.night,
+#homeVenuesPanel #venues .card .mark.midnight{
+  width:15px!important;height:15px!important;min-width:15px!important;
+  position:relative!important;display:grid!important;place-items:center!important;
+  overflow:visible!important;background:transparent!important;color:transparent!important;
+}
+#homeVenuesPanel #venues .card .mark.morning::before{
+  content:"☀"!important;width:auto!important;height:auto!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;color:#f7941d!important;
+  font-size:15px!important;line-height:1!important;transform:none!important;
+}
+#homeVenuesPanel #venues .card .mark.night::before{
+  content:"☾"!important;width:auto!important;height:auto!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;color:#6646a5!important;
+  font-size:17px!important;line-height:1!important;transform:none!important;
+}
+#homeVenuesPanel #venues .card .mark.midnight::before{
+  content:"★"!important;width:auto!important;height:auto!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;color:#ffe780!important;
+  font-size:13px!important;line-height:1!important;transform:none!important;
+}
+#homeVenuesPanel #venues .card .mark.midnight::after{content:none!important}
+
+/* オッズ：スマホは3列から2列へ。買い目と数値の境界を強くする。 */
+#quickDataPanel .oddsTrifectaGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:9px!important;padding:9px!important;background:#eef7fb!important;
+}
+#quickDataPanel .oddsFirstCard{
+  border:1.5px solid #7eb1ce!important;border-radius:10px!important;
+  box-shadow:0 3px 9px rgba(13,83,119,.09)!important;
+}
+#quickDataPanel .oddsFirstHead{min-height:38px!important;padding:7px 9px!important}
+#quickDataPanel .oddsFirstHead span{font-size:11px!important}
+#quickDataPanel .oddsFirstHead b{font-size:18px!important;line-height:1!important}
+#quickDataPanel .oddsFirstTableHead{min-height:35px!important;background:#dceef7!important}
+#quickDataPanel .oddsFirstTableHead span{font-size:10px!important;color:#245a78!important}
+#quickDataPanel .oddsFirstRow{min-height:36px!important}
+#quickDataPanel .oddsFirstRow:nth-child(odd){background:#f7fbfd!important}
+#quickDataPanel .oddsFirstRow>div{font-size:11px!important;line-height:1.2!important}
+#quickDataPanel .oddsFirstRow>div:last-child{font-size:12px!important;font-weight:950!important;color:#0b4265!important}
+#quickDataPanel .oddsChip{width:25px!important;height:24px!important;font-size:11px!important;line-height:1!important}
+#quickDataPanel .oddsRankRow,
+#quickDataPanel .oddsSimpleRow{min-height:39px!important}
+#quickDataPanel .oddsRankRow:nth-child(odd),
+#quickDataPanel .oddsSimpleRow:nth-child(odd){background:#f5fafd!important}
+
+/* 直近20走：8列を画面内へ固定。年・R表記を外し、日付リンクは維持。 */
+#quickDataPanel .r20Table{width:100%!important;max-width:100%!important;overflow:hidden!important}
+#quickDataPanel .r20Header,
+#quickDataPanel .r20Row{
+  width:100%!important;
+  grid-template-columns:11% 12% 12% 8% 8% 8% 14% 27%!important;
+}
+#quickDataPanel .r20Header{font-size:8px!important;line-height:1.15!important}
+#quickDataPanel .r20Header>div{min-width:0!important;padding:7px 0!important}
+#quickDataPanel .r20Row{min-height:43px!important}
+#quickDataPanel .r20Row>div{
+  min-width:0!important;padding:4px 1px!important;font-size:8px!important;
+  line-height:1.12!important;overflow:hidden!important;word-break:break-all!important;
+}
+#quickDataPanel .r20Row .date strong{font-size:9.5px!important;line-height:1.1!important;white-space:nowrap!important}
+#quickDataPanel .r20Row .date small{display:none!important}
+#quickDataPanel .r20Row .venue{font-size:8px!important}
+#quickDataPanel .r20Row .finish{font-size:10px!important}
+#quickDataPanel .r20Row .move{font-size:7.5px!important}
+#quickDataPanel .r20Grade{padding:3px 2px!important;font-size:7px!important;line-height:1!important}
+#quickDataPanel .r20Lane{width:18px!important;height:18px!important;border-radius:4px!important;font-size:8px!important;line-height:1!important}
+#quickDataPanel .r20Result{gap:1px!important;width:100%!important}
+#quickDataPanel .r20Result .r20Lane{width:17px!important;height:17px!important;font-size:7.5px!important}
+@media(max-width:390px){
+  #quickDataPanel .r20Header{font-size:7.3px!important}
+  #quickDataPanel .r20Row>div{font-size:7.4px!important}
+  #quickDataPanel .r20Row .venue{font-size:7.3px!important}
+  #quickDataPanel .r20Result .r20Lane{width:15px!important;height:15px!important;font-size:7px!important}
 }
 </style>
