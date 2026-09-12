@@ -15946,3 +15946,77 @@ button.meetPerfFinish.isLink.late{
   #quickDataPanel .r20Result .r20Lane{width:15px!important;height:15px!important;font-size:7px!important}
 }
 </style>
+
+<style id="v133-white-premium-venues">
+/* White premium: venue overview only. */
+#homeVenuesPanel{
+  background:#fcfcfd!important;border:1px solid #d6dce4!important;
+  border-top:2px solid #b6a27d!important;border-radius:14px!important;
+  padding:12px 8px!important;box-shadow:0 5px 22px rgba(18,38,65,.045)!important;
+}
+#homeVenuesPanel #venues{gap:8px 6px!important}
+#homeVenuesPanel #venues .card{
+  background:#fff!important;color:#172d48!important;
+  border:1px solid #66788e!important;border-radius:8px!important;
+  box-shadow:0 2px 5px rgba(18,38,65,.065)!important;
+}
+#homeVenuesPanel #venues .card .nameRow{
+  background:linear-gradient(120deg,#fafbfd,#edf1f6)!important;
+  border-bottom:1px solid #b8c3cf!important;
+}
+#homeVenuesPanel #venues .card .nameRow .venueTitle,
+#homeVenuesPanel #venues .card .kindText,
+#homeVenuesPanel #venues .card .nextRace b,
+#homeVenuesPanel #venues .card .cutoff b{color:#172d48!important}
+#homeVenuesPanel #venues .card .meta{
+  background:#fff!important;color:#46586d!important;border-bottom:1px solid #c9d1dc!important;
+}
+#homeVenuesPanel #venues .card .nextRow{background:#fff!important}
+#homeVenuesPanel #venues .card .nextRace{border-right-color:#b8c3cf!important}
+#homeVenuesPanel #venues .card .cutoff b.urgentTime{color:#c52b3c!important}
+#homeVenuesPanel #venues .card .endText{color:#4d5e72!important}
+#homeVenuesPanel #venues .card .mark.women{color:#b52f63!important}
+#homeVenuesPanel #venues .card.time-morning:not(.off) .nameRow{
+  background:linear-gradient(120deg,#fff2d6,#ffe3ab)!important;
+}
+#homeVenuesPanel #venues .card.time-summer:not(.off) .nameRow{
+  background:linear-gradient(120deg,#ffebdf,#f8cebf)!important;
+}
+#homeVenuesPanel #venues .card.time-night:not(.off) .nameRow{
+  background:linear-gradient(120deg,#eee9fa,#d9cef0)!important;
+}
+#homeVenuesPanel #venues .card.time-midnight:not(.off) .nameRow{
+  background:linear-gradient(120deg,#665181,#49375f)!important;
+}
+#homeVenuesPanel #venues .card.time-midnight:not(.off) .nameRow .venueTitle{color:#fff!important}
+/* SVG silhouette keeps the crescent yellow on every device. */
+#homeVenuesPanel #venues .card .mark.night::before{
+  content:""!important;display:block!important;width:13px!important;height:13px!important;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19.7 16.5A9 9 0 0 1 8 4.1a9.2 9.2 0 1 0 11.7 12.4Z' fill='%23FFD43B' stroke='%238B681E' stroke-width='1.1' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat!important;
+  color:#ffd43b!important;box-shadow:none!important;transform:none!important;
+}
+#homeVenuesPanel #venues .card .mark.night::after{content:none!important}
+#homeVenuesPanel #venues .card.off{
+  background:#f7f8fa!important;border-color:#bdc6d1!important;box-shadow:none!important;
+}
+#homeVenuesPanel #venues .card.off .nameRow{background:#eef1f5!important}
+#homeVenuesPanel #venues .card.off .nameRow .venueTitle{color:#657286!important}
+#homeVenuesPanel #venues .card.off .offtext b{color:#687487!important}
+#homeVenuesPanel #venues .card .cancelMain{color:#ab293b!important}
+#homeVenuesPanel #venues .card .cancelSub{color:#5c6879!important}
+#homeVenuesPanel #venues .card .partialCancelBadge{color:#ab293b!important;background:#fff0f2!important}
+#homeVenuesPanel #venues .card:not(.off):hover{
+  border-color:#263f5b!important;box-shadow:0 4px 10px rgba(18,38,65,.12)!important;
+}
+#homeVenuesPanel .homePtBalance{
+  background:#f2f4f7!important;border:1px solid #b8c3cf!important;box-shadow:none!important;color:#172d48!important;
+}
+#homeVenuesPanel .homePtBalance small,#homeVenuesPanel .homePtBalance strong,
+#homeVenuesPanel .homePtBalance>span{color:#172d48!important}
+@media(max-width:375px){
+  #homeVenuesPanel{padding:10px 5px!important}
+  #homeVenuesPanel #venues{gap:7px 4px!important}
+  #homeVenuesPanel #venues .card .mark.night::before{width:11px!important;height:11px!important}
+}
+
+</style>
