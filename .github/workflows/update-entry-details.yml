@@ -1,0 +1,51 @@
+name: Update racer and motor details
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 16 * * *"
+permissions:
+  contents: write
+concurrency:
+  group: boat-check-data-update
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: python -m pip install requests lhafile beautifulsoup4
+      - name: Restore official result cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/entry-results
+          key: entry-results-v1-${{ github.run_id }}
+          restore-keys: entry-results-v1-
+      - name: Collect racer and motor details
+        run: python scripts/collect_entry_data.py --input data/today.json --out data/entry-details.json --workers 6
+      - name: Save collected data
+        run: |
+          git config user.name "boat-check-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/entry-details.json
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git commit -m "Update racer appearances and official motor details"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              exit 0
+            fi
+            if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
+              git rebase --abort
+            fi
+            sleep $((attempt * 3))
+          done
+          exit 1
