@@ -6398,7 +6398,22 @@ function fmtWeight(v){
   return /kg/i.test(s) ? esc(s) : `${esc(s)}kg`;
 }
 
+function racerHistory(b){
+  return state.racerOverallById?.[String(b.racerId||b.registrationNo||"")];
+}
 function racerMetric(b, group, period){
+  const history=racerHistory(b)?.periods?.[period];
+  if(history && ["quinella","trifecta","st"].includes(group)){
+    if(!history.entryCount)return "対象なし";
+    if(history[group]!=null)return history[group];
+  }
+  if(group==="st" && period==="meet"){
+    const rows=(b.meetResults||[]).filter(x=>x.source==="official_result");
+    const seen=new Map();
+    for(const row of rows)seen.set(`${row.day}:${row.raceNo}`,row);
+    const values=[...seen.values()].filter(x=>!/[FL]/i.test(String(x.finish))).map(x=>String(x.st??"")).filter(x=>/^(?:0)?\.\d+$/.test(x)).map(Number);
+    if(values.length)return values.reduce((a,b)=>a+b,0)/values.length;
+  }
   const aliases={
     winRate:{
       national:["stats.winRate.national","winRate.national","nationalWinRate"],
@@ -6490,7 +6505,7 @@ function renderRacerInfo(){
   };
 
   const finishingRows=["逃げ","差し","まくり","まくり差し"].map(key=>{
-    const values=boats.map(b=>firstStat(b,[
+    const values=boats.map(b=>racerHistory(b)?.kimarite?.[key] ?? firstStat(b,[
       `stats.kimarite.${key}`,
       `kimarite.${key}`,
       `finishMoves.${key}`
@@ -6498,11 +6513,11 @@ function renderRacerInfo(){
     return `<tr><th class="riSub">${key}</th>${rowCells(values,"","desc")}</tr>`;
   }).join("");
 
-  const flyingDate=b=>firstStat(b,["flying.date","stats.flying.date","flyingDate"]);
+  const flyingDate=b=>racerHistory(b)?.lastFlyingDate ?? firstStat(b,["flying.date","stats.flying.date","flyingDate"]);
   const flyingBreak=b=>firstStat(b,["flying.breakStart","stats.flying.breakStart","flyingBreakStart"]);
   const flyingRemain=b=>firstStat(b,["flying.unserved","stats.flying.unserved","flyingUnserved"]);
   const accident=b=>firstStat(b,["stats.accidentRate","accidentRate"]);
-  const wins=b=>firstStat(b,["stats.championships","championships","wins"]);
+  const wins=b=>racerHistory(b)?.championships ?? firstStat(b,["stats.championships","championships","wins"]);
 
   return `<div class="racerInfoPro">
     <div class="racerInfoTop">
@@ -6551,23 +6566,23 @@ function renderRacerInfo(){
             ${metricRow("直近1ヶ月","st","m1","","asc",2)}
             ${metricRow("直近3ヶ月","st","m3","","asc",2)}
 
-            <tr class="riGroup"><th colspan="7">決まり手数</th></tr>
+            <tr class="riGroup"><th colspan="7">決まり手数（過去１年）</th></tr>
             ${finishingRows}
 
             <tr class="riGroup"><th colspan="7">フライング</th></tr>
-            ${simpleRow("Fした日",flyingDate)}
+            ${simpleRow("直近F日（過去１年）",flyingDate)}
             ${simpleRow("F休み開始日",flyingBreak)}
             ${simpleRow("未消化数",flyingRemain,"","asc",0)}
 
             <tr class="riGroup"><th colspan="7">その他</th></tr>
-            ${simpleRow("事故率",accident,"%","asc",2)}
-            ${simpleRow("優勝数",wins,"","desc",0)}
+            ${simpleRow("事故率",accident,"","asc",2)}
+            ${simpleRow("優勝数（過去１年）",wins,"","desc",0)}
           </tbody>
         </table>
       </div>
     </div>
 
-    <div class="racerInfoNote">※ 実データ連携前の項目は「--」で表示します。取得できた項目から順次自動反映されます。</div>
+    <div class="racerInfoNote">※ 直近１・３か月は公式結果から集計（集計最終日：${esc(state.courseStatsMeta?.to||"未取得")}）。決まり手・優勝数は過去１年。今節STは取得済み本番結果から集計。期間別勝率・F休み予定・未消化数・事故率は確認できたデータがない場合「--」。出走なしは「対象なし」。</div>
   </div>`;
 }
 
@@ -7686,8 +7701,14 @@ function sortOdds(entries,mode){
   return arr;
 }
 
+function oddsDisplayStamp(){
+ const r=state.currentRace||{},keys=oddsSubTab==="pair"?["exacta","quinella"]:oddsSubTab==="winplace"?["win","place"]:[oddsSubTab];
+ const stamps=keys.filter(k=>r.odds?.[k]?.length).map(k=>r.odds?.updatedAtByType?.[k]||r.oddsUpdatedAt).filter(Boolean).sort();
+ return stamps.length?formatUpdated(stamps[0]):"未取得";
+}
 function setOddsSubTab(tab){
   oddsSubTab=tab;
+  const stamp=document.getElementById("oddsFetchedAt");if(stamp)stamp.textContent=oddsDisplayStamp();
   oddsSortMode="normal";
   const body=document.getElementById("oddsInnerPanel");
   if(body) body.innerHTML=renderOddsInner();
@@ -7837,6 +7858,7 @@ function renderOddsInner(){
 }
 
 function renderOddsInfo(){
+  applyRecoveredOdds();
   const r=state.currentRace||{};
   return `<div class="oddsInfoPage">
     <div class="oddsPageTitle">
@@ -7849,7 +7871,7 @@ function renderOddsInfo(){
 
     <div class="oddsRaceStatus">
       <div><b>${r.raceNo||"--"}R</b><span>${meetingGrade(state.currentMeeting||{})}</span><strong>締切 ${esc(r.deadline||"--:--")}</strong></div>
-      <small>最終更新 ${esc(state.updatedAt?formatUpdated(state.updatedAt):"--")}</small>
+      <small>オッズ取得 <span id="oddsFetchedAt">${esc(oddsDisplayStamp())}</span></small>
     </div>
 
     <div class="oddsSubTabs">
@@ -9431,6 +9453,8 @@ function refreshCurrentQuickDataPanel(){
   if(!panel || !currentQuickDataType)return;
 
   try{
+    if(currentQuickDataType==="racer")panel.innerHTML=renderRacerInfo();
+    if(currentQuickDataType==="odds")panel.innerHTML=renderOddsInfo();
     if(currentQuickDataType==="before")panel.innerHTML=renderBeforeInfo();
     if(currentQuickDataType==="result")panel.innerHTML=renderResultInfo();
     if(currentQuickDataType==="replay")panel.innerHTML=renderReplayInfo();
@@ -9509,13 +9533,33 @@ async function loadData(){
   }
 }
 
+
+function applyRecoveredOdds(){
+  const d=state.oddsRecovery,m=state.currentMeeting,r=state.currentRace;
+  if(!d||!m||!r||String(m.date)!==d.dateJST)return;
+  const saved=d.races[`${m.venueCode}:${r.raceNo}`];if(!saved)return;
+  r.odds=r.odds||{};let changed=false;
+  for(const k of ["trifecta","trio","exacta","quinella","wide","win","place"]){
+    if(!r.odds[k]?.length && saved.odds[k]?.length){r.odds[k]=saved.odds[k];r.odds.updatedAtByType=r.odds.updatedAtByType||{};r.odds.updatedAtByType[k]=saved.updatedAt;changed=true;}
+  }
+  if(changed){r.odds.official=true;r.oddsUpdatedAt=r.oddsUpdatedAt||saved.updatedAt;}
+}
+async function loadRecoveredOdds(){
+  try{const res=await fetch("data/odds-recovery.json",{cache:"no-store"});if(!res.ok)return;
+    state.oddsRecovery=await res.json();
+    if(currentQuickDataType==="odds")$("quickDataPanel").innerHTML=renderOddsInfo();
+  }catch(e){console.warn("Optional recovered odds unavailable",e);}
+}
+
 async function loadCourseStatsData(){
   try{
     const res=await fetch(`data/course-stats.json?v=${Date.now()}`,{cache:"no-store"});
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const data=await res.json();
     if(data.schemaVersion!==1 || !data.byRacer || typeof data.byRacer!=="object")throw new Error("Invalid course stats");
+    state.racerOverallById=data.overallByRacer||{};
     state.courseStatsByRacer=data.byRacer;state.courseStatsMeta={to:data.to,errors:data.errors||[]};
+    if(currentQuickDataType==="racer")$("quickDataPanel").innerHTML=renderRacerInfo();
     if(currentQuickDataType==="course" && courseSubTab==="rate"){
       const panel=document.getElementById("courseInnerPanel");if(panel)panel.innerHTML=renderCourseRate();
     }
@@ -9579,6 +9623,7 @@ window.addEventListener("popstate",(e)=>{
 loadData();
 loadRecent20Data();
 loadCourseStatsData();
+loadRecoveredOdds();
 setInterval(refreshOfficialData,60000);
 setInterval(loadRecent20Data,1800000);
 setInterval(()=>{
