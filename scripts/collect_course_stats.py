@@ -115,6 +115,7 @@ def parse_day(text: str, day: date, wanted: set[str]) -> dict[str, list[dict]]:
                 "venueName": VENUES.get(venue_code, venue_code),
                 "grade": grade,
                 "raceNo": race_no,
+                "isFinal":bool(re.search(r"(?<!準)優勝戦",race_head)),
                 "finish": int(match.group(1)) if match else raw_finish,
                 "kimarite": move if match and int(match.group(1)) == 1 else "",
                 "result": result,
@@ -202,6 +203,20 @@ def aggregate(rows,base):
             metrics["kimarite"]=k;output[str(course)][period]=metrics
     return output
 
+def aggregate_overall(rows,base):
+    from statistics import mean
+    result={"periods":{},"kimarite":{}}
+    for period,months in [("m1",1),("m3",3)]:
+        sample=[r for r in rows if subtract_months(base,months).isoformat()<=r["date"]<base.isoformat() and r["finish"] not in ("K","欠")]
+        starts=[r["normalST"] for r in sample if r.get("normalST") is not None]
+        n=len(sample)
+        result["periods"][period]={"entryCount":n,"quinella":round(100*sum(r["finish"] in (1,2) for r in sample)/n,2) if n else None,"trifecta":round(100*sum(r["finish"] in (1,2,3) for r in sample)/n,2) if n else None,"st":round(mean(starts),3) if starts else None}
+    for move in ("逃げ","差し","まくり","まくり差し"):
+        result["kimarite"][move]=sum(r["finish"]==1 and r["raceMove"]==move for r in rows) if rows else None
+    result["championships"]=sum(r["finish"]==1 and r.get("isFinal") for r in rows) if rows else None
+    result["lastFlyingDate"]=max((r["date"] for r in rows if r["finish"]=="F"),default=None)
+    return result
+
 def main():
     import time
     p=argparse.ArgumentParser();p.add_argument("--input",default="data/today.json");p.add_argument("--out",default="data/course-stats.json");p.add_argument("--cache",default=".cache/course-results");p.add_argument("--workers",type=int,default=10);args=p.parse_args()
@@ -235,7 +250,8 @@ def main():
             errors.remove(item);good+=1
             for rid,rows in data.items():history[rid].extend(rows)
     out={"schemaVersion":1,"targetDateJST":payload["dateJST"],"from":first.isoformat(),"to":(base-timedelta(days=1)).isoformat(),"source":"BOAT RACE official result download files","daysExpected":len(days),"daysCollected":good,"errors":errors,"racerCount":len(wanted),"raceRows":sum(map(len,history.values())),"byRacer":{rid:aggregate(history[rid],base) for rid in sorted(wanted)}}
+    out["overallByRacer"]={rid:aggregate_overall(history[rid],base) for rid in sorted(wanted)}
     path=Path(args.out);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(out,ensure_ascii=False,separators=(",",":")))
-    print(json.dumps({k:v for k,v in out.items() if k!="byRacer"},ensure_ascii=False),flush=True)
+    print(json.dumps({k:v for k,v in out.items() if k not in ("byRacer","overallByRacer")},ensure_ascii=False),flush=True)
 
 if __name__=="__main__":main()

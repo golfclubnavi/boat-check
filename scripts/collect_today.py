@@ -2064,12 +2064,17 @@ def fetch_odds_task(code: str, date: str, race_no: int):
                 "k":ex.submit(get_soup,ODDSK_URL,params,16),
                 "tf":ex.submit(get_soup,ODDSTF_URL,params,16),
             }
-            soups={k:f.result() for k,f in futs.items()}
+            soups={}; errors=[]
+            for k,f in futs.items():
+                try: soups[k]=f.result()
+                except Exception as exc:
+                    soups[k]=BeautifulSoup("","html.parser")
+                    errors.append(f"{k}: {type(exc).__name__}: {exc}")
 
         data=parse_official_odds(
             soups["3t"],soups["3f"],soups["2tf"],soups["k"],soups["tf"]
         )
-        return code,race_no,data,None
+        return code,race_no,data,"; ".join(errors) or None
     except Exception as e:
         return code,race_no,{},f"{type(e).__name__}: {e}"
 
@@ -2661,7 +2666,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 if last.tzinfo is None:
                     last=last.replace(tzinfo=JST)
                 age=(datetime.now(JST)-last.astimezone(JST)).total_seconds()/60
-                return age >= 30
+                return age >= (5 if mins <= 120 else 15 if mins <= 240 else 30)
             except Exception:
                 return True
 
@@ -2716,8 +2721,20 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
         for meeting in payload.get("meetings",[]):
             for race in meeting.get("races",[]):
                 key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
-                data,err=odds_results.get(key,({},None))
+                if key not in odds_results:
+                    continue
+                data,err=odds_results[key]
                 if data and data.get("official"):
+                    previous=race.get("odds") or {}
+                    stamps=dict(previous.get("updatedAtByType") or {})
+                    now_stamp=datetime.now(JST).isoformat(timespec="seconds")
+                    for kind in ("trifecta","trio","exacta","quinella","wide","win","place"):
+                        if data.get(kind): stamps[kind]=now_stamp
+                        elif previous.get(kind):
+                            data[kind]=previous[kind]
+                            stamps.setdefault(kind,race.get("oddsUpdatedAt"))
+                    data["updatedAtByType"]=stamps
+                    data["counts"]={k:len(data.get(k) or []) for k in ("trifecta","trio","exacta","quinella","wide","win","place")}
                     race["odds"]=data
                     race["oddsUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
                     race["oddsLastAttemptAt"]=race["oddsUpdatedAt"]
