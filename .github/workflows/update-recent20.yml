@@ -1,4 +1,4 @@
-name: Update recent 20 race history
+name: Update recent 30 race history
 
 on:
   workflow_dispatch:
@@ -35,8 +35,8 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Collect recent history for every active racer
-        run: python scripts/collect_recent20.py --input data/today.json --out data/recent20.json --days 365 --workers 16 --per-course 20
+      - name: Collect recent history and ST ranks for every active racer
+        run: python scripts/collect_recent20.py --input data/today.json --out data/recent20.json --days 365 --workers 16 --per-course 30
 
       - name: Save recent history when changed
         run: |
@@ -47,7 +47,7 @@ jobs:
             echo "No recent-history changes."
             exit 0
           fi
-          git commit -m "Update recent 20 race history"
+          git commit -m "Update recent 30 race history with ST ranks"
           for attempt in 1 2 3; do
             if git pull --rebase origin main && git push origin HEAD:main; then
               exit 0
