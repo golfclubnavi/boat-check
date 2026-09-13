@@ -3500,8 +3500,8 @@ body{letter-spacing:0 !important}
   <div class="raceGrid" id="races"></div>
 
   <div class="dataNoticePro">
-    <strong>✓ BOAT CHECK 分析について</strong><br>
-    現在は公式の開催・締切・出走選手データを表示中です。勝率・平均ST・モーター・展示・気象などが揃った段階で、各レースに「見送り度」と理由を表示します。
+    <strong>✓ BOAT CHECK 見送り度について</strong><br>
+    全国勝率・コース成績・平均ST・モーター・節間成績・展示・F/L・気象のうち、取得できた公式データから自動算出します。直前情報の取得後に数値が変わる場合があります。
   </div>
 </section>
 
@@ -4955,6 +4955,105 @@ function racerNameClass(name){
   return Array.from(s).length>=5 ? "longRacerName" : "shortRacerName";
 }
 
+function skipFiniteNumber(value){
+  if(value===null||value===undefined||value==="")return null;
+  const n=Number(value);
+  return Number.isFinite(n)?n:null;
+}
+
+function skipClamp(value,min=0,max=100){
+  return Math.max(min,Math.min(max,value));
+}
+
+function skipValues(boats,pick){
+  return boats.map(pick).map(skipFiniteNumber).filter(v=>v!==null);
+}
+
+/*
+ * A high score means that the available official figures do not reveal a
+ * clear leading boat, or that start/weather risk is high. Missing categories
+ * are excluded and the remaining weights are re-normalised; they never become
+ * zero-valued evidence.
+ */
+function skipGapRisk(values,decisiveGap,lowerIsBetter=false){
+  if(values.length<4)return null;
+  const sorted=[...values].sort((a,b)=>lowerIsBetter?a-b:b-a);
+  const leaderGap=Math.abs(sorted[1]-sorted[0]);
+  return skipClamp(100-(leaderGap/decisiveGap)*100);
+}
+
+function raceSkipAnalysis(r){
+  const boats=Array.isArray(r?.boats)?r.boats:[];
+  const parts=[];
+  const add=(name,weight,risk)=>{
+    if(risk!==null&&Number.isFinite(risk))parts.push({name,weight,risk:skipClamp(risk)});
+  };
+
+  add("全国勝率",25,skipGapRisk(skipValues(boats,b=>b.nationalWinRate??b.stats?.winRate?.national),1.4));
+  add("コース成績",20,skipGapRisk(skipValues(boats,b=>{
+    const course=String(b.exhibitionCourse||b.lane||"");
+    const row=b.courseStats?.[course];
+    return row?.official?.threeRate??row?.threeRate;
+  }),18));
+  add("平均ST",14,skipGapRisk(skipValues(boats,b=>b.avgST??b.stats?.st?.overall),0.035,true));
+  add("モーター",14,skipGapRisk(skipValues(boats,b=>b.motorTwoRate??b.motor?.twoRate),12));
+  add("節間成績",10,skipGapRisk(skipValues(boats,b=>b.meetStats?.threeRate),25));
+
+  const beforeByLane=new Map((r.beforeData||[]).map(b=>[Number(b.lane),b]));
+  add("展示タイム",10,skipGapRisk(skipValues(boats,b=>b.exhibitionTime??beforeByLane.get(Number(b.lane))?.exhibitionTime),0.12,true));
+
+  const hasStartRisk=boats.filter(b=>
+    b.flyingCount!==undefined||b.lateCount!==undefined||
+    b.stats?.flyingCount!==undefined||b.stats?.lateCount!==undefined
+  ).length>=4;
+  if(hasStartRisk){
+    const risk=boats.reduce((sum,b)=>{
+      const flying=skipFiniteNumber(b.flyingCount??b.stats?.flyingCount)??0;
+      const late=skipFiniteNumber(b.lateCount??b.stats?.lateCount)??0;
+      return sum+flying*20+late*28;
+    },0);
+    add("F・L",7,risk);
+  }
+
+  const weather=r.weather||r.weatherData||r.conditions||{};
+  const wind=skipFiniteNumber(weather.windSpeed);
+  const wave=skipFiniteNumber(weather.waveHeight);
+  if(wind!==null||wave!==null){
+    add("気象",7,Math.max(wind===null?0:(wind/7)*100,wave===null?0:(wave/12)*100));
+  }
+
+  const totalWeight=parts.reduce((sum,p)=>sum+p.weight,0);
+  if(parts.length<3||totalWeight<45){
+    return {ready:false,label:"算出待ち",cls:"pending",mark:"…",title:"公式データが3項目以上揃うと自動算出します"};
+  }
+
+  const score=Math.round(parts.reduce((sum,p)=>sum+p.weight*p.risk,0)/totalWeight);
+  const decision=score<=40
+    ?{label:"CHECK",cls:"check",mark:"✓"}
+    :score<=70
+      ?{label:"CAUTION",cls:"caution",mark:"▲"}
+      :{label:"SKIP",cls:"skip",mark:"×"};
+  return {
+    ready:true,
+    score,
+    ...decision,
+    title:`${parts.map(p=>p.name).join("・")}から自動算出（取得済み${parts.length}項目）`
+  };
+}
+
+function renderRaceSkipMeter(analysis){
+  if(!analysis.ready){
+    return `<div class="raceSkipMeter pending" title="${esc(analysis.title)}">
+      <div class="raceSkipValue"><span>見送り度</span><strong>--<small>%</small></strong></div>
+      <div class="raceSkipDecision"><b>${analysis.mark}</b>${analysis.label}</div>
+    </div>`;
+  }
+  return `<div class="raceSkipMeter ${analysis.cls}" title="${esc(analysis.title)}">
+    <div class="raceSkipValue"><span>見送り度</span><strong>${analysis.score}<small>%</small></strong></div>
+    <div class="raceSkipDecision"><b>${analysis.mark}</b>${analysis.label}</div>
+  </div>`;
+}
+
 function renderRaces(m){
   const races=m.races||[];
   if(!races.length){
@@ -4966,6 +5065,7 @@ function renderRaces(m){
     const info=raceStatusInfo(r,m);
     const urgent=info.cls==="urgent";
     const cancelled=info.cls==="cancelled";
+    const skipAnalysis=raceSkipAnalysis(r);
 
     const boats=hydrateBoatsForDisplay(r.boats||[]).map(b=>{
       const period=b.period?`${esc(b.period)}期`:"--期";
@@ -4993,6 +5093,7 @@ function renderRaces(m){
           <small>${cancelled?"レース状況":"締切予定"}</small>
           <b class="${urgent?"urgent":""}">${cancelled?esc(info.label):esc(r.deadline||"-")}</b>
         </div>
+        ${renderRaceSkipMeter(skipAnalysis)}
         <div class="raceCountdownBox ${urgent?"urgent":""}">
           ${(()=>{
             const mins=raceMinutesUntil(r.deadline);
@@ -10334,6 +10435,109 @@ setInterval(()=>{
 #quickDataPanel .r20Header,#quickDataPanel .r20Row{grid-template-columns:1.05fr .9fr .9fr .55fr .55fr .55fr 1fr 1.4fr!important}
 #quickDataPanel .r20Header>div{font-size:12px!important;line-height:1.5!important;overflow-wrap:anywhere}
 
+</style>
+<style id="race-skip-score-20260914">
+/* Four balanced zones: R / deadline / skip score / countdown. */
+.raceCardPro .raceTopPro{
+  grid-template-columns:48px 104px minmax(116px,132px) minmax(76px,1fr)!important;
+  gap:9px!important;
+  align-items:center!important;
+}
+.raceCardPro .raceNoPro{grid-column:1!important;grid-row:1!important}
+.raceCardPro .raceTiming{grid-column:2!important;grid-row:1!important}
+.raceCardPro .raceSkipMeter{grid-column:3!important;grid-row:1!important}
+.raceCardPro .raceCountdownBox{
+  grid-column:4!important;
+  grid-row:1!important;
+  min-width:0!important;
+  text-align:right!important;
+}
+
+.raceSkipMeter{
+  min-width:0;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.38);
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 3px 10px rgba(0,32,58,.12);
+}
+.raceSkipValue{
+  min-height:29px;
+  padding:3px 7px 2px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+  color:#345a70;
+  background:#f5fbfe;
+  border-bottom:1px solid #d8eaf2;
+}
+.raceSkipValue span{
+  font-size:9px;
+  line-height:1;
+  font-weight:850;
+  white-space:nowrap;
+}
+.raceSkipValue strong{
+  font-size:18px;
+  line-height:1;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.04em;
+}
+.raceSkipValue strong small{font-size:9px;margin-left:1px;letter-spacing:0}
+.raceSkipDecision{
+  height:22px;
+  padding:3px 5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:9px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.015em;
+  white-space:nowrap;
+}
+.raceSkipDecision b{font-size:11px;line-height:1}
+.raceSkipMeter.check .raceSkipDecision{color:#007bd8;background:#e9f6ff}
+.raceSkipMeter.check .raceSkipValue strong{color:#007bd8}
+.raceSkipMeter.caution .raceSkipDecision{color:#a96b00;background:#fff5d8}
+.raceSkipMeter.caution .raceSkipValue strong{color:#d88600}
+.raceSkipMeter.skip .raceSkipDecision{color:#d9152e;background:#ffebee}
+.raceSkipMeter.skip .raceSkipValue strong{color:#e51c36}
+.raceSkipMeter.pending .raceSkipDecision{color:#667d8e;background:#eef5f8}
+.raceSkipMeter.pending .raceSkipValue strong{color:#758b9b}
+
+@media(max-width:430px){
+  .raceCardPro .raceTopPro{
+    grid-template-columns:41px 78px minmax(94px,108px) minmax(62px,1fr)!important;
+    gap:6px!important;
+    padding:8px 9px!important;
+  }
+  .raceCardPro .raceNoPro{font-size:28px!important}
+  .raceCardPro .raceNoPro small{font-size:12px!important}
+  .raceCardPro .raceTiming{padding-left:8px!important}
+  .raceCardPro .raceTiming small{font-size:9px!important}
+  .raceCardPro .raceTiming b{font-size:18px!important}
+  .raceCardPro .raceCountdownBox{font-size:11px!important;line-height:1.25!important}
+  .raceSkipValue{min-height:27px;padding:3px 5px 2px}
+  .raceSkipValue span{font-size:8px}
+  .raceSkipValue strong{font-size:16px}
+  .raceSkipValue strong small{font-size:8px}
+  .raceSkipDecision{height:20px;font-size:8px;gap:3px;padding:3px}
+  .raceSkipDecision b{font-size:10px}
+}
+@media(max-width:355px){
+  .raceCardPro .raceTopPro{
+    grid-template-columns:38px 70px minmax(88px,98px) minmax(54px,1fr)!important;
+    gap:5px!important;
+    padding:8px 7px!important;
+  }
+  .raceCardPro .raceNoPro{font-size:25px!important}
+  .raceCardPro .raceTiming b{font-size:16px!important}
+  .raceCardPro .raceCountdownBox{font-size:10px!important}
+}
 </style>
 </body>
 </html>
