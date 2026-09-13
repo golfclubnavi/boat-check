@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Attach each active racer's recent results, grouped up to 20 per entry course."""
+"""Collect each active racer's recent results, grouped up to 30 per entry course."""
 from __future__ import annotations
 
 import argparse
@@ -30,6 +30,57 @@ RACER_ROW = re.compile(
 RACE_HEAD = re.compile(r"^\s*(\d{1,2})R\s+.*?H\d+m\b")
 VENUE_BEGIN = re.compile(r"^(\d{2})KBGN\s*$")
 FINISH_NUM = re.compile(r"^0?([1-6])$")
+
+
+def normalize_finish(value: str) -> int | str:
+    """Convert official result codes to short labels used by BOAT CHECK."""
+    raw = re.sub(r"[\s　]+", "", str(value or "")).upper()
+    match = FINISH_NUM.match(raw)
+    if match:
+        return int(match.group(1))
+    if raw.startswith("S1") or "転" in raw:
+        return "転"
+    if raw.startswith("S") or "失" in raw:
+        return "失"
+    if raw.startswith("K") or "欠" in raw:
+        return "欠"
+    if raw.startswith("F") or "フライング" in raw:
+        return "F"
+    if raw.startswith("L") or "出遅" in raw:
+        return "L"
+    return raw or "--"
+
+
+def start_order_value(value: str) -> float | None:
+    """Return a sortable actual-start value; F is early and L is late."""
+    raw = re.sub(r"[\s　]+", "", str(value or "")).upper()
+    try:
+        if raw.startswith("F"):
+            return -abs(float(raw[1:]))
+        if raw.startswith("L"):
+            return 1.0 + abs(float(raw[1:]))
+        return float(raw)
+    except ValueError:
+        return None
+
+
+def attach_start_ranks(rows: list[dict]) -> None:
+    starts = []
+    for row in rows:
+        value = start_order_value(row.get("st", ""))
+        if value is not None:
+            starts.append((value, int(row.get("lane") or 0)))
+    starts.sort(key=lambda item: (item[0], item[1]))
+    ranks: dict[int, int] = {}
+    previous: float | None = None
+    previous_rank = 0
+    for index, (value, lane) in enumerate(starts, 1):
+        rank = previous_rank if previous is not None and abs(value - previous) < 1e-9 else index
+        ranks[lane] = rank
+        previous = value
+        previous_rank = rank
+    for row in rows:
+        row["stRank"] = ranks.get(int(row.get("lane") or 0))
 
 
 def archive_url(day: date) -> str:
@@ -96,6 +147,7 @@ def parse_day(text: str, day: date, wanted: set[str]) -> dict[str, list[dict]]:
         result = [lane for _, lane in numeric[:3]]
         move = race_move
         grade = grade_from_text(event_context + " " + race_head)
+        attach_start_ranks(race_rows)
         for row in race_rows:
             racer_id = row.pop("racerId")
             raw_finish = row.pop("finishRaw")
@@ -106,7 +158,7 @@ def parse_day(text: str, day: date, wanted: set[str]) -> dict[str, list[dict]]:
                 "venueName": VENUES.get(venue_code, venue_code),
                 "grade": grade,
                 "raceNo": race_no,
-                "finish": int(match.group(1)) if match else raw_finish,
+                "finish": normalize_finish(raw_finish),
                 "kimarite": move if match and int(match.group(1)) == 1 else "",
                 "result": result,
             })
@@ -205,11 +257,11 @@ def compact_payload(payload: dict, history: dict[str, list[dict]], audit: dict) 
                 row.get("course") or 0, row.get("finish", "--"),
                 value_index(moves, row.get("kimarite") or ""),
                 "".join(str(x) for x in (row.get("result") or [])),
-                row.get("exhibitionTime"), row.get("st"),
+                row.get("exhibitionTime"), row.get("st"), row.get("stRank"),
             ])
         by_racer[racer_id] = packed
     return {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "compact": True,
         "updatedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
         "source": "BOAT RACE official result download files",
@@ -228,7 +280,7 @@ def main() -> None:
     parser.add_argument("--out", required=True)
     parser.add_argument("--days", type=int, default=365)
     parser.add_argument("--workers", type=int, default=16)
-    parser.add_argument("--per-course", type=int, default=20)
+    parser.add_argument("--per-course", type=int, default=30)
     args = parser.parse_args()
 
     input_path = Path(args.input)
