@@ -162,19 +162,22 @@ def compact(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-def boatcast_replay_url(code: str, date: str, race_no: int) -> str:
+def boatcast_replay_url(code: str, date: str, race_no: int, mode: str = "V") -> str:
     # BOATCAST official per-race replay route.
     # Example format confirmed publicly: ?jo=4&ymd=YYYYMMDD&race=11
-    return f"{BOATCAST_REPLAY_URL}?jo={int(code)}&ymd={date}&race={int(race_no)}"
+    return f"{BOATCAST_REPLAY_URL}?jo={int(code)}&ymd={date}&race={int(race_no)}&md={mode}"
 
 def attach_replay_urls(code: str, date: str, races: list[dict]) -> None:
     for race in races:
         rno = int(race.get("raceNo") or 0)
         if not rno:
             continue
-        page = boatcast_replay_url(code, date, rno)
+        page = boatcast_replay_url(code, date, rno, "V")
+        exhibition_page = boatcast_replay_url(code, date, rno, "T")
         replay = race.setdefault("replay", {})
         replay.setdefault("officialPage", page)
+        replay.setdefault("racePage", page)
+        replay.setdefault("exhibitionPage", exhibition_page)
         # The same official replay page provides both result replay and exhibition replay.
         # If a future collector finds separate media URLs, those keys can override this fallback.
         race.setdefault("officialReplayPage", page)
