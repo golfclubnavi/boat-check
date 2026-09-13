@@ -6207,11 +6207,84 @@ function recent20Result(v){
   if(Array.isArray(v))return `<span class="r20Result">${v.slice(0,3).map(x=>recent20LaneChip(x)).join("")}</span>`;
   const s=String(v).trim(),nums=s.match(/[1-6]/g);if(nums&&nums.length>=2)return `<span class="r20Result">${nums.slice(0,3).map(x=>recent20LaneChip(x)).join("")}</span>`;return esc(s);
 }
-function recent20ResultLink(row){
-  const date=String(recent20Value(row,["date","raceDate","heldAt"])||"").replace(/[^0-9]/g,"").slice(0,8);
-  const code=String(row.venueCode||"").padStart(2,"0"),rno=Number(row.raceNo);
-  if(!/^20\d{6}$/.test(date)||!/^\d{2}$/.test(code)||Number(code)<1||Number(code)>24||!Number.isInteger(rno)||rno<1||rno>12)return "";
-  return `https://www.boatrace.jp/owpc/pc/race/raceresult?hd=${date}&jcd=${code}&rno=${rno}`;
+function recent30Finish(v){
+  if(v===undefined||v===null||v==="")return "--";
+  const s=String(v).replace(/[\s　]+/g,"").toUpperCase();
+  if(/^0?[1-6]$/.test(s))return String(Number(s));
+  if(s.startsWith("S1")||s.includes("転"))return "転";
+  if(s.startsWith("S")||s.includes("失"))return "失";
+  if(s.startsWith("K")||s.includes("欠"))return "欠";
+  if(s.startsWith("F")||s.includes("フライング"))return "F";
+  if(s.startsWith("L")||s.includes("出遅"))return "L";
+  return s||"--";
+}
+function recent30ST(v,rank){
+  if(v===undefined||v===null||v==="")return "--";
+  const raw=String(v).replace(/[\s　]+/g,"").toUpperCase();
+  const num=Number(raw.replace(/^[FL]/,""));
+  const prefix=/^[FL]/.test(raw)?raw[0]:"";
+  const value=Number.isFinite(num)?`${prefix}${num.toFixed(2)}`:raw;
+  const n=Number(rank);
+  return `<span class="r20ST"><b>${esc(value)}</b>${Number.isInteger(n)&&n>0?`<small>(${n})</small>`:""}</span>`;
+}
+function recent30DateKey(row){
+  const raw=String(recent20Value(row,["date","raceDate","heldAt"])||"").replace(/[^0-9]/g,"");
+  return raw.length===8?raw:"";
+}
+let recent30VisibleRows=[];
+function closeRecent30Result(){document.getElementById("recent30ResultModal")?.remove();}
+function recent30ResultModal(row){
+  closeRecent30Result();
+  const modal=document.createElement("div");
+  modal.id="recent30ResultModal";
+  modal.className="r30ResultModal";
+  const date=recent20Value(row,["date","raceDate","heldAt"]);
+  const venue=recent20Value(row,["venue","venueName","place","stadium"])||"--";
+  const grade=recent20Value(row,["grade","raceGrade","eventGrade"]);
+  const frame=recent20Value(row,["lane","frame","waku","boatNo"]);
+  const entry=recent20Value(row,["course","entry","courseNo","actualCourse"]);
+  const finish=recent30Finish(recent20Value(row,["finish","rank","arrival","finishPlace"]));
+  const st=recent20Value(row,["st","startTiming","start","actualST"]);
+  const stRank=recent20Value(row,["stRank","startRank","stOrder"]);
+  const move=recent20Value(row,["kimarite","winningMove","decision","move"]);
+  const result=recent20Value(row,["result","combination","resultCombo","order","top3"]);
+  modal.innerHTML=`<div class="r30ResultBackdrop" onclick="closeRecent30Result()"></div>
+    <section class="r30ResultSheet" role="dialog" aria-modal="true" aria-label="BOAT CHECK 結果詳細">
+      <button type="button" class="r30ResultClose" onclick="closeRecent30Result()" aria-label="閉じる">×</button>
+      <div class="r30ResultBrand">BOAT <span>✓</span> CHECK</div>
+      <div class="r30ResultTitle"><div><small>結果詳細</small><strong>${esc(venue)} ${Number(row.raceNo)||"--"}R</strong></div>${recent20Grade(grade)}</div>
+      <div class="r30ResultDate">${recent20Date(date)}</div>
+      <div class="r30ResultGrid">
+        <div><small>選手</small><b>${esc(row.racerName||"選択選手")}</b></div>
+        <div><small>枠</small><b>${recent20LaneChip(frame)}</b></div>
+        <div><small>進入</small><b>${entry!==null?esc(entry):"--"}</b></div>
+        <div><small>着</small><b>${esc(finish)}</b></div>
+        <div><small>ST（順位）</small>${recent30ST(st,stRank)}</div>
+        <div><small>決まり手</small><b>${move?esc(move):"--"}</b></div>
+      </div>
+      <div class="r30ResultOrder"><small>3連単結果</small>${recent20Result(result)}</div>
+      <p>BOAT CHECKに保存されている公式結果データを表示しています。</p>
+    </section>`;
+  document.body.appendChild(modal);
+}
+function openRecent30Result(index){
+  const row=recent30VisibleRows[Number(index)];
+  if(!row)return;
+  const date=recent30DateKey(row),code=String(row.venueCode||"").padStart(2,"0"),rno=Number(row.raceNo);
+  const meeting=state.meetings.find(m=>String(m.venueCode).padStart(2,"0")===code);
+  if(meeting&&date&&Number.isInteger(rno)){
+    const view=currentDayView(meeting,date);
+    const race=(view.races||[]).find(x=>Number(x.raceNo)===rno);
+    if(race){
+      state.currentMeeting=meeting;state.currentDayDate=date;state.currentMeetingView=view;
+      state.currentRace=hydrateRaceForDisplay(race);
+      history.pushState({view:"detail",code,date,raceNo:rno},"",`#race-${code}-${date}-${rno}`);
+      renderRaceContext();$("home").classList.add("hidden");$("venue").classList.add("hidden");$("detail").classList.remove("hidden");
+      const btn=document.querySelector('#raceDataTabs [data-panel="result"]');showRaceData("result",btn);scrollTo({top:0,behavior:"instant"});
+      return;
+    }
+  }
+  recent30ResultModal(row);
 }
 function recent20Selector(boats){
   const displayBoats=orderedBoatsByAssignedCourse(boats,false);
@@ -6255,38 +6328,42 @@ function renderRecent20(){
   // A racer can have no start from the selected course even when other recent
   // results exist. Keep the screen useful and label the fallback explicitly.
   const usedFallback=hasCourseData && courseHistory.length===0 && allHistory.length>0;
-  const history=(usedFallback?allHistory:courseHistory).slice(0,20);
+  const history=(usedFallback?allHistory:courseHistory).slice(0,30);
+  recent30VisibleRows=history.map(x=>({...x,racerName:cleanRacerName(selected.racerName)||""}));
 
-  const rows=history.map(x=>{
+  const rows=history.map((x,rowIndex)=>{
     const date=recent20Value(x,["date","raceDate","heldAt"]);
     const venue=recent20Value(x,["venue","venueName","place","stadium"]);
     const grade=recent20Value(x,["grade","raceGrade","eventGrade"]);
     const frame=recent20Value(x,["lane","frame","waku","boatNo"]);
     const entry=recent20Value(x,["course","entry","courseNo","actualCourse"]);
-    const finish=recent20Value(x,["finish","rank","arrival","finishPlace"]);
+    const finish=recent30Finish(recent20Value(x,["finish","rank","arrival","finishPlace"]));
     const kimarite=recent20Value(x,["kimarite","winningMove","decision","move"]);
+    const st=recent20Value(x,["st","startTiming","start","actualST"]);
+    const stRank=recent20Value(x,["stRank","startRank","stOrder"]);
     const result=recent20Value(x,["result","combination","resultCombo","order","top3"]);
     return `<div class="r20Row">
-      <div class="date">${recent20ResultLink(x)?`<a href="${recent20ResultLink(x)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(date)} ${esc(venue)} ${Number(x.raceNo)}R 公式結果">${recent20Date(date)}</a>`:recent20Date(date)}</div>
+      <div class="date"><button type="button" onclick="openRecent30Result(${rowIndex})" aria-label="${esc(date)} ${esc(venue)} ${Number(x.raceNo)}R BOAT CHECK結果詳細">${recent20Date(date)}</button></div>
       <div class="venue">${venue?esc(venue):"--"}</div>
       <div>${recent20Grade(grade)}</div>
       <div>${recent20LaneChip(frame)}</div>
       <div>${entry!==null?esc(entry):"--"}</div>
       <div class="finish">${finish!==null?esc(finish):"--"}</div>
       <div class="move">${kimarite?esc(kimarite):"--"}</div>
+      <div class="st">${recent30ST(st,stRank)}</div>
       <div class="result">${recent20Result(result)}</div>
     </div>`;
   }).join("");
 
   const empty=`<div class="r20Empty">
     <strong>${assignedCourse}コースの直近データは未取得です</strong>
-    <span>データ取得後、この表に最大20走を自動表示します。</span>
+    <span>データ取得後、この表に最大30走を自動表示します。</span>
   </div>`;
 
   return `<div class="recent20Panel">
     <div class="r20Intro">
       <div>
-        <h3>直近20走成績</h3>
+        <h3>直近30走成績</h3>
         <p>${usedFallback?`${assignedCourse}コース記録なし・全コース直近を表示`:`選択選手の「${assignedCourse}コース想定」に合わせて表示`}</p>
       </div>
       <span>${history.length?`${history.length}走表示`:"データ待ち"}</span>
@@ -6297,7 +6374,7 @@ function renderRecent20(){
     <div class="r20Table">
       <div class="r20Header">
         <div>日付</div><div>場</div><div>級</div><div>枠</div>
-        <div>進</div><div>着</div><div>決</div><div>結果</div>
+        <div>進</div><div>着</div><div>決</div><div class="stHead">ST<small>（順位）</small></div><div>結果</div>
       </div>
       <div class="r20Body">${rows||empty}</div>
     </div>
@@ -6367,7 +6444,7 @@ function renderCourseChange(){
 
     <div class="courseSequenceHelp">
       <b>${complete?"6艇すべて選択済み":"左からの順番ではなく、タップした順番で決まります"}</b>
-      <span>${complete?"「この進入で決定」を押すとコース別勝率・直近20走へ反映します。":"例：3号艇→1号艇→2号艇…と押すと、3-1-2…の進入になります。"}</span>
+      <span>${complete?"「この進入で決定」を押すとコース別勝率・直近30走へ反映します。":"例：3号艇→1号艇→2号艇…と押すと、3-1-2…の進入になります。"}</span>
     </div>
 
     <div class="courseChangeActions">
@@ -6405,7 +6482,7 @@ function renderCourseInfo(){
         onclick="setCourseSubTab('rate')">コース別勝率</button>
       <button data-course-tab="last20"
         class="${courseSubTab==="last20"?"active":""}"
-        onclick="setCourseSubTab('last20')">直近20走成績</button>
+        onclick="setCourseSubTab('last20')">直近30走成績</button>
       <button data-course-tab="change"
         class="${courseSubTab==="change"?"active":""}"
         onclick="setCourseSubTab('change')">進入コース変更</button>
@@ -9678,7 +9755,7 @@ async function loadRecent20Data(){
     if(!res.ok)return;
     const d=await res.json();
     let byRacer=d?.byRacer||d?.recent20ByRacer||d;
-    if(d?.compact===true&&d?.schemaVersion===2&&byRacer&&typeof byRacer==="object"){
+    if(d?.compact===true&&Number(d?.schemaVersion)>=2&&byRacer&&typeof byRacer==="object"){
       const venueNames=d.venueNames||{};
       const grades=Array.isArray(d.grades)?d.grades:[];
       const kimarite=Array.isArray(d.kimarite)?d.kimarite:[];
@@ -9696,7 +9773,8 @@ async function loadRecent20Data(){
           kimarite:kimarite[Number(row[7])]||"",
           result:String(row[8]||"").split("").map(Number).filter(Number.isFinite),
           exhibitionTime:row[9]??null,
-          st:row[10]??null
+          st:row[10]??null,
+          stRank:row[11]??null
         }))
       ]));
     }
@@ -16254,37 +16332,59 @@ button.meetPerfFinish.isLink.late{
 #quickDataPanel .oddsWPRow strong{padding:3px 5px!important;color:#153f5b!important;font-size:11px!important;line-height:1.25!important;overflow-wrap:anywhere}
 </style>
 
-<style id="recent20-one-screen-final-20260914">
+<style id="recent30-st-final-20260914">
 #quickDataPanel .recent20Panel{width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important;touch-action:pan-y}
-#quickDataPanel .recent20Panel .r20Table{width:100%!important;max-width:100%!important;min-width:0!important;overflow:hidden!important;border-color:#7ba9c3!important}
-#quickDataPanel .r20Header,#quickDataPanel .r20Row{width:100%!important;min-width:0!important;grid-template-columns:13% 15% 12% 8% 9% 9% 14% 20%!important}
-#quickDataPanel .r20Header{font-size:9px!important;line-height:1!important}
-#quickDataPanel .r20Header>div{min-width:0!important;padding:8px 0!important;border-right:1px solid rgba(255,255,255,.38)!important;white-space:nowrap!important}
-#quickDataPanel .r20Header>div:nth-child(2),#quickDataPanel .r20Header>div:nth-child(3),#quickDataPanel .r20Header>div:nth-child(5),#quickDataPanel .r20Header>div:nth-child(6){font-size:10px!important}
-#quickDataPanel .r20Row{min-height:49px!important;border-bottom:1px solid #a9c6d6!important}
-#quickDataPanel .r20Row>div{min-width:0!important;padding:4px 1px!important;overflow:hidden!important;font-size:8.6px!important;line-height:1.12!important;word-break:keep-all!important;overflow-wrap:anywhere!important;border-right:1px solid #afcad9!important}
-#quickDataPanel .r20Row .date,#quickDataPanel .r20Row .date a{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;padding:0!important;white-space:nowrap!important}
-#quickDataPanel .r20Row .date strong{font-size:10px!important;line-height:1.05!important;color:#075e9a!important;letter-spacing:-.02em!important}
-#quickDataPanel .r20Row .date small,#quickDataPanel .r20Row .date a small{display:block!important;margin-top:3px!important;font-size:6.5px!important;line-height:1!important;color:#61788a!important;text-decoration:none!important;white-space:nowrap!important}
-#quickDataPanel .r20Row .venue{font-size:10.5px!important;font-weight:950!important;letter-spacing:-.02em!important}
-#quickDataPanel .r20Row .finish{font-size:11px!important;font-weight:950!important}
-#quickDataPanel .r20Row>div:nth-child(5),#quickDataPanel .r20Row>div:nth-child(6){font-size:11px!important;font-weight:950!important}
-#quickDataPanel .r20Row .move{font-size:8px!important;line-height:1.12!important}
-#quickDataPanel .r20Grade{max-width:100%!important;padding:4px 2px!important;font-size:8.5px!important;font-weight:950!important;line-height:1!important;overflow:hidden!important}
-#quickDataPanel .r20Lane{width:19px!important;height:21px!important;min-width:19px!important;min-height:21px!important;border-radius:3px!important;font-size:9px!important;line-height:1!important}
+#quickDataPanel .recent20Panel .r20Table{width:100%!important;max-width:100%!important;min-width:0!important;overflow:hidden!important;border:2px solid #5787a2!important}
+#quickDataPanel .r20Header,#quickDataPanel .r20Row{width:100%!important;min-width:0!important;grid-template-columns:12% 14% 10% 7% 8% 8% 10% 14% 17%!important}
+#quickDataPanel .r20Header{font-size:8.5px!important;line-height:1!important}
+#quickDataPanel .r20Header>div{display:flex!important;min-width:0!important;align-items:center!important;justify-content:center!important;padding:8px 0!important;border-right:1.5px solid rgba(255,255,255,.55)!important;white-space:nowrap!important}
+#quickDataPanel .r20Header>div:last-child{border-right:0!important}
+#quickDataPanel .r20Header .stHead{flex-direction:column!important;gap:2px!important}
+#quickDataPanel .r20Header .stHead small{font-size:6px!important;line-height:1!important}
+#quickDataPanel .r20Row{min-height:50px!important;border-bottom:1.5px solid #759db3!important}
+#quickDataPanel .r20Row:last-child{border-bottom:0!important}
+#quickDataPanel .r20Row>div{min-width:0!important;padding:4px 1px!important;overflow:hidden!important;font-size:8.8px!important;line-height:1.1!important;word-break:keep-all!important;overflow-wrap:anywhere!important;border-right:1.5px solid #789fb5!important}
+#quickDataPanel .r20Row>div:last-child{border-right:0!important}
+#quickDataPanel .r20Row .date,#quickDataPanel .r20Row .date button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;padding:0!important;white-space:nowrap!important}
+#quickDataPanel .r20Row .date button{width:100%!important;height:100%!important;border:0!important;background:transparent!important;font:inherit!important;cursor:pointer!important}
+#quickDataPanel .r20Row .date strong{font-size:10px!important;line-height:1.05!important;color:#075e9a!important;letter-spacing:-.02em!important;text-decoration:underline!important;text-underline-offset:3px!important}
+#quickDataPanel .r20Row .date small,#quickDataPanel .r20Row .date button small{display:block!important;margin-top:3px!important;font-size:6.5px!important;line-height:1!important;color:#61788a!important;text-decoration:none!important;white-space:nowrap!important}
+#quickDataPanel .r20Row .venue{font-size:11.2px!important;font-weight:950!important;letter-spacing:-.04em!important}
+#quickDataPanel .r20Row>div:nth-child(5),#quickDataPanel .r20Row>div:nth-child(6){font-size:11.5px!important;font-weight:950!important}
+#quickDataPanel .r20Row .move{font-size:8px!important;line-height:1.1!important}
+#quickDataPanel .r20Grade{max-width:100%!important;padding:4px 1px!important;font-size:8px!important;font-weight:950!important;line-height:1!important;overflow:hidden!important}
+#quickDataPanel .r20Lane{width:18px!important;height:21px!important;min-width:18px!important;min-height:21px!important;border-radius:3px!important;font-size:9px!important;line-height:1!important}
+#quickDataPanel .r20Row .st{padding-left:0!important;padding-right:0!important}
+#quickDataPanel .r20ST{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;white-space:nowrap!important;font-variant-numeric:tabular-nums!important}
+#quickDataPanel .r20ST b{font-size:9px!important;line-height:1!important;font-weight:950!important}
+#quickDataPanel .r20ST small{font-size:6.5px!important;line-height:1!important;color:#526f82!important;font-weight:900!important}
 #quickDataPanel .r20Row .result{padding-left:0!important;padding-right:0!important}
 #quickDataPanel .r20Result{width:100%!important;min-width:0!important;justify-content:center!important;gap:1px!important;flex-wrap:nowrap!important}
-#quickDataPanel .r20Result .r20Lane{width:18px!important;height:21px!important;min-width:18px!important;min-height:21px!important;font-size:8.5px!important;box-shadow:0 0 0 1px #20a0cf!important}
+#quickDataPanel .r20Result .r20Lane{width:15px!important;height:20px!important;min-width:15px!important;min-height:20px!important;font-size:7.5px!important;box-shadow:0 0 0 1px #168db6!important}
+.r30ResultModal{position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;justify-content:center;font-family:inherit}
+.r30ResultBackdrop{position:absolute;inset:0;background:rgba(2,20,36,.6);backdrop-filter:blur(3px)}
+.r30ResultSheet{position:relative;width:min(100%,520px);max-height:88vh;overflow:auto;padding:18px 18px 24px;border:2px solid #7aa8c2;border-radius:24px 24px 0 0;background:#f8fbfd;box-shadow:0 -18px 50px rgba(0,32,58,.28);color:#0a3452}
+.r30ResultClose{position:absolute;right:13px;top:12px;width:34px;height:34px;border:0;border-radius:50%;background:#e7f0f5;color:#123f5d;font-size:24px;font-weight:800;line-height:1}
+.r30ResultBrand{margin:2px 46px 14px 0;color:#072e4c;font-size:13px;font-weight:950;letter-spacing:.04em}.r30ResultBrand span{color:#1599e6}
+.r30ResultTitle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;border-radius:14px;background:linear-gradient(110deg,#064473,#069bd0);color:#fff}
+.r30ResultTitle small{display:block;font-size:9px}.r30ResultTitle strong{display:block;margin-top:3px;font-size:19px}.r30ResultTitle .r20Grade{font-size:10px!important}
+.r30ResultDate{margin:12px 0;text-align:center}.r30ResultDate strong{display:block;font-size:16px}.r30ResultDate small{font-size:9px;color:#698093}
+.r30ResultGrid{display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;border:1.5px solid #6f99b0;border-radius:13px;background:#fff}
+.r30ResultGrid>div{min-height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px 3px;border-right:1.5px solid #8eafc1;border-bottom:1.5px solid #8eafc1;text-align:center}.r30ResultGrid>div:nth-child(3n){border-right:0}.r30ResultGrid>div:nth-last-child(-n+3){border-bottom:0}
+.r30ResultGrid small,.r30ResultOrder>small{color:#6b8191;font-size:8px;font-weight:850}.r30ResultGrid b{font-size:13px;font-weight:950}.r30ResultGrid .r20ST b{font-size:13px!important}.r30ResultGrid .r20ST small{font-size:8px!important}
+.r30ResultOrder{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:12px 14px;border:1.5px solid #6f99b0;border-radius:13px;background:#fff}.r30ResultOrder .r20Result{width:auto!important}.r30ResultOrder .r20Lane{width:27px!important;height:27px!important;font-size:12px!important}
+.r30ResultSheet>p{margin:12px 2px 0;color:#6e8392;font-size:9px;line-height:1.5;text-align:center}
 @media(max-width:365px){
- #quickDataPanel .r20Header{font-size:8px!important}
- #quickDataPanel .r20Header>div:nth-child(2),#quickDataPanel .r20Header>div:nth-child(3),#quickDataPanel .r20Header>div:nth-child(5),#quickDataPanel .r20Header>div:nth-child(6){font-size:9px!important}
+ #quickDataPanel .r20Header{font-size:7.5px!important}
+ #quickDataPanel .r20Header .stHead small{font-size:5.5px!important}
  #quickDataPanel .r20Row>div{font-size:7.8px!important}
  #quickDataPanel .r20Row .date strong{font-size:9px!important}
- #quickDataPanel .r20Row .date small,#quickDataPanel .r20Row .date a small{font-size:6px!important}
- #quickDataPanel .r20Row .venue{font-size:9.5px!important}
- #quickDataPanel .r20Grade{font-size:7.7px!important;padding:3px 1px!important}
- #quickDataPanel .r20Row>div:nth-child(5),#quickDataPanel .r20Row>div:nth-child(6){font-size:10px!important}
- #quickDataPanel .r20Result{gap:1px!important}
- #quickDataPanel .r20Result .r20Lane{width:16px!important;min-width:16px!important;height:20px!important;min-height:20px!important;font-size:7.5px!important}
+ #quickDataPanel .r20Row .date small,#quickDataPanel .r20Row .date button small{font-size:6px!important}
+ #quickDataPanel .r20Row .venue{font-size:10px!important}
+ #quickDataPanel .r20Grade{font-size:7px!important;padding:3px 0!important}
+ #quickDataPanel .r20Row>div:nth-child(5),#quickDataPanel .r20Row>div:nth-child(6){font-size:10.5px!important}
+ #quickDataPanel .r20ST b{font-size:8px!important}
+ #quickDataPanel .r20ST small{font-size:6px!important}
+ #quickDataPanel .r20Result .r20Lane{width:14px!important;min-width:14px!important;height:19px!important;min-height:19px!important;font-size:7px!important}
 }
 </style>
