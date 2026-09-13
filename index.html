@@ -836,6 +836,58 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 
 </style>
 
+<style id="v136-requested-data-video-odds-fix">
+/* Odds: clear lane/name mapping and stronger table rules. */
+#quickDataPanel .oddsRacerLegend{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;
+ margin:10px 0;border:2px solid #5f91ae;border-radius:11px;overflow:hidden;background:#fff;
+}
+#quickDataPanel .oddsRacerLegend>div{
+ display:grid;grid-template-columns:31px minmax(0,1fr);align-items:center;gap:5px;
+ min-width:0;padding:7px 6px;border-right:1.5px solid #6f9db7;border-bottom:1.5px solid #6f9db7;
+}
+#quickDataPanel .oddsRacerLegend>div:nth-child(3n){border-right:0}
+#quickDataPanel .oddsRacerLegend>div:nth-last-child(-n+3){border-bottom:0}
+#quickDataPanel .oddsRacerLegend b{min-width:0;color:#123f5f;font-size:11px!important;line-height:1.2!important;overflow-wrap:anywhere}
+#quickDataPanel .oddsFirstCard,
+#quickDataPanel .oddsRankBox,
+#quickDataPanel .oddsMainSection{border-color:#588ba9!important;border-width:2px!important}
+#quickDataPanel .oddsFirstHead{flex-wrap:wrap;column-gap:6px!important;row-gap:2px!important;border-bottom:2px solid #527f99!important}
+#quickDataPanel .oddsFirstHead strong{width:100%;font-size:11px!important;line-height:1.2!important;font-weight:950!important;overflow-wrap:anywhere}
+#quickDataPanel .oddsFirstTableHead{border-bottom:2px solid #527f99!important}
+#quickDataPanel .oddsFirstTableHead span,
+#quickDataPanel .oddsFirstRow>div{border-right:1.5px solid #729ab1!important}
+#quickDataPanel .oddsFirstRow{border-bottom:1.5px solid #729ab1!important}
+#quickDataPanel .oddsSimpleHead{border-bottom:2px solid #527f99!important}
+#quickDataPanel .oddsSimpleHead span,
+#quickDataPanel .oddsSimpleRow>*{border-right:1.5px solid #729ab1!important}
+#quickDataPanel .oddsSimpleRow{min-height:48px!important;border-bottom:1.5px solid #729ab1!important}
+#quickDataPanel .oddsComboWithNames{display:flex!important;flex-direction:column!important;gap:3px!important;padding:4px!important}
+#quickDataPanel .oddsComboWithNames small{display:block;color:#4e6e83;font-size:9px!important;line-height:1.25!important;font-weight:850!important;text-align:center}
+#quickDataPanel .oddsRankHead{border-bottom:2px solid #527f99!important}
+#quickDataPanel .oddsRankHead>*,
+#quickDataPanel .oddsRankRow>*{border-right:1.5px solid #729ab1!important}
+#quickDataPanel .oddsRankRow{border-bottom:1.5px solid #729ab1!important}
+#quickDataPanel .oddsWPHead{border-bottom:2px solid #527f99!important}
+#quickDataPanel .oddsWPHead span,
+#quickDataPanel .oddsWPRow>*{border-right:1.5px solid #729ab1!important}
+#quickDataPanel .oddsWPRow{border-bottom:1.5px solid #729ab1!important}
+#quickDataPanel .oddsWPRow strong{padding:3px 5px;color:#153f5b!important;font-size:11px!important;line-height:1.25!important;overflow-wrap:anywhere}
+
+/* Replay: show an official playback action until a direct embeddable URL exists. */
+#quickDataPanel .replayOfficialButton{
+ display:inline-flex;align-items:center;justify-content:center;min-width:190px;min-height:46px;
+ margin-top:12px;padding:9px 18px;border-radius:999px;background:linear-gradient(90deg,#075181,#09a0ce);
+ color:#fff!important;text-decoration:none;font-size:12px!important;font-weight:950!important;
+ box-shadow:0 7px 16px rgba(7,101,154,.18);
+}
+@media(max-width:390px){
+ #quickDataPanel .oddsRacerLegend b{font-size:10px!important}
+ #quickDataPanel .oddsRacerLegend>div{grid-template-columns:28px minmax(0,1fr);padding:6px 4px}
+ #quickDataPanel .oddsFirstHead strong{font-size:10px!important}
+}
+</style>
+
 <style>
 /* v38: professional course-information panel */
 .coursePanel{margin-top:2px}
@@ -4283,7 +4335,7 @@ function renderHomeAdModal(){
     <div class="rewardAdProgress">
       ${homeAdCountdown>0?`あと <b>${homeAdCountdown}</b> 秒`:`視聴完了`}
     </div>
-    <button class="rewardAdClaim" ${homeAdCountdown>0?"disabled":""} onclick="homeGrantAdReward()">視聴完了・500pt受け取る</button>
+    <button class="rewardAdClaim" ${homeAdCountdown>0?"disabled":""} onclick="homeGrantAdReward()">視聴完了・1000pt受け取る</button>
   </div>`;
 }
 function homeGrantAdReward(){
@@ -4295,13 +4347,13 @@ function homeGrantAdReward(){
   }
   s.count+=1;
   homeSaveRewardAdState(s);
-  demoPoints+=500;
+  demoPoints+=1000;
   demoSavePoints();
 
   const hist=homePtHistory();
   hist.unshift({
     at:new Date().toISOString(),
-    amount:500,
+    amount:1000,
     balance:demoPoints,
     type:"reward_ad",
     label:"広告視聴"
@@ -4310,7 +4362,7 @@ function homeGrantAdReward(){
   homeCloseAdModal();
   renderHomeMyPage();
   renderHomePointBalance();
-  demoToast("広告視聴ボーナス +500pt");
+  demoToast("広告視聴ボーナス +1000pt");
 }
 
 function homeMissionDefinitions(){
@@ -4458,7 +4510,7 @@ function homeRenderPoints(){
         <div class="rewardAdIcon">▶</div>
         <div>
           <h4>広告を見てpt追加</h4>
-          <p>広告を最後まで見ると <b>500pt</b> 獲得</p>
+          <p>広告を最後まで見ると <b>1000pt</b> 獲得</p>
         </div>
       </div>
       <div class="rewardAdLimit">
@@ -6100,8 +6152,11 @@ function recent20HistoryForBoat(b){
   const racerId=String(b?.racerId||b?.registrationNo||"");
   const sources=[b?.recent20,b?.recent20Races,b?.last20,b?.history20,b?.recentRaces,b?.stats?.recent20,b?.stats?.recent20Races,b?.history?.recent20];
   for(const s of sources){if(Array.isArray(s))return s;}
-  const shared=state.recent20ByRacer?.[racerId];
-  if(Array.isArray(shared))return shared;
+  const idCandidates=[racerId,racerId.replace(/^0+/,""),racerId.padStart(4,"0")].filter(Boolean);
+  for(const id of idCandidates){
+    const shared=state.recent20ByRacer?.[id];
+    if(Array.isArray(shared))return shared;
+  }
   return [];
 }
 function recent20Value(row,keys){
@@ -6168,10 +6223,13 @@ function renderRecent20(){
   const allHistory=recent20HistoryForBoat(selected);
 
   const hasCourseData=allHistory.some(x=>recent20Value(x,["course","entry","courseNo","actualCourse"])!==null);
-  const filtered=hasCourseData
+  const courseHistory=hasCourseData
     ? allHistory.filter(x=>Number(recent20Value(x,["course","entry","courseNo","actualCourse"]))===assignedCourse)
     : allHistory;
-  const history=filtered.slice(0,20);
+  // A racer can have no start from the selected course even when other recent
+  // results exist. Keep the screen useful and label the fallback explicitly.
+  const usedFallback=hasCourseData && courseHistory.length===0 && allHistory.length>0;
+  const history=(usedFallback?allHistory:courseHistory).slice(0,20);
 
   const rows=history.map(x=>{
     const date=recent20Value(x,["date","raceDate","heldAt"]);
@@ -6203,7 +6261,7 @@ function renderRecent20(){
     <div class="r20Intro">
       <div>
         <h3>直近20走成績</h3>
-        <p>選択選手の「${assignedCourse}コース想定」に合わせて表示</p>
+        <p>${usedFallback?`${assignedCourse}コース記録なし・全コース直近を表示`:`選択選手の「${assignedCourse}コース想定」に合わせて表示`}</p>
       </div>
       <span>${history.length?`${history.length}走表示`:"データ待ち"}</span>
     </div>
@@ -6219,7 +6277,7 @@ function renderRecent20(){
     </div>
 
     <div class="r20Note">
-      ※ 進入コース変更で設定したコースを反映します。未取得項目は「--」表示。
+      ※ 進入コース変更で設定したコースを反映します。該当コースの記録がない場合のみ全コース直近を表示。未取得項目は「--」表示。
     </div>
   </div>`;
 }
@@ -7677,6 +7735,19 @@ function oddsComboHtml(combo,sep="-"){
   return nums.map(oddsLaneChip).join(`<span class="oddsSep">${sep}</span>`);
 }
 
+function oddsRacerName(lane){
+  const boat=(state.currentRace?.boats||[]).find(b=>Number(b.lane||b.boatNo||b.frame)===Number(lane));
+  return cleanRacerName(boat?.racerName||boat?.name||"")||"--";
+}
+function oddsComboNames(combo){
+  const nums=parseCombo(combo);
+  return nums.length?nums.map(oddsRacerName).join("・"):"--";
+}
+function renderOddsRacerLegend(){
+  return `<div class="oddsRacerLegend">${[1,2,3,4,5,6].map(lane=>`
+    <div><span>${oddsLaneChip(lane)}</span><b>${esc(oddsRacerName(lane))}</b></div>`).join("")}</div>`;
+}
+
 function sortOdds(entries,mode){
   const arr=[...entries];
   if(mode==="popular"){
@@ -7753,7 +7824,7 @@ function renderOddsTrifecta(entries){
       ? `<div class="oddsTrifectaGrid">
           ${[1,2,3,4,5,6].map(first=>`
             <div class="oddsFirstCard">
-              <div class="oddsFirstHead laneHead${first}"><span>1着</span><b>${first}</b></div>
+              <div class="oddsFirstHead laneHead${first}"><span>1着</span><b>${first}</b><strong>${esc(oddsRacerName(first))}</strong></div>
               <div class="oddsFirstTable">
                 <div class="oddsFirstTableHead"><span>2着</span><span>3着</span><span>オッズ</span></div>
                 ${(groups[first]||[]).map(e=>`
@@ -7808,7 +7879,7 @@ function renderOddsSimple(entries,title,comboLen=2){
       <div class="oddsSimpleHead"><span>組番</span><span>オッズ</span></div>
       ${sorted.map(e=>`
         <div class="oddsSimpleRow">
-          <div>${oddsComboHtml(e.combination??e.combo??e.number)}</div>
+          <div class="oddsComboWithNames"><span>${oddsComboHtml(e.combination??e.combo??e.number)}</span><small>${esc(oddsComboNames(e.combination??e.combo??e.number))}</small></div>
           <b>${oddsFmt(e.odds??e.value??e.rate)}</b>
         </div>`).join("")}
     </div>
@@ -7834,7 +7905,7 @@ function renderOddsWinPlace(win,place){
     else if(pv!==undefined) placeText=oddsFmt(pv);
     return `<div class="oddsWPRow">
       <div>${oddsLaneChip(lane)}</div>
-      <strong>--</strong>
+      <strong>${esc(oddsRacerName(lane))}</strong>
       <b>${w?oddsFmt(w.odds??w.value??w.rate):"--"}</b>
       <b>${placeText}</b>
     </div>`;
@@ -7873,6 +7944,8 @@ function renderOddsInfo(){
       <div><b>${r.raceNo||"--"}R</b><span>${meetingGrade(state.currentMeeting||{})}</span><strong>締切 ${esc(r.deadline||"--:--")}</strong></div>
       <small>オッズ取得 <span id="oddsFetchedAt">${esc(oddsDisplayStamp())}</span></small>
     </div>
+
+    ${renderOddsRacerLegend()}
 
     <div class="oddsSubTabs">
       <button data-odds-tab="trifecta" class="${oddsSubTab==="trifecta"?"active":""}" onclick="setOddsSubTab('trifecta')">3連単</button>
@@ -8081,7 +8154,6 @@ function renderPayouts(race){
   return `<div class="resultPayoutTable">
     ${defs.map(([label,val])=>payoutRow(label,val)).join("")}
     ${refund!==null?`<div class="resultExtraRow"><span>返還</span><b>${oddsComboHtml(refund)}</b></div>`:""}
-    ${note?`<div class="resultExtraRow"><span>備考</span><b>${esc(note)}</b></div>`:""}
   </div>`;
 }
 
@@ -8164,6 +8236,12 @@ function normalizeVideoUrl(v){
 
 function replayUrls(race){
   const root=replayRoot(race);
+  const officialRacePage =
+    replayPath(root,["racePage","officialPage","page","official"]) ??
+    firstStat(race,["officialReplayPage","replay.officialPage"]);
+  const officialExhibitionPage =
+    replayPath(root,["exhibitionPage","officialExhibitionPage"]) ??
+    (officialRacePage?`${String(officialRacePage).replace(/([?&])md=[^&]*/,"$1md=T")}${String(officialRacePage).includes("md=")?"":"&md=T"}`:"");
   const raceReplay =
     replayPath(root,["race","raceReplay","raceVideo","resultReplay","replay","race.url","raceReplay.url","videos.race"]) ??
     firstStat(race,["raceReplayUrl","replayUrl","raceVideoUrl","video.race","replay.race"]);
@@ -8174,7 +8252,9 @@ function replayUrls(race){
     race: normalizeVideoUrl(raceReplay),
     exhibition: normalizeVideoUrl(exhibitionReplay),
     raceRaw: raceReplay || "",
-    exhibitionRaw: exhibitionReplay || ""
+    exhibitionRaw: exhibitionReplay || "",
+    officialRacePage: normalizeVideoUrl(officialRacePage),
+    officialExhibitionPage: normalizeVideoUrl(officialExhibitionPage)
   };
 }
 
@@ -8185,7 +8265,7 @@ function externalVideoUrl(embedUrl, rawUrl){
   return embedUrl || "";
 }
 
-function renderReplayVideo(title, embedUrl, rawUrl){
+function renderReplayVideo(title, embedUrl, rawUrl, officialPage=""){
   const external=externalVideoUrl(embedUrl,rawUrl);
   if(!embedUrl){
     return `<div class="replaySection">
@@ -8193,8 +8273,9 @@ function renderReplayVideo(title, embedUrl, rawUrl){
         <div><span class="replayAccent"></span><b>${title}</b></div>
       </div>
       <div class="replayEmpty">
-        <strong>${title}はまだ取得されていません</strong>
-        <span>公式動画URL取得後にここへ直接表示します。</span>
+        <strong>${officialPage?`${title}を公式動画で再生`:`${title}はまだ取得されていません`}</strong>
+        <span>${officialPage?"公式配信ページで動画を確認できます。":"公式動画URL取得後にここへ直接表示します。"}</span>
+        ${officialPage?`<a class="replayOfficialButton" href="${esc(officialPage)}" target="_blank" rel="noopener">▶ ${title}を見る</a>`:""}
       </div>
     </div>`;
   }
@@ -8260,8 +8341,8 @@ function renderReplayInfo(){
       <small>締切 ${esc(r.deadline||"--:--")}</small>
     </div>
 
-    ${renderReplayVideo("レースリプレイ",urls.race,urls.raceRaw)}
-    ${renderReplayVideo("展示リプレイ",urls.exhibition,urls.exhibitionRaw)}
+    ${renderReplayVideo("レースリプレイ",urls.race,urls.raceRaw,urls.officialRacePage)}
+    ${renderReplayVideo("展示リプレイ",urls.exhibition,urls.exhibitionRaw,urls.officialExhibitionPage)}
 
     <div class="replayNotice">
       <b>ご注意</b>
@@ -9477,7 +9558,7 @@ async function refreshOfficialData(){
 
     state.meetings=d.meetings;
     state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];
-    if(d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;
+    if(!Object.keys(state.recent20ByRacer||{}).length&&d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;
     state.updatedAt=d.updatedAt;
     state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
@@ -9518,7 +9599,7 @@ async function loadData(){
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const d=await res.json();
     if(!Array.isArray(d.meetings))throw new Error("meetings invalid");
-    state.meetings=d.meetings;state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];if(d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
+    state.meetings=d.meetings;state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];if(!Object.keys(state.recent20ByRacer||{}).length&&d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
     $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
     renderVenues();
@@ -16117,6 +16198,33 @@ button.meetPerfFinish.isLink.late{
  #homeVenuesPanel #venues .card .nextRace b,
  #homeVenuesPanel #venues .card .cutoff b{font-size:13px!important}
  #homeVenuesPanel #venues .card .endText{font-size:11px!important}
- #homeTabs .homeTabLabel{font-size:9.5px!important}
+#homeTabs .homeTabLabel{font-size:9.5px!important}
 }
+</style>
+
+<style id="v136-final-odds-rules">
+#quickDataPanel .oddsMainSection,
+#quickDataPanel .oddsFirstCard,
+#quickDataPanel .oddsRankBox{border-color:#4f809d!important;border-width:2px!important}
+#quickDataPanel .oddsFirstHead,
+#quickDataPanel .oddsFirstTableHead,
+#quickDataPanel .oddsSimpleHead,
+#quickDataPanel .oddsRankHead,
+#quickDataPanel .oddsWPHead{border-bottom:2px solid #4f7890!important}
+#quickDataPanel .oddsFirstRow,
+#quickDataPanel .oddsSimpleRow,
+#quickDataPanel .oddsRankRow,
+#quickDataPanel .oddsWPRow{border-bottom:1.5px solid #668fa7!important}
+#quickDataPanel .oddsFirstTableHead span,
+#quickDataPanel .oddsFirstRow>div,
+#quickDataPanel .oddsSimpleHead span,
+#quickDataPanel .oddsSimpleRow>*,
+#quickDataPanel .oddsRankHead>*,
+#quickDataPanel .oddsRankRow>*,
+#quickDataPanel .oddsWPHead span,
+#quickDataPanel .oddsWPRow>*{border-right:1.5px solid #668fa7!important}
+#quickDataPanel .oddsSimpleRow{min-height:48px!important}
+#quickDataPanel .oddsFirstHead{flex-wrap:wrap!important;column-gap:6px!important;row-gap:2px!important}
+#quickDataPanel .oddsFirstHead strong{display:block;width:100%;font-size:11px!important;line-height:1.2!important;font-weight:950!important;overflow-wrap:anywhere}
+#quickDataPanel .oddsWPRow strong{padding:3px 5px!important;color:#153f5b!important;font-size:11px!important;line-height:1.25!important;overflow-wrap:anywhere}
 </style>
