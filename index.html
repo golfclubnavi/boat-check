@@ -63,16 +63,6 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .skeleton{animation:pulse 1.2s ease-in-out infinite alternate;background:#e7edf3!important;color:transparent!important}
 @keyframes pulse{from{opacity:.55}to{opacity:1}}
 
-.judge-guide{margin-top:14px;background:#fff;border:1px solid #d8e1ea;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
-.judge-title{background:linear-gradient(90deg,#092d57,#174f84);color:#fff;font-size:13px;font-weight:950;padding:10px 12px}
-.judge-main{display:grid;grid-template-columns:.95fr 1.2fr 1fr;padding:11px 9px 10px}
-.jc{min-width:0}.jc+.jc{border-left:1px solid #d7e0e8;padding-left:9px;margin-left:9px}
-.jh{font-size:11px;font-weight:950;margin-bottom:5px}.jp{font-size:8px;line-height:1.5}
-.scale{height:6px;margin:9px 0 4px;border-radius:99px;background:linear-gradient(90deg,#0877f9,#16b962 27%,#f0d80c 53%,#ff8a00 74%,#ee2028)}
-.scale-label{display:flex;justify-content:space-between;font-size:8px;font-weight:800}
-.status{margin-bottom:7px}.status:last-child{margin-bottom:0}.status-head{font-size:9px;font-weight:950}.status small{font-size:6px}.status p{margin:2px 0 0;font-size:7px;line-height:1.35}
-.status.check .status-head{color:#0878ee}.status.caution .status-head{color:#e89500}.status.skip .status-head{color:#ef2028}
-
 .back{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;font-weight:850;color:#233952;margin-bottom:10px;box-shadow:0 3px 10px rgba(8,32,59,.05)}
 .hero{background:linear-gradient(145deg,#fff,#f8fbff);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
 .heroTop{display:flex;justify-content:space-between;gap:12px}.venueName{font-size:28px;font-weight:950;letter-spacing:-.03em}
@@ -107,7 +97,7 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .empty{grid-column:1/-1;background:#fff;border:1px solid var(--line);border-radius:13px;padding:26px 15px;text-align:center;color:var(--muted);font-size:10px;box-shadow:var(--shadow)}
 .errorbox{background:#fff4f4;border:1px solid #f0c9cc;color:#a52f37;border-radius:11px;padding:10px;font-size:9px;margin-bottom:10px}
 @media(min-width:760px){.grid{grid-template-columns:repeat(6,1fr)}.raceGrid{grid-template-columns:1fr 1fr}}
-@media(max-width:390px){.name{font-size:14px}.card{min-height:108px}.race{gap:4px}.judge-main{grid-template-columns:.9fr 1.25fr 1fr}.status p{font-size:6.5px}}
+@media(max-width:390px){.name{font-size:14px}.card{min-height:108px}.race{gap:4px}}
 
 /* v23: venue status / professional card polish */
 .card{padding-top:7px}
@@ -836,6 +826,122 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 
 </style>
 
+<style id="recent20-one-screen-20260914">
+/* Recent history: all eight columns fit the visible panel without horizontal scrolling. */
+#quickDataPanel .recent20Panel{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow-x:hidden!important;
+  touch-action:pan-y;
+}
+#quickDataPanel .recent20Panel .r20Table{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  border-color:#7ba9c3!important;
+}
+#quickDataPanel .r20Header,
+#quickDataPanel .r20Row{
+  width:100%!important;
+  min-width:0!important;
+  grid-template-columns:13% 13% 10% 8% 8% 8% 14% 26%!important;
+}
+#quickDataPanel .r20Header{
+  font-size:9px!important;
+  line-height:1!important;
+}
+#quickDataPanel .r20Header>div{
+  min-width:0!important;
+  padding:8px 0!important;
+  border-right:1px solid rgba(255,255,255,.38)!important;
+  white-space:nowrap!important;
+}
+#quickDataPanel .r20Row{
+  min-height:49px!important;
+  border-bottom:1px solid #a9c6d6!important;
+}
+#quickDataPanel .r20Row>div{
+  min-width:0!important;
+  padding:4px 1px!important;
+  overflow:hidden!important;
+  font-size:8.6px!important;
+  line-height:1.12!important;
+  word-break:keep-all!important;
+  overflow-wrap:anywhere!important;
+  border-right:1px solid #afcad9!important;
+}
+#quickDataPanel .r20Row .date a,
+#quickDataPanel .r20Row .date{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  white-space:nowrap!important;
+}
+#quickDataPanel .r20Row .date strong{
+  font-size:10px!important;
+  line-height:1.05!important;
+  color:#075e9a!important;
+  letter-spacing:-.02em!important;
+}
+#quickDataPanel .r20Row .date small,
+#quickDataPanel .r20Row .date a small{
+  display:block!important;
+  margin-top:3px!important;
+  font-size:6.5px!important;
+  line-height:1!important;
+  color:#61788a!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+}
+#quickDataPanel .r20Row .venue{font-size:8.8px!important;font-weight:900!important}
+#quickDataPanel .r20Row .finish{font-size:11px!important;font-weight:950!important}
+#quickDataPanel .r20Row .move{font-size:8px!important;line-height:1.12!important}
+#quickDataPanel .r20Grade{
+  max-width:100%!important;
+  padding:3px 2px!important;
+  font-size:7px!important;
+  line-height:1!important;
+  overflow:hidden!important;
+}
+#quickDataPanel .r20Lane{
+  width:19px!important;
+  height:21px!important;
+  min-width:19px!important;
+  min-height:21px!important;
+  border-radius:3px!important;
+  font-size:9px!important;
+  line-height:1!important;
+}
+#quickDataPanel .r20Result{
+  width:100%!important;
+  min-width:0!important;
+  gap:2px!important;
+  flex-wrap:nowrap!important;
+}
+#quickDataPanel .r20Result .r20Lane{
+  width:18px!important;
+  height:21px!important;
+  min-width:18px!important;
+  min-height:21px!important;
+  font-size:8.5px!important;
+  box-shadow:0 0 0 1px #20a0cf!important;
+}
+@media(max-width:365px){
+  #quickDataPanel .r20Header{font-size:8px!important}
+  #quickDataPanel .r20Row>div{font-size:7.8px!important}
+  #quickDataPanel .r20Row .date strong{font-size:9px!important}
+  #quickDataPanel .r20Row .date small,
+  #quickDataPanel .r20Row .date a small{font-size:6px!important}
+  #quickDataPanel .r20Row .venue{font-size:8px!important}
+  #quickDataPanel .r20Result{gap:1px!important}
+  #quickDataPanel .r20Result .r20Lane{width:16px!important;min-width:16px!important;height:20px!important;min-height:20px!important;font-size:7.5px!important}
+}
+</style>
+
 <style id="v136-requested-data-video-odds-fix">
 /* Odds: clear lane/name mapping and stronger table rules. */
 #quickDataPanel .oddsRacerLegend{
@@ -973,10 +1079,6 @@ h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color
 .sixCell.lane6 .laneBadge{background:#159447;color:#fff}
 .sixCell strong{display:block;font-size:8px;color:#132f49;line-height:1.35;margin-bottom:5px}
 .sixCell small{display:block;font-size:6.8px;color:#697e92;font-weight:800;line-height:1.45}
-
-.skipPrep{display:flex;gap:12px;align-items:center}
-.skipScoreGhost{flex:0 0 58px;height:58px;border-radius:16px;background:#eef4f8;display:grid;place-items:center;font-size:25px;font-weight:950;color:#8da0b1}
-.skipPrep strong{font-size:12px;color:#163a58}.skipPrep p{margin:4px 0 0;font-size:9px;line-height:1.6;color:#6b7e90}
 
 .meetDayTabs{display:flex !important;gap:7px !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 2px 10px !important}
 .meetDayTabs::-webkit-scrollbar{display:none}
@@ -1638,62 +1740,6 @@ body{letter-spacing:0 !important}
   }
   .raceQuickGrid9 button{
     font-size:14.8px !important;
-  }
-}
-</style>
-
-
-<style>
-/* v55: reserve center space for future 見送り度 */
-.raceTopPro{
-  grid-template-columns:58px 118px 1fr auto !important;
-  gap:8px !important;
-  padding:12px 14px 11px !important;
-  align-items:center !important;
-}
-.raceNoPro{
-  justify-content:flex-start !important;
-  font-size:27px !important;
-}
-.raceNoPro small{
-  font-size:12px !important;
-}
-.raceTiming{
-  text-align:left !important;
-}
-.raceTiming small{
-  font-size:8px !important;
-  margin-bottom:2px !important;
-}
-.raceTiming b{
-  font-size:18px !important;
-}
-.raceCountdownBox{
-  grid-column:4;
-  min-width:100px !important;
-  font-size:14px !important;
-  text-align:right !important;
-}
-
-/* keep an open middle lane for future 見送り度 */
-.raceTopPro::after{
-  content:"";
-  grid-column:3;
-}
-
-@media(max-width:390px){
-  .raceTopPro{
-    grid-template-columns:52px 106px 1fr auto !important;
-    gap:7px !important;
-    padding:11px 11px 10px !important;
-  }
-  .raceNoPro{font-size:25px !important}
-  .raceNoPro small{font-size:11px !important}
-  .raceTiming small{font-size:7.5px !important}
-  .raceTiming b{font-size:17px !important}
-  .raceCountdownBox{
-    min-width:90px !important;
-    font-size:13px !important;
   }
 }
 </style>
@@ -3441,23 +3487,6 @@ body{letter-spacing:0 !important}
       <span>マイページ ›</span>
     </button>
 
-    <div class="judge-guide">
-      <div class="judge-title">見送り度・判定の見方</div>
-      <div class="judge-main">
-        <div class="jc">
-          <div class="jh">見送り度</div>
-          <div class="jp">数値が高いほど<br>見送るべきレースです</div>
-          <div class="scale"></div><div class="scale-label"><b>0%</b><b>100%</b></div>
-        </div>
-        <div class="jc">
-          <div class="status check"><div class="status-head">✓ CHECK <small>0〜40%</small></div><p>買い目検討OKのレース</p></div>
-          <div class="status caution"><div class="status-head">▲ CAUTION <small>41〜70%</small></div><p>慎重に判断したいレース</p></div>
-        </div>
-        <div class="jc">
-          <div class="status skip"><div class="status-head">× SKIP <small>71〜100%</small></div><p>見送ることを推奨するレース</p></div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div id="homeDeadlinePanel" class="homePanel hidden"></div>
@@ -3499,10 +3528,6 @@ body{letter-spacing:0 !important}
   </div>
   <div class="raceGrid" id="races"></div>
 
-  <div class="dataNoticePro">
-    <strong>✓ BOAT CHECK 見送り度について</strong><br>
-    全国勝率・コース成績・平均ST・モーター・節間成績・展示・F/L・気象のうち、取得できた公式データから自動算出します。直前情報の取得後に数値が変わる場合があります。
-  </div>
 </section>
 
 <section id="detail" class="hidden">
@@ -4955,105 +4980,6 @@ function racerNameClass(name){
   return Array.from(s).length>=5 ? "longRacerName" : "shortRacerName";
 }
 
-function skipFiniteNumber(value){
-  if(value===null||value===undefined||value==="")return null;
-  const n=Number(value);
-  return Number.isFinite(n)?n:null;
-}
-
-function skipClamp(value,min=0,max=100){
-  return Math.max(min,Math.min(max,value));
-}
-
-function skipValues(boats,pick){
-  return boats.map(pick).map(skipFiniteNumber).filter(v=>v!==null);
-}
-
-/*
- * A high score means that the available official figures do not reveal a
- * clear leading boat, or that start/weather risk is high. Missing categories
- * are excluded and the remaining weights are re-normalised; they never become
- * zero-valued evidence.
- */
-function skipGapRisk(values,decisiveGap,lowerIsBetter=false){
-  if(values.length<4)return null;
-  const sorted=[...values].sort((a,b)=>lowerIsBetter?a-b:b-a);
-  const leaderGap=Math.abs(sorted[1]-sorted[0]);
-  return skipClamp(100-(leaderGap/decisiveGap)*100);
-}
-
-function raceSkipAnalysis(r){
-  const boats=Array.isArray(r?.boats)?r.boats:[];
-  const parts=[];
-  const add=(name,weight,risk)=>{
-    if(risk!==null&&Number.isFinite(risk))parts.push({name,weight,risk:skipClamp(risk)});
-  };
-
-  add("全国勝率",25,skipGapRisk(skipValues(boats,b=>b.nationalWinRate??b.stats?.winRate?.national),1.4));
-  add("コース成績",20,skipGapRisk(skipValues(boats,b=>{
-    const course=String(b.exhibitionCourse||b.lane||"");
-    const row=b.courseStats?.[course];
-    return row?.official?.threeRate??row?.threeRate;
-  }),18));
-  add("平均ST",14,skipGapRisk(skipValues(boats,b=>b.avgST??b.stats?.st?.overall),0.035,true));
-  add("モーター",14,skipGapRisk(skipValues(boats,b=>b.motorTwoRate??b.motor?.twoRate),12));
-  add("節間成績",10,skipGapRisk(skipValues(boats,b=>b.meetStats?.threeRate),25));
-
-  const beforeByLane=new Map((r.beforeData||[]).map(b=>[Number(b.lane),b]));
-  add("展示タイム",10,skipGapRisk(skipValues(boats,b=>b.exhibitionTime??beforeByLane.get(Number(b.lane))?.exhibitionTime),0.12,true));
-
-  const hasStartRisk=boats.filter(b=>
-    b.flyingCount!==undefined||b.lateCount!==undefined||
-    b.stats?.flyingCount!==undefined||b.stats?.lateCount!==undefined
-  ).length>=4;
-  if(hasStartRisk){
-    const risk=boats.reduce((sum,b)=>{
-      const flying=skipFiniteNumber(b.flyingCount??b.stats?.flyingCount)??0;
-      const late=skipFiniteNumber(b.lateCount??b.stats?.lateCount)??0;
-      return sum+flying*20+late*28;
-    },0);
-    add("F・L",7,risk);
-  }
-
-  const weather=r.weather||r.weatherData||r.conditions||{};
-  const wind=skipFiniteNumber(weather.windSpeed);
-  const wave=skipFiniteNumber(weather.waveHeight);
-  if(wind!==null||wave!==null){
-    add("気象",7,Math.max(wind===null?0:(wind/7)*100,wave===null?0:(wave/12)*100));
-  }
-
-  const totalWeight=parts.reduce((sum,p)=>sum+p.weight,0);
-  if(parts.length<3||totalWeight<45){
-    return {ready:false,label:"算出待ち",cls:"pending",mark:"…",title:"公式データが3項目以上揃うと自動算出します"};
-  }
-
-  const score=Math.round(parts.reduce((sum,p)=>sum+p.weight*p.risk,0)/totalWeight);
-  const decision=score<=40
-    ?{label:"CHECK",cls:"check",mark:"✓"}
-    :score<=70
-      ?{label:"CAUTION",cls:"caution",mark:"▲"}
-      :{label:"SKIP",cls:"skip",mark:"×"};
-  return {
-    ready:true,
-    score,
-    ...decision,
-    title:`${parts.map(p=>p.name).join("・")}から自動算出（取得済み${parts.length}項目）`
-  };
-}
-
-function renderRaceSkipMeter(analysis){
-  if(!analysis.ready){
-    return `<div class="raceSkipMeter pending" title="${esc(analysis.title)}">
-      <div class="raceSkipValue"><span>見送り度</span><strong>--<small>%</small></strong></div>
-      <div class="raceSkipDecision"><b>${analysis.mark}</b>${analysis.label}</div>
-    </div>`;
-  }
-  return `<div class="raceSkipMeter ${analysis.cls}" title="${esc(analysis.title)}">
-    <div class="raceSkipValue"><span>見送り度</span><strong>${analysis.score}<small>%</small></strong></div>
-    <div class="raceSkipDecision"><b>${analysis.mark}</b>${analysis.label}</div>
-  </div>`;
-}
-
 function renderRaces(m){
   const races=m.races||[];
   if(!races.length){
@@ -5065,7 +4991,6 @@ function renderRaces(m){
     const info=raceStatusInfo(r,m);
     const urgent=info.cls==="urgent";
     const cancelled=info.cls==="cancelled";
-    const skipAnalysis=raceSkipAnalysis(r);
 
     const boats=hydrateBoatsForDisplay(r.boats||[]).map(b=>{
       const period=b.period?`${esc(b.period)}期`:"--期";
@@ -5093,7 +5018,6 @@ function renderRaces(m){
           <small>${cancelled?"レース状況":"締切予定"}</small>
           <b class="${urgent?"urgent":""}">${cancelled?esc(info.label):esc(r.deadline||"-")}</b>
         </div>
-        ${renderRaceSkipMeter(skipAnalysis)}
         <div class="raceCountdownBox ${urgent?"urgent":""}">
           ${(()=>{
             const mins=raceMinutesUntil(r.deadline);
@@ -6266,8 +6190,9 @@ function recent20Value(row,keys){
 }
 function recent20Date(v){
   if(v===undefined||v===null||v==="")return "--";
-  const s=String(v).trim();const m=s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
-  if(m)return `<strong>${Number(m[2])}/${Number(m[3])}</strong>`;
+  const s=String(v).trim();
+  const m=s.match(/^(\d{4})[-\/]?(\d{1,2})[-\/]?(\d{1,2})$/);
+  if(m)return `<strong>${Number(m[2])}/${Number(m[3])}</strong><small>${m[1]}</small>`;
   return esc(s);
 }
 function recent20Grade(v){
@@ -6371,8 +6296,8 @@ function renderRecent20(){
 
     <div class="r20Table">
       <div class="r20Header">
-        <div>日付</div><div>場</div><div>グレード</div><div>枠</div>
-        <div>進入</div><div>着</div><div>決まり手</div><div>結果</div>
+        <div>日付</div><div>場</div><div>級</div><div>枠</div>
+        <div>進</div><div>着</div><div>決</div><div>結果</div>
       </div>
       <div class="r20Body">${rows||empty}</div>
     </div>
@@ -9927,7 +9852,6 @@ setInterval(()=>{
 #quickDataPanel .sixCell .laneBadge{font-size:12px!important;line-height:1.45!important;}
 #quickDataPanel .sixCell strong{font-size:12px!important;line-height:1.45!important;}
 #quickDataPanel .sixCell small{font-size:12px!important;line-height:1.45!important;}
-#quickDataPanel .skipPrep p{font-size:12px!important;line-height:1.45!important;}
 #quickDataPanel .meetDayTabs .meetDate{font-size:12px!important;line-height:1.45!important;}
 #quickDataPanel .meetDayTabs .meetLabel{font-size:12px!important;line-height:1.45!important;}
 #quickDataPanel .backToListBtn{font-size:12px!important;line-height:1.45!important;}
@@ -10435,109 +10359,6 @@ setInterval(()=>{
 #quickDataPanel .r20Header,#quickDataPanel .r20Row{grid-template-columns:1.05fr .9fr .9fr .55fr .55fr .55fr 1fr 1.4fr!important}
 #quickDataPanel .r20Header>div{font-size:12px!important;line-height:1.5!important;overflow-wrap:anywhere}
 
-</style>
-<style id="race-skip-score-20260914">
-/* Four balanced zones: R / deadline / skip score / countdown. */
-.raceCardPro .raceTopPro{
-  grid-template-columns:48px 104px minmax(116px,132px) minmax(76px,1fr)!important;
-  gap:9px!important;
-  align-items:center!important;
-}
-.raceCardPro .raceNoPro{grid-column:1!important;grid-row:1!important}
-.raceCardPro .raceTiming{grid-column:2!important;grid-row:1!important}
-.raceCardPro .raceSkipMeter{grid-column:3!important;grid-row:1!important}
-.raceCardPro .raceCountdownBox{
-  grid-column:4!important;
-  grid-row:1!important;
-  min-width:0!important;
-  text-align:right!important;
-}
-
-.raceSkipMeter{
-  min-width:0;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.38);
-  border-radius:10px;
-  background:#fff;
-  box-shadow:0 3px 10px rgba(0,32,58,.12);
-}
-.raceSkipValue{
-  min-height:29px;
-  padding:3px 7px 2px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:4px;
-  color:#345a70;
-  background:#f5fbfe;
-  border-bottom:1px solid #d8eaf2;
-}
-.raceSkipValue span{
-  font-size:9px;
-  line-height:1;
-  font-weight:850;
-  white-space:nowrap;
-}
-.raceSkipValue strong{
-  font-size:18px;
-  line-height:1;
-  font-weight:950;
-  font-variant-numeric:tabular-nums;
-  letter-spacing:-.04em;
-}
-.raceSkipValue strong small{font-size:9px;margin-left:1px;letter-spacing:0}
-.raceSkipDecision{
-  height:22px;
-  padding:3px 5px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  font-size:9px;
-  line-height:1;
-  font-weight:950;
-  letter-spacing:.015em;
-  white-space:nowrap;
-}
-.raceSkipDecision b{font-size:11px;line-height:1}
-.raceSkipMeter.check .raceSkipDecision{color:#007bd8;background:#e9f6ff}
-.raceSkipMeter.check .raceSkipValue strong{color:#007bd8}
-.raceSkipMeter.caution .raceSkipDecision{color:#a96b00;background:#fff5d8}
-.raceSkipMeter.caution .raceSkipValue strong{color:#d88600}
-.raceSkipMeter.skip .raceSkipDecision{color:#d9152e;background:#ffebee}
-.raceSkipMeter.skip .raceSkipValue strong{color:#e51c36}
-.raceSkipMeter.pending .raceSkipDecision{color:#667d8e;background:#eef5f8}
-.raceSkipMeter.pending .raceSkipValue strong{color:#758b9b}
-
-@media(max-width:430px){
-  .raceCardPro .raceTopPro{
-    grid-template-columns:41px 78px minmax(94px,108px) minmax(62px,1fr)!important;
-    gap:6px!important;
-    padding:8px 9px!important;
-  }
-  .raceCardPro .raceNoPro{font-size:28px!important}
-  .raceCardPro .raceNoPro small{font-size:12px!important}
-  .raceCardPro .raceTiming{padding-left:8px!important}
-  .raceCardPro .raceTiming small{font-size:9px!important}
-  .raceCardPro .raceTiming b{font-size:18px!important}
-  .raceCardPro .raceCountdownBox{font-size:11px!important;line-height:1.25!important}
-  .raceSkipValue{min-height:27px;padding:3px 5px 2px}
-  .raceSkipValue span{font-size:8px}
-  .raceSkipValue strong{font-size:16px}
-  .raceSkipValue strong small{font-size:8px}
-  .raceSkipDecision{height:20px;font-size:8px;gap:3px;padding:3px}
-  .raceSkipDecision b{font-size:10px}
-}
-@media(max-width:355px){
-  .raceCardPro .raceTopPro{
-    grid-template-columns:38px 70px minmax(88px,98px) minmax(54px,1fr)!important;
-    gap:5px!important;
-    padding:8px 7px!important;
-  }
-  .raceCardPro .raceNoPro{font-size:25px!important}
-  .raceCardPro .raceTiming b{font-size:16px!important}
-  .raceCardPro .raceCountdownBox{font-size:10px!important}
-}
 </style>
 </body>
 </html>
@@ -16431,4 +16252,33 @@ button.meetPerfFinish.isLink.late{
 #quickDataPanel .oddsFirstHead{flex-wrap:wrap!important;column-gap:6px!important;row-gap:2px!important}
 #quickDataPanel .oddsFirstHead strong{display:block;width:100%;font-size:11px!important;line-height:1.2!important;font-weight:950!important;overflow-wrap:anywhere}
 #quickDataPanel .oddsWPRow strong{padding:3px 5px!important;color:#153f5b!important;font-size:11px!important;line-height:1.25!important;overflow-wrap:anywhere}
+</style>
+
+<style id="recent20-one-screen-final-20260914">
+#quickDataPanel .recent20Panel{width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important;touch-action:pan-y}
+#quickDataPanel .recent20Panel .r20Table{width:100%!important;max-width:100%!important;min-width:0!important;overflow:hidden!important;border-color:#7ba9c3!important}
+#quickDataPanel .r20Header,#quickDataPanel .r20Row{width:100%!important;min-width:0!important;grid-template-columns:13% 13% 10% 8% 8% 8% 14% 26%!important}
+#quickDataPanel .r20Header{font-size:9px!important;line-height:1!important}
+#quickDataPanel .r20Header>div{min-width:0!important;padding:8px 0!important;border-right:1px solid rgba(255,255,255,.38)!important;white-space:nowrap!important}
+#quickDataPanel .r20Row{min-height:49px!important;border-bottom:1px solid #a9c6d6!important}
+#quickDataPanel .r20Row>div{min-width:0!important;padding:4px 1px!important;overflow:hidden!important;font-size:8.6px!important;line-height:1.12!important;word-break:keep-all!important;overflow-wrap:anywhere!important;border-right:1px solid #afcad9!important}
+#quickDataPanel .r20Row .date,#quickDataPanel .r20Row .date a{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;padding:0!important;white-space:nowrap!important}
+#quickDataPanel .r20Row .date strong{font-size:10px!important;line-height:1.05!important;color:#075e9a!important;letter-spacing:-.02em!important}
+#quickDataPanel .r20Row .date small,#quickDataPanel .r20Row .date a small{display:block!important;margin-top:3px!important;font-size:6.5px!important;line-height:1!important;color:#61788a!important;text-decoration:none!important;white-space:nowrap!important}
+#quickDataPanel .r20Row .venue{font-size:8.8px!important;font-weight:900!important}
+#quickDataPanel .r20Row .finish{font-size:11px!important;font-weight:950!important}
+#quickDataPanel .r20Row .move{font-size:8px!important;line-height:1.12!important}
+#quickDataPanel .r20Grade{max-width:100%!important;padding:3px 2px!important;font-size:7px!important;line-height:1!important;overflow:hidden!important}
+#quickDataPanel .r20Lane{width:19px!important;height:21px!important;min-width:19px!important;min-height:21px!important;border-radius:3px!important;font-size:9px!important;line-height:1!important}
+#quickDataPanel .r20Result{width:100%!important;min-width:0!important;gap:2px!important;flex-wrap:nowrap!important}
+#quickDataPanel .r20Result .r20Lane{width:18px!important;height:21px!important;min-width:18px!important;min-height:21px!important;font-size:8.5px!important;box-shadow:0 0 0 1px #20a0cf!important}
+@media(max-width:365px){
+ #quickDataPanel .r20Header{font-size:8px!important}
+ #quickDataPanel .r20Row>div{font-size:7.8px!important}
+ #quickDataPanel .r20Row .date strong{font-size:9px!important}
+ #quickDataPanel .r20Row .date small,#quickDataPanel .r20Row .date a small{font-size:6px!important}
+ #quickDataPanel .r20Row .venue{font-size:8px!important}
+ #quickDataPanel .r20Result{gap:1px!important}
+ #quickDataPanel .r20Result .r20Lane{width:16px!important;min-width:16px!important;height:20px!important;min-height:20px!important;font-size:7.5px!important}
+}
 </style>
