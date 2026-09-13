@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Attach each active racer's recent results, grouped up to 20 per entry course."""
+"""Parse official race results and aggregate racer/course statistics."""
 from __future__ import annotations
 
 import argparse
@@ -116,11 +116,12 @@ def parse_day(text: str, day: date, wanted: set[str]) -> dict[str, list[dict]]:
                 "grade": grade,
                 "raceNo": race_no,
                 "isFinal":bool(re.search(r"(?<!準)優勝戦",race_head)),
+                "isSemiFinal":bool(re.search(r"準優勝戦",race_head)),
                 "finish": int(match.group(1)) if match else raw_finish,
                 "kimarite": move if match and int(match.group(1)) == 1 else "",
                 "result": result,
             })
-            if racer_id in wanted:
+            if wanted is None or racer_id in wanted:
                 found[racer_id].append(row)
         race_rows = []
 
@@ -157,6 +158,8 @@ def parse_day(text: str, day: date, wanted: set[str]) -> dict[str, list[dict]]:
             "racerId": racer_id,
             "racerName": normalize_name(name),
             "finishRaw": finish_raw,
+            "motorNo":int(_motor),
+            "registrationNo":racer_id,
             "lane": int(lane),
             "course": int(course),
             "exhibitionTime": float(exhibition),
@@ -214,6 +217,8 @@ def aggregate_overall(rows,base):
     for move in ("逃げ","差し","まくり","まくり差し"):
         result["kimarite"][move]=sum(r["finish"]==1 and r["raceMove"]==move for r in rows) if rows else None
     result["championships"]=sum(r["finish"]==1 and r.get("isFinal") for r in rows) if rows else None
+    result["semiFinals"]=sum(bool(r.get("isSemiFinal")) for r in rows if not str(r["finish"]).startswith("K")) if rows else None
+    result["finals"]=sum(bool(r.get("isFinal")) for r in rows if not str(r["finish"]).startswith("K")) if rows else None
     result["lastFlyingDate"]=max((r["date"] for r in rows if r["finish"]=="F"),default=None)
     return result
 
