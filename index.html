@@ -4992,24 +4992,7 @@ function renderRaces(m){
     const urgent=info.cls==="urgent";
     const cancelled=info.cls==="cancelled";
 
-    const boats=hydrateBoatsForDisplay(r.boats||[]).map(b=>{
-      const period=b.period?`${esc(b.period)}期`:"--期";
-      const age=b.age!==undefined&&b.age!==null?`${esc(b.age)}歳`:"--歳";
-      const branch=b.branch||b.region||"--";
-      const racerNo=b.racerId||b.registrationNo||"----";
-      return `<div class="laneMini lane${b.lane}">
-        <div class="laneNo">${b.lane}</div>
-        <div class="laneName">
-          <b class="${racerNameClass(cleanRacerName(b.racerName))}">${esc(cleanRacerName(b.racerName)||"-")}</b>
-          <div class="laneMeta">
-            <div class="metaTop"><span>${esc(racerNo)}</span><span class="entryClass">${esc(b.class||"-")}</span></div>
-            <div class="metaRow">${esc(branch)}</div>
-            <div class="metaRow">${period}</div>
-            <div class="metaRow">${age}</div>
-          </div>
-        </div>
-      </div>`;
-    }).join("");
+    const boats=entryRacerTable(r.boats||[],false);
 
     return `<div class="raceCardPro ${cancelled?"raceCancelled":""}" id="race-card-${Number(r.raceNo)}" onclick="openRace(${Number(r.raceNo)})">
       <div class="raceTopPro">
@@ -5028,7 +5011,7 @@ function renderRaces(m){
         </div>
       </div>
 
-      <div class="laneStrip">${boats}</div>
+      <div class="entryListWrap">${boats}</div>
 
       <div class="raceQuickGrid raceQuickGrid9" onclick="event.stopPropagation()">
         <button type="button" onclick="openRaceData(${Number(r.raceNo)},'racer')">選手情報</button>
@@ -5968,25 +5951,26 @@ function hydrateRaceForDisplay(race){
   return {...race,boats:hydrateBoatsForDisplay(race.boats||[])};
 }
 
+function entryFLCount(boat, key){
+  const raw=boat[key] ?? boat.stats?.[key];
+  if(raw===null || raw===undefined || raw==="")return "--";
+  const value=String(raw).replace(/^[FL]/i,"");
+  return /^\d+$/.test(value)?esc(value):"--";
+}
+function entryRacerTable(boats, withLabels=true){
+  boats=hydrateBoatsForDisplay(boats).slice(0,6);
+  const rows=[
+    ["登録番号",b=>esc(b.racerId||b.registrationNo||"----"),"registration"],
+    ["枠番・名前",b=>`<span class="entryLane lane${Number(b.lane)}">${Number(b.lane)}</span><strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>`,"identity"],
+    ["級",b=>esc(b.class||"--"),"class"],
+    ["期",b=>b.period?`${esc(b.period)}期`:"--", "period"],
+    ["支部",b=>esc(normalizeBranchLabel(b.branch||b.region)),"branch"],
+    ["F｜L",b=>`<span>F${entryFLCount(b,"flyingCount")}</span><i aria-hidden="true">|</i><span>L${entryFLCount(b,"lateCount")}</span>`,"fl"]
+  ];
+  return `<div class="entryRacerTable ${withLabels?'entryWithLabels':'entryWithoutLabels'}" role="table" aria-label="出走表">${rows.map(([label,render,type])=>`<div class="entryGridRow entryRow-${type}" role="row">${withLabels?`<div class="entryRowLabel" role="rowheader">${label}</div>`:''}${boats.map(b=>`<div class="entryGridCell proLaneBg${Number(b.lane)}" role="cell">${render(b)}</div>`).join("")}</div>`).join("")}</div>`;
+}
 function proRacerStrip(boats, label="出走表"){
-  boats=hydrateBoatsForDisplay(boats);
-  return `<div class="proRacerStrip">
-    <div class="proRacerLabel">${esc(label)}</div>
-    ${boats.map(b=>{
-      const lane=Number(b.lane)||1;
-      const racerId=b.racerId||b.registrationNo||"----";
-      const klass=b.class||"--";
-      const period=b.period?`${esc(b.period)}期`:"--期";
-      const branch=normalizeBranchLabel(b.branch||b.region);
-      return `<div class="proRacerCard proLaneBg${lane}">
-        <span class="proLaneChip lane${lane}">${lane}</span>
-        <strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>
-        <span class="proRacerId">${esc(racerId)}</span>
-        <span class="proRacerMeta"><span>${esc(klass)}</span><span>${period}</span></span>
-        <span class="proRacerBranch">${esc(branch)}</span>
-      </div>`;
-    }).join("")}
-  </div>`;
+  return entryRacerTable(boats,true);
 }
 
 function coursePlayerHeader(boats){
@@ -6560,7 +6544,8 @@ function fmtWeight(v){
 }
 
 function racerHistory(b){
-  return state.racerOverallById?.[String(b.racerId||b.registrationNo||"")];
+  const id=String(b.racerId||b.registrationNo||"");
+  return {...(state.racerOverallById?.[id]||{}),...(state.entryDetails?.byRacer?.[id]||{})};
 }
 function racerMetric(b, group, period){
   const history=racerHistory(b)?.periods?.[period];
@@ -6675,9 +6660,11 @@ function renderRacerInfo(){
   }).join("");
 
   const flyingDate=b=>racerHistory(b)?.lastFlyingDate ?? firstStat(b,["flying.date","stats.flying.date","flyingDate"]);
-  const flyingBreak=b=>firstStat(b,["flying.breakStart","stats.flying.breakStart","flyingBreakStart"]);
-  const flyingRemain=b=>firstStat(b,["flying.unserved","stats.flying.unserved","flyingUnserved"]);
-  const accident=b=>firstStat(b,["stats.accidentRate","accidentRate"]);
+  const flyingBreak=b=>racerHistory(b)?.flyingBreakStart ?? firstStat(b,["flying.breakStart","stats.flying.breakStart","flyingBreakStart"]);
+  const flyingRemain=b=>racerHistory(b)?.flyingUnserved ?? firstStat(b,["flying.unserved","stats.flying.unserved","flyingUnserved"]);
+  const accident=b=>racerHistory(b)?.accident?.rate ?? firstStat(b,["stats.accidentRate","accidentRate"]);
+  const semiFinals=b=>racerHistory(b)?.semiFinals;
+  const finals=b=>racerHistory(b)?.finals;
   const wins=b=>racerHistory(b)?.championships ?? firstStat(b,["stats.championships","championships","wins"]);
 
   return `<div class="racerInfoPro">
@@ -6732,18 +6719,20 @@ function renderRacerInfo(){
 
             <tr class="riGroup"><th colspan="7">フライング</th></tr>
             ${simpleRow("直近F日（過去１年）",flyingDate)}
-            ${simpleRow("F休み開始日",flyingBreak)}
+            ${simpleRow("F休み予定日",flyingBreak)}
             ${simpleRow("未消化数",flyingRemain,"","asc",0)}
 
             <tr class="riGroup"><th colspan="7">その他</th></tr>
             ${simpleRow("事故率",accident,"","asc",2)}
+            ${simpleRow("準優進出数（過去１年）",semiFinals,"","desc",0)}
+            ${simpleRow("優出数（過去１年）",finals,"","desc",0)}
             ${simpleRow("優勝数（過去１年）",wins,"","desc",0)}
           </tbody>
         </table>
       </div>
     </div>
 
-    <div class="racerInfoNote">※ 直近１・３か月は公式結果から集計（集計最終日：${esc(state.courseStatsMeta?.to||"未取得")}）。決まり手・優勝数は過去１年。今節STは取得済み本番結果から集計。期間別勝率・F休み予定・未消化数・事故率は確認できたデータがない場合「--」。出走なしは「対象なし」。</div>
+    <div class="racerInfoNote">※ 直近１・３か月は公式結果から集計（集計最終日：${esc(state.entryDetails?.to||state.courseStatsMeta?.to||"未取得")}）。F休み予定日は未消化Fがある選手について、公式の現在・今後の斡旋最終日の翌日を表示（斡旋追加で変わる場合があります）。未消化数は今期F数と完了済み30日間の無出走期間から判定。事故率は2026年9月13日の級別審査データを初期値に、以後は公式結果と各場公式出走表の減点者を加算して自動計算。公式PDFを取得できなかった日は次回更新で再確認します。未取得は「--」、出走なしは「対象なし」。</div>
   </div>`;
 }
 
@@ -6873,9 +6862,16 @@ function motorObjectForBoat(boat, race){
     boat?.motor, boat?.motorData, boat?.motorStats,
     boat?.equipment?.motor, boat?.stats?.motor
   ];
+  const code=String(state.currentMeeting?.venueCode||state.currentMeetingView?.venueCode||"").padStart(2,"0");
+  const no=String(boat?.motorNo||boat?.motor?.motorNo||boat?.motor?.number||"");
+  let extra=state.entryDetails?.motorsByVenue?.[code]?.[no];
+  const rawDate=String(state.currentMeeting?.date||state.dateJST||"").replaceAll("-","");
+  const raceDate=rawDate.length===8?`${rawDate.slice(0,4)}-${rawDate.slice(4,6)}-${rawDate.slice(6,8)}`:"";
+  if(extra && (!raceDate || (extra.usageStart ? raceDate<extra.usageStart : rawDate!==state.entryDetails?.targetDateJST)))extra=null;
   for(const x of direct){
-    if(x && typeof x==="object" && !Array.isArray(x)) return x;
+    if(x && typeof x==="object" && !Array.isArray(x)) return {...(extra||{}),...x,rank:extra?.rank??null};
   }
+  if(extra)return extra;
 
   const root=race?.motorData || race?.motors || race?.motorStats || null;
   if(!root) return {};
@@ -6949,7 +6945,7 @@ function motorMetric(motor, boat, metric){
   // Flexible fallbacks for collector schemas where motor fields are stored directly on boat.
   const boatAliases={
     no:["motorNo","motorNumber","motor.no","equipment.motorNo"],
-    rank:["motorRank","motor.rank"],
+    rank:[],
     win:["motorWinRate","motor.winRate"],
     first:["motorFirstRate","motor.firstRate"],
     two:["motorTwoRate","motor2Rate","motor.twoRate"],
@@ -7096,7 +7092,7 @@ function motorRacerHeader(boats){
 function motorBasicTable(boats, motors){
   const defs=[
     {label:"モーター番号", key:"no", fmt:v=>motorFmt(v), rank:null},
-    {label:"モーター順位", key:"rank", fmt:v=>motorRankText(v), rank:"asc"},
+    {label:"場内順位（公式）", key:"rank", fmt:v=>motorRankText(v), rank:"asc"},
     {label:"勝率", key:"win", fmt:v=>motorFmt(v,"",2), rank:"desc"},
     {label:"1着率", key:"first", fmt:v=>motorFmt(v,"%",1), rank:"desc"},
     {label:"2連対率", key:"two", fmt:v=>motorFmt(v,"%",1), rank:"desc"},
@@ -7144,7 +7140,8 @@ function motorHistoryCell(item){
   const course=motorPath(item,["course","entry","courseNo","actualCourse","lane"]);
   const exhibition=motorPath(item,["exhibitionTime","tenjiTime","displayTime","exhibition","time"]);
   const racerClass=motorPath(item,["class","grade","racerClass","rankClass"]);
-  const finish=motorPath(item,["finish","rank","arrival","finishPlace","result"]);
+  const finishRaw=motorPath(item,["finish","rank","arrival","finishPlace","result"]);
+  const finish=finishRaw===null?null:recent30Finish(finishRaw);
   const f=Number(finish);
   const cls=f===1?"motorFinish1":f===2?"motorFinish2":"";
 
@@ -7226,6 +7223,7 @@ function renderMotorInfo(){
       </button>
     </div>
 
+    ${motorInnerTab==="motor"?`<p class="entryDataNote">${(()=>{const m=motors.find(x=>x.sourceUrl);return m?`公式モーター表：${esc(m.asOf||"更新日未確認")}時点。使用開始：${esc(m.usageStart||"未確認")}。順位は${esc(m.rankBasis||"公式掲載順")}順。2・3連対率は出走表を優先。履歴・決まり手率は確認済み使用期間の公式結果から集計（率の分母は出走数）。`:'公式成績の補完データが未取得の場です。確認できない項目は -- で表示します。';})()}</p>`:''}
     ${motorInnerTab==="motor"?`
       <div class="motorConnectedFrame motorProConnected">
         ${motorRacerHeader(boats)}
@@ -9735,6 +9733,19 @@ async function loadRecoveredOdds(){
   }catch(e){console.warn("Optional recovered odds unavailable",e);}
 }
 
+async function loadEntryDetails(){
+  try{
+    const res=await fetch(`data/entry-details.json?v=${Date.now()}`,{cache:"no-store"});
+    if(!res.ok)return;
+    const data=await res.json();
+    if(data.schemaVersion!==1||!data.byRacer||!data.motorsByVenue)return;
+    state.entryDetails=data;
+    const panel=document.getElementById("quickDataPanel");
+    if(panel&&currentQuickDataType==="racer")panel.innerHTML=renderRacerInfo();
+    if(panel&&currentQuickDataType==="motor")panel.innerHTML=renderMotorInfo();
+  }catch(error){console.warn("Entry details unavailable",error);}
+}
+
 async function loadCourseStatsData(){
   try{
     const res=await fetch(`data/course-stats.json?v=${Date.now()}`,{cache:"no-store"});
@@ -9808,6 +9819,7 @@ window.addEventListener("popstate",(e)=>{
 loadData();
 loadRecent20Data();
 loadCourseStatsData();
+loadEntryDetails();
 loadRecoveredOdds();
 setInterval(refreshOfficialData,60000);
 setInterval(loadRecent20Data,1800000);
@@ -16388,3 +16400,23 @@ button.meetPerfFinish.isLink.late{
  #quickDataPanel .r20Result .r20Lane{width:14px!important;min-width:14px!important;height:19px!important;min-height:19px!important;font-size:7px!important}
 }
 </style>
+
+<style id="entry-table-september-update">
+.entryRacerTable{width:100%;margin:0;background:#fff;border:1px solid #7295ae;box-sizing:border-box;overflow:hidden;color:#15374e}
+.entryGridRow{display:grid;grid-template-columns:14% repeat(6,minmax(0,1fr));border-bottom:1px solid #7295ae}
+.entryWithoutLabels .entryGridRow{grid-template-columns:repeat(6,minmax(0,1fr))}
+.entryGridRow:last-child{border-bottom:0}
+.entryGridCell,.entryRowLabel{box-sizing:border-box;min-width:0;padding:5px 1px;display:flex;align-items:center;justify-content:center;text-align:center;border-right:1px solid #7295ae;font-size:11px;font-weight:800;line-height:1.3}
+.entryGridCell:last-child{border-right:0}
+.entryRowLabel{background:#e7f3fa;font-size:9px;color:#28516b}
+.entryGridCell.proLaneBg1{background:#fff}.entryGridCell.proLaneBg2{background:#eef0f2}.entryGridCell.proLaneBg3{background:#fff0f2}.entryGridCell.proLaneBg4{background:#eef4ff}.entryGridCell.proLaneBg5{background:#fff9dc}.entryGridCell.proLaneBg6{background:#eef9f2}
+.entryRow-identity .entryGridCell{flex-direction:column;gap:5px;padding:6px 1px;min-height:76px}
+.entryGridCell strong{display:block;color:#15374e;font-size:12px;line-height:1.4;letter-spacing:-.04em;word-break:normal;overflow-wrap:anywhere;font-weight:900}
+.entryLane{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;border:1px solid #65839a}
+.entryLane.lane1{background:#fff;color:#17212a}.entryLane.lane2{background:#252b32;color:white}.entryLane.lane3{background:#e83747;color:white}.entryLane.lane4{background:#2863cf;color:white}.entryLane.lane5{background:#f4d91c;color:#17212a}.entryLane.lane6{background:#149456;color:white}
+.entryRow-fl .entryGridCell{gap:3px;font-size:10px;white-space:nowrap}.entryRow-fl i{font-style:normal;color:#7890a0}
+.entryListWrap{margin:0;overflow:hidden}.entryWithoutLabels .entryGridCell strong{font-size:13px}
+.entryWithoutLabels .entryRow-identity .entryGridCell{min-height:78px}
+@media(max-width:365px){.entryGridCell{font-size:10px}.entryGridCell strong{font-size:11px}.entryWithoutLabels .entryGridCell strong{font-size:12px}.entryRow-fl .entryGridCell{font-size:9px;gap:2px}.entryRowLabel{font-size:8px}}
+</style>
+<style>.entryDataNote{font-size:10px;line-height:1.7;color:#526d80;margin:8px 2px 12px}.entryGridRow.entryRow-registration .entryGridCell{font-size:11px;font-variant-numeric:tabular-nums}</style>
