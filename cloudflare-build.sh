@@ -9,7 +9,8 @@ find . -maxdepth 1 -type f \( \
   -name '*.css' -o \
   -name '*.js' -o \
   -name 'robots.txt' -o \
-  -name 'sitemap.xml' \
+  -name 'sitemap.xml' -o \
+  -name 'ads.txt' \
 \) -exec cp '{}' cloudflare-dist/ \;
 
 find data -maxdepth 1 -type f -name '*.json' ! -name 'today.json' \
