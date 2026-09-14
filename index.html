@@ -9,6 +9,7 @@
 <meta name="description" content="BOAT CHECKは、全国24場の出走表・選手・モーター・直前情報・オッズ・結果を確認し、買わないレースを見極めるための独立運営ボートレース情報サイトです。">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://boatcheck.jp/">
+<link rel="preload" href="data/today.json" as="fetch" crossorigin>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:site_name" content="BOAT CHECK">
@@ -3613,7 +3614,7 @@ body{letter-spacing:0 !important}
 </footer>
 
 <script>
-const DATA_URL="https://raw.githubusercontent.com/golfclubnavi/boat-check/main/data/today.json";
+const DATA_URL="data/today.json";
 const RECENT20_URL="./data/recent20.json";
 const VENUES=[
 ["01","桐生"],["02","戸田"],["03","江戸川"],["04","平和島"],["05","多摩川"],["06","浜名湖"],
@@ -9678,7 +9679,7 @@ async function refreshOfficialData(){
 async function loadData(){
   renderLoading();
   try{
-    const res=await fetch(`${DATA_URL}?v=${Date.now()}`,{cache:"no-store"});
+    const res=await fetch(DATA_URL);
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const d=await res.json();
     if(!Array.isArray(d.meetings))throw new Error("meetings invalid");
@@ -9798,11 +9799,19 @@ window.addEventListener("popstate",(e)=>{
   }
 });
 
-loadData();
-loadRecent20Data();
-loadCourseStatsData();
-loadEntryDetails();
-loadRecoveredOdds();
+loadData().finally(()=>{
+  const loadOptionalData=()=>{
+    loadRecent20Data();
+    loadCourseStatsData();
+    loadEntryDetails();
+    loadRecoveredOdds();
+  };
+  if("requestIdleCallback" in window){
+    requestIdleCallback(loadOptionalData,{timeout:1500});
+  }else{
+    setTimeout(loadOptionalData,300);
+  }
+});
 setInterval(refreshOfficialData,60000);
 setInterval(loadRecent20Data,1800000);
 setInterval(()=>{
