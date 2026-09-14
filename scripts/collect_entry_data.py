@@ -5,9 +5,12 @@ from pathlib import Path
 from datetime import date,datetime,timedelta,timezone
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from collections import defaultdict
+from decimal import Decimal,ROUND_HALF_UP
 import requests
 from bs4 import BeautifulSoup
 import collect_course_stats as history
+
+PROFILE_URL='https://www.boatrace.jp/owpc/pc/data/racersearch/profile?toban={}'
 
 MOTOR_URLS={
  '04':'https://www.heiwajima.gr.jp/01motor/01motor.htm',
@@ -108,8 +111,92 @@ def enrich_history(motor,rows,days_ok):
  motor['recent20']=[{k:r[k] for k in ['date','raceNo','registrationNo','racerName','course','exhibitionTime','finish']} for r in rows[:20]]
  motor['historySource']='BOAT RACE official results; same motor usage period'
 
+def current_meetings_by_racer(payload):
+ out={}
+ for meeting in payload.get('meetings',[]) or []:
+  dates=[str(x.get('date') or '') for x in meeting.get('meetDays',[]) or []]
+  start=min((d for d in dates if re.fullmatch(r'\d{8}',d)),default=str(meeting.get('date') or ''))
+  end=max((d for d in dates if re.fullmatch(r'\d{8}',d)),default=str(meeting.get('date') or ''))
+  ids=set()
+  race_groups=[meeting.get('races',[]) or []]
+  race_groups.extend((x.get('races',[]) or []) for x in meeting.get('meetDays',[]) or [])
+  for races in race_groups:
+   for race in races:
+    for boat in race.get('boats',[]) or []:
+     rid=str(boat.get('racerId') or boat.get('registrationNo') or '')
+     if rid:ids.add(rid)
+  if re.fullmatch(r'\d{8}',start) and re.fullmatch(r'\d{8}',end):
+   start=date(int(start[:4]),int(start[4:6]),int(start[6:])).isoformat()
+   end=date(int(end[:4]),int(end[4:6]),int(end[6:])).isoformat()
+   for rid in ids:out[rid]={'start':start,'end':end}
+ return out
+
+def parse_assignments(html):
+ soup=BeautifulSoup(html,'html.parser')
+ plain=soup.get_text(' ',strip=True)
+ ranges=[]
+ for m in re.finditer(r'(\d{4})/(\d{1,2})/(\d{1,2})\s*[~～]\s*(\d{4})/(\d{1,2})/(\d{1,2})',plain):
+  ranges.append({'start':date(*map(int,m.groups()[:3])).isoformat(),'end':date(*map(int,m.groups()[3:])).isoformat()})
+ return ranges
+
+def add_flying_break_schedules(overall,payload,base,errors,workers=6):
+ current_meets=current_meetings_by_racer(payload)
+ targets=[rid for rid,item in overall.items() if item.get('flyingUnserved',0)>0]
+ def task(rid):
+  r=requests.get(PROFILE_URL.format(rid),headers=history.HEADERS,timeout=20);r.raise_for_status()
+  return rid,parse_assignments(r.text)
+ schedules={}
+ print('Official assignment profiles:',len(targets),'racers with an inferred unserved F',flush=True)
+ with ThreadPoolExecutor(max_workers=min(max(workers,6),12)) as ex:
+  futs={ex.submit(task,rid):rid for rid in targets}
+  for f in as_completed(futs):
+   rid=futs[f]
+   try:_,items=f.result();schedules[rid]=items
+   except Exception as e:errors.append({'racerId':rid,'kind':'assignment','error':str(e)[:200]})
+ for rid in targets:
+  item=overall[rid];future=[x for x in schedules.get(rid,[]) if x['end']>=base.isoformat()]
+  intervals=([current_meets[rid]] if rid in current_meets else [])+future
+  intervals.sort(key=lambda x:(x['start'],x['end']))
+  if intervals:
+   merged=[]
+   for interval in intervals:
+    if merged and interval['start']<=merged[-1]['end']:
+     merged[-1]['end']=max(merged[-1]['end'],interval['end'])
+    else:merged.append(dict(interval))
+   last=merged[-1]['end']
+   # The first gap long enough for the pending F suspension marks the end of
+   # the already-assigned race series.  Later profile entries may be post-rest.
+   for left,right in zip(merged,merged[1:]):
+    if (date.fromisoformat(right['start'])-date.fromisoformat(left['end'])).days-1>=30:
+     last=left['end'];break
+   item['lastAssignmentEnd']=last
+   item['flyingBreakStart']=(date.fromisoformat(last)+timedelta(days=1)).isoformat()
+   item['futureAssignments']=future
+
+def apply_accident_ledger(overall,racer_rows,ledger,base):
+ period_start=date(base.year,5,1) if 5<=base.month<=10 else date(base.year if base.month>=11 else base.year-1,11,1)
+ seeded=ledger.get('reviewPeriodStart')==period_start.isoformat()
+ seed_as_of=ledger.get('seedAsOf') if seeded else None
+ events=ledger.get('conductEvents',{}) or {}
+ event_points=defaultdict(int)
+ for event in events.values():
+  event_date=str(event.get('date') or '')
+  if not (period_start.isoformat()<=event_date<base.isoformat()):continue
+  if seed_as_of and event_date<=seed_as_of:continue
+  event_points[str(event.get('racerId') or '')]+=int(event.get('points') or 0)
+ for rid,item in overall.items():
+  seed=(ledger.get('players',{}).get(rid,{}) if seeded else {})
+  seed_points=int(seed.get('seedPoints') or 0)
+  code_points=history.accident_code_points_after(racer_rows.get(rid,[]),period_start,base,seed_as_of)
+  conduct=event_points.get(rid,0);points=seed_points+code_points+conduct
+  accident=item.setdefault('accident',{});starts=int(accident.get('starts') or 0)
+  if seed:
+   counted={1,2,3,4,5,6,'F','L1','K1','S1','S2'}
+   starts=int(seed.get('seedStarts') or 0)+sum(r.get('finish') in counted and r.get('date','')>seed_as_of for r in racer_rows.get(rid,[]))
+  accident.update({'starts':starts,'points':points,'rate':float((Decimal(points)/Decimal(starts)).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP)) if starts else None,'seedPoints':seed_points,'resultCodePointsAfterSeed':code_points,'conductPointsAfterSeed':conduct,'seedAsOf':seed_as_of,'source':'initial class2000 snapshot + BOAT RACE official results + official venue race-card deductions','note':'2026-09-13 seed; thereafter official result codes and verified venue race-card conduct notices'})
+
 def main():
- p=argparse.ArgumentParser();p.add_argument('--input',default='data/today.json');p.add_argument('--out',default='data/entry-details.json');p.add_argument('--cache',default='.cache/entry-results');p.add_argument('--workers',type=int,default=6);p.add_argument('--motor-fixtures');args=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--input',default='data/today.json');p.add_argument('--out',default='data/entry-details.json');p.add_argument('--cache',default='.cache/entry-results');p.add_argument('--workers',type=int,default=6);p.add_argument('--motor-fixtures');p.add_argument('--accident-ledger',default='data/accident-ledger.json');args=p.parse_args()
  payload=json.loads(Path(args.input).read_text());base=datetime.strptime(payload['dateJST'],'%Y%m%d').date();first=history.subtract_months(base,12);wanted=history.current_racers(payload)
  motors={};errors=[]
  def motor_task(pair):
@@ -149,9 +236,12 @@ def main():
    if i%60==0:print('History',i,'/',len(days),flush=True)
  if len(days_ok)<len(days)*.95:raise RuntimeError('Insufficient archive coverage; keeping previous output')
  overall={rid:history.aggregate_overall(rows,base) for rid,rows in racer_rows.items()}
+ ledger_path=Path(args.accident_ledger)
+ if ledger_path.exists():apply_accident_ledger(overall,racer_rows,json.loads(ledger_path.read_text()),base)
+ add_flying_break_schedules(overall,payload,base,errors,args.workers)
  for code,by_no in motors.items():
   for no,motor in by_no.items():enrich_history(motor,motor_rows[(code,no)],days_ok)
- out={'schemaVersion':1,'targetDateJST':payload['dateJST'],'from':first.isoformat(),'to':(base-timedelta(days=1)).isoformat(),'generatedAt':datetime.now(timezone.utc).isoformat(),'daysCollected':len(days_ok),'daysExpected':len(days),'errors':errors,'byRacer':overall,'motorsByVenue':motors,'unavailable':['期間別勝率','F休み開始日','F未消化数','事故率','未提供の足評価・中間整備','モーター過去走の当時級別']}
+ out={'schemaVersion':2,'targetDateJST':payload['dateJST'],'from':first.isoformat(),'to':(base-timedelta(days=1)).isoformat(),'generatedAt':datetime.now(timezone.utc).isoformat(),'daysCollected':len(days_ok),'daysExpected':len(days),'errors':errors,'byRacer':overall,'motorsByVenue':motors,'unavailable':['期間別勝率','F未消化数','公式出走表PDFを取得できなかった開催日の2点減点','未提供の足評価・中間整備','モーター過去走の当時級別']}
  path=Path(args.out);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(out,ensure_ascii=False,separators=(',',':')))
  print(json.dumps({'racers':len(overall),'motorVenues':len(motors),'motors':sum(map(len,motors.values())),'days':len(days_ok),'errors':errors},ensure_ascii=False),flush=True)
 if __name__=='__main__':main()

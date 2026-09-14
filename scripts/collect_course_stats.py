@@ -6,6 +6,7 @@ import argparse
 import io
 import json
 import re
+from decimal import Decimal, ROUND_HALF_UP
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timedelta
@@ -206,6 +207,23 @@ def aggregate(rows,base):
             metrics["kimarite"]=k;output[str(course)][period]=metrics
     return output
 
+def accident_code_points_after(rows,period_start,base,after_date=None):
+    """Points visible in official result codes, preserving repeat-F order."""
+    review=[r for r in rows if period_start.isoformat()<=r["date"]<base.isoformat()]
+    review.sort(key=lambda r:(r["date"],r["venueCode"],r["raceNo"]))
+    points=0;f_count=0
+    for r in review:
+        code=r["finish"]
+        if code=="F":f_count+=1
+        if after_date and r["date"]<=after_date:continue
+        if code=="F":
+            points+=30 if r.get("isFinal") else 20
+            if f_count>=2:points+=20 if r.get("isFinal") else 10
+        elif code=="L1":points+=30 if r.get("isFinal") else 20
+        elif code=="K1" or code=="S1":points+=10
+        elif code=="S2":points+=15
+    return points
+
 def aggregate_overall(rows,base):
     from statistics import mean
     result={"periods":{},"kimarite":{}}
@@ -220,6 +238,45 @@ def aggregate_overall(rows,base):
     result["semiFinals"]=sum(bool(r.get("isSemiFinal")) for r in rows if not str(r["finish"]).startswith("K")) if rows else None
     result["finals"]=sum(bool(r.get("isFinal")) for r in rows if not str(r["finish"]).startswith("K")) if rows else None
     result["lastFlyingDate"]=max((r["date"] for r in rows if r["finish"]=="F"),default=None)
+    # Grade-review periods are May-Oct and Nov-Apr.  The official accident
+    # rate is accident points divided by counted starts in the active period.
+    period_start=date(base.year,5,1) if 5<=base.month<=10 else date(base.year if base.month>=11 else base.year-1,11,1)
+    review=[r for r in rows if period_start.isoformat()<=r["date"]<base.isoformat()]
+    review.sort(key=lambda r:(r["date"],r["venueCode"],r["raceNo"]))
+    counted={1,2,3,4,5,6,"F","L1","K1","S1","S2"}
+    starts=sum(r["finish"] in counted for r in review)
+    points=0;f_count=0
+    breakdown={"F":0,"L1":0,"K1":0,"S1":0,"S2":0}
+    for r in review:
+        code=r["finish"]
+        if code=="F":
+            f_count+=1
+            points+=30 if r.get("isFinal") else 20
+            if f_count>=2:points+=20 if r.get("isFinal") else 10
+            breakdown["F"]+=1
+        elif code=="L1":points+=30 if r.get("isFinal") else 20;breakdown["L1"]+=1
+        elif code=="K1":points+=10;breakdown["K1"]+=1
+        elif code=="S1":points+=10;breakdown["S1"]+=1
+        elif code=="S2":points+=15;breakdown["S2"]+=1
+    result["accident"]={
+        "periodStart":period_start.isoformat(),"periodEnd":base.isoformat(),
+        "starts":starts,"points":points,
+        "rate":float((Decimal(points)/Decimal(starts)).quantize(Decimal("0.01"),rounding=ROUND_HALF_UP)) if starts else None,
+        "flyingCount":f_count,"breakdown":breakdown,
+        "note":"Official result-code calculation; 2-point conduct violations are not included when absent from result downloads"
+    }
+    # F remains printed in race cards for the whole review period even after
+    # the suspension was served.  A completed 30-day no-race block consumes
+    # one F penalty; this prevents an old, already-served F from being shown as
+    # a new future break.
+    raced=sorted({date.fromisoformat(r["date"]) for r in review})
+    consumed=0
+    first_f=min((date.fromisoformat(r["date"]) for r in review if r["finish"]=="F"),default=None)
+    if first_f:
+        after=[d for d in raced if d>=first_f]
+        consumed=sum(max(0,(b-a).days-1)//30 for a,b in zip(after,after[1:]))
+    result["flyingUnserved"]=max(0,f_count-min(f_count,consumed))
+    result["flyingUnservedMethod"]="inferred from completed 30-day no-race blocks in active review period"
     return result
 
 def main():
