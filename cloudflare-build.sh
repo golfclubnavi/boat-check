@@ -7,6 +7,7 @@ mkdir -p cloudflare-dist/data
 find . -maxdepth 1 -type f \( \
   -name '*.html' -o \
   -name '*.css' -o \
+  -name '*.js' -o \
   -name 'robots.txt' -o \
   -name 'sitemap.xml' \
 \) -exec cp '{}' cloudflare-dist/ \;
