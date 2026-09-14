@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://golfclubnavi.github.io/boat-check/sitemap.xml
+Sitemap: https://boatcheck.jp/sitemap.xml
