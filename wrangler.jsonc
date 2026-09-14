@@ -3,7 +3,7 @@
   "name": "boat-check",
   "compatibility_date": "2026-09-14",
   "assets": {
-    "directory": ".",
+    "directory": "./cloudflare-dist",
     "not_found_handling": "404-page"
   }
 }
