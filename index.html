@@ -4,7 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#071d35">
-<title>BOAT ✓ CHECK</title>
+<meta name="description" content="BOAT CHECKは、全国24場の出走表・選手・モーター・直前情報・オッズ・結果を確認し、買わないレースを見極めるための独立運営ボートレース情報サイトです。">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://golfclubnavi.github.io/boat-check/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="BOAT CHECK">
+<meta property="og:title" content="BOAT CHECK｜買わないレースを見つける">
+<meta property="og:description" content="全国24場の公式公開データを整理し、レース選びの判断材料を提供します。">
+<meta property="og:url" content="https://golfclubnavi.github.io/boat-check/">
+<meta name="twitter:card" content="summary">
+<title>BOAT CHECK｜全国24場のボートレース情報</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"BOAT CHECK","alternateName":"ボートチェック","url":"https://golfclubnavi.github.io/boat-check/","inLanguage":"ja-JP","publisher":{"@type":"Organization","name":"NEXIA Works"}}</script>
 <style>
 :root{
   --navy:#071d35;--navy2:#0d315d;--blue:#1671d9;--bg:#f4f6f9;--text:#10223d;
@@ -32,6 +43,8 @@ header{
 .live i{width:6px;height:6px;border-radius:50%;background:#48d18c;box-shadow:0 0 0 3px rgba(72,209,140,.12)}
 main{max-width:980px;margin:auto;padding:15px 10px 42px}
 .hidden{display:none!important}
+.siteFooter{max-width:980px;margin:0 auto;padding:26px 14px calc(26px + env(safe-area-inset-bottom));border-top:1px solid #cbd7e2;color:#53677d;font-size:11px;line-height:1.7;text-align:center}
+.siteFooter nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 14px;margin-bottom:13px}.siteFooter a{color:#075f9c;font-weight:850;text-decoration:none}.siteFooter p{max-width:720px;margin:7px auto}.siteFooter .ageNotice{color:#9a2b35;font-weight:900}.siteFooter small{display:block;margin-top:12px;color:#77879a}
 .topline{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:10px}
 h2{font-size:22px;margin:0 0 3px;letter-spacing:-.02em}.sub{font-size:10px;color:var(--muted)}
 .data-state{font-size:8px;color:var(--muted);text-align:right}.data-state strong{display:block;color:#2d4260;font-size:9px}
@@ -3444,7 +3457,7 @@ body{letter-spacing:0 !important}
 <header>
   <div class="header-inner">
     <div><div class="logo">BOAT <b>✓</b> CHECK</div><div class="tag">「買うレース」より、「買わないレース」を見つける。</div></div>
-    <div class="live"><i></i> OFFICIAL DATA</div>
+    <div class="live"><i></i> 公式公開データ参照</div>
   </div>
 </header>
 
@@ -3581,6 +3594,21 @@ body{letter-spacing:0 !important}
   </div>
 </section>
 </main>
+
+<footer class="siteFooter">
+  <nav aria-label="サイト情報">
+    <a href="about.html">BOAT CHECKについて</a>
+    <a href="guide.html">使い方</a>
+    <a href="privacy.html">プライバシーポリシー</a>
+    <a href="terms.html">利用規約・免責事項</a>
+    <a href="operator.html">運営者・お問い合わせ</a>
+    <a href="data-sources.html">データ出典</a>
+  </nav>
+  <p>BOAT CHECKはBOAT RACE公式サイトではありません。公式公開情報を参照して作成した、NEXIA Works独立運営の情報サイトです。</p>
+  <p class="ageNotice">舟券の購入は20歳以上。無理のない資金で、余裕を持ってお楽しみください。</p>
+  <p>掲載情報には遅延・欠損・誤差が生じる場合があります。投票判断は必ず公式情報を確認のうえ、ご自身の責任で行ってください。</p>
+  <small>© 2026 NEXIA Works / BOAT CHECK</small>
+</footer>
 
 <script>
 const DATA_URL="./data/today.json";
@@ -4312,30 +4340,7 @@ let homeAdCountdownTimer=null;
 let homeAdCountdown=0;
 
 function homeWatchRewardAd(){
-  const s=homeRewardAdState();
-  if(s.count>=5){
-    demoToast("本日の広告視聴上限は5回です");
-    return;
-  }
-
-  // 将来、実広告SDKをつなぐときは window.boatCheckShowRewardAd(resolve,reject) を実装。
-  if(typeof window.boatCheckShowRewardAd==="function"){
-    window.boatCheckShowRewardAd(
-      ()=>homeGrantAdReward(),
-      ()=>demoToast("広告を最後まで視聴するとptを獲得できます")
-    );
-    return;
-  }
-
-  // 現段階は広告SDK未接続のため、テスト用の視聴確認画面を表示。
-  homeAdCountdown=10;
-  renderHomeAdModal();
-  clearInterval(homeAdCountdownTimer);
-  homeAdCountdownTimer=setInterval(()=>{
-    homeAdCountdown=Math.max(0,homeAdCountdown-1);
-    renderHomeAdModal();
-    if(homeAdCountdown<=0)clearInterval(homeAdCountdownTimer);
-  },1000);
+  demoToast("報酬付き広告は現在準備中です");
 }
 function homeCloseAdModal(){
   clearInterval(homeAdCountdownTimer);
@@ -4351,43 +4356,18 @@ function renderHomeAdModal(){
   }
   wrap.className="rewardAdBackdrop";
   wrap.innerHTML=`<div class="rewardAdModal">
-    <div class="rewardAdHead"><b>広告視聴</b><button onclick="homeCloseAdModal()">×</button></div>
+    <div class="rewardAdHead"><b>報酬付き広告</b><button onclick="homeCloseAdModal()">×</button></div>
     <div class="rewardAdMock">
       <span>AD</span>
-      <strong>リワード広告表示エリア</strong>
-      <small>現在は広告SDK接続前のテスト表示です</small>
+      <strong>現在準備中です</strong>
+      <small>正式な報酬付き広告の接続後に提供します</small>
     </div>
-    <div class="rewardAdProgress">
-      ${homeAdCountdown>0?`あと <b>${homeAdCountdown}</b> 秒`:`視聴完了`}
-    </div>
-    <button class="rewardAdClaim" ${homeAdCountdown>0?"disabled":""} onclick="homeGrantAdReward()">視聴完了・1000pt受け取る</button>
+    <button class="rewardAdClaim" onclick="homeCloseAdModal()">閉じる</button>
   </div>`;
 }
 function homeGrantAdReward(){
-  const s=homeRewardAdState();
-  if(s.count>=5){
-    homeCloseAdModal();
-    demoToast("本日の広告視聴上限は5回です");
-    return;
-  }
-  s.count+=1;
-  homeSaveRewardAdState(s);
-  demoPoints+=1000;
-  demoSavePoints();
-
-  const hist=homePtHistory();
-  hist.unshift({
-    at:new Date().toISOString(),
-    amount:1000,
-    balance:demoPoints,
-    type:"reward_ad",
-    label:"広告視聴"
-  });
-  homeSaveJson("boatCheckPtHistory",hist.slice(0,200));
   homeCloseAdModal();
-  renderHomeMyPage();
-  renderHomePointBalance();
-  demoToast("広告視聴ボーナス +1000pt");
+  demoToast("報酬付き広告は現在準備中です");
 }
 
 function homeMissionDefinitions(){
@@ -4530,20 +4510,20 @@ function homeRenderPoints(){
       <span>デモ投票専用の仮想ポイント</span>
     </div>
 
-    <div class="rewardAdCard">
+    <div class="rewardAdCard" aria-disabled="true">
       <div class="rewardAdInfo">
         <div class="rewardAdIcon">▶</div>
         <div>
-          <h4>広告を見てpt追加</h4>
-          <p>広告を最後まで見ると <b>1000pt</b> 獲得</p>
+          <h4>報酬付き広告</h4>
+          <p>専用広告サービスの審査・接続後に提供予定です</p>
         </div>
       </div>
       <div class="rewardAdLimit">
-        <span>本日の残り</span>
-        <strong>${remaining}<small>/5回</small></strong>
+        <span>現在の状態</span>
+        <strong><small>準備中</small></strong>
       </div>
-      <button ${remaining<=0?"disabled":""} onclick="homeWatchRewardAd()">${remaining>0?"広告を見る":"本日分終了"}</button>
-      <small class="rewardAdTestNote">現在は実広告SDK接続前のテスト表示。広告サービス導入後は実広告へ差し替え可能です。</small>
+      <button disabled>準備中</button>
+      <small class="rewardAdTestNote">通常広告とは分離し、Google Ad Manager等の報酬付き広告を正式に接続した後に有効化します。</small>
     </div>
 
     ${homeRenderMissions()}
