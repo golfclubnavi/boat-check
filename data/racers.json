@@ -36104,5 +36104,429 @@
     "weight": 53.0,
     "class": "B2",
     "profileCheckedAt": "2026-09-15T00:42:47+09:00"
+  },
+  "3372": {
+    "period": 63,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 52.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-16T00:38:19+09:00"
+  },
+  "3422": {
+    "period": 64,
+    "branch": "静岡",
+    "origin": "静岡県",
+    "weight": 56.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-16T00:38:19+09:00"
+  },
+  "3411": {
+    "period": 64,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:20+09:00"
+  },
+  "3527": {
+    "period": 68,
+    "branch": "長崎",
+    "origin": "長崎県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:20+09:00"
+  },
+  "3445": {
+    "period": 65,
+    "branch": "埼玉",
+    "origin": "東京都",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:20+09:00"
+  },
+  "3158": {
+    "period": 54,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 54.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-16T00:38:20+09:00"
+  },
+  "3434": {
+    "period": 65,
+    "branch": "福岡",
+    "origin": "福岡県",
+    "weight": 53.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:20+09:00"
+  },
+  "3478": {
+    "period": 66,
+    "branch": "香川",
+    "origin": "香川県",
+    "weight": 53.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:20+09:00"
+  },
+  "3412": {
+    "period": 64,
+    "branch": "埼玉",
+    "origin": "埼玉県",
+    "weight": 53.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-09-16T00:38:21+09:00"
+  },
+  "3226": {
+    "period": 57,
+    "branch": "東京",
+    "origin": "東京都",
+    "weight": 53.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:21+09:00"
+  },
+  "3535": {
+    "period": 68,
+    "branch": "兵庫",
+    "origin": "兵庫県",
+    "weight": 51.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:27+09:00"
+  },
+  "3690": {
+    "period": 74,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:29+09:00"
+  },
+  "3745": {
+    "period": 75,
+    "branch": "兵庫",
+    "origin": "兵庫県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:29+09:00"
+  },
+  "3752": {
+    "period": 76,
+    "branch": "福岡",
+    "origin": "福岡県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:29+09:00"
+  },
+  "3784": {
+    "period": 76,
+    "branch": "佐賀",
+    "origin": "佐賀県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:30+09:00"
+  },
+  "3550": {
+    "period": 69,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:30+09:00"
+  },
+  "3602": {
+    "period": 71,
+    "branch": "東京",
+    "origin": "千葉県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:30+09:00"
+  },
+  "3687": {
+    "period": 74,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:31+09:00"
+  },
+  "3656": {
+    "period": 72,
+    "branch": "東京",
+    "origin": "山梨県",
+    "weight": 57.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:31+09:00"
+  },
+  "3710": {
+    "period": 74,
+    "branch": "香川",
+    "origin": "香川県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:31+09:00"
+  },
+  "3891": {
+    "period": 80,
+    "branch": "福井",
+    "origin": "福井県",
+    "weight": 56.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:36+09:00"
+  },
+  "3949": {
+    "period": 82,
+    "branch": "岡山",
+    "origin": "岡山県",
+    "weight": 57.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:38+09:00"
+  },
+  "4171": {
+    "period": 90,
+    "branch": "長崎",
+    "origin": "長崎県",
+    "weight": 53.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-16T00:38:38+09:00"
+  },
+  "3908": {
+    "period": 80,
+    "branch": "香川",
+    "origin": "香川県",
+    "weight": 56.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-09-16T00:38:39+09:00"
+  },
+  "4211": {
+    "period": 91,
+    "branch": "東京",
+    "origin": "神奈川県",
+    "weight": 63.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:39+09:00"
+  },
+  "4064": {
+    "period": 86,
+    "branch": "山口",
+    "origin": "山口県",
+    "weight": 52.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-09-16T00:38:39+09:00"
+  },
+  "3964": {
+    "period": 82,
+    "branch": "長崎",
+    "origin": "長崎県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:40+09:00"
+  },
+  "4086": {
+    "period": 87,
+    "branch": "東京",
+    "origin": "神奈川県",
+    "weight": 51.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-16T00:38:40+09:00"
+  },
+  "4202": {
+    "period": 91,
+    "branch": "岡山",
+    "origin": "岡山県",
+    "weight": 57.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:41+09:00"
+  },
+  "4331": {
+    "period": 96,
+    "branch": "香川",
+    "origin": "愛媛県",
+    "weight": 55.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-16T00:38:41+09:00"
+  },
+  "4405": {
+    "period": 99,
+    "branch": "福井",
+    "origin": "石川県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:46+09:00"
+  },
+  "4409": {
+    "period": 99,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 57.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-09-16T00:38:46+09:00"
+  },
+  "4641": {
+    "period": 107,
+    "branch": "東京",
+    "origin": "東京都",
+    "weight": 50.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:48+09:00"
+  },
+  "4463": {
+    "period": 101,
+    "branch": "福岡",
+    "origin": "福岡県",
+    "weight": 57.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-16T00:38:48+09:00"
+  },
+  "4635": {
+    "period": 107,
+    "branch": "岡山",
+    "origin": "岡山県",
+    "weight": 56.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-16T00:38:48+09:00"
+  },
+  "4584": {
+    "period": 105,
+    "branch": "岡山",
+    "origin": "鳥取県",
+    "weight": 53.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-09-16T00:38:49+09:00"
+  },
+  "4734": {
+    "period": 111,
+    "branch": "佐賀",
+    "origin": "佐賀県",
+    "weight": 53.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-09-16T00:38:49+09:00"
+  },
+  "4683": {
+    "period": 109,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 46.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-16T00:38:49+09:00"
+  },
+  "4752": {
+    "period": 112,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 53.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:50+09:00"
+  },
+  "4782": {
+    "period": 113,
+    "branch": "岡山",
+    "origin": "岡山県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:50+09:00"
+  },
+  "4837": {
+    "period": 115,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 50.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:55+09:00"
+  },
+  "4818": {
+    "period": 114,
+    "branch": "東京",
+    "origin": "香川県",
+    "weight": 57.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-16T00:38:56+09:00"
+  },
+  "5086": {
+    "period": 124,
+    "branch": "長崎",
+    "origin": "長崎県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:56+09:00"
+  },
+  "5127": {
+    "period": 126,
+    "branch": "愛知",
+    "origin": "広島県",
+    "weight": 50.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:56+09:00"
+  },
+  "5211": {
+    "period": 129,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 51.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:57+09:00"
+  },
+  "5096": {
+    "period": 125,
+    "branch": "東京",
+    "origin": "沖縄県",
+    "weight": 54.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-16T00:38:57+09:00"
+  },
+  "5318": {
+    "period": 133,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 56.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:58+09:00"
+  },
+  "5420": {
+    "period": 136,
+    "branch": "長崎",
+    "origin": "長崎県",
+    "weight": 54.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-16T00:38:58+09:00"
+  },
+  "5245": {
+    "period": 130,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:38:59+09:00"
+  },
+  "5333": {
+    "period": 133,
+    "branch": "兵庫",
+    "origin": "兵庫県",
+    "weight": 51.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-16T00:38:59+09:00"
+  },
+  "5441": {
+    "period": 137,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 50.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-16T00:39:05+09:00"
+  },
+  "5456": {
+    "period": 138,
+    "branch": "兵庫",
+    "origin": "兵庫県",
+    "weight": 51.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-16T00:39:06+09:00"
+  },
+  "5443": {
+    "period": 137,
+    "branch": "長崎",
+    "origin": "佐賀県",
+    "weight": 56.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-16T00:39:06+09:00"
   }
 }
