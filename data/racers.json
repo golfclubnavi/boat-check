@@ -37240,5 +37240,189 @@
     "weight": 55.0,
     "class": "B2",
     "profileCheckedAt": "2026-09-19T00:38:11+09:00"
+  },
+  "3994": {
+    "period": 83,
+    "branch": "滋賀",
+    "origin": "東京都",
+    "weight": 46.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:14:52+09:00"
+  },
+  "4112": {
+    "period": 88,
+    "branch": "佐賀",
+    "origin": "佐賀県",
+    "weight": 52.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-20T03:14:52+09:00"
+  },
+  "3461": {
+    "period": 66,
+    "branch": "静岡",
+    "origin": "静岡県",
+    "weight": 59.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:14:52+09:00"
+  },
+  "3054": {
+    "period": 50,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 58.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:14:52+09:00"
+  },
+  "4485": {
+    "period": 102,
+    "branch": "福岡",
+    "origin": "福岡県",
+    "weight": 56.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:14:52+09:00"
+  },
+  "4711": {
+    "period": 110,
+    "branch": "福井",
+    "origin": "石川県",
+    "weight": 52.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-20T03:14:54+09:00"
+  },
+  "4819": {
+    "period": 114,
+    "branch": "群馬",
+    "origin": "群馬県",
+    "weight": 48.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-20T03:14:54+09:00"
+  },
+  "3617": {
+    "period": 71,
+    "branch": "佐賀",
+    "origin": "佐賀県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:14:54+09:00"
+  },
+  "3538": {
+    "period": 69,
+    "branch": "群馬",
+    "origin": "栃木県",
+    "weight": 55.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-20T03:14:54+09:00"
+  },
+  "4228": {
+    "period": 92,
+    "branch": "愛知",
+    "origin": "岐阜県",
+    "weight": 58.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-20T03:14:54+09:00"
+  },
+  "5061": {
+    "period": 123,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 53.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:15:00+09:00"
+  },
+  "4892": {
+    "period": 117,
+    "branch": "福岡",
+    "origin": "福岡県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:15:00+09:00"
+  },
+  "5345": {
+    "period": 134,
+    "branch": "愛知",
+    "origin": "岐阜県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:15:02+09:00"
+  },
+  "5114": {
+    "period": 125,
+    "branch": "福井",
+    "origin": "石川県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:15:02+09:00"
+  },
+  "5184": {
+    "period": 128,
+    "branch": "群馬",
+    "origin": "栃木県",
+    "weight": 46.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-20T03:15:02+09:00"
+  },
+  "5090": {
+    "period": 124,
+    "branch": "群馬",
+    "origin": "群馬県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:15:02+09:00"
+  },
+  "5185": {
+    "period": 128,
+    "branch": "福井",
+    "origin": "福井県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:15:02+09:00"
+  },
+  "5352": {
+    "period": 134,
+    "branch": "香川",
+    "origin": "香川県",
+    "weight": 56.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:15:02+09:00"
+  },
+  "5250": {
+    "period": 130,
+    "branch": "長崎",
+    "origin": "熊本県",
+    "weight": 48.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-20T03:15:03+09:00"
+  },
+  "5415": {
+    "period": 136,
+    "branch": "東京",
+    "origin": "山形県",
+    "weight": 53.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-20T03:15:04+09:00"
+  },
+  "5453": {
+    "period": 138,
+    "branch": "香川",
+    "origin": "香川県",
+    "weight": 52.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-20T03:15:08+09:00"
+  },
+  "5465": {
+    "period": 138,
+    "branch": "福井",
+    "origin": "福井県",
+    "weight": 53.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-20T03:15:10+09:00"
+  },
+  "5437": {
+    "period": 137,
+    "branch": "香川",
+    "origin": "香川県",
+    "weight": 52.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-20T03:15:10+09:00"
   }
 }
