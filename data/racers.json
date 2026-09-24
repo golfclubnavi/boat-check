@@ -37632,5 +37632,29 @@
     "weight": 47.0,
     "class": "A2",
     "profileCheckedAt": "2026-09-24T04:14:45+09:00"
+  },
+  "3302": {
+    "period": 60,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 45.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-25T04:23:09+09:00"
+  },
+  "4864": {
+    "period": 116,
+    "branch": "福岡",
+    "origin": "宮崎県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-25T04:23:10+09:00"
+  },
+  "4225": {
+    "period": 92,
+    "branch": "群馬",
+    "origin": "群馬県",
+    "weight": 46.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-25T04:23:11+09:00"
   }
 }
