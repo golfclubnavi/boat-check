@@ -3467,7 +3467,7 @@ body{letter-spacing:0 !important}
 <main>
 <section id="home">
   <div class="topline">
-    <div><h2>本日の開催場</h2><div class="sub" id="todayLabel">読み込み中...</div></div>
+    <div class="bcDayHeader"><div id="bcDayTabs" role="group" aria-label="開催日"><button type="button" onclick="bcSelectDay(-1)">← 前日開催</button><button type="button" onclick="bcSelectDay(0)" aria-pressed="true">本日開催</button><button type="button" onclick="bcSelectDay(1)">明日開催 →</button></div><div class="sub" id="todayLabel">読み込み中...</div></div>
     <div class="data-state" id="dataState"><strong>公式データ</strong>更新確認中</div>
   </div>
 
@@ -3613,6 +3613,8 @@ body{letter-spacing:0 !important}
   <small>© 2026 NEXIA Works / BOAT CHECK</small>
 </footer>
 
+<link rel="stylesheet" href="racer-notebook.css">
+<script src="racer-notebook.js"></script>
 <script>
 const DATA_URL="data/today.json";
 const RECENT20_URL="./data/recent20.json";
@@ -3635,7 +3637,7 @@ let homeFavoriteQuery="";
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function gradeClass(g){return g==="SG"?"sg":g==="G1"?"g1":g==="G2"?"g2":g==="G3"?"g3":g==="女子"?"women":"general"}
-function displayGrade(m){return m.grade||m.raceType||"開催"}
+function displayGrade(m){return meetingGrade(m)}
 function jstNow(){
   const parts=new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
   const o=Object.fromEntries(parts.map(x=>[x.type,x.value]));return {date:`${o.year}${o.month}${o.day}`,time:`${o.hour}:${o.minute}`}
@@ -3692,6 +3694,7 @@ function cancellationLabel(status){
 function getNextRace(m){
   const now=jstNow();
   const available=liveRaces(m);
+  if(m.date<now.date)return null;
   if(m.date!==now.date)return available[0]||null;
   return available.find(r=>r.deadline && !raceIsPast(r.deadline,now.time))||null;
 }
@@ -3725,6 +3728,7 @@ function meetingState(m,next){
   if(cancel==="postponed")return {cls:"postponed",label:"中止順延",card:"isPostponed"};
   if(cancel==="cancelled")return {cls:"cancelled",label:"開催中止",card:"isCancelled"};
   const now=jstNow();
+  if(m.date<now.date)return {cls:"closed",label:"開催終了",card:"isClosed"};
   if(m.date!==now.date)return {cls:"soon",label:"開始前",card:"isSoon"};
   if(!next){
     if(cancel==="partial_cancelled")return {cls:"partial",label:"一部レース中止",card:"isPartialCancelled"};
@@ -3736,13 +3740,7 @@ function meetingState(m,next){
 }
 function meetingGrade(m){
   const direct=String(m.grade||"").toUpperCase();
-  if(["SG","G1","G2","G3"].includes(direct))return direct;
-  const t=normTitle(m);
-  if(/(^|[^A-Z])SG([^A-Z]|$)/i.test(t))return "SG";
-  if(/(^|[^A-Z])G1([^A-Z0-9]|$)/i.test(t) || /開設.{0,8}周年記念/.test(t))return "G1";
-  if(/(^|[^A-Z])G2([^A-Z0-9]|$)/i.test(t) || /モーターボート大賞/.test(t))return "G2";
-  if(/(^|[^A-Z])G3([^A-Z0-9]|$)/i.test(t) || /オールレディース|マスターズリーグ/.test(t))return "G3";
-  return "一般";
+  return m.gradeVerified && ["SG","G1","G2","G3","一般"].includes(direct)?direct:"確認中";
 }
 function normTitle(m){return `${m.title||""} ${m.raceType||""}`.replace(/\s+/g,"");}
 function timeMark(m){
@@ -4567,7 +4565,8 @@ function homeBackupData(){
     favorites:homeFavorites(),
     demoCart:typeof demoCart!=="undefined"?demoCart:[],
     demoHistory:homeBetHistory(),
-    ptHistory:homePtHistory()
+    ptHistory:homePtHistory(),
+    racerNotes:bcReadNotes()
   };
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
@@ -4584,6 +4583,7 @@ function homeRestoreData(input){
   reader.onload=()=>{
     try{
       const d=JSON.parse(String(reader.result||"{}"));
+      if(d.racerNotes)bcRestoreNotes(d.racerNotes);
       if(typeof d.demoPoints==="number"){
         demoPoints=d.demoPoints;
         demoSavePoints();
@@ -4675,7 +4675,8 @@ function refreshHomeActivePanel(){
 }
 
 function renderVenues(){
-  const map=new Map(state.meetings.map(m=>[m.venueCode,m]));
+  if(bcRenderDayStatus())return;
+  const map=new Map(bcHomeMeetings().map(m=>[m.venueCode,m]));
   const now=jstNow();
 
   $("venues").innerHTML=VENUES.map(([code,name])=>{
@@ -4688,7 +4689,7 @@ function renderVenues(){
           <div class="venueTitle">${name}</div>
           <span class="rightMark"></span>
         </div>
-        <div class="offtext"><b>本日非開催</b></div>
+        <div class="offtext"><b>${bcAbsentLabel(code)}</b></div>
       </div>`;
     }
 
@@ -4739,7 +4740,7 @@ function renderVenues(){
           <span>${esc(m.day||"")}</span>
         </div>
         <div class="nextRow endedRow">
-          <div class="endText">本日終了</div>
+          <div class="endText">${m.date<now.date?"開催終了":"本日終了"}</div>
         </div>
         <div class="countdown endedSpacer">全レース終了</div>
       </div>`;
@@ -4749,7 +4750,7 @@ function renderVenues(){
       r=>m.date===now.date&&raceIsPast(r.deadline,now.time)
     ).length;
     const pct=Math.round(finished/Math.max(1,(m.races||[]).length)*100);
-    const mins=minutesUntil(next.deadline);
+    const mins=m.date===now.date?minutesUntil(next.deadline):null;
     const urgent=mins!==null&&mins>=0&&mins<=10;
 
     return `<div class="card ${st.card} ${timeClass(m)}" data-code="${code}" onclick="openVenue('${code}')">
@@ -4767,7 +4768,7 @@ function renderVenues(){
         <div class="nextRace"><b>${next.raceNo}R</b></div>
         <div class="cutoff" aria-label="締切時刻"><b class="${urgent?"urgentTime":""}">${esc(next.deadline)}</b></div>
       </div>
-      <div class="countdown ${urgent?"urgent":""}">${esc(countdownText(next.deadline))}</div>
+      <div class="countdown ${urgent?"urgent":""}">${m.date===now.date?esc(countdownText(next.deadline)):"翌日開催"}</div>
       <div class="progress"><i style="width:${pct}%"></i></div>
     </div>`;
   }).join("");
@@ -4900,6 +4901,8 @@ function raceStatusInfo(r,m){
   const cancel=raceCancelStatus(r);
   if(cancel==="postponed")return {label:"中止順延",cls:"cancelled"};
   if(cancel==="cancelled")return {label:"中止",cls:"cancelled"};
+  if(m.date<jstNow().date)return {label:"締切済",cls:"closed"};
+  if(m.date>jstNow().date)return {label:"受付予定",cls:"soon"};
   const mins=raceMinutesUntil(r.deadline);
   const now=jstNow();
   const past=!!r.deadline&&m.date===now.date&&raceIsPast(r.deadline,now.time);
@@ -4908,7 +4911,7 @@ function raceStatusInfo(r,m){
   return {label:r.deadline?"受付予定":"時刻未定",cls:"soon"};
 }
 function openVenue(code, push=true){
-  const m=state.meetings.find(x=>x.venueCode===code);if(!m)return;
+  const m=bcHomeMeetings().find(x=>x.venueCode===code);if(!m)return;
   if(push)history.pushState({view:"venue",code},"",`#venue-${code}`);
   state.currentMeeting=m;
 
@@ -4986,6 +4989,8 @@ function renderRaces(m){
         </div>
         <div class="raceCountdownBox ${urgent?"urgent":""}">
           ${(()=>{
+            if(m.date<jstNow().date)return "締切済";
+            if(m.date>jstNow().date)return "翌日開催";
             const mins=raceMinutesUntil(r.deadline);
             if(mins===null)return "";
             if(mins<=0)return "締切済";
@@ -5944,7 +5949,7 @@ function entryRacerTable(boats, withLabels=true){
   boats=hydrateBoatsForDisplay(boats).slice(0,6);
   const rows=[
     ["登録番号",b=>esc(b.racerId||b.registrationNo||"----"),"registration"],
-    ["枠番・名前",b=>`<span class="entryLane lane${Number(b.lane)}">${Number(b.lane)}</span><strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong>`,"identity"],
+    ["枠番・名前",b=>`<span class="entryLane lane${Number(b.lane)}">${Number(b.lane)}</span><button type="button" class="bcRacerLink" data-racer-id="${esc(b.racerId||b.registrationNo||'')}" data-racer-name="${esc(cleanRacerName(b.racerName))}" onclick="event.stopPropagation();bcOpenRacer(this)"><strong>${formatRacerNameTwoLines(cleanRacerName(b.racerName)||"--")}</strong></button>`,"identity"],
     ["級",b=>esc(b.class||"--"),"class"],
     ["期",b=>b.period?`${esc(b.period)}期`:"--", "period"],
     ["支部",b=>esc(normalizeBranchLabel(b.branch||b.region)),"branch"],
@@ -9629,6 +9634,7 @@ function refreshCurrentQuickDataPanel(){
 }
 async function refreshOfficialData(){
   if(document.hidden)return;
+  if(bcSelectedOffset!==0)return;
 
   const currentVenueCode=state.currentMeeting?.venueCode||state.currentMeetingView?.venueCode||null;
   const currentDayDate=state.currentMeetingView?.date||state.currentDayDate||null;
@@ -9641,6 +9647,7 @@ async function refreshOfficialData(){
     if(!Array.isArray(d.meetings))return;
 
     state.meetings=d.meetings;
+    state.errors=d.errors||[];
     state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];
     if(!Object.keys(state.recent20ByRacer||{}).length&&d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;
     state.updatedAt=d.updatedAt;
@@ -9683,6 +9690,7 @@ async function loadData(){
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const d=await res.json();
     if(!Array.isArray(d.meetings))throw new Error("meetings invalid");
+    state.errors=d.errors||[];
     state.meetings=d.meetings;state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];if(!Object.keys(state.recent20ByRacer||{}).length&&d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
     $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
@@ -9789,7 +9797,7 @@ window.addEventListener("popstate",(e)=>{
   if(st.view==="home"){showHome();return;}
   if(st.view==="venue"){openVenue(st.code,false);return;}
   if(st.view==="detail"){
-    const m=state.meetings.find(x=>x.venueCode===st.code);
+    const m=bcHomeMeetings().find(x=>x.venueCode===st.code);
     if(m){
       state.currentMeeting=m;
       state.currentDayDate=st.date||state.currentDayDate||m.date;
