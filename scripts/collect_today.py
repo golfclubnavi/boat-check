@@ -36,6 +36,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import unicodedata
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -212,25 +213,42 @@ def active_venues(date: str) -> list[tuple[str, str]]:
     return sorted(found.items())
 
 def detect_grade(soup: BeautifulSoup, title: str) -> str:
-    blob = " ".join(
-        f"{k}={' '.join(map(str,v)) if isinstance(v,(list,tuple)) else v}"
-        for tag in soup.find_all(True)
-        for k,v in tag.attrs.items()
-    ).lower()
-    for grade, pat in [
-        ("SG", r"(?:^|[_/\-.])sg(?:[_/\-.]|$)|grade[^a-z0-9]*sg"),
-        ("G1", r"(?:^|[_/\-.])g1(?:[_/\-.]|$)|grade[^a-z0-9]*g1"),
-        ("G2", r"(?:^|[_/\-.])g2(?:[_/\-.]|$)|grade[^a-z0-9]*g2"),
-        ("G3", r"(?:^|[_/\-.])g3(?:[_/\-.]|$)|grade[^a-z0-9]*g3"),
-    ]:
-        if re.search(pat, blob, re.I):
+    # Only inspect the target meeting heading, never navigation/advertisements.
+    heading = next((h for h in soup.find_all("h2")
+                    if compact(h.get_text(" ", strip=True)) == compact(title)), None)
+    tokens = []
+    if heading is not None:
+        node = heading
+        for _ in range(3):
+            if node is None or node.name in ("body", "html", "main"):
+                break
+            if len(node.find_all("h2")) > 1:
+                break
+            tokens.extend(node.get("class", []))
+            if node is heading or "heading2_title" in node.get("class", []):
+                for image in node.find_all("img"):
+                    tokens.extend([image.get("alt", ""), image.get("src", "")])
+            node = node.parent
+    def normalize(value):
+        return unicodedata.normalize("NFKC", value).upper().replace("GIII", "G3").replace("GII", "G2").replace("GI", "G1")
+    blob = normalize(" ".join(tokens))
+    # Official titles distinguish premium G1 / ordinary G1 as is-G1a / is-G1b.
+    # Match class tokens exactly; do not accept arbitrary suffixes in titles.
+    for token in tokens:
+        match = re.fullmatch(r"IS-(SG|G1[AB]?|G2|G3)", normalize(token))
+        if match:
+            return match.group(1)[:2] if match.group(1).startswith("G1") else match.group(1)
+    for grade in ("SG", "G1", "G2", "G3"):
+        if re.search(r"(?:^|[^A-Z0-9])(?:P)?" + grade + r"(?:[^A-Z0-9]|$)", blob):
             return grade
-    t = compact(title)
-    if re.search(r"(^|[^A-Z])SG([^A-Z]|$)", t, re.I): return "SG"
-    if re.search(r"(^|[^A-Z])G1([^A-Z0-9]|$)", t, re.I) or re.search(r"開設.{0,8}周年記念", t): return "G1"
-    if re.search(r"(^|[^A-Z])G2([^A-Z0-9]|$)", t, re.I) or "モーターボート大賞" in t: return "G2"
-    if re.search(r"(^|[^A-Z])G3([^A-Z0-9]|$)", t, re.I) or re.search(r"オールレディース|マスターズリーグ", t): return "G3"
-    return "一般"
+    if re.search(r"(?:^|[^A-Z0-9])(?:IS-)?(?:GENERAL|IPPAN)(?:[^A-Z0-9]|$)", blob) or "一般" in blob:
+        return "一般"
+    t = normalize(title)
+    for grade in ("SG", "G1", "G2", "G3"):
+        if re.search(r"(?:^|[^A-Z0-9])(?:P)?" + grade + r"(?:[^A-Z0-9]|$)", t):
+            return grade
+    # A BTS anniversary is NOT proof of G1. Unknown must stay unknown.
+    return ""
 
 def extract_title(soup: BeautifulSoup) -> str:
     for h in soup.find_all("h2"):
@@ -1092,6 +1110,8 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
         "date":date,
         "title":title,
         "grade":detect_grade(soup,title),
+        "gradeVerified":True,
+        "gradeSource":f"{RACEINDEX_URL}?hd={date}&jcd={code}",
         "day":day,
         "status":meeting_status,
         "statusLabel":status_label,
