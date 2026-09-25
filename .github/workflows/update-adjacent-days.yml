@@ -1,0 +1,37 @@
+name: BOAT CHECK previous and next day
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+permissions:
+  contents: write
+concurrency:
+  group: boat-check-data-update
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests beautifulsoup4
+      - run: git pull --ff-only origin main
+      - name: Fetch date-specific race cards
+        run: python scripts/collect_adjacent_days.py
+      - name: Save successful snapshots
+        if: always()
+        run: |
+          git config user.name "boat-check-bot"
+          git config user.email "actions@users.noreply.github.com"
+          for file in data/yesterday.json data/tomorrow.json; do
+            if [ -f "$file" ]; then git add "$file"; fi
+          done
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Refresh adjacent BOAT CHECK dates"
+          git pull --rebase origin main
+          git push origin HEAD:main
