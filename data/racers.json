@@ -37688,5 +37688,45 @@
     "weight": 46.0,
     "class": "B1",
     "profileCheckedAt": "2026-09-26T04:27:41+09:00"
+  },
+  "4596": {
+    "period": 106,
+    "branch": "徳島",
+    "origin": "徳島県",
+    "weight": 55.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-09-27T03:48:45+09:00"
+  },
+  "3024": {
+    "period": 49,
+    "branch": "広島",
+    "origin": "島根県",
+    "weight": 59.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-09-27T03:48:46+09:00"
+  },
+  "3809": {
+    "period": 77,
+    "branch": "佐賀",
+    "origin": "佐賀県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-27T03:48:46+09:00"
+  },
+  "3499": {
+    "period": 67,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 52.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-09-27T03:48:47+09:00"
+  },
+  "5312": {
+    "period": 133,
+    "branch": "佐賀",
+    "origin": "佐賀県",
+    "weight": 56.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-09-27T03:48:47+09:00"
   }
 }
