@@ -3455,11 +3455,16 @@ body{letter-spacing:0 !important}
 .demoCartClosedWarning{margin:0 12px 9px;padding:8px 10px;border:1px solid #efb4b8;border-radius:8px;background:#fff1f2;color:#a8242e;font-size:8px;font-weight:900;text-align:center;}
 .demoCartActions .submit:disabled{opacity:.42;cursor:not-allowed;}
 </style>
+<style>
+.homeReading{margin:20px 4px 4px;padding:18px;background:#fff;border:1px solid #c5d7e6;border-radius:14px;color:#193650;box-shadow:0 3px 14px rgba(9,35,61,.05)}
+.homeReading h2{font-size:17px;margin:0 0 8px}.homeReading p{font-size:13px;line-height:1.7;margin:0 0 14px}.homeReadingLinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.homeReadingLinks a{display:block;padding:13px;border:1px solid #d4e2ec;border-radius:10px;background:#f6fbff;color:#075f9c;text-decoration:none}.homeReadingLinks strong{display:block;font-size:14px}.homeReadingLinks span{display:block;margin-top:4px;color:#415d74;font-size:12px;line-height:1.6}
+@media(max-width:600px){.homeReadingLinks{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <header>
   <div class="header-inner">
-    <div><div class="logo">BOAT <b>✓</b> CHECK</div><div class="tag">「買うレース」より、「買わないレース」を見つける。</div></div>
+    <div><h1 class="logo" style="margin:0">BOAT <b>✓</b> CHECK</h1><div class="tag">「買うレース」より、「買わないレース」を見つける。</div></div>
     <div class="live"><i></i> 公式公開データ参照</div>
   </div>
 </header>
@@ -3503,6 +3508,14 @@ body{letter-spacing:0 !important}
       <span>マイページ ›</span>
     </button>
 
+    <aside class="homeReading" aria-label="BOAT CHECKの独自ガイド">
+      <h2>データを読むためのガイド</h2>
+      <p>出走表の数字だけでは分からない点を確認し、情報が足りないレースを見送るための考え方をまとめました。</p>
+      <div class="homeReadingLinks">
+        <a href="race-reading.html"><strong>見送り判断の確認手順</strong><span>選手の近況、進入、モーター、展示を比べる順番と仮のケース</span></a>
+        <a href="data-method.html"><strong>データの読み方</strong><span>枠番と進入、本番STと展示ST、事故率と未取得の違い</span></a>
+      </div>
+    </aside>
   </div>
 
   <div id="homeDeadlinePanel" class="homePanel hidden"></div>
@@ -3602,6 +3615,8 @@ body{letter-spacing:0 !important}
   <nav aria-label="サイト情報">
     <a href="about.html">BOAT CHECKについて</a>
     <a href="guide.html">使い方</a>
+    <a href="race-reading.html">見送り判断ガイド</a>
+    <a href="data-method.html">データの読み方</a>
     <a href="privacy.html">プライバシーポリシー</a>
     <a href="terms.html">利用規約・免責事項</a>
     <a href="operator.html">運営者・お問い合わせ</a>
