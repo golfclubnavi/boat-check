@@ -37976,5 +37976,45 @@
     "weight": 57.0,
     "class": "B2",
     "profileCheckedAt": "2026-10-04T03:52:32+09:00"
+  },
+  "4123": {
+    "period": 88,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 48.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-10-05T03:49:51+09:00"
+  },
+  "5148": {
+    "period": 127,
+    "branch": "福岡",
+    "origin": "福岡県",
+    "weight": 47.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-05T03:49:51+09:00"
+  },
+  "4648": {
+    "period": 108,
+    "branch": "兵庫",
+    "origin": "大阪府",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-05T03:49:52+09:00"
+  },
+  "4778": {
+    "period": 113,
+    "branch": "佐賀",
+    "origin": "佐賀県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-05T03:49:52+09:00"
+  },
+  "4496": {
+    "period": 102,
+    "branch": "東京",
+    "origin": "東京都",
+    "weight": 55.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-10-05T03:49:53+09:00"
   }
 }
