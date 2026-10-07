@@ -38080,5 +38080,13 @@
     "weight": 52.0,
     "class": "A1",
     "profileCheckedAt": "2026-10-07T10:52:21+09:00"
+  },
+  "4464": {
+    "period": 101,
+    "branch": "静岡",
+    "origin": "静岡県",
+    "weight": 43.0,
+    "class": "A1",
+    "profileCheckedAt": "2026-10-08T05:48:28+09:00"
   }
 }
