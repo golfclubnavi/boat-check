@@ -37,6 +37,7 @@ import argparse
 import json
 import re
 import unicodedata
+from functools import lru_cache
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -249,6 +250,41 @@ def detect_grade(soup: BeautifulSoup, title: str) -> str:
             return grade
     # A BTS anniversary is NOT proof of G1. Unknown must stay unknown.
     return ""
+
+@lru_cache(maxsize=3)
+def _official_g3_schedule(year: str) -> BeautifulSoup:
+    return get_soup(BASE+"/owpc/pc/race/gradesch",{"hcd":"03","year":year},timeout=15)
+
+def grade_from_official_schedule(date: str, code: str) -> tuple[str, str]:
+    """Confirm an otherwise unknown G3 from the official yearly G3 schedule.
+
+    The schedule category itself establishes the grade. Match both venue and
+    date range; the words 'オールレディース' alone never establish a grade.
+    """
+    source=f"{BASE}/owpc/pc/race/gradesch?hcd=03&year={date[:4]}"
+    try:
+        soup=_official_g3_schedule(date[:4])
+        target=datetime.strptime(date,"%Y%m%d").date()
+        name=VENUES[code]
+        for tr in soup.find_all("tr"):
+            text=compact(tr.get_text(" ",strip=True))
+            span=re.search(r"(\d{1,2})/(\d{1,2})\s*[-〜～－]\s*(\d{1,2})/(\d{1,2})",text)
+            if not span:
+                continue
+            images=tr.find_all("img")
+            if not any(compact(img.get("alt", ""))==name for img in images):
+                continue
+            from datetime import date as date_type
+            mm1,dd1,mm2,dd2=map(int,span.groups())
+            start=date_type(target.year,mm1,dd1)
+            end=date_type(target.year+(mm2<mm1),mm2,dd2)
+            if start<=target<=end:
+                return "G3",source
+    except (ValueError,KeyError) as exc:
+        print(f"  grade schedule parse failed: {exc}")
+    except Exception as exc:
+        print(f"  grade schedule unavailable: {type(exc).__name__}: {exc}")
+    return "",source
 
 def extract_title(soup: BeautifulSoup) -> str:
     for h in soup.find_all("h2"):
@@ -1110,7 +1146,7 @@ def collect_venue_fast(code: str, date: str, old_meeting: dict | None, racer_cac
         "date":date,
         "title":title,
         "grade":detect_grade(soup,title),
-        "gradeVerified":True,
+        "gradeVerified":bool(detect_grade(soup,title)),
         "gradeSource":f"{RACEINDEX_URL}?hd={date}&jcd={code}",
         "day":day,
         "status":meeting_status,
@@ -2724,10 +2760,13 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
             if mins >= -10 and _odds_refresh_due(race,mins):
                 candidates.append((mins,rno))
 
-        # 近いRから処理。1回のLive更新で各場最大6Rまでに制限し、
-        # 次の5分更新で残りRも順次埋める。
+        # All races within two hours take priority; one farther race per venue
+        # is refreshed in the background. This avoids starving the next race
+        # while avoiding repeated requests for all 12 races every five minutes.
         candidates.sort(key=lambda x:x[0])
-        for _,rno in candidates[:6]:
+        urgent=[x for x in candidates if -10 <= x[0] <= 120]
+        background=[x for x in candidates if x[0] > 120][:1]
+        for _,rno in urgent+background:
             odds_tasks.append((meeting.get("venueCode"),meeting.get("date"),rno))
 
     if odds_tasks:
@@ -2759,8 +2798,8 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                     data["updatedAtByType"]=stamps
                     data["counts"]={k:len(data.get(k) or []) for k in ("trifecta","trio","exacta","quinella","wide","win","place")}
                     race["odds"]=data
-                    race["oddsUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
-                    race["oddsLastAttemptAt"]=race["oddsUpdatedAt"]
+                    race["oddsUpdatedAt"]=max(stamps.values()) if stamps else now_stamp
+                    race["oddsLastAttemptAt"]=now_stamp
                     race["oddsSource"]="BOAT RACE official"
                 else:
                     # 先のレースはまだ公式オッズ未公開の場合がある。
@@ -3305,6 +3344,12 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
                 print(f"  ERROR {code} {name}: {e}")
 
     meetings.sort(key=lambda m:int(m["venueCode"]))
+
+    for meeting in meetings:
+        if not meeting.get("grade"):
+            grade,source=grade_from_official_schedule(date,meeting["venueCode"])
+            if grade:
+                meeting.update(grade=grade,gradeVerified=True,gradeSource=source)
 
     now_jst=datetime.now(JST)
     static_enriched_date = old_payload.get("staticEnrichedDate") if old_payload.get("dateJST")==date else None
