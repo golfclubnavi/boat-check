@@ -969,7 +969,7 @@ def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache
     old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
     keep_race_keys = (
         "title", "beforeData", "before", "weather", "weatherData", "conditions",
-        "result", "raceResult", "results", "payouts", "refunds", "resultLastAttemptAt", "odds", "oddsUpdatedAt", "oddsLastAttemptAt", "oddsSource", "racerComments", "localOfficialSources", "localSiteUpdatedAt",
+        "result", "raceResult", "results", "payouts", "refunds", "resultLastAttemptAt", "odds", "oddsUpdatedAt", "oddsLastAttemptAt", "oddsSource", "racerComments", "localOfficialSources", "localSiteUpdatedAt", "beforeLastAttemptAt",
         "replay", "officialReplayPage", "resultUpdatedAt", "beforeUpdatedAt",
     )
 
@@ -2655,7 +2655,16 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
             if live:
                 # Exhibition/start-exhibition can change close to cutoff.
                 if -25 <= mins <= 45:
-                    before_tasks.append((code,date,rno))
+                    before_rows=race.get("beforeData") or []
+                    start_rows=race.get("startExhibition") or []
+                    complete=len(before_rows)==6 and len(start_rows)==6 and all(
+                        x.get("course") in (1,2,3,4,5,6) and x.get("st") not in (None,"")
+                        for x in start_rows
+                    )
+                    # An incomplete six-boat exhibition remains eligible on
+                    # every scheduled live run; a complete one is not refetched.
+                    if not complete:
+                        before_tasks.append((code,date,rno))
 
                     # Local official sites often publish original exhibition times
                     # and racer comments. Recheck near-cutoff races every 10 minutes.
@@ -2706,8 +2715,8 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     # 締切までの残り時間で更新間隔を段階化する。
     #
     #   ～120分 : 5分ごと
-    #   ～240分 : 15分ごと
-    #   240分超 : 30分ごと
+    #   ～240分 : 10分ごと
+    #   240分超 : 15分ごと（各場1Rずつ）
     #
     # 未取得レースは時間帯に関係なく一度取得を試す。
     def _odds_refresh_due(race, mins):
@@ -2716,7 +2725,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
         has_odds=bool((race.get("odds") or {}).get("official"))
 
         # 未公開レースも5分ごとに全件叩かない。
-        # 一度も試していない場合だけ即時、以降は30分ごとに再試行。
+        # 一度も試していない場合だけ即時。未公開は段階的に再試行。
         if not has_odds:
             if not attempted:
                 return True
@@ -2725,7 +2734,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 if last.tzinfo is None:
                     last=last.replace(tzinfo=JST)
                 age=(datetime.now(JST)-last.astimezone(JST)).total_seconds()/60
-                return age >= (5 if mins <= 120 else 15 if mins <= 240 else 30)
+                return age >= (5 if mins <= 120 else 10 if mins <= 240 else 15)
             except Exception:
                 return True
 
@@ -2735,9 +2744,9 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
         if mins <= 120:
             interval=5
         elif mins <= 240:
-            interval=15
+            interval=10
         else:
-            interval=30
+            interval=15
 
         try:
             last=datetime.fromisoformat(str(updated))
@@ -2879,9 +2888,13 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
             for race in meeting.get("races",[]):
                 key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
                 data,err=results.get(key,({},None))
+                if key in results:
+                    race["beforeLastAttemptAt"]=datetime.now(JST).isoformat(timespec="seconds")
                 if data:
-                    race["beforeData"]=data.get("boats",[])
-                    race["startExhibition"]=data.get("startExhibition",[])
+                    if len(data.get("boats") or []) >= len(race.get("beforeData") or []):
+                        race["beforeData"]=data.get("boats",[])
+                    if len(data.get("startExhibition") or []) >= len(race.get("startExhibition") or []):
+                        race["startExhibition"]=data.get("startExhibition",[])
                     if data.get("weather"):
                         race["weather"]=data["weather"]
                     race["beforeUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
@@ -3385,6 +3398,8 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
 
     payload["localOfficialAudit"]=build_local_official_audit(payload)
     payload["recentResults"]=build_recent_results(old_payload,payload,keep_days=3)
+    # This is the completed file-generation time, not the start of collection.
+    payload["updatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
 
     return payload
 
