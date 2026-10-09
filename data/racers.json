@@ -38088,5 +38088,29 @@
     "weight": 43.0,
     "class": "A1",
     "profileCheckedAt": "2026-10-08T05:48:28+09:00"
+  },
+  "5319": {
+    "period": 133,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-10T05:26:00+09:00"
+  },
+  "5123": {
+    "period": 126,
+    "branch": "山口",
+    "origin": "山口県",
+    "weight": 49.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-10T05:26:01+09:00"
+  },
+  "4271": {
+    "period": 94,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-10T05:26:01+09:00"
   }
 }
