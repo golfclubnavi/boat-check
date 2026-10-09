@@ -13,16 +13,13 @@ find . -maxdepth 1 -type f \( \
   -name 'ads.txt' \
 \) -exec cp '{}' cloudflare-dist/ \;
 
-find data -maxdepth 1 -type f -name '*.json' ! -name 'today.json' \
+find data -maxdepth 1 -type f -name '*.json' ! -name 'today.json' ! -name 'odds-recovery.json' \
+  ! -name 'home-live.json' ! -name 'settlements.json' \
   -exec cp '{}' cloudflare-dist/data/ \;
 
-# The source JSON is human-readable and roughly three times larger than needed.
-# Minifying it at build time keeps the same data while making the initial page
-# load much faster from Cloudflare's own CDN.
-if [ -f data/today.json ]; then
-  node -e 'const fs=require("fs");const src=process.argv[1];const dest=process.argv[2];fs.writeFileSync(dest,JSON.stringify(JSON.parse(fs.readFileSync(src,"utf8"))))' \
-    data/today.json cloudflare-dist/data/today.json
-fi
+# Keep the 37 MB collector source in GitHub, not the public assets.
+# Split dated home, venue and active-race LIVE views at every deployment.
+python3 scripts/build_public_data.py --input data/today.json --outdir cloudflare-dist/data
 
 # Provide readable, dated venue information before live JavaScript finishes.
 node scripts/add_static_home.js cloudflare-dist
