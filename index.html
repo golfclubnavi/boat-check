@@ -9,12 +9,11 @@
 <meta name="description" content="BOAT CHECKは、全国24場の出走表・選手・モーター・直前情報・オッズ・結果を確認し、買わないレースを見極めるための独立運営ボートレース情報サイトです。">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://boatcheck.jp/">
-<link rel="preload" href="data/today.json" as="fetch" crossorigin>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:site_name" content="BOAT CHECK">
 <meta property="og:title" content="BOAT CHECK｜買わないレースを見つける">
-<meta property="og:description" content="全国24場の公式公開データを整理し、レース選びの判断材料を提供します。">
+<meta property="og:description" content="全国24場の公開情報を独自に整理し、レース選びの判断材料を提供します。">
 <meta property="og:url" content="https://boatcheck.jp/">
 <meta name="twitter:card" content="summary">
 <title>BOAT CHECK｜全国24場のボートレース情報</title>
@@ -3465,7 +3464,7 @@ body{letter-spacing:0 !important}
 <header>
   <div class="header-inner">
     <div><h1 class="logo" style="margin:0">BOAT <b>✓</b> CHECK</h1><div class="tag">「買うレース」より、「買わないレース」を見つける。</div></div>
-    <div class="live"><i></i> 公式公開データ参照</div>
+    <div class="live"><i></i> 公開情報をもとに更新</div>
   </div>
 </header>
 
@@ -3473,7 +3472,7 @@ body{letter-spacing:0 !important}
 <section id="home">
   <div class="topline">
     <div class="bcDayHeader"><div id="bcDayTabs" role="group" aria-label="開催日"><button type="button" onclick="bcSelectDay(-1)">← 前日開催</button><button type="button" onclick="bcSelectDay(0)" aria-pressed="true">本日開催</button><button type="button" onclick="bcSelectDay(1)">明日開催 →</button></div><div class="sub" id="todayLabel">読み込み中...</div></div>
-    <div class="data-state" id="dataState"><strong>公式データ</strong>更新確認中</div>
+    <div class="data-state" id="dataState"><strong>データ更新中</strong>最新情報を確認しています</div>
   </div>
 
   <div class="homeTabs homeTabsOriginal" id="homeTabs">
@@ -3554,7 +3553,7 @@ body{letter-spacing:0 !important}
 
   <div class="raceSectionHead">
     <h3>レース一覧</h3>
-    <span>BOAT RACE公式 出走データ</span>
+    <span>公開情報をもとにした出走表</span>
   </div>
   <div class="raceGrid" id="races"></div>
 
@@ -3723,6 +3722,10 @@ function formatDataDate(s){
 function formatUpdated(s){
   if(!s)return "更新時刻不明";
   try{return new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit"}).format(new Date(s))+" 更新"}catch{return "更新済み"}
+}
+function dataFreshnessLabel(s){
+  const age=(Date.now()-new Date(s).getTime())/60000;
+  return Number.isFinite(age)&&age>20?`更新遅延・${formatUpdated(s)}`:formatUpdated(s);
 }
 function renderLoading(){
   if($("venues").dataset.snapshotDate===jstNow().date)return;
@@ -4359,7 +4362,7 @@ let homeAdCountdownTimer=null;
 let homeAdCountdown=0;
 
 function homeWatchRewardAd(){
-  demoToast("報酬付き広告は現在準備中です");
+  demoToast("報酬付き広告は現在利用できません");
 }
 function homeCloseAdModal(){
   clearInterval(homeAdCountdownTimer);
@@ -4378,7 +4381,7 @@ function renderHomeAdModal(){
     <div class="rewardAdHead"><b>報酬付き広告</b><button onclick="homeCloseAdModal()">×</button></div>
     <div class="rewardAdMock">
       <span>AD</span>
-      <strong>現在準備中です</strong>
+      <strong>現在利用できません</strong>
       <small>正式な報酬付き広告の接続後に提供します</small>
     </div>
     <button class="rewardAdClaim" onclick="homeCloseAdModal()">閉じる</button>
@@ -4386,7 +4389,7 @@ function renderHomeAdModal(){
 }
 function homeGrantAdReward(){
   homeCloseAdModal();
-  demoToast("報酬付き広告は現在準備中です");
+  demoToast("報酬付き広告は現在利用できません");
 }
 
 function homeMissionDefinitions(){
@@ -4529,22 +4532,6 @@ function homeRenderPoints(){
       <span>デモ投票専用の仮想ポイント</span>
     </div>
 
-    <div class="rewardAdCard" aria-disabled="true">
-      <div class="rewardAdInfo">
-        <div class="rewardAdIcon">▶</div>
-        <div>
-          <h4>報酬付き広告</h4>
-          <p>専用広告サービスの審査・接続後に提供予定です</p>
-        </div>
-      </div>
-      <div class="rewardAdLimit">
-        <span>現在の状態</span>
-        <strong><small>準備中</small></strong>
-      </div>
-      <button disabled>準備中</button>
-      <small class="rewardAdTestNote">通常広告とは分離し、Google Ad Manager等の報酬付き広告を正式に接続した後に有効化します。</small>
-    </div>
-
     ${homeRenderMissions()}
 
     <div class="favoriteSectionHead"><b>pt獲得履歴</b><span>${hist.length}件</span></div>
@@ -4652,10 +4639,7 @@ function homeRenderDataManage(){
       </label>
       <button class="danger" onclick="homeClearUserData()"><b>データ初期化</b><span>端末内のデモデータを削除</span></button>
     </div>
-    <div class="myLoginNote">
-      <b>ログイン機能は現在未実装</b>
-      <span>サイト完成後にApple・Google・メール認証を追加すると、複数端末同期や機種変更時の復元がしやすくなります。</span>
-    </div>
+
   </div>`;
 }
 function renderHomeMyPage(){
@@ -5509,7 +5493,7 @@ function meetRaceCell(item){
 
 function renderMeetResultsInner(){
   const r=state.currentRace||{};
-  const boats=(r.boats||[]).slice(0,6);
+  const boats=hydrateBoatsForDisplay(r.boats||[]).slice(0,6);
   if(!boats.length) return `<p class="dataPlaceholder">出走選手データを取得中です。</p>`;
 
   const histories=boats.map(b=>meetHistoryForBoat(b));
@@ -5636,7 +5620,7 @@ function renderMeetResultsInner(){
       <span><i class="one"></i>1位（最も優れた値）</span>
       <span><i class="two"></i>2位（2番目に優れた値）</span>
     </div>
-    <div class="meetDataNote">※ 公式データ取得後に自動反映します。未取得項目は「--」表示。</div>
+    <div class="meetDataNote">※ 公開情報を取得できた項目を反映します。未取得項目は「--」表示。</div>
   `;
 }
 
@@ -5713,7 +5697,7 @@ function renderOfficialCourseStatsBlock(boats){
     }catch(e){}
   }
   return `<div class="courseDataBlock officialCourseBlock ${hasData?"":"isEmpty"}">
-    ${courseBar("公式コース別成績",checkedText||"BOAT RACE公式")}
+    ${courseBar("公開情報によるコース別成績",checkedText||"BOAT RACE公式")}
     <div class="officialCourseLead">各選手の現在の想定進入コースに対応した公式成績です。進入コース変更をすると参照コースも連動します。</div>
     ${courseSimpleTable(rows,"officialCourseTable")}
     <div class="courseDataNote">※ 公式選手ページの集計期間をそのまま使用。未取得項目は「--」表示。</div>
@@ -5941,14 +5925,14 @@ function hydrateBoatsForDisplay(boats){
   return (boats||[]).map(b=>{
     const id=String(b.racerId||b.registrationNo||"");
     const name=uiRacerKey(b.racerName);
-    const src=(id&&reg.byId.get(id)?.b)||reg.byName.get(name)?.b;
-    if(!src)return b;
     const out={...b};
-    keys.forEach(k=>{
+    const src=(id&&reg.byId.get(id)?.b)||(!id&&reg.byName.get(name)?.b);
+    if(src)keys.forEach(k=>{
       const v=out[k];
       const empty=v===undefined||v===null||v===""||(Array.isArray(v)&&!v.length);
       if(empty && src[k]!==undefined && src[k]!==null && src[k]!=="")out[k]=src[k];
     });
+    if(id && !out.period)out.period=state.racerDirectory?.[id]?.period||state.entryDetails?.byRacer?.[id]?.period||null;
     return out;
   });
 }
@@ -6300,7 +6284,7 @@ function recent20Selector(boats){
 }
 function renderRecent20(){
   const r=state.currentRace||{};
-  const boats=(r.boats||[]).slice(0,6);
+  const boats=hydrateBoatsForDisplay(r.boats||[]).slice(0,6);
   if(!boats.length)return `<div class="dataSection"><p class="dataPlaceholder">出走選手データを取得中です。</p></div>`;
 
   if(!boats.some(b=>Number(b.lane)===recent20SelectedLane)){
@@ -6627,7 +6611,7 @@ function renderRacerInfo(){
   const r=state.currentRace||{};
   const boats=(r.boats||[]).slice(0,6);
   if(!boats.length){
-    return `<div class="qdh"><b>選手情報</b><span>公式データ取得待ち</span></div><p>出走選手データを取得中です。</p>`;
+    return `<div class="qdh"><b>選手情報</b><span>公開情報を取得中</span></div><p>出走選手データを取得中です。</p>`;
   }
 
   const metricRow=(label, group, period, suffix="", rankMode="desc", digits=null)=>{
@@ -7881,8 +7865,15 @@ function sortOdds(entries,mode){
 
 function oddsDisplayStamp(){
  const r=state.currentRace||{},keys=oddsSubTab==="pair"?["exacta","quinella"]:oddsSubTab==="winplace"?["win","place"]:[oddsSubTab];
+ if(keys.some(k=>!r.odds?.[k]?.length))return "未取得・更新待ち";
  const stamps=keys.filter(k=>r.odds?.[k]?.length).map(k=>r.odds?.updatedAtByType?.[k]||r.oddsUpdatedAt).filter(Boolean).sort();
- return stamps.length?formatUpdated(stamps[0]):"未取得";
+ if(!stamps.length)return "未取得・更新待ち";
+ const oldest=new Date(stamps[0]);
+ const age=(Date.now()-oldest.getTime())/60000;
+ const mins=minutesUntil(r.deadline);
+ const limit=mins!==null&&mins<=120?12:35;
+ if(!Number.isFinite(age)||age>limit)return `更新待ち（最終 ${formatUpdated(stamps[0])}）`;
+ return `最終更新 ${formatUpdated(stamps[0]).replace(" 更新","")}`;
 }
 function setOddsSubTab(tab){
   oddsSubTab=tab;
@@ -7902,7 +7893,7 @@ function setOddsSort(mode){
 }
 
 function oddsEmpty(text="オッズデータは未取得です"){
-  return `<div class="oddsEmpty"><b>${text}</b><span>公式データ取得後に自動反映します。</span></div>`;
+  return `<div class="oddsEmpty"><b>${text}</b><span>公開情報の取得後に自動反映します。</span></div>`;
 }
 
 function renderOddsTrifecta(entries){
@@ -9286,8 +9277,8 @@ function showRaceData(type, btn){
     }catch(err){
       console.error("meet results render error",err);
       panel.innerHTML=`<div class="dataSection meetResults">
-        <div class="dataSectionHead"><b>節間成績</b><span>表示準備中</span></div>
-        <p class="dataPlaceholder">節間成績の表示処理を読み込み中です。</p>
+        <div class="dataSectionHead"><b>節間成績</b><span>表示エラー</span></div>
+        <p class="dataPlaceholder">節間成績の表示できませんでした。ページを再読み込みしてください。</p>
       </div>`;
     }
     return;
@@ -9299,8 +9290,8 @@ function showRaceData(type, btn){
     }catch(err){
       console.error("motor info render error",err);
       panel.innerHTML=`<div class="dataSection">
-        <div class="dataSectionHead"><b>モーター情報</b><span>表示準備中</span></div>
-        <p class="dataPlaceholder">モーター情報の表示処理を読み込み中です。</p>
+        <div class="dataSectionHead"><b>モーター情報</b><span>表示エラー</span></div>
+        <p class="dataPlaceholder">モーター情報の表示できませんでした。ページを再読み込みしてください。</p>
       </div>`;
     }
     return;
@@ -9311,8 +9302,8 @@ function showRaceData(type, btn){
     }catch(err){
       console.error("before info render error",err);
       panel.innerHTML=`<div class="dataSection">
-        <div class="dataSectionHead"><b>直前情報</b><span>表示準備中</span></div>
-        <p class="dataPlaceholder">直前情報の表示処理を読み込み中です。</p>
+        <div class="dataSectionHead"><b>直前情報</b><span>表示エラー</span></div>
+        <p class="dataPlaceholder">直前情報の表示できませんでした。ページを再読み込みしてください。</p>
       </div>`;
     }
     return;
@@ -9323,8 +9314,8 @@ function showRaceData(type, btn){
     }catch(err){
       console.error("odds render error",err);
       panel.innerHTML=`<div class="dataSection">
-        <div class="dataSectionHead"><b>オッズ</b><span>表示準備中</span></div>
-        <p class="dataPlaceholder">オッズ表示処理を読み込み中です。</p>
+        <div class="dataSectionHead"><b>オッズ</b><span>表示エラー</span></div>
+        <p class="dataPlaceholder">オッズ表示できませんでした。ページを再読み込みしてください。</p>
       </div>`;
     }
     return;
@@ -9335,8 +9326,8 @@ function showRaceData(type, btn){
     }catch(err){
       console.error("result render error",err);
       panel.innerHTML=`<div class="dataSection">
-        <div class="dataSectionHead"><b>結果</b><span>表示準備中</span></div>
-        <p class="dataPlaceholder">結果表示処理を読み込み中です。</p>
+        <div class="dataSectionHead"><b>結果</b><span>表示エラー</span></div>
+        <p class="dataPlaceholder">結果表示できませんでした。ページを再読み込みしてください。</p>
       </div>`;
     }
     return;
@@ -9347,8 +9338,8 @@ function showRaceData(type, btn){
     }catch(err){
       console.error("replay render error",err);
       panel.innerHTML=`<div class="dataSection">
-        <div class="dataSectionHead"><b>リプレイ</b><span>表示準備中</span></div>
-        <p class="dataPlaceholder">リプレイ表示処理を読み込み中です。</p>
+        <div class="dataSectionHead"><b>リプレイ</b><span>表示エラー</span></div>
+        <p class="dataPlaceholder">リプレイ表示できませんでした。ページを再読み込みしてください。</p>
       </div>`;
     }
     return;
@@ -9359,7 +9350,7 @@ function showRaceData(type, btn){
     }catch(err){
       console.error("demo bet render error",err);
       panel.innerHTML=`<div class="dataSection">
-        <div class="dataSectionHead"><b>デモ投票</b><span>表示準備中</span></div>
+        <div class="dataSectionHead"><b>デモ投票</b><span>表示エラー</span></div>
         <p class="dataPlaceholder">デモ投票画面を読み込み中です。</p>
       </div>`;
     }
@@ -9376,7 +9367,7 @@ function showRaceData(type, btn){
   const data=dataMap[type];
   const hasData=data && (Array.isArray(data) ? data.length : (typeof data==="object" ? Object.keys(data).length : true));
   if(!hasData){
-    panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>${labels[type]}</b><span>公式データ連携準備中</span></div><p class="dataPlaceholder">公式データ取得後、6艇比較を中心に見やすく表示します。</p></div>`;
+    panel.innerHTML=`<div class="dataSection"><div class="dataSectionHead"><b>${labels[type]}</b><span>データ未取得</span></div><p class="dataPlaceholder">この項目のデータは現在表示できません。</p></div>`;
     return;
   }
   const raw=typeof data==="string" ? data : JSON.stringify(data);
@@ -9671,7 +9662,7 @@ async function refreshOfficialData(){
     state.updatedAt=d.updatedAt;
     state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
-    $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
+    $("dataState").innerHTML=`<strong>公開データ参照</strong>${esc(dataFreshnessLabel(d.updatedAt))}`;
 
     if(currentVenueCode){
       const m=state.meetings.find(x=>x.venueCode===currentVenueCode);
@@ -9680,7 +9671,7 @@ async function refreshOfficialData(){
         state.currentDayDate=currentDayDate||m.date;
         state.currentMeetingView=currentDayView(m,state.currentDayDate);
         if(currentRaceNo){
-          state.currentRace=(state.currentMeetingView?.races||[]).find(r=>Number(r.raceNo)===currentRaceNo)||state.currentRace;
+          state.currentRace=hydrateRaceForDisplay((state.currentMeetingView?.races||[]).find(r=>Number(r.raceNo)===currentRaceNo)||state.currentRace);
         }
       }
     }
@@ -9704,14 +9695,14 @@ async function refreshOfficialData(){
 async function loadData(){
   renderLoading();
   try{
-    const res=await fetch(DATA_URL);
+    const res=await fetch(`${DATA_URL}?v=${Date.now()}`,{cache:"no-store"});
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const d=await res.json();
     if(!Array.isArray(d.meetings))throw new Error("meetings invalid");
     state.errors=d.errors||[];
     state.meetings=d.meetings;state.recentResults=Array.isArray(d.recentResults)?d.recentResults:[];if(!Object.keys(state.recent20ByRacer||{}).length&&d.recent20ByRacer&&typeof d.recent20ByRacer==="object")state.recent20ByRacer=d.recent20ByRacer;state.updatedAt=d.updatedAt;state.dateJST=d.dateJST;
     $("todayLabel").textContent=formatDataDate(d.dateJST);
-    $("dataState").innerHTML=`<strong>BOAT RACE公式</strong>${esc(formatUpdated(d.updatedAt))}`;
+    $("dataState").innerHTML=`<strong>公開データ参照</strong>${esc(dataFreshnessLabel(d.updatedAt))}`;
     renderVenues();
     demoSettleHistoryFromOfficialResults();
     refreshHomeActivePanel();
@@ -9719,7 +9710,7 @@ async function loadData(){
     $("todayLabel").textContent=formatDataDate(jstNow().date);
     $("dataState").innerHTML="<strong>データ取得エラー</strong>再読み込みしてください";
     $("loadError").classList.remove("hidden");
-    $("loadError").textContent="公式データを読み込めませんでした。ページを再読み込みしてください。";
+    $("loadError").textContent="開催情報を読み込めませんでした。ページを再読み込みしてください。";
     $("venues").innerHTML=VENUES.map(v=>`<div class="card off"><div class="name">${v[1]}</div><div class="offtext"><b>確認中</b></div></div>`).join("");
   }
 }
@@ -9753,6 +9744,15 @@ async function loadEntryDetails(){
     if(panel&&currentQuickDataType==="racer")panel.innerHTML=renderRacerInfo();
     if(panel&&currentQuickDataType==="motor")panel.innerHTML=renderMotorInfo();
   }catch(error){console.warn("Entry details unavailable",error);}
+}
+
+async function loadRacerDirectory(){
+  try{
+    const res=await fetch(`data/racers.json?v=${Date.now()}`,{cache:"no-store"});
+    if(!res.ok)return;
+    state.racerDirectory=await res.json();
+    if(currentQuickDataType==="racer")$("quickDataPanel").innerHTML=renderRacerInfo();
+  }catch(error){console.warn("Racer directory unavailable",error);}
 }
 
 async function loadCourseStatsData(){
@@ -9827,6 +9827,7 @@ window.addEventListener("popstate",(e)=>{
 
 loadData().finally(()=>{
   const loadOptionalData=()=>{
+    loadRacerDirectory();
     loadRecent20Data();
     loadCourseStatsData();
     loadEntryDetails();
