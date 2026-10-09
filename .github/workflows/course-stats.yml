@@ -1,0 +1,42 @@
+name: Update course statistics
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly JST Monday 07:45; independent of five-minute live updates.
+    - cron: '45 22 * * 0'
+permissions:
+  contents: write
+concurrency:
+  group: boat-check-course-stats
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install requests lhafile
+      - uses: actions/cache@v4
+        with:
+          path: .cache/course-results
+          key: course-results-v1-${{ github.run_id }}
+          restore-keys: course-results-v1-
+      - run: git fetch origin main && git reset --hard origin/main
+      - name: Update one-year course rates for current racers
+        run: python scripts/collect_course_stats.py --input data/today.json --out data/course-stats.json --workers 16
+      - name: Report coverage
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('data/course-stats.json'))
+          print(f"[course] racers={d['racerCount']} days={d['daysCollected']}/{d['daysExpected']} errors={len(d['errors'])}")
+          if d['daysCollected'] < d['daysExpected'] * .8:
+              print('::warning title=Course statistics incomplete::Fewer than 80% of result days downloaded')
+          PY
+      - name: Publish course statistics
+        run: python scripts/publish_data.py --mode files --message 'Update BOAT CHECK course statistics' data/course-stats.json
