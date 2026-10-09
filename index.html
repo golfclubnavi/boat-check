@@ -3514,6 +3514,7 @@ body{letter-spacing:0 !important}
       <div class="homeReadingLinks">
         <a href="race-reading.html"><strong>見送り判断の確認手順</strong><span>選手の近況、進入、モーター、展示を比べる順番と仮のケース</span></a>
         <a href="data-method.html"><strong>データの読み方</strong><span>枠番と進入、本番STと展示ST、事故率と未取得の違い</span></a>
+        <a href="decision-note.html"><strong>見送りメモ</strong><span>気になる材料と不足情報を記録し、レース後に振り返る</span></a>
       </div>
     </aside>
   </div>
@@ -3617,6 +3618,7 @@ body{letter-spacing:0 !important}
     <a href="guide.html">使い方</a>
     <a href="race-reading.html">見送り判断ガイド</a>
     <a href="data-method.html">データの読み方</a>
+    <a href="decision-note.html">見送りメモ</a>
     <a href="privacy.html">プライバシーポリシー</a>
     <a href="terms.html">利用規約・免責事項</a>
     <a href="operator.html">運営者・お問い合わせ</a>
@@ -3723,6 +3725,7 @@ function formatUpdated(s){
   try{return new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit"}).format(new Date(s))+" 更新"}catch{return "更新済み"}
 }
 function renderLoading(){
+  if($("venues").dataset.snapshotDate===jstNow().date)return;
   $("venues").innerHTML=VENUES.map(v=>`<div class="card"><div class="name skeleton">${v[1]}</div><div class="meta skeleton">読込中</div><div class="race skeleton">----</div></div>`).join("");
 }
 function minutesUntil(deadline){

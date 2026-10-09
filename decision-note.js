@@ -1,0 +1,13 @@
+(()=>{'use strict';
+const KEY='boatcheck-decision-notes-v1', $=id=>document.getElementById(id), form=$('noteForm'), list=$('savedNotes'), status=$('noteStatus');
+const race=$('noteRace');for(let n=1;n<=12;n++){const o=document.createElement('option');o.value=String(n);o.textContent=`${n}R`;race.append(o)}
+const now=new Date();$('noteDate').value=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+function read(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a.filter(x=>x&&typeof x==='object').slice(0,100):[]}catch{return []}}
+function save(a){try{localStorage.setItem(KEY,JSON.stringify(a));return true}catch{status.textContent='保存できませんでした。ブラウザの空き容量やプライベートモードを確認してください。';return false}}
+function node(tag,text,cls){const e=document.createElement(tag);e.textContent=text;if(cls)e.className=cls;return e}
+function detail(box,title,value){if(!value)return;const p=node('p',`${title}：${value}`);box.append(p)}
+function render(){list.replaceChildren();const items=read();if(!items.length){list.append(node('p','保存したメモはありません。','emptyNote'));return}
+for(const x of items){const a=node('article','','savedNote');a.append(node('h3',`${x.date||''} ${x.venue||''} ${x.race||''}R`));a.append(node('small',`記録：${x.savedAt||''}`));detail(a,'判断',x.decision);detail(a,'気になる点',Array.isArray(x.factors)?x.factors.join('、'):'');detail(a,'確認できた情報',x.evidence);detail(a,'まだ分からないこと',x.unknown);detail(a,'理由',x.reason);
+const controls=node('div','','noteActions'), del=node('button','削除');del.type='button';del.addEventListener('click',()=>{if(!confirm('このメモを削除しますか？'))return;const next=read().filter(y=>y.id!==x.id);if(save(next)){render();status.textContent='メモを削除しました。'}});controls.append(del);a.append(controls);list.append(a)}}
+form.addEventListener('submit',ev=>{ev.preventDefault();if(!form.reportValidity())return;const x={id:globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`,date:$('noteDate').value,venue:$('noteVenue').value.trim(),race:race.value,factors:[...form.querySelectorAll('input[name="factor"]:checked')].map(e=>e.value),evidence:$('noteEvidence').value.trim(),unknown:$('noteUnknown').value.trim(),decision:form.querySelector('input[name="decision"]:checked').value,reason:$('noteReason').value.trim(),savedAt:new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',dateStyle:'medium',timeStyle:'short'}).format(new Date())};if(!x.venue){status.textContent='場名を入力してください。';return}const items=read();items.unshift(x);if(save(items.slice(0,100))){render();status.textContent='この端末に保存しました。';form.reset();$('noteDate').value=x.date}});
+render();})();

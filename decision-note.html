@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>見送りメモ｜BOAT CHECK</title><meta name="description" content="進入・近況・モーター・展示などの確認事項と、見送る理由を記録して振り返るBOAT CHECKの無料ツール。">
+<link rel="canonical" href="https://boatcheck.jp/decision-note.html"><link rel="stylesheet" href="legal.css"><link rel="stylesheet" href="decision-note.css">
+<script src="analytics.js" defer></script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9271224558105519" crossorigin="anonymous"></script><script src="decision-note.js" defer></script></head>
+<body><header><div class="head"><a class="brand" href="index.html">BOAT <b>✓</b> CHECK</a><span>見送りメモ</span></div></header>
+<main><a class="back" href="index.html">‹ 開催一覧へ戻る</a><article class="card"><h1>見送りメモ</h1>
+<p class="lead">気になる点を「確認した事実」と「まだ分からないこと」に分けて残すための道具です。各項目は判断の順番を示すもので、選ぶだけで見送りや的中を判定しません。</p>
+<div class="info">保存したメモはこのブラウザ内にだけ残ります。公式の出走表・展示・締切を確認してから判断してください。デモ投票や舟券購入とは連動しません。</div>
+<form id="noteForm"><h2>1. 対象のレース</h2><div class="noteGrid"><label>開催日<input id="noteDate" type="date" required></label><label>場名<input id="noteVenue" maxlength="24" placeholder="例：戸田" required></label><label>レース番号<select id="noteRace" required><option value="">選択</option></select></label></div>
+<h2>2. 確認する材料</h2><p class="hint">気になった項目だけ選び、下に具体的な根拠を書いてください。選択数で危険度は決まりません。</p>
+<fieldset><legend>不確かな点</legend><div class="checkGrid">
+<label><input type="checkbox" name="factor" value="枠番と実際の進入">枠番と実際の進入</label>
+<label><input type="checkbox" name="factor" value="長期成績と直近走の差">長期成績と直近走の差</label>
+<label><input type="checkbox" name="factor" value="集計期間・出走数">集計期間・出走数</label>
+<label><input type="checkbox" name="factor" value="モーター成績の更新時期">モーター成績の更新時期</label>
+<label><input type="checkbox" name="factor" value="展示と本番STの違い">展示と本番STの違い</label>
+<label><input type="checkbox" name="factor" value="欠場・変更・未取得">欠場・変更・未取得</label>
+<label><input type="checkbox" name="factor" value="オッズと締切">オッズと締切</label></div></fieldset>
+<label class="block">確認できた情報<textarea id="noteEvidence" maxlength="800" rows="4" placeholder="いつ・どの情報を確認したか。数字には対象期間と出走数も添える"></textarea></label>
+<label class="block">まだ分からないこと<textarea id="noteUnknown" maxlength="800" rows="3" placeholder="例：展示が未公開で進入の変化を確認できていない"></textarea></label>
+<h2>3. 自分の判断</h2><div class="choices" role="group" aria-label="判断"><label><input type="radio" name="decision" value="保留" checked>保留</label><label><input type="radio" name="decision" value="見送る">見送る</label><label><input type="radio" name="decision" value="確認を続ける">確認を続ける</label></div>
+<label class="block">理由<textarea id="noteReason" maxlength="800" rows="3" placeholder="なぜそう判断したかを自分の言葉で残す"></textarea></label>
+<div class="actions"><button class="primary" type="submit">この端末に保存</button><button type="reset">入力をクリア</button></div><p id="noteStatus" role="status" aria-live="polite"></p></form>
+<h2>保存したメモ</h2><p class="hint">レース結果は自動取得しません。結果・実際の進入・本番STを公式情報で確認し、判断の理由を振り返ってください。</p><div id="savedNotes"></div>
+<h2>読み間違えを防ぐために</h2><p>枠番は出走表の艇番号、進入は実際に走ったコースです。展示STは本番STではありません。数値に欠損がある場合、ゼロや平均値として補わず、その不確かさをメモに残せます。詳しくは<a href="data-method.html">データの読み方</a>と<a href="race-reading.html">見送り判断の確認手順</a>をご覧ください。</p></article></main>
+<footer><nav><a href="about.html">サイトについて</a><a href="guide.html">使い方</a><a href="privacy.html">プライバシー</a><a href="terms.html">利用規約</a><a href="operator.html">運営者</a><a href="data-sources.html">データ出典</a></nav>© 2026 NEXIA Works</footer></body></html>

@@ -23,3 +23,6 @@ if [ -f data/today.json ]; then
   node -e 'const fs=require("fs");const src=process.argv[1];const dest=process.argv[2];fs.writeFileSync(dest,JSON.stringify(JSON.parse(fs.readFileSync(src,"utf8"))))' \
     data/today.json cloudflare-dist/data/today.json
 fi
+
+# Provide readable, dated venue information before live JavaScript finishes.
+node scripts/add_static_home.js cloudflare-dist
