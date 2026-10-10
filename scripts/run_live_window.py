@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Three bounded LIVE rounds, with no overlapping official requests."""
+"""Run one or more bounded LIVE rounds without overlapping official requests."""
 import argparse
 import subprocess
 import sys
@@ -8,7 +8,7 @@ import time
 def run(*args):subprocess.run((sys.executable,)+args,check=True)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--rounds',type=int,default=3);p.add_argument('--interval',type=int,default=120);args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--rounds',type=int,default=1);p.add_argument('--interval',type=int,default=120);args=p.parse_args()
     if not 1<=args.rounds<=3 or args.interval<120:raise SystemExit('Require 1–3 rounds and interval >=120s')
     start=time.monotonic();finished=0
     for index in range(args.rounds):
