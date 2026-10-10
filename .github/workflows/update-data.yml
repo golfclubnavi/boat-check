@@ -16,7 +16,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -35,8 +35,8 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Collect and publish bounded two-minute LIVE rounds
+      - name: Collect and publish one bounded LIVE round
         env:
           CF_LIVE_URL: ${{ vars.CF_LIVE_URL }}
           CF_LIVE_TOKEN: ${{ secrets.CF_LIVE_TOKEN }}
-        run: python scripts/run_live_window.py --rounds 3 --interval 120
+        run: python scripts/run_live_window.py --rounds 1 --interval 120
