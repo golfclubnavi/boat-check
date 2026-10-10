@@ -1,0 +1,9 @@
+{
+  "name": "boat-check",
+  "private": true,
+  "scripts": {
+    "build": "bash cloudflare-build.sh",
+    "verify-release": "python3 scripts/release_check.py",
+    "prepare-source": "python3 scripts/build_public_data.py && node scripts/add_static_home.js ."
+  }
+}
