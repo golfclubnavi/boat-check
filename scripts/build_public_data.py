@@ -7,6 +7,7 @@ artifact, but is not requested by the browser on its initial page load.
 import argparse
 import json
 from pathlib import Path
+VENUES=['桐生','戸田','江戸川','平和島','多摩川','浜名湖','蒲郡','常滑','津','三国','びわこ','住之江','尼崎','鳴門','丸亀','児島','宮島','徳山','下関','若松','芦屋','福岡','唐津','大村']
 
 
 def write(path, data):
@@ -21,6 +22,10 @@ def build(source, destination):
         raise ValueError('Invalid current-day snapshot; refusing to publish empty views')
     summaries=[]
     venue_files=[]
+    active_codes={str(m.get('venueCode') or '').zfill(2) for m in data['meetings']}
+    for folder in ('venue','venue-live'):
+        for old in (destination/folder).glob('[0-9][0-9].json'):
+            if old.stem not in active_codes:old.unlink()
     for meeting in data['meetings']:
         code=str(meeting.get('venueCode') or '').zfill(2)
         if not code.isdigit() or len(code)!=2 or not (1<=int(code)<=24):
@@ -41,7 +46,7 @@ def build(source, destination):
         live['races']=[]
         for race in meeting.get('races',[]):
             dynamic={k:race[k] for k in ('raceNo','deadline','status','statusLabel','odds','oddsUpdatedAt',
-                     'oddsLastAttemptAt','beforeData','startExhibition','beforeUpdatedAt','weather',
+                     'oddsLastAttemptAt','beforeData','startExhibition','beforeUpdatedAt','beforeLastAttemptAt','weather',
                      'result','resultUpdatedAt','resultLastAttemptAt','resultWeather','liveErrors') if k in race}
             dynamic['boats']=[{k:b[k] for k in ('lane','racerId','registrationNo','before','weight',
                               'weightAdjustment','exhibitionTime','tilt','partsExchange',
@@ -55,6 +60,8 @@ def build(source, destination):
 
     home={k:data[k] for k in ('schemaVersion','dateJST','updatedAt','errors') if k in data}
     home['meetings']=summaries
+    home['venues']=[{'venueCode':f'{i:02}', 'venueName':name,
+                     'isHeld':f'{i:02}' in active_codes} for i,name in enumerate(VENUES,1)]
     all_races=[r for m in data['meetings'] for r in m.get('races',[])]
     home['dailyOverview']={
         'venues':len(data['meetings']),

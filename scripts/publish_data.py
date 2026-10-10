@@ -2,7 +2,7 @@
 """Publish independent Action jobs with optimistic main-branch retries.
 
 The collector's output is retained in memory while main moves. A failed push
-is retried against the new tip; it never rebases a stale 37 MB JSON commit.
+is retried against the new tip; it never rebases a stale canonical JSON commit.
 """
 import argparse
 import json
@@ -106,9 +106,12 @@ def main():
             path=Path(name);path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(blob)
         if 'data/today.json' in current:
             generated=build(Path('data/today.json'),Path('data'))
-            paths=list(current)+[str(path) for path in generated]
+            subprocess.run(('node','scripts/add_static_home.js','.'),check=True)
+            paths=list(current)+[str(path) for path in generated]+['index.html']
         else:paths=list(current)
         git('add',*paths)
+        if 'data/today.json' in current:
+            git('add','-u','data/venue','data/venue-live')
         if git('diff','--cached','--quiet',check=False).returncode==0:
             print('[publish] no changes');return
         git('commit','-m',args.message)

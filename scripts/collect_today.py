@@ -2530,13 +2530,15 @@ def fetch_beforeinfo_task(code: str, date: str, race_no: int):
 def _result_is_complete(result: dict) -> bool:
     if not isinstance(result,dict):
         return False
-    if result.get("complete") is True:
-        return True
-
     finishers=result.get("finishers") or []
     starts=result.get("startEntries") or []
     st_count=sum(1 for x in finishers if x.get("st") not in (None,""))
-    return len(finishers)==6 and len(starts)==6 and st_count==6
+    normal=[x for x in finishers if str(x.get('rank')) in ('1','2','3')]
+    return (len(finishers)==6 and len(starts)==6 and st_count==6
+            and all(x.get('course') in (1,2,3,4,5,6) for x in starts)
+            and all(x.get('time') not in (None,'') for x in normal)
+            and bool(result.get('payouts') or result.get('refund'))
+            and (not normal or bool(result.get('kimarite'))))
 
 def _result_refresh_due(race: dict, mins: int) -> bool:
     # Do not retry races explicitly cancelled/postponed.
@@ -2556,7 +2558,7 @@ def _result_refresh_due(race: dict, mins: int) -> bool:
         return True
 
     # Immediate period: every 5 minutes. Older race: every 15 minutes.
-    interval=5 if mins>=-120 else 15
+    interval=2 if mins>=-120 else 15
     try:
         dt=datetime.fromisoformat(str(last))
         if dt.tzinfo is None:
@@ -2631,7 +2633,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     Dynamic official data refresh.
 
     LIVE mode (5-minute workflow):
-      - beforeinfo: 35 minutes before cutoff through 20 minutes after
+      - beforeinfo: 45 minutes before cutoff through 25 minutes after
       - result/refund: closed races up to 120 minutes after cutoff, until official result exists
 
     FAST/ENRICH mode:
@@ -2657,10 +2659,13 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 if -25 <= mins <= 45:
                     before_rows=race.get("beforeData") or []
                     start_rows=race.get("startExhibition") or []
-                    complete=len(before_rows)==6 and len(start_rows)==6 and all(
+                    complete=(len(before_rows)==6 and len(start_rows)==6
+                        and len({x.get('lane') for x in before_rows})==6
+                        and all(x.get('exhibitionTime') not in (None,'') for x in before_rows)
+                        and all(
                         x.get("course") in (1,2,3,4,5,6) and x.get("st") not in (None,"")
                         for x in start_rows
-                    )
+                    ))
                     # An incomplete six-boat exhibition remains eligible on
                     # every scheduled live run; a complete one is not refetched.
                     if not complete:
@@ -2714,9 +2719,8 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     # ただし全12Rを5分ごとに再取得すると負荷が大きいため、
     # 締切までの残り時間で更新間隔を段階化する。
     #
-    #   ～120分 : 5分ごと
-    #   ～240分 : 10分ごと
-    #   240分超 : 15分ごと（各場1Rずつ）
+    #   ～30分 : 2分ごと / ～120分 : 5分ごと
+    #   120分超 : 15分ごと（各場1Rずつ）
     #
     # 未取得レースは時間帯に関係なく一度取得を試す。
     def _odds_refresh_due(race, mins):
@@ -2734,17 +2738,17 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 if last.tzinfo is None:
                     last=last.replace(tzinfo=JST)
                 age=(datetime.now(JST)-last.astimezone(JST)).total_seconds()/60
-                return age >= (5 if mins <= 120 else 10 if mins <= 240 else 15)
+                return age >= (2 if mins <= 30 else 5 if mins <= 120 else 15)
             except Exception:
                 return True
 
         if not updated:
             return True
 
-        if mins <= 120:
+        if mins <= 30:
+            interval=2
+        elif mins <= 120:
             interval=5
-        elif mins <= 240:
-            interval=10
         else:
             interval=15
 
@@ -2781,6 +2785,10 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     if odds_tasks:
         # Deduplicate in case the same race is encountered twice.
         odds_tasks=list(dict.fromkeys(odds_tasks))
+        odds_tasks.sort(key=lambda task: next(
+            (_minutes_from_now(r.get('deadline','')) or 0)
+            for m in payload['meetings'] if m.get('venueCode')==task[0]
+            for r in m.get('races',[]) if int(r.get('raceNo') or 0)==task[2]))
         print(f"[BOAT CHECK] LIVE odds tasks={len(odds_tasks)}")
         odds_results={}
         with ThreadPoolExecutor(max_workers=min(max(workers,8),12)) as ex:
@@ -3354,6 +3362,10 @@ def collect(date: str, out_path: Path, enrich: bool, live: bool, workers: int) -
                     print(f"  SKIP {code} {name}: no race rows")
             except Exception as e:
                 errors.append({"venueCode":code,"venueName":name,"error":f"{type(e).__name__}: {e}"})
+                previous=old_map.get(code)
+                if previous and str(previous.get('date'))==date:
+                    previous['collectionWarning']='開催情報の再取得待ち'
+                    meetings.append(previous)
                 print(f"  ERROR {code} {name}: {e}")
 
     meetings.sort(key=lambda m:int(m["venueCode"]))
@@ -3410,6 +3422,7 @@ def main():
     p.add_argument("--enrich",action="store_true",help="全R出走表に加え、今節成績/得点率/前検/モーター・ボート基本値を取得")
     p.add_argument("--deep",action="store_true",help="旧互換: --enrich と同じ")
     p.add_argument("--live",action="store_true",help="5分更新用: 直前展示と直近の結果・払戻を優先取得")
+    p.add_argument("--refresh-only",action="store_true",help="同日の出走表を再取得せずLIVE項目だけ更新")
     p.add_argument("--workers",type=int,default=10)
     args=p.parse_args()
 
@@ -3418,7 +3431,15 @@ def main():
     enrich=bool(args.enrich or args.deep)
     live=bool(args.live and not enrich)
 
-    payload=collect(date,out_path,enrich,live,args.workers)
+    payload=load_json(out_path,{}) if args.refresh_only else {}
+    if args.refresh_only and payload.get('dateJST')==date and payload.get('meetings'):
+        old_payload=json.loads(json.dumps(payload))
+        enrich_realtime(payload,workers=args.workers,live=True)
+        payload['recentResults']=build_recent_results(old_payload,payload,keep_days=3)
+        payload['updatedAt']=datetime.now(JST).isoformat(timespec='seconds')
+        payload['mode']='live'
+    else:
+        payload=collect(date,out_path,enrich,live,args.workers)
     out_path.parent.mkdir(parents=True,exist_ok=True)
     out_path.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding="utf-8")
     print(f"[BOAT CHECK] collected {len(payload['meetings'])} meetings -> {out_path}")

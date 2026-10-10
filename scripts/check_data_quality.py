@@ -29,13 +29,20 @@ for m in unknown:print(f"::warning title=Unknown grade::{m.get('venueName')}: {m
 for name in ('course-stats','entry-details'):
     try:
         extra=json.loads(Path(f'data/{name}.json').read_text(encoding='utf-8'))
-        covered=len(racers.intersection((extra.get('byRacer') or {}).keys()))
+        by_racer=extra.get('byRacer') or {}
+        covered=sum(rid in by_racer and (name!='course-stats' or any(
+            (course.get('y1') or {}).get('entryCount',0)>0
+            for course in by_racer[rid].values() if isinstance(course,dict))) for rid in racers)
         print(f'[quality] {name} racers={covered}/{len(racers)} to={extra.get("to")}')
         if racers and covered/len(racers)<.8:print(f'::warning title=Supplemental coverage::{name} {covered}/{len(racers)}')
+        if extra.get('targetDateJST')!=d.get('dateJST'):print(f'::warning title=Stale supplemental date::{name} target={extra.get("targetDateJST")} today={d.get("dateJST")}')
     except (OSError,ValueError):print(f'::warning title=Supplemental file missing::{name}')
 now=datetime.now(ZoneInfo('Asia/Tokyo'))
 try:
     age=(now-datetime.fromisoformat(d['updatedAt'])).total_seconds()/60
     if age>20:print(f'::warning title=Stale snapshot::generated {age:.0f} minutes ago')
 except (KeyError,ValueError,TypeError):print('::warning title=Missing timestamp::updatedAt invalid')
+for key in ('oddsUpdatedAt','beforeUpdatedAt','resultUpdatedAt'):
+    newer=[r for r in races if r.get(key) and str(r[key])>str(d.get('updatedAt') or '')]
+    if newer:print(f'::warning title=Timestamp ordering::{key} newer than file generation: {len(newer)} races')
 if not meetings or not races or not boats:raise SystemExit('Empty collection; refusing publication')

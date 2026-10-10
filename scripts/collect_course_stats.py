@@ -286,6 +286,9 @@ def main():
     days=[first+timedelta(days=i) for i in range((base-first).days)];cache=Path(args.cache);cache.mkdir(parents=True,exist_ok=True)
     def task(day):
         path=cache/f"k{day:%y%m%d}.lzh"
+        if path.exists():
+            try:decode_archive(path.read_bytes())
+            except Exception:path.unlink()  # discard only this corrupt cached archive
         if path.exists():blob=path.read_bytes();err=None
         else:
             _,blob,err=download_day(day,20)
@@ -313,6 +316,8 @@ def main():
             for rid,rows in data.items():history[rid].extend(rows)
     out={"schemaVersion":1,"targetDateJST":payload["dateJST"],"from":first.isoformat(),"to":(base-timedelta(days=1)).isoformat(),"source":"BOAT RACE official result download files","daysExpected":len(days),"daysCollected":good,"errors":errors,"racerCount":len(wanted),"raceRows":sum(map(len,history.values())),"byRacer":{rid:aggregate(history[rid],base) for rid in sorted(wanted)}}
     out["overallByRacer"]={rid:aggregate_overall(history[rid],base) for rid in sorted(wanted)}
+    out['coveredRacerCount']=sum(bool(history[rid]) for rid in wanted)
+    out['generatedAt']=datetime.now().astimezone().isoformat(timespec='seconds')
     path=Path(args.out);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(out,ensure_ascii=False,separators=(",",":")))
     print(json.dumps({k:v for k,v in out.items() if k not in ("byRacer","overallByRacer")},ensure_ascii=False),flush=True)
 

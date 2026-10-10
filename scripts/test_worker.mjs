@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import worker from '../cloudflare-live/worker.js';
+const records=new Map();
+const env={INGEST_TOKEN:'test-only',LIVE:{async get(k,options){const v=records.get(k);return v&&options?.type==='json'?JSON.parse(v):v||null;},async put(k,v){records.set(k,v);}}};
+const now=new Date().toISOString();
+const files={'home-live.json':{venues:Array.from({length:24},(_,i)=>({venueCode:String(i+1).padStart(2,'0')})),dateJST:'20261010',updatedAt:now,meetings:[{venueCode:'03'}]},'venue/03.json':{date:'20261010'},'venue-live/03.json':{date:'20261010'}};
+const ingest=(token,payload)=>worker.fetch(new Request('https://test.invalid/ingest',{method:'POST',headers:{Authorization:`Bearer ${token}`},body:JSON.stringify(payload)}),env);
+assert.equal((await ingest('wrong',{files})).status,401);
+assert.equal((await ingest('test-only',{files})).status,200);
+const get=await worker.fetch(new Request('https://test.invalid/home-live.json',{headers:{Origin:'https://boatcheck.jp'}}),env);
+assert.equal(get.status,200);assert.equal((await get.json()).venues.length,24);
+assert.equal(get.headers.get('Access-Control-Allow-Origin'),'https://boatcheck.jp');
+assert.equal((await worker.fetch(new Request('https://test.invalid/today.json'),env)).status,404);
+assert.equal((await (await ingest('test-only',{files})).json()).skipped,'older version');
+const invalid=structuredClone(files);invalid['home-live.json'].updatedAt=new Date(Date.now()+600000).toISOString();
+assert.equal((await ingest('test-only',{files:invalid})).status,400);
+console.log('[worker] authorization, snapshot delivery, route allowlist, timestamp gates: OK (offline KV mock)');
