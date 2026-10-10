@@ -38112,5 +38112,13 @@
     "weight": 54.0,
     "class": "B1",
     "profileCheckedAt": "2026-10-10T05:26:01+09:00"
+  },
+  "5200": {
+    "period": 128,
+    "branch": "福岡",
+    "origin": "福岡県",
+    "weight": 47.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-10-11T04:28:26+09:00"
   }
 }
