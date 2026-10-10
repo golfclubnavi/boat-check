@@ -6,7 +6,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: boat-check-data-update
+  group: boat-check-adjacent
   cancel-in-progress: false
 jobs:
   update:
@@ -23,15 +23,7 @@ jobs:
       - run: git pull --ff-only origin main
       - name: Fetch date-specific race cards
         run: python scripts/collect_adjacent_days.py
-      - name: Save successful snapshots
-        if: always()
-        run: |
-          git config user.name "boat-check-bot"
-          git config user.email "actions@users.noreply.github.com"
-          for file in data/yesterday.json data/tomorrow.json; do
-            if [ -f "$file" ]; then git add "$file"; fi
-          done
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Refresh adjacent BOAT CHECK dates"
-          git pull --rebase origin main
-          git push origin HEAD:main
+      - name: Data quality summary
+        run: python scripts/check_data_quality.py
+      - name: Publish with optimistic main-branch retries
+        run: python scripts/publish_data.py --mode files --message 'Refresh adjacent BOAT CHECK dates' data/yesterday.json data/tomorrow.json

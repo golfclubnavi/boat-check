@@ -38,5 +38,7 @@ jobs:
           if d['daysCollected'] < d['daysExpected'] * .8:
               raise SystemExit('Fewer than 80% of official result days downloaded; keep previously published statistics')
           PY
+      - name: Data quality summary
+        run: python scripts/check_data_quality.py
       - name: Publish course statistics
         run: python scripts/publish_data.py --mode files --message 'Update BOAT CHECK course statistics' data/course-stats.json
