@@ -5730,3 +5730,68 @@ button.meetPerfFinish.isLink.late{
 .skipChecks>div span{font-size:12px;color:#647887}
 .skipChecks ul{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 0;padding:0;list-style:none}
 .skipChecks li{padding:5px 9px;border-radius:8px;background:white;border:1px solid #dde9ee;font-size:12px}
+
+
+/* v-final-course-layout: align course stats with six-racer header and keep values on one line */
+#quickDataPanel .courseUnifiedSheet{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#quickDataPanel .courseUnifiedSheet>.entryRacerTable{
+  width:100%!important;
+  border:0!important;
+  border-bottom:2px solid #88b8d3!important;
+  border-radius:0!important;
+}
+#quickDataPanel .courseUnifiedSheet .courseDataBlock,
+#quickDataPanel .courseUnifiedSheet .kimariteUnified{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#quickDataPanel .courseUnifiedSheet .courseStatTable{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  table-layout:fixed!important;
+  border-collapse:collapse!important;
+}
+#quickDataPanel .courseUnifiedSheet .courseStatTable th{
+  width:14%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  padding:8px 2px!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  word-break:normal!important;
+  overflow-wrap:anywhere!important;
+}
+#quickDataPanel .courseUnifiedSheet .courseStatTable td{
+  min-width:0!important;
+  box-sizing:border-box!important;
+  padding:8px 1px!important;
+  font-size:10.5px!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+  word-break:keep-all!important;
+  overflow-wrap:normal!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  font-variant-numeric:tabular-nums!important;
+}
+#quickDataPanel .courseUnifiedSheet .courseStatBar{
+  width:100%!important;
+  box-sizing:border-box!important;
+}
+#quickDataPanel .courseUnifiedSheet .kimariteSplit{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+@media(max-width:365px){
+  #quickDataPanel .courseUnifiedSheet .courseStatTable th{font-size:9px!important;padding:7px 1px!important}
+  #quickDataPanel .courseUnifiedSheet .courseStatTable td{font-size:9.6px!important;padding:7px 0!important}
+}

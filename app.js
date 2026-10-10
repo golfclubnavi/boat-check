@@ -2091,69 +2091,6 @@ function courseFirstStat(b, keys){
   return null;
 }
 
-function courseOfficialMetric(b, courseNo, metric){
-  const aliases={
-    entryRate:[
-      `courseStatsOfficial.${courseNo}.entryRate`,
-      `courseStats.${courseNo}.official.entryRate`
-    ],
-    threeRate:[
-      `courseStatsOfficial.${courseNo}.threeRate`,
-      `courseStats.${courseNo}.official.threeRate`
-    ],
-    avgST:[
-      `courseStatsOfficial.${courseNo}.avgST`,
-      `courseStats.${courseNo}.official.avgST`
-    ],
-    avgStartRank:[
-      `courseStatsOfficial.${courseNo}.avgStartRank`,
-      `courseStats.${courseNo}.official.avgStartRank`
-    ]
-  };
-  return courseFirstStat(b,aliases[metric]||[]);
-}
-
-function officialCourseStatsAvailable(boats){
-  return (boats||[]).some((b,i)=>{
-    const c=assignedCourseForLane(b.lane||i+1);
-    return ["entryRate","threeRate","avgST","avgStartRank"]
-      .some(k=>courseOfficialMetric(b,c,k)!==null);
-  });
-}
-
-function renderOfficialCourseStatsBlock(boats){
-  const hasData=officialCourseStatsAvailable(boats);
-  const vals=(metric)=>boats.map((b,i)=>{
-    const c=assignedCourseForLane(b.lane||i+1);
-    return courseOfficialMetric(b,c,metric);
-  });
-  const courseCellsText=boats.map((b,i)=>{
-    const c=assignedCourseForLane(b.lane||i+1);
-    return `<td><span class="officialCourseNo">${c}コース</span></td>`;
-  }).join("");
-  const rows=[
-    `<tr><th>参照コース</th>${courseCellsText}</tr>`,
-    `<tr><th>進入率</th>${courseCells(vals("entryRate"),"desc","%",1)}</tr>`,
-    `<tr><th>3連対率</th>${courseCells(vals("threeRate"),"desc","%",1)}</tr>`,
-    `<tr><th>平均ST</th>${courseCells(vals("avgST"),"asc","",2)}</tr>`,
-    `<tr><th>平均スタート順</th>${courseCells(vals("avgStartRank"),"asc","位",1)}</tr>`
-  ].join("");
-  const checked=boats.map(b=>b.courseStatsCheckedAt).filter(Boolean).sort().slice(-1)[0];
-  let checkedText="";
-  if(checked){
-    try{
-      const d=new Date(checked);
-      checkedText=`最終取得 ${new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(d)}`;
-    }catch(e){}
-  }
-  return `<div class="courseDataBlock officialCourseBlock ${hasData?"":"isEmpty"}">
-    ${courseBar("公開情報によるコース別成績",checkedText||"公開成績")}
-    <div class="officialCourseLead">各選手の現在の想定進入コースに対応した公式成績です。進入コース変更をすると参照コースも連動します。</div>
-    ${courseSimpleTable(rows,"officialCourseTable")}
-    <div class="courseDataNote">※ 公式選手ページの集計期間をそのまま使用。未取得項目は「--」表示。</div>
-  </div>`;
-}
-
 function courseAggregatedBoat(b){
   const id=String(b?.racerId||b?.registrationNo||"");
   const aggregate=state.courseStatsByRacer?.[id];
@@ -2559,7 +2496,6 @@ function renderCourseRate(){
     <div class="courseUnifiedSheet">
       ${coursePlayerHeader(boats)}
 
-      ${renderOfficialCourseStatsBlock(boats)}
 
       <div class="courseDataBlock">
         ${courseBar("勝率",periodText)}
