@@ -968,7 +968,7 @@ def merge_boat_details(new_races: list[dict], old_races: list[dict], racer_cache
     """Preserve enriched/live fields while refreshing raceindex timing/status."""
     old_by_race = {int(r.get("raceNo",0)): r for r in old_races or []}
     keep_race_keys = (
-        "title", "beforeData", "before", "weather", "weatherData", "conditions",
+        "title", "beforeData", "startExhibition", "before", "weather", "weatherData", "conditions",
         "result", "raceResult", "results", "payouts", "refunds", "resultLastAttemptAt", "odds", "oddsUpdatedAt", "oddsLastAttemptAt", "oddsSource", "racerComments", "localOfficialSources", "localSiteUpdatedAt", "beforeLastAttemptAt",
         "replay", "officialReplayPage", "resultUpdatedAt", "beforeUpdatedAt",
     )
@@ -2628,49 +2628,88 @@ def build_local_official_audit(payload: dict) -> list[dict]:
         })
     return out
 
+LIVE_RECOVERY_MINUTES = 120
+ODDS_KINDS = ("trifecta", "trio", "exacta", "quinella", "wide", "win", "place")
+
+
+def _retry_due(stamp, interval):
+    if not stamp:
+        return True
+    try:
+        last = datetime.fromisoformat(str(stamp))
+        if last.tzinfo is None:
+            last = last.replace(tzinfo=JST)
+        return (datetime.now(JST) - last.astimezone(JST)).total_seconds() >= interval * 60
+    except (ValueError, TypeError):
+        return True
+
+
+def _before_complete(race):
+    rows = race.get("beforeData") or []
+    starts = race.get("startExhibition") or []
+    return (len(rows) == len(starts) == 6
+            and {x.get("lane") for x in rows} == set(range(1, 7))
+            and {x.get("lane") for x in starts} == set(range(1, 7))
+            and all(x.get("exhibitionTime") not in (None, "") for x in rows)
+            and all(x.get("course") in range(1, 7) and x.get("st") not in (None, "") for x in starts))
+
+
+def _merge_before_rows(previous, incoming):
+    # Keep valid values and lane identity when an official page is partial.
+    merged = {x.get("lane"): dict(x) for x in previous if x.get("lane") in range(1, 7)}
+    accepted = False
+    for row in incoming:
+        lane = row.get("lane")
+        if lane not in range(1, 7):
+            continue
+        values = {k: v for k, v in row.items() if k != "lane" and v not in (None, "", [], {})}
+        if not values:
+            continue
+        merged.setdefault(lane, {"lane": lane}).update(values)
+        accepted = True
+    return [merged[k] for k in sorted(merged)], accepted
+
+
 def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     """
     Dynamic official data refresh.
 
     LIVE mode (5-minute workflow):
-      - beforeinfo: 45 minutes before cutoff through 25 minutes after
+      - beforeinfo: 45 minutes before cutoff, incomplete recovery through 120 minutes after
       - result/refund: closed races up to 120 minutes after cutoff, until official result exists
 
     FAST/ENRICH mode:
       - wider recovery window for beforeinfo
       - any closed race without an official result is retried
     """
+    # Deadline-only arithmetic is valid only for today's meeting date.
+    today = datetime.now(JST).strftime("%Y%m%d")
+    if str(payload.get("dateJST")) != today:
+        return
+    meetings = [m for m in payload.get("meetings", []) if str(m.get("date")) == today]
     before_tasks=[]
     result_tasks=[]
     odds_tasks=[]
     local_tasks=[]
 
-    for meeting in payload.get("meetings",[]):
+    for meeting in meetings:
         code=meeting.get("venueCode")
         date=meeting.get("date")
         for race in meeting.get("races",[]):
             rno=int(race.get("raceNo") or 0)
             mins=_minutes_from_now(race.get("deadline",""))
-            if not rno or mins is None:
+            if not rno or mins is None or race.get("status") in ("cancelled", "postponed") or meeting.get("status") in ("cancelled", "postponed"):
                 continue
 
             if live:
-                # Exhibition/start-exhibition can change close to cutoff.
-                if -25 <= mins <= 45:
-                    before_rows=race.get("beforeData") or []
-                    start_rows=race.get("startExhibition") or []
-                    complete=(len(before_rows)==6 and len(start_rows)==6
-                        and len({x.get('lane') for x in before_rows})==6
-                        and all(x.get('exhibitionTime') not in (None,'') for x in before_rows)
-                        and all(
-                        x.get("course") in (1,2,3,4,5,6) and x.get("st") not in (None,"")
-                        for x in start_rows
-                    ))
-                    # An incomplete six-boat exhibition remains eligible on
-                    # every scheduled live run; a complete one is not refetched.
-                    if not complete:
+                # Recover incomplete exhibitions for at most two hours after cutoff.
+                # Attempts are throttled, including unpublished/failed responses.
+                if -LIVE_RECOVERY_MINUTES <= mins <= 45 and not _before_complete(race):
+                    interval = 10 if mins < -25 else 5
+                    if _retry_due(race.get("beforeLastAttemptAt"), interval):
                         before_tasks.append((code,date,rno))
 
+                if -25 <= mins <= 45:
                     # Local official sites often publish original exhibition times
                     # and racer comments. Recheck near-cutoff races every 10 minutes.
                     last_local=race.get("localSiteUpdatedAt")
@@ -2722,7 +2761,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     #   ～30分 : 2分ごと / ～120分 : 5分ごと
     #   120分超 : 15分ごと（各場1Rずつ）
     #
-    # 未取得レースは時間帯に関係なく一度取得を試す。
+    # 当日未取得・券種欠落は締切120分後まで10分間隔で回収する。
     def _odds_refresh_due(race, mins):
         updated=race.get("oddsUpdatedAt")
         attempted=race.get("oddsLastAttemptAt")
@@ -2761,23 +2800,26 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
         except Exception:
             return True
 
-    for meeting in payload.get("meetings",[]):
+    for meeting in meetings:
         candidates=[]
         for race in meeting.get("races",[]):
             rno=int(race.get("raceNo") or 0)
             mins=_minutes_from_now(race.get("deadline",""))
-            if not rno or mins is None:
+            if not rno or mins is None or race.get("status") in ("cancelled", "postponed") or meeting.get("status") in ("cancelled", "postponed"):
                 continue
 
             # 締切済み直後は最終オッズ確認、未来レースは全て候補。
-            if mins >= -10 and _odds_refresh_due(race,mins):
+            recovery = (-LIVE_RECOVERY_MINUTES <= mins < -10
+                        and not all((race.get("odds") or {}).get(k) for k in ODDS_KINDS)
+                        and _retry_due(race.get("oddsLastAttemptAt"), 10))
+            if recovery or (mins >= -10 and _odds_refresh_due(race,mins)):
                 candidates.append((mins,rno))
 
         # All races within two hours take priority; one farther race per venue
         # is refreshed in the background. This avoids starving the next race
         # while avoiding repeated requests for all 12 races every five minutes.
         candidates.sort(key=lambda x:x[0])
-        urgent=[x for x in candidates if -10 <= x[0] <= 120]
+        urgent=[x for x in candidates if -LIVE_RECOVERY_MINUTES <= x[0] <= 120]
         background=[x for x in candidates if x[0] > 120][:1]
         for _,rno in urgent+background:
             odds_tasks.append((meeting.get("venueCode"),meeting.get("date"),rno))
@@ -2797,13 +2839,13 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 code,rno,data,err=fut.result()
                 odds_results[(code,rno)]=(data,err)
 
-        for meeting in payload.get("meetings",[]):
+        for meeting in meetings:
             for race in meeting.get("races",[]):
                 key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
                 if key not in odds_results:
                     continue
                 data,err=odds_results[key]
-                if data and data.get("official"):
+                if data and data.get("official") and any(data.get(k) for k in ODDS_KINDS):
                     previous=race.get("odds") or {}
                     stamps=dict(previous.get("updatedAtByType") or {})
                     now_stamp=datetime.now(JST).isoformat(timespec="seconds")
@@ -2811,13 +2853,16 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                         if data.get(kind): stamps[kind]=now_stamp
                         elif previous.get(kind):
                             data[kind]=previous[kind]
-                            stamps.setdefault(kind,race.get("oddsUpdatedAt"))
+                            if race.get("oddsUpdatedAt"):
+                                stamps.setdefault(kind,race["oddsUpdatedAt"])
                     data["updatedAtByType"]=stamps
                     data["counts"]={k:len(data.get(k) or []) for k in ("trifecta","trio","exacta","quinella","wide","win","place")}
                     race["odds"]=data
-                    race["oddsUpdatedAt"]=max(stamps.values()) if stamps else now_stamp
+                    known_stamps = [stamp for stamp in stamps.values() if stamp]
+                    race["oddsUpdatedAt"]=max(known_stamps) if known_stamps else now_stamp
                     race["oddsLastAttemptAt"]=now_stamp
                     race["oddsSource"]="BOAT RACE official"
+                    race.get("liveErrors", {}).pop("odds", None)
                 else:
                     # 先のレースはまだ公式オッズ未公開の場合がある。
                     # エラー扱いで表示を壊さず、試行時刻だけ記録して次回再取得する。
@@ -2834,7 +2879,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
                 code,rno,data,err=fut.result()
                 local_results[(code,rno)]=(data,err)
 
-        for meeting in payload.get("meetings",[]):
+        for meeting in meetings:
             for race in meeting.get("races",[]):
                 key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
                 data,err=local_results.get(key,({},None))
@@ -2892,41 +2937,50 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
             for fut in as_completed(futs):
                 code,rno,data,err=fut.result()
                 results[(code,rno)]=(data,err)
-        for meeting in payload.get("meetings",[]):
+        for meeting in meetings:
             for race in meeting.get("races",[]):
                 key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
                 data,err=results.get(key,({},None))
                 if key in results:
                     race["beforeLastAttemptAt"]=datetime.now(JST).isoformat(timespec="seconds")
                 if data:
-                    if len(data.get("boats") or []) >= len(race.get("beforeData") or []):
-                        race["beforeData"]=data.get("boats",[])
-                    if len(data.get("startExhibition") or []) >= len(race.get("startExhibition") or []):
-                        race["startExhibition"]=data.get("startExhibition",[])
-                    if data.get("weather"):
-                        race["weather"]=data["weather"]
-                    race["beforeUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                    rows, rows_ok = _merge_before_rows(race.get("beforeData") or [], data.get("boats") or [])
+                    starts, starts_ok = _merge_before_rows(race.get("startExhibition") or [], data.get("startExhibition") or [])
+                    weather = {k: v for k, v in (data.get("weather") or {}).items() if v not in (None, "", [], {})}
+                    if rows_ok:
+                        race["beforeData"] = rows
+                    if starts_ok:
+                        race["startExhibition"] = starts
+                    if weather:
+                        race.setdefault("weather", {}).update(weather)
+                    observed = any(row.get("lane") in range(1, 7) and row.get("exhibitionTime") not in (None, "")
+                                   for row in data.get("boats") or []) or any(
+                                   row.get("lane") in range(1, 7) and (row.get("course") in range(1, 7) or row.get("st") not in (None, ""))
+                                   for row in data.get("startExhibition") or [])
+                    if observed:
+                        race["beforeUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
+                        race.get("liveErrors", {}).pop("beforeinfo", None)
                     by_lane={int(x.get("lane") or 0):x for x in data.get("boats",[])}
                     for b in race.get("boats",[]):
                         d=by_lane.get(int(b.get("lane") or 0))
                         if d:
-                            b["before"]=d
-                            if d.get("weight") is not None:
+                            b.setdefault("before", {}).update({k: v for k, v in d.items() if v not in (None, "", [], {})})
+                            if d.get("weight") not in (None, ""):
                                 b["weight"]=d["weight"]
 
                             # Mirror frequently used live fields for UI/analysis convenience.
-                            if d.get("weightAdjustment") is not None:
+                            if d.get("weightAdjustment") not in (None, ""):
                                 b["weightAdjustment"]=d["weightAdjustment"]
-                            if d.get("exhibitionTime") is not None:
+                            if d.get("exhibitionTime") not in (None, ""):
                                 b["exhibitionTime"]=d["exhibitionTime"]
-                            if d.get("tilt") is not None:
+                            if d.get("tilt") not in (None, ""):
                                 b["tilt"]=d["tilt"]
                             if d.get("partsExchange"):
                                 b["partsExchange"]=d["partsExchange"]
-                            if d.get("course") is not None:
+                            if d.get("course") not in (None, ""):
                                 b["exhibitionCourse"]=d["course"]
                                 b["course"]=d["course"]
-                            if d.get("st") is not None:
+                            if d.get("st") not in (None, ""):
                                 b["exhibitionST"]=d["st"]
                                 b["startExhibitionST"]=d["st"]
                 elif err:
@@ -2940,7 +2994,7 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
             for fut in as_completed(futs):
                 code,rno,data,err=fut.result()
                 results[(code,rno)]=(data,err)
-        for meeting in payload.get("meetings",[]):
+        for meeting in meetings:
             for race in meeting.get("races",[]):
                 key=(meeting.get("venueCode"),int(race.get("raceNo") or 0))
                 data,err=results.get(key,({},None))
@@ -2993,16 +3047,16 @@ def enrich_realtime(payload: dict, workers: int=8, live: bool=False) -> None:
     # 得点率一覧は1場1ページなので5分更新でも軽量。結果反映と同時に節間成績へ同期する。
     point_maps={}
     with ThreadPoolExecutor(max_workers=min(workers,8)) as ex:
-        futs={ex.submit(fetch_point_rank_task,m.get("venueCode"),m.get("date")):m.get("venueCode") for m in payload.get("meetings",[])}
+        futs={ex.submit(fetch_point_rank_task,m.get("venueCode"),m.get("date")):m.get("venueCode") for m in meetings}
         for fut in as_completed(futs):
             code=futs[fut]
             try: _,data,err=fut.result()
             except Exception as e: data,err={},f"{type(e).__name__}: {e}"
             point_maps[code]=data
             if err:
-                for mm in payload.get("meetings",[]):
+                for mm in meetings:
                     if mm.get("venueCode")==code: mm.setdefault("liveErrors",{})["pointrank"]=err; break
-    for meeting in payload.get("meetings",[]):
+    for meeting in meetings:
         apply_meeting_series_data(meeting,point_map=point_maps.get(meeting.get("venueCode"),{}))
         meeting["meetDataLiveUpdatedAt"]=datetime.now(JST).isoformat(timespec="seconds")
 

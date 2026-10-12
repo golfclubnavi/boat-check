@@ -1,5 +1,12 @@
 import assert from 'node:assert/strict';
-import worker from '../cloudflare-live/worker.js';
+import { existsSync } from 'node:fs';
+const workerUrl = new URL('../cloudflare-live/worker.js', import.meta.url);
+if (!existsSync(workerUrl)) {
+  const required = process.argv.includes('--require-worker') || process.env.BOAT_CHECK_REQUIRE_WORKER === '1';
+  console[required ? 'error' : 'log']('[worker] ' + (required ? 'FAIL' : 'SKIP') + ': optional Worker source is absent; static assets configuration does not verify Worker delivery');
+  process.exit(required ? 1 : 0);
+}
+const { default: worker } = await import(workerUrl);
 const records=new Map();
 const env={INGEST_TOKEN:'test-only',LIVE:{async get(k,options){const v=records.get(k);return v&&options?.type==='json'?JSON.parse(v):v||null;},async put(k,v){records.set(k,v);}}};
 const now=new Date().toISOString();

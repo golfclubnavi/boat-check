@@ -23,6 +23,33 @@ for field in ('odds','beforeData','result'):
     print(f'[quality] {field}={count}/{len(races)}')
 for kind in ('trifecta','trio','exacta','quinella','wide','win','place'):
     print(f'[quality] odds.{kind}={sum(bool((r.get("odds") or {}).get(kind)) for r in races)}/{len(races)}')
+# Report exact venue/race gaps in a closed-race snapshot; future unpublished
+# races are not treated as missing. Warnings retain available data for publication.
+try:
+    generated = datetime.fromisoformat(d['updatedAt'])
+    for meeting in meetings:
+        if str(meeting.get('date')) != str(d.get('dateJST')):
+            continue
+        for race in meeting.get('races', []):
+            try:
+                hour, minute = map(int, race.get('deadline', '').split(':'))
+                cutoff = generated.replace(hour=hour, minute=minute, second=0, microsecond=0)
+            except (ValueError, TypeError):
+                continue
+            if cutoff > generated or race.get('status') in ('cancelled', 'postponed') or meeting.get('status') in ('cancelled', 'postponed'):
+                continue
+            missing = [kind for kind in ('trifecta','trio','exacta','quinella','wide','win','place') if not (race.get('odds') or {}).get(kind)]
+            rows, starts = race.get('beforeData') or [], race.get('startExhibition') or []
+            complete = (len(rows) == len(starts) == 6
+                        and {row.get('lane') for row in rows} == set(range(1,7))
+                        and {row.get('lane') for row in starts} == set(range(1,7))
+                        and all(row.get('exhibitionTime') not in (None,'') for row in rows)
+                        and all(row.get('course') in range(1,7) and row.get('st') not in (None,'') for row in starts))
+            if missing or not complete:
+                label = f"{meeting.get('venueCode')} {race.get('raceNo')}R"
+                print(f"::warning title=Closed race data gap::{label} missingOdds={','.join(missing) or 'none'} incompleteExhibition={not complete} oddsLastAttemptAt={race.get('oddsLastAttemptAt') or 'never'} beforeLastAttemptAt={race.get('beforeLastAttemptAt') or 'never'}")
+except (KeyError, ValueError, TypeError):
+    print('::warning title=Gap monitoring unavailable::Invalid snapshot timestamp')
 unknown=[m for m in meetings if m.get('grade') not in ('SG','G1','G2','G3','一般') or not m.get('gradeVerified')]
 print(f'[quality] unknownGrade={len(unknown)}')
 for m in unknown:print(f"::warning title=Unknown grade::{m.get('venueName')}: {m.get('title')}")
