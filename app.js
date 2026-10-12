@@ -1231,7 +1231,9 @@ function normalizedMeetDays(m){
       date:String(d.date||""),
       label:d.label||d.day||"",
       day:d.day||d.label||"",
-      races:Array.isArray(d.races)?d.races:[]
+      // Current-day LIVE updates belong to m.races; meetDays may be a stale snapshot.
+      races:String(d.date||"")===String(m.date||"") && Array.isArray(m.races)
+        ? m.races : Array.isArray(d.races)?d.races:[]
     })).filter(d=>d.date);
   }
 
