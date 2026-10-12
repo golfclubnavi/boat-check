@@ -38120,5 +38120,13 @@
     "weight": 47.0,
     "class": "B2",
     "profileCheckedAt": "2026-10-11T04:28:26+09:00"
+  },
+  "5350": {
+    "period": 134,
+    "branch": "兵庫",
+    "origin": "兵庫県",
+    "weight": 52.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-13T07:38:56+09:00"
   }
 }
