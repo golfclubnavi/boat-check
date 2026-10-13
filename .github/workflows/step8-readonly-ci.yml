@@ -1,0 +1,71 @@
+name: STEP8 isolated read-only validation
+
+on:
+  push:
+    branches: [step6-test]
+  workflow_dispatch:
+    inputs:
+      official_smoke:
+        description: 'Optional two public GETs only; no collector or publication'
+        type: boolean
+        default: false
+      race_date:
+        description: 'Official test date YYYYMMDD (required only for optional smoke)'
+        type: string
+        default: ''
+      venue:
+        description: 'One venue 01-24'
+        type: string
+        default: '03'
+      race:
+        description: 'One race 1-12'
+        type: string
+        default: '12'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: step8-readonly-step6-test
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/step6-test'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact triggering revision without stored credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Record public revision
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git rev-parse HEAD
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Offline validation in runner temporary directory
+        run: python3 scripts/step8_run_offline.py --source "$GITHUB_WORKSPACE" --logs "$RUNNER_TEMP/step8-logs"
+      - name: Optional two official public GETs
+        if: github.event_name == 'workflow_dispatch' && inputs.official_smoke
+        env:
+          SMOKE_DATE: ${{ inputs.race_date }}
+          SMOKE_VENUE: ${{ inputs.venue }}
+          SMOKE_RACE: ${{ inputs.race }}
+        run: python3 scripts/step8_official_smoke.py --logs "$RUNNER_TEMP/step8-logs"
+      - name: Retain validation logs only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: step8-validation-${{ github.sha }}
+          path: ${{ runner.temp }}/step8-logs/
+          retention-days: 7
+          if-no-files-found: warn
