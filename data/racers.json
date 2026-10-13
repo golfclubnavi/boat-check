@@ -38128,5 +38128,13 @@
     "weight": 52.0,
     "class": "B1",
     "profileCheckedAt": "2026-10-13T07:38:56+09:00"
+  },
+  "4052": {
+    "period": 85,
+    "branch": "徳島",
+    "origin": "兵庫県",
+    "weight": 50.0,
+    "class": "A2",
+    "profileCheckedAt": "2026-10-14T05:53:04+09:00"
   }
 }
