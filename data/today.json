@@ -1,6 +1,6 @@
 {
   "schemaVersion": "56.0",
-  "updatedAt": "2026-10-18T03:56:49+09:00",
+  "updatedAt": "2026-10-18T06:13:57+09:00",
   "dateJST": "20261018",
   "source": "BOAT RACE official public pages",
   "mode": "live",
@@ -701,7 +701,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=1&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -46128,7 +46128,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=1&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=1&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -53938,7 +53938,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "02",
@@ -54799,7 +54799,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=2&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=2&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -121797,7 +121797,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=2&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=2&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -131417,7 +131417,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "03",
@@ -132150,7 +132150,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=3&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -176562,7 +176562,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=3&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=3&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -184367,7 +184367,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "04",
@@ -185594,7 +185594,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=4&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -307532,7 +307532,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=4&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=4&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -320916,7 +320916,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "08",
@@ -321649,7 +321649,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=8&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=8&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -366884,7 +366884,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=8&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=8&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -374922,7 +374922,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "09",
@@ -375653,7 +375653,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=9&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=9&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -420370,7 +420370,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=9&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=9&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -428217,7 +428217,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "10",
@@ -429075,7 +429075,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=10&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=10&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -501030,7 +501030,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=10&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=10&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -510976,7 +510976,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "16",
@@ -511042,7 +511042,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=16&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -530432,7 +530432,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=16&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=16&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -530941,7 +530941,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "18",
@@ -531005,7 +531005,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=18&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=18&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -531517,7 +531517,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=18&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=18&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -532014,7 +532014,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "19",
@@ -532735,7 +532735,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=19&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=19&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -574314,7 +574314,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=19&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=19&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -582273,7 +582273,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "20",
@@ -583492,7 +583492,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=20&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -695160,7 +695160,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=20&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=20&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -708737,7 +708737,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "21",
@@ -709649,7 +709649,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=21&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -811471,7 +811471,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=21&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=21&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -823357,7 +823357,7 @@
           ]
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     },
     {
       "venueCode": "23",
@@ -823418,7 +823418,7 @@
             "exhibitionPage": "https://race.boatcast.jp/replay?jo=23&ymd=20261018&race=1&md=T"
           },
           "officialReplayPage": "https://race.boatcast.jp/replay?jo=23&ymd=20261018&race=1&md=V",
-          "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+          "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
         },
         {
           "raceNo": 2,
@@ -823930,7 +823930,7 @@
                 "exhibitionPage": "https://race.boatcast.jp/replay?jo=23&ymd=20261018&race=1&md=T"
               },
               "officialReplayPage": "https://race.boatcast.jp/replay?jo=23&ymd=20261018&race=1&md=V",
-              "oddsLastAttemptAt": "2026-10-18T03:56:29+09:00"
+              "oddsLastAttemptAt": "2026-10-18T06:13:37+09:00"
             },
             {
               "raceNo": 2,
@@ -824427,7 +824427,7 @@
           "races": []
         }
       ],
-      "meetDataLiveUpdatedAt": "2026-10-18T03:56:49+09:00"
+      "meetDataLiveUpdatedAt": "2026-10-18T06:13:57+09:00"
     }
   ],
   "errors": [],
