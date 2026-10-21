@@ -38152,5 +38152,21 @@
     "weight": 59.0,
     "class": "A2",
     "profileCheckedAt": "2026-10-16T04:20:50+09:00"
+  },
+  "5431": {
+    "period": 137,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 53.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-10-22T04:31:00+09:00"
+  },
+  "5422": {
+    "period": 137,
+    "branch": "埼玉",
+    "origin": "埼玉県",
+    "weight": 55.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-10-22T04:31:00+09:00"
   }
 }
