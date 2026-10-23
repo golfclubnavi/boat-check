@@ -38168,5 +38168,13 @@
     "weight": 55.0,
     "class": "B2",
     "profileCheckedAt": "2026-10-22T04:31:00+09:00"
+  },
+  "5295": {
+    "period": 132,
+    "branch": "大阪",
+    "origin": "和歌山県",
+    "weight": 48.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-24T04:30:03+09:00"
   }
 }
