@@ -38176,5 +38176,13 @@
     "weight": 48.0,
     "class": "B1",
     "profileCheckedAt": "2026-10-24T04:30:03+09:00"
+  },
+  "5306": {
+    "period": 132,
+    "branch": "群馬",
+    "origin": "群馬県",
+    "weight": 49.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-25T03:23:54+09:00"
   }
 }
