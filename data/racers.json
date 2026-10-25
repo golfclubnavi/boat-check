@@ -38184,5 +38184,13 @@
     "weight": 49.0,
     "class": "B1",
     "profileCheckedAt": "2026-10-25T03:23:54+09:00"
+  },
+  "4558": {
+    "period": 104,
+    "branch": "岡山",
+    "origin": "岡山県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-26T03:36:59+09:00"
   }
 }
