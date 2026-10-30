@@ -28,5 +28,10 @@ python3 scripts/build_public_data.py --input data/today.json --outdir cloudflare
 node scripts/add_static_home.js cloudflare-dist
 
 # Venue statistics pages appear only after the daily course-stats job publishes data.
-python3 scripts/build_venue_pages.py data/venue-stats.json cloudflare-dist
+if ! python3 scripts/build_venue_pages.py data/venue-stats.json cloudflare-dist; then
+  # Ship the existing site without venue pages rather than failing the deployment.
+  rm -rf cloudflare-dist/venues
+  cp sitemap.xml cloudflare-dist/sitemap.xml
+  echo "::warning title=Venue pages skipped::build_venue_pages.py failed"
+fi
 python3 scripts/release_check.py

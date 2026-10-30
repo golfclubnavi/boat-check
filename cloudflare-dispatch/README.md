@@ -15,7 +15,7 @@
 | 5分 | 約165 | 約150MB/日 |
 
 5〜15分間隔で長期運用すると、clone・checkout（`fetch-depth: 0`）が遅くなり、GitHubの推奨サイズも超えます。Cloudflare側がpushごとに自動ビルドする設定なら、ビルド回数も増えます。
-そのため、**STEP12のKV配信（`upload_live.py` → LIVE Worker、`BOAT_CHECK_LIVE_BASE`）で高頻度データをgitの外へ出し、gitへのコミットは低頻度に抑える構成**とセットで有効化することを推奨します。
+そのため、**`cloudflare-live/` のKV配信Workerと `LIVE_GIT_EVERY_MINUTES`（gitへのコミットを間引く設定）を先に有効にし、そのあとでこのトリガーを有効にしてください**（手順は `cloudflare-live/README.md`）。
 短期間だけ試す場合は `EVERY_MINUTES` を `30` 程度にして、容量の増え方を確認してください。
 
 ## 配置手順（オーナー承認後）

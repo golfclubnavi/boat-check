@@ -100,3 +100,20 @@ Cloudflare Cronから `workflow_dispatch` を呼ぶWorker。テストはPASS。�
 
 ### 11. 既存テストの注意
 `scripts/test_app.cjs` は実行時の時刻に依存する。データの日付と日本時間の日付が違うと、元のmainでも `0 == 24` で失敗する。今回は時計を10/30 12:00 JSTに固定して、元のmain・修正版ともPASSを確認した。
+
+---
+
+## 追加対応（3回目・オーナー承認後）
+
+### 12. STEP12成果物の確認結果（訂正）
+`MIRATEXIA-STEP12-shadow-validation-20261014.zip` の中身は、**データ鮮度の監視（shadow観測）・スケジューラ・Cloudflare監視案（Python Workers、未承認）**だった。KV配信用のWorkerは含まれていない。前回の報告で「STEP12のKV配信」と書いたのは誤りだったので訂正する。
+mainの `scripts/test_worker.mjs` は、存在しない `cloudflare-live/worker.js` を参照していた。今回、そのテストの仕様に合わせて実装した。STEP12の監視コードは今回は統合しておらず、本番導入の判定はHOLDのまま。
+
+### 13. LIVE配信Worker（`cloudflare-live/`）
+- `upload_live.py` の送信形式と、フロントの `requestLiveJson` に合わせたKV配信。既存の `test_worker.mjs` と追加の `cloudflare-live/test.mjs`（実データの26ファイル・11.9MB）がPASS。
+- `run_live_window.py` に `LIVE_GIT_EVERY_MINUTES` を追加した（初期状態は無効）。KVへの配信に成功し、かつ前回のLIVEコミットから指定の分数が経っていない回は、gitにコミットしない。配信に失敗した回はgitにコミットする。`scripts/test_live_window.py` がPASS。
+- 配置にはCloudflareアカウントでの操作が必要（KV作成・secret・deploy）。手順は `cloudflare-live/README.md`。**この環境からは配置していない**。
+
+### 14. マージ前の安全策
+- course-statsの場別集計ステップは `continue-on-error`。失敗してもコース別成績は公開される。
+- `cloudflare-build.sh` で場別ページの生成が失敗した場合は、場別ページだけを省いてデプロイを続ける。壊れたデータで検証し、リリース検査PASS・リンクの残りなしを確認した。

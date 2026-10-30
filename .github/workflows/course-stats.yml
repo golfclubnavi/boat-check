@@ -41,6 +41,8 @@ jobs:
       - name: Data quality summary
         run: python scripts/check_data_quality.py
       - name: Aggregate venue statistics from the same cached result files
+        # Never block the existing course-stats publication.
+        continue-on-error: true
         run: python scripts/build_venue_stats.py --input data/today.json --cache .cache/course-results --out data/venue-stats.json
       - name: Publish course statistics
         run: |

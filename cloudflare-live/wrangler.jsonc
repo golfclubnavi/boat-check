@@ -1,0 +1,10 @@
+{
+  // LIVE delivery Worker. Deploying needs a KV namespace id and the INGEST_TOKEN secret (see README.md).
+  "name": "boat-check-live",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-14",
+  "workers_dev": true,
+  "kv_namespaces": [
+    { "binding": "LIVE", "id": "REPLACE_WITH_KV_NAMESPACE_ID" }
+  ]
+}
