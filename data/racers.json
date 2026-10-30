@@ -38192,5 +38192,29 @@
     "weight": 55.0,
     "class": "B1",
     "profileCheckedAt": "2026-10-26T03:36:59+09:00"
+  },
+  "3704": {
+    "period": 74,
+    "branch": "三重",
+    "origin": "神奈川県",
+    "weight": 45.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-31T05:07:51+09:00"
+  },
+  "5072": {
+    "period": 124,
+    "branch": "埼玉",
+    "origin": "埼玉県",
+    "weight": 51.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-10-31T05:07:51+09:00"
+  },
+  "4954": {
+    "period": 119,
+    "branch": "東京",
+    "origin": "東京都",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-10-31T05:07:52+09:00"
   }
 }
