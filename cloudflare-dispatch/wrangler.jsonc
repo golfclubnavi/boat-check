@@ -1,0 +1,17 @@
+{
+  // Separate Worker; deploying it is an owner-approved operation (see README.md).
+  "name": "boat-check-dispatch",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-14",
+  "workers_dev": false,
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "vars": {
+    "ENABLED": "false",
+    "REPOSITORY": "golfclubnavi/boat-check",
+    "WORKFLOW": "update-data.yml",
+    "REF": "main",
+    "EVERY_MINUTES": "15",
+    "WINDOW_START": "08:00",
+    "WINDOW_END": "21:45"
+  }
+}

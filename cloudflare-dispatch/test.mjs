@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import worker,{dispatch,jstMinutes,shouldDispatch} from './worker.js';
+const at=s=>new Date(s);
+assert.equal(jstMinutes(at('2026-10-30T00:00:00Z')),9*60);
+const env={EVERY_MINUTES:'15'};
+assert.equal(shouldDispatch(at('2026-10-29T22:59:00Z'),env),false,'07:59 JST is outside the window');
+assert.equal(shouldDispatch(at('2026-10-30T00:00:00Z'),env),true);
+assert.equal(shouldDispatch(at('2026-10-30T00:05:00Z'),env),false,'between 15-minute slots');
+assert.equal(shouldDispatch(at('2026-10-30T00:16:00Z'),env),true,'a late cron tick still hits its slot');
+assert.equal(shouldDispatch(at('2026-10-30T12:46:00Z'),env),false,'21:46 JST is outside the window');
+assert.equal(shouldDispatch(at('2026-10-30T00:05:00Z'),{EVERY_MINUTES:'1'}),true,'never more often than 5 minutes');
+const calls=[];
+const ok=async(url,init)=>{calls.push([url,init]);return {status:204};};
+await dispatch({GITHUB_TOKEN:'t',REPOSITORY:'o/r'},ok);
+assert.equal(calls[0][0],'https://api.github.com/repos/o/r/actions/workflows/update-data.yml/dispatches');
+assert.deepEqual(JSON.parse(calls[0][1].body),{ref:'main'});
+assert.equal(calls[0][1].headers.Authorization,'Bearer t');
+await assert.rejects(dispatch({GITHUB_TOKEN:'t',REPOSITORY:'o/r'},async()=>({status:403})),/HTTP 403/);
+await assert.rejects(dispatch({},ok),/required/);
+// Disabled by default: no request even inside the window.
+let waited=0;
+await worker.scheduled({scheduledTime:Date.parse('2026-10-30T00:00:00Z')},{ENABLED:'false'},{waitUntil(){waited++;}});
+assert.equal(waited,0);
+console.log('[dispatch] JST window, slot spacing, 5-minute floor, request shape, failure, disabled default: OK');

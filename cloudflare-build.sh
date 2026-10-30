@@ -26,4 +26,7 @@ python3 scripts/build_public_data.py --input data/today.json --outdir cloudflare
 
 # Provide readable, dated venue information before live JavaScript finishes.
 node scripts/add_static_home.js cloudflare-dist
+
+# Venue statistics pages appear only after the daily course-stats job publishes data.
+python3 scripts/build_venue_pages.py data/venue-stats.json cloudflare-dist
 python3 scripts/release_check.py
