@@ -39,4 +39,6 @@ jobs:
         env:
           CF_LIVE_URL: ${{ vars.CF_LIVE_URL }}
           CF_LIVE_TOKEN: ${{ secrets.CF_LIVE_TOKEN }}
+          # Empty keeps one git commit per round; set (e.g. 60) only after the LIVE Worker is live.
+          LIVE_GIT_EVERY_MINUTES: ${{ vars.LIVE_GIT_EVERY_MINUTES }}
         run: python scripts/run_live_window.py --rounds 1 --interval 120

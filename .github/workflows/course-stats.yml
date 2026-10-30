@@ -40,5 +40,12 @@ jobs:
           PY
       - name: Data quality summary
         run: python scripts/check_data_quality.py
+      - name: Aggregate venue statistics from the same cached result files
+        # Never block the existing course-stats publication.
+        continue-on-error: true
+        run: python scripts/build_venue_stats.py --input data/today.json --cache .cache/course-results --out data/venue-stats.json
       - name: Publish course statistics
-        run: python scripts/publish_data.py --mode files --message 'Update BOAT CHECK course statistics' data/course-stats.json
+        run: |
+          files="data/course-stats.json"
+          if [ -s data/venue-stats.json ]; then files="$files data/venue-stats.json"; fi
+          python scripts/publish_data.py --mode files --message 'Update BOAT CHECK course statistics' $files

@@ -48,6 +48,19 @@ def main():
             assert re.search(r'<title>[^<]+</title>',content),file
             assert content.count('pagead2.googlesyndication.com/pagead/js/adsbygoogle.js')<=1,file
         else:assert 'adsbygoogle' not in content and 'noindex' in content
+    venue_pages=sorted((ROOT/'venues').glob('*.html'))
+    for file in venue_pages:
+        p=Page();p.feed(file.read_text())
+        for url in p.links+p.assets:
+            if url.startswith(('http:','https:','#')):continue
+            local=url.split('#',1)[0].split('?',1)[0]
+            target=(file.parent/local).resolve()
+            assert target.exists() or (target/'index.html').exists(),f'{file}: broken link {url}'
+        expected='https://boatcheck.jp/venues/'+('' if file.name=='index.html' else file.name)
+        assert p.canonical==[expected] and len(p.descriptions)==1,f'{file}: canonical/description'
+    if venue_pages:
+        sitemap=(ROOT/'sitemap.xml').read_text()
+        assert all(f'venues/{f.name}' in sitemap or f.name=='index.html' for f in venue_pages),'venue pages missing from sitemap'
     home=Page();home.feed((ROOT/'index.html').read_text())
     assert home.cards==[f'{n:02}' for n in range(1,25)]
     for name in ('ads.txt','robots.txt','sitemap.xml'):
@@ -73,7 +86,7 @@ def main():
     for asset in re.findall(r'assets/icons/[a-z0-9]+\.(?:png|jpg|svg|webp|gif)',js):
         assert (ROOT/asset).is_file(),asset
     print(f'[release] {len(pages)} HTML pages, 24 static cards, '
-          f'{len(live["meetings"])} active venues, links and split views OK')
+          f'{len(live["meetings"])} active venues, {len(venue_pages)} venue stats pages, links and split views OK')
 
 
 if __name__=='__main__':main()
