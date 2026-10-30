@@ -159,7 +159,12 @@ function formatUpdated(s){
 }
 function dataFreshnessLabel(s){
   const age=(Date.now()-new Date(s).getTime())/60000;
-  return Number.isFinite(age)&&age>20?`更新遅延・${formatUpdated(s)}`:formatUpdated(s);
+  if(!Number.isFinite(age)||age<=20)return formatUpdated(s);
+  // A bare HH:MM hides that the data may be hours or a day old.
+  const elapsed=age<60?`${Math.floor(age)}分前`:age<1440?`約${Math.floor(age/60)}時間前`:`${Math.floor(age/1440)}日以上前`;
+  let day="";
+  try{const f=d=>new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",month:"numeric",day:"numeric"}).format(d);if(f(new Date(s))!==f(new Date()))day=f(new Date(s))+" "}catch{}
+  return `更新遅延（${elapsed}）・${day}${formatUpdated(s)}`;
 }
 function renderLoading(){
   if($("venues").querySelectorAll(".card").length===24)return;
@@ -4832,9 +4837,9 @@ function renderReplayInfo(){
     <div class="replayPageTitle">
       <div>
         <h3>リプレイ</h3>
-        <p>レース動画・展示動画をこのページで直接再生</p>
+        <p>公式配信ページのレース動画・展示動画へ案内</p>
       </div>
-      <span>OFFICIAL VIDEO</span>
+      <span>公式配信へのリンク</span>
     </div>
 
     <div class="replayRaceStatus">
@@ -4850,7 +4855,7 @@ function renderReplayInfo(){
 
     <div class="replayNotice">
       <b>ご注意</b>
-      <span>動画は公式配信元の埋め込み再生に対応しています。</span>
+      <span>動画は公式配信元のページで再生されます。BOAT CHECKは動画を複製・保存していません。</span>
       <span>配信元の設定により、サイト内再生できない動画は別画面で開く必要があります。</span>
       <span>通信環境によって再生開始まで時間がかかる場合があります。</span>
     </div>

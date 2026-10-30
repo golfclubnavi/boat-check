@@ -3332,4 +3332,5 @@ body{letter-spacing:0 !important}
 
 .homeReading{margin:20px 4px 4px;padding:18px;background:#fff;border:1px solid #c5d7e6;border-radius:14px;color:#193650;box-shadow:0 3px 14px rgba(9,35,61,.05)}
 .homeReading h2{font-size:17px;margin:0 0 8px}.homeReading p{font-size:13px;line-height:1.7;margin:0 0 14px}.homeReadingLinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.homeReadingLinks a{display:block;padding:13px;border:1px solid #d4e2ec;border-radius:10px;background:#f6fbff;color:#075f9c;text-decoration:none}.homeReadingLinks strong{display:block;font-size:14px}.homeReadingLinks span{display:block;margin-top:4px;color:#415d74;font-size:12px;line-height:1.6}
+.homeReading p a{color:#075f9c;font-weight:800}
 @media(max-width:600px){.homeReadingLinks{grid-template-columns:1fr}}
