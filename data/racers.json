@@ -38240,5 +38240,37 @@
     "weight": 53.0,
     "class": "B2",
     "profileCheckedAt": "2026-11-01T04:30:49+09:00"
+  },
+  "3787": {
+    "period": 77,
+    "branch": "岡山",
+    "origin": "岡山県",
+    "weight": 55.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-11-02T04:54:42+09:00"
+  },
+  "3832": {
+    "period": 78,
+    "branch": "香川",
+    "origin": "香川県",
+    "weight": 59.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-02T04:54:43+09:00"
+  },
+  "5488": {
+    "period": 139,
+    "branch": "香川",
+    "origin": "香川県",
+    "weight": 46.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-02T04:54:43+09:00"
+  },
+  "5477": {
+    "period": 139,
+    "branch": "香川",
+    "origin": "愛媛県",
+    "weight": 50.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-02T04:54:43+09:00"
   }
 }
