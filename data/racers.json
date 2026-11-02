@@ -38272,5 +38272,21 @@
     "weight": 50.0,
     "class": "B2",
     "profileCheckedAt": "2026-11-02T04:54:43+09:00"
+  },
+  "5473": {
+    "period": 139,
+    "branch": "福井",
+    "origin": "石川県",
+    "weight": 52.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-03T08:19:09+09:00"
+  },
+  "5300": {
+    "period": 132,
+    "branch": "愛知",
+    "origin": "愛知県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-11-03T08:19:09+09:00"
   }
 }
