@@ -38376,5 +38376,13 @@
     "weight": 53.0,
     "class": "B2",
     "profileCheckedAt": "2026-11-08T04:37:39+09:00"
+  },
+  "5476": {
+    "period": 139,
+    "branch": "広島",
+    "origin": "広島県",
+    "weight": 53.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-09T04:52:49+09:00"
   }
 }
