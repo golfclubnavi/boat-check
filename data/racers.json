@@ -38424,5 +38424,45 @@
     "weight": 49.0,
     "class": "B1",
     "profileCheckedAt": "2026-11-12T07:10:21+09:00"
+  },
+  "3207": {
+    "period": 56,
+    "branch": "東京",
+    "origin": "沖縄県",
+    "weight": 54.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-11-13T07:00:43+09:00"
+  },
+  "5077": {
+    "period": 124,
+    "branch": "埼玉",
+    "origin": "埼玉県",
+    "weight": 51.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-11-13T07:00:43+09:00"
+  },
+  "5494": {
+    "period": 139,
+    "branch": "福岡",
+    "origin": "沖縄県",
+    "weight": 52.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-13T07:00:44+09:00"
+  },
+  "5491": {
+    "period": 139,
+    "branch": "福岡",
+    "origin": "福岡県",
+    "weight": 52.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-13T07:00:44+09:00"
+  },
+  "5489": {
+    "period": 139,
+    "branch": "静岡",
+    "origin": "静岡県",
+    "weight": 51.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-13T07:00:44+09:00"
   }
 }
