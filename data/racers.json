@@ -38488,5 +38488,21 @@
     "weight": 50.0,
     "class": "B2",
     "profileCheckedAt": "2026-11-17T08:55:13+09:00"
+  },
+  "3778": {
+    "period": 76,
+    "branch": "埼玉",
+    "origin": "埼玉県",
+    "weight": 47.0,
+    "class": "B1",
+    "profileCheckedAt": "2026-11-18T08:05:25+09:00"
+  },
+  "5495": {
+    "period": 139,
+    "branch": "徳島",
+    "origin": "徳島県",
+    "weight": 50.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-18T08:05:26+09:00"
   }
 }
