@@ -38504,5 +38504,13 @@
     "weight": 50.0,
     "class": "B2",
     "profileCheckedAt": "2026-11-18T08:05:26+09:00"
+  },
+  "5486": {
+    "period": 139,
+    "branch": "三重",
+    "origin": "三重県",
+    "weight": 52.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-19T07:46:41+09:00"
   }
 }
