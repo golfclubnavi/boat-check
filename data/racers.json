@@ -38512,5 +38512,21 @@
     "weight": 52.0,
     "class": "B2",
     "profileCheckedAt": "2026-11-19T07:46:41+09:00"
+  },
+  "5497": {
+    "period": 139,
+    "branch": "大阪",
+    "origin": "大阪府",
+    "weight": 48.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-21T07:24:36+09:00"
+  },
+  "5480": {
+    "period": 139,
+    "branch": "東京",
+    "origin": "東京都",
+    "weight": 50.0,
+    "class": "B2",
+    "profileCheckedAt": "2026-11-21T07:24:38+09:00"
   }
 }
